@@ -1,0 +1,306 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <!--
+    <record model="ir.ui.view" id="tiger_account_core.list">
+      <field name="name">tigerAccountCore list</field>
+      <field name="model">tiger_account_core.tiger_account_core</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+    -->
+    <record model='ir.ui.view' id='accountcore_org_list'>
+      <field name='name'>机构</field>
+      <field name='model'>accountcore.org</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number' />
+          <field name='name' />
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_itemclass_list'>
+      <field name='name'>核算项目类别</field>
+      <field name='model'>accountcore.itemclass</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number' />
+          <field name='name' />
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_items_list'>
+      <field name='name'>核算项目</field>
+      <field name='model'>accountcore.item</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='itemClass' />
+          <field name='number' />
+          <field name='name' />
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_rulebook_list'>
+      <field name='name'>账簿口径</field>
+      <field name='model'>accountcore.rulebook</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number'></field>
+          <field name='name'></field>
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_accountclass_list'>
+      <field name='name'>科目类别</field>
+      <field name='model'>accountcore.accountclass</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number'></field>
+          <field name='name'></field>
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_accounts_list'>
+      <field name='name'>会计科目</field>
+      <field name='model'>accountcore.account</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='org'></field>
+          <field name='accountClass'></field>
+          <field name='number'></field>
+          <field name='name'></field>
+          <field name='cashFlowControl'></field>
+          <field name='itemClasses'></field>
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='account_cashflowtype_list'>
+      <field name='name'>现金流量项目类别</field>
+      <field name='model'>accountcore.cashflowtype</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number'></field>
+          <field name='name'></field>
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_cashflows_list'>
+      <field name='name'>现金流量项目列别</field>
+      <field name='model'>accountcore.cashflow</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='cashFlowType'></field>
+          <field name='number'></field>
+          <field name='name'></field>
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_source_list'>
+      <field name='name'>凭证来源</field>
+      <field name='model'>accountcore.source</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number'></field>
+          <field name='name'></field>
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_voucher_list'>
+      <field name='name'>记账凭证列表</field>
+      <field name='model'>accountcore.voucher</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='voucherdate' />
+          <field name='soucre' />
+          <field name='org' />
+          <field name='ruleBook' />
+          <field name='number' />
+          <field name='appendixCount' />
+          <field name='createUser' />
+          <field name='reviewer' />
+          <field name='entrys' />
+          <!-- <field name='voucherFile'/> -->
+        </tree>
+      </field>
+    </record>
+    <record model='ir.ui.view' id='accountcore_voucher_form'>
+      <field name='name'>记账凭证</field>
+      <field name='model'>accountcore.voucher</field>
+      <field name='arch' type='xml'>
+        <form>
+          <header>
+            <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
+            <button string='取消审核' type='object' name='cancelReview' attrs="{'invisible':[('state','=','creating')]}"></button>
+            <field name='state' widget='statusbar'></field>
+          </header>
+          <sheet>
+            <center>
+              <h1>记账凭证</h1>
+            </center>
+            <div>
+              <center>
+                <field name='voucherdate' nolabel="1" col='1' attrs="{'readonly':[('state','=','reviewed')]}" />
+              </center>
+            </div>
+            <group col='4' class='oe_grey'>
+              <field name='org' col='2' attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='ruleBook' col='2' attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='number' col='1' attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" />
+            </group>
+            <field name='entrys' context="{'disable_open': True}" attrs="{'readonly':[('state','=','reviewed')]}">
+              <tree editable="bottom">
+                <field name='sequence' widget='handle'></field>
+                <field name='explain'></field>
+                <field name='account'></field>
+                <field name='items' widget="many2many_tags"></field>
+                <field name='damount'></field>
+                <field name='camount'></field>
+                <field name='cashFlow'></field>
+              </tree>
+            </field>
+            <group col='12' class='oe_grey'>
+              <field name='createUser' />
+              <field name='reviewer' />
+              <field name='soucre' />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id='accountcore_userdefaults_form' model='ir.ui.view'>
+      <field name='name'>配置新增凭证默认值</field>
+      <field name='model'>accountcoure.userdefaults</field>
+      <field name='arch' type='xml'>
+        <form string='设置默认值' create='false'>
+          <!-- <header>
+            <button string='保存' type='object' name='setDefaults' class='oe_hightlight'/>
+          </header> -->
+          <group col='2'>
+            <field name='default_voucherDate' required='1' />
+            <field name='default_org' required='1' />
+            <field name='default_ruleBook' required='1' />
+          </group>
+        </form>
+      </field>
+    </record>
+    <!-- actions opening views on models -->
+    <!--
+    <record model="ir.actions.act_window" id="tiger_account_core.action_window">
+      <field name="name">tigerAccountCore window</field>
+      <field name="res_model">tiger_account_core.tiger_account_core</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    -->
+    <record model='ir.actions.act_window' id='accountcore_org_action_window'>
+      <field name='name'>核算机构</field>
+      <field name='res_model'>accountcore.org</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_itemclass_action_window'>
+      <field name='name'>核算项目</field>
+      <field name='res_model'>accountcore.itemclass</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_items_action_window'>
+      <field name='name'>核算项目列表</field>
+      <field name='res_model'>accountcore.item</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_rulebook_action_window'>
+      <field name='name'>账簿口径</field>
+      <field name='res_model'>accountcore.rulebook</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_accountclass_action_window'>
+      <field name='name'>科目类别</field>
+      <field name='res_model'>accountcore.accountclass</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_account_action_window'>
+      <field name='name'>科目列表</field>
+      <field name='res_model'>accountcore.account</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_cashflowtype_action_window'>
+      <field name='name'>现金流量项目类别</field>
+      <field name='res_model'>accountcore.cashflowtype</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_cashflowitems_action_window'>
+      <field name='name'>现金流量项目列表</field>
+      <field name='res_model'>accountcore.cashflow</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_source_action_window'>
+      <field name='name'>凭证来源</field>
+      <field name='res_model'>accountcore.source</field>
+      <field name='veiw_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_vouchers_action_window'>
+      <field name='name'>凭证列表</field>
+      <field name='res_model'>accountcore.voucher</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_userdefaults_action'>
+      <field name='name'>默认配置</field>
+      <field name='res_model'>accountcoure.userdefaults</field>
+      <field name='view_mode'>form</field>
+      <field name='target'>new</field>
+    </record>
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="tiger_account_core.action_server">
+      <field name="name">tigerAccountCore server</field>
+      <field name="model_id" ref="model_tiger_account_core_tiger_account_core"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="tigerAccountCore" id="tiger_account_core.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="tiger_account_core.menu_1" parent="tiger_account_core.menu_root"/>
+    <menuitem name="Menu 2" id="tiger_account_core.menu_2" parent="tiger_account_core.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="tiger_account_core.menu_1_list" parent="tiger_account_core.menu_1" action="tiger_account_core.action_window"/>
+    <menuitem name="Server to list" id="tiger_account_core" parent="tiger_account_core.menu_2" action="tiger_account_core.action_server"/>
+    -->
+    <menuitem name='会计' id='accountcore_menu' />
+    <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="48" />
+    <menuitem name='凭证列表' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="50" />
+    <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="51" />
+    <menuitem name='账簿口径' id='acctountcore_rulebook_menu' parent='accountcore_menu' action='accountcore_rulebook_action_window' sequence="49" />
+    <menuitem name='核算机构' id='accountcore_org_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="50" />
+    <menuitem name='会计科目' id='accountcore_account_menu' parent='accountcore_menu' sequence="51" />
+    <menuitem name='科目类别' id='acctountcore_accountclass_menu' parent='accountcore_account_menu' action='accountcore_accountclass_action_window' />
+    <menuitem name='科目列表' id='accountcore_accounts_menu' parent='accountcore_account_menu' action='accountcore_account_action_window' />
+    <menuitem name='核算项目' id='accountcore_item_menu' parent='accountcore_menu' sequence="52" />
+    <menuitem name='核算项目类别' id='accountcore_itemclass_menu' parent='accountcore_item_menu' action='accountcore_itemclass_action_window' />
+    <menuitem name='核算项目列表' id='accountcore_items_menu' parent='accountcore_item_menu' action='accountcore_items_action_window' />
+    <menuitem name='现金流量' id='accountcore_cashflow_menu' parent='accountcore_menu' sequence="53" />
+    <menuitem name='现金流量项目类别' id='accountcore_cashflowtypw_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowtype_action_window' />
+    <menuitem name='现金流量项目列表' id='accountcore_cashflows_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowitems_action_window' />
+    <menuitem name='设置默认值' id='accountcore_serdefaults_menu' parent='accountcore_menu' action='accountcore_userdefaults_action' sequence="55" />
+
+  </data>
+</odoo>
+
