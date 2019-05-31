@@ -27,8 +27,14 @@
         'views/views.xml',
         'views/templates.xml',
     ],
+    'qweb': [
+        'views/accountcore.xml',
+    ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
+    'css': [
+        'static/css/accountcore.css',
+    ]
 }

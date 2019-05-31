@@ -1,5 +1,24 @@
 <odoo>
     <data>
+        <!-- <template id="accountcore_backend" name="accountcore assets" inherit_id="web.assets_backend">
+            <xpath expr="//script[last()]" position='after'>
+                <link rel='stylesheet' type='text/css' href=""/>
+                <script type='text/javascript' src=''/>
+            </xpath>
+        </template> -->
+
+        <template id="accountcore_assets_css" inherit_id="web.assets_backend" name="accountcore assets">
+            <xpath expr="link[last()]" position="after">
+                <link rel='stylesheet' type='text/css' href="/accountcore/static/css/accountcore.css" />
+                <!-- <script type="text/javascript" src=""></script> -->
+            </xpath>
+        </template>
+        <template id="accountcore_assets_js" inherit_id="web.assets_backend" name="accountcore jsassets">
+            <xpath expr="script[last()]" position="after">
+                <!-- <link rel='stylesheet' type='text/css' href="/accountcore/staic/static/css/accountcore.css"/> -->
+                <script type="text/javascript" src="/accountcore/static/js/accountcore.js"></script>
+            </xpath>
+        </template>
         <!-- <template id="listing"> -->
         <!--   <ul> -->
         <!--     <li t-foreach="objects" t-as="object"> -->

@@ -1,0 +1,108 @@
+/* 凭证列表表格-开始 */
+.oe_accountcore_table_fix th {
+    white-space: nowrap;
+
+}
+
+.oe_accountcore_table_fix td {
+    white-space: nowrap;
+}
+
+.oe_accountcore_entrys {
+    margin: 0px;
+    width: 1070px;
+
+}
+
+
+
+.oe_accountcore_entrys td {
+    white-space: normal !important;
+    vertical-align: middle !important;
+    border: 0px;
+
+}
+
+/* 凭证列表表格结束 */
+/* 会计凭证界面-开始 */
+.oe_ac_voucher_entrys{
+    margin: 0px;
+    width: 1070px;
+}
+.oe_ac_voucher_entrys .o_input {
+    width: 100%;
+    border: 0px;
+}
+
+.oe_ac_voucher_entrys th {
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+}
+
+.oe_ac_voucher_entrys td {
+    vertical-align: middle !important;
+}
+
+.amount-zero {
+    /* 凭证分录借贷金额为零显示颜色 */
+    color: white !important;
+}
+
+.amount-negative {
+    /* 凭证分录借贷金额小于零显示颜色 */
+    color: red !important;
+}
+
+
+
+.oe_ac_voucher_entrys {
+    /* 凭证分录 */
+    table-layout: fixed;
+}
+
+.oe_ac_explain {
+    /* 凭证说明 */
+    width: 250px;
+    overflow: auto;
+}
+
+.oe_ac_account {
+    /* 凭证会计科目 */
+    width: 250px;
+
+}
+.oe_ac_accountItemClasses{
+display: none;
+}
+.oe_accountcore_entrys .o_list_number {
+    /* 凭证借贷金额 */
+    width: 130px;
+
+}
+
+.oe_ac_items {
+    /* 凭证核算项目 */
+    width: 250px !important;
+}
+
+.oe_ac_cashflow {
+    /* 凭证现金流量 */
+    width: 230px;
+}
+
+.ac-items-choice {
+    /* 凭证编辑状态核算项目选择容器 */
+
+}
+
+.ac-item-type-name {
+    /* 凭证编辑状态核算项目类别名称 */
+
+}
+
+.ac-item-selection {
+    /* 凭证编辑状态核算项目下拉选择 */
+
+}
+
+/* 会计凭证界面-结束 */
