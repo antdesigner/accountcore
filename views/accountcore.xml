@@ -2,21 +2,16 @@
 <templates>
     <t t-name='accountcore_voucher_choice_items'>
         <div class="container ac-items-choice">
-            <!-- <t t-foreach='itemTypes' t-as='type'>
-                <div class='row'>
-                    <div class='col-3 ac-item-type-name'>
-                        <t t-esc='type.name' />
-                    </div>
-                    <div class='ac-item-selection' t-att-id='type.id'>
-                        <select>
-                            <option value ="volvo">Volvo</option>
-                            <option value ="saab">重庆京宝科技有限公司江北分公司</option>
-                            <option value="opel">Opel</option>
-                            <option value="audi">Audi</option>
-                        </select>
-                    </div>
-                </div>
-            </t> -->
         </div>
+    </t>
+    <t t-extend="ListView.buttons">
+        <t t-jquery='div.o_list_buttons' t-operation="append">
+            <t t-if="widget.displayName=='凭证列表'">
+                <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
+            </t>
+            <t t-elif="widget.displayName=='已生成凭证编号'">
+                <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
+            </t>
+        </t>
     </t>
 </templates>

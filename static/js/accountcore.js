@@ -78,15 +78,7 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
         getFocusableElement: function () {
             return this.choiceItemsModel ? this.choiceItemsModel.getFocusableElement() : $();
         },
-        // _removeTag: function (id) {
-        //     var record = _.findWhere(this.value.data, {
-        //         res_id: id
-        //     });
-        //     this._setValue({
-        //         operation: 'FORGET',
-        //         ids: [record.id],
-        //     });
-        // },
+
         /**
          * @private
          */
@@ -124,8 +116,8 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
             var newValue = ev.data.changes[this.name];
             if (newValue) {
                 this._addTag(newValue);
-                var id=ev.target.ac_itemId;
-                if (id && id> 0 && id!=newValue.id) {
+                var id = ev.target.ac_itemId;
+                if (id && id > 0 && id != newValue.id) {
                     this._removeTag(id);
                 }
                 ev.target.ac_itemId = newValue.id;
@@ -466,4 +458,42 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         choiceItemsModel: choiceItemsModel,
 
     }
+});
+
+//给凭证列表视图添加按钮
+odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var voucherListController = ListController.extend({
+        renderButtons: function () {
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+                var btn = this.$buttons.find('.ac_voucher_number_sort'); //凭证编号排序按钮
+                btn.on('click', this.proxy('vouchersSortByNumber'));
+            };
+        },
+        /**依据凭证编号对凭证列表进行排序
+         */
+        vouchersSortByNumber: function () {
+            var tbody = this.$el.find('tbody').first();
+            var trs = this.$el.find('tr.o_data_row');
+            trs.detach();
+            trs.sort(this._voucherNumbersort);
+            tbody.append(trs);
+
+        },
+        _voucherNumbersort: function (a, b) {
+            return $(a).find('.voucherNumber').text() - $(b).find('.voucherNumber').text();
+        }
+
+    });
+    var voucherListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: voucherListController,
+        }),
+    });
+    viewRegistry.add('voucherListView', voucherListView);
+    return voucherListView;
 });

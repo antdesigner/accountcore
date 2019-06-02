@@ -66,6 +66,7 @@
         <tree>
           <field name="org" />
           <field name='itemClass' />
+          <field name='uniqueNumber' readonly='1'></field>
           <field name='number' />
           <field name='name' />
         </tree>
@@ -81,6 +82,7 @@
             <h1>新增编辑=>核算项目</h1>
             <hr></hr>
             <group>
+              <field name='uniqueNumber' readonly='1'></field>
               <field name="number" />
               <field name="org" />
               <field name="itemClass" />
@@ -155,7 +157,8 @@
           <field name='number'></field>
           <field name='name'></field>
           <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
-          <field name='itemClasses'></field>
+          <field name='itemClassesHtml'>
+          </field>
           <field name='fatherAccountId' invisible='1'></field>
         </tree>
       </field>
@@ -183,6 +186,7 @@
                   <field name="name" />
                 </tree>
               </field>
+              <field name="explain" />
             </group>
           </sheet>
         </form>
@@ -278,11 +282,12 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree class='oe_accountcore_table_fix' default_order="org,voucherdate,number">
-          <field name='number' />
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix voucher_list' default_order="org,voucherdate,number">
+         <!-- <tree  class='oe_accountcore_table_fix' default_order="org,voucherdate,number"> -->
+          <field name='voucherdate' />
+          <field name='number' class='voucherNumber'/>
           <field name='uniqueNumber' />
           <field name='entrysHtml' />
-          <field name='voucherdate' />
           <field name='createUser' />
           <field name='reviewer' />
           <field name='ruleBook' />
@@ -360,14 +365,14 @@
         <form string="">
           <sheet>
             <group>
-            <field name="explain"/>
-            <field name="account"/>
-            <field name="damount"/>
-            <field name="camount"/>
-            <field name="items"/>
-            <field name="cashFlow"/>
+              <field name="explain" />
+              <field name="account" />
+              <field name="damount" />
+              <field name="camount" />
+              <field name="items" />
+              <field name="cashFlow" />
               <!-- Add your fields here -->
-              
+
             </group>
           </sheet>
         </form>
@@ -610,6 +615,15 @@
       <field name='prefix'>V</field>
       <field name='suffix'></field>
       <field name='padding'>7</field>
+    </record>
+  </data>
+  <data noupdate='True'>
+    <record id='item_unique_number' model='ir.sequence'>
+      <field name='name'>核算项目唯一号</field>
+      <field name='code'>item.uniqueNumber</field>
+      <field name='prefix'>I</field>
+      <field name='suffix'></field>
+      <field name='padding'>8</field>
     </record>
   </data>
 </odoo>

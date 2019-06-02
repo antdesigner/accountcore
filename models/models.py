@@ -9,18 +9,6 @@ import copy
 import time
 sys.path.append('.\.\server')
 
-# class accountcore(models.Model):
-#     _name = 'accountcore.accountcore'
-
-#     name = fields.Char()
-#     value = fields.Integer()
-#     value2 = fields.Float(compute="_value_pc", store=True)
-#     description = fields.Text()
-#
-#     @api.depends('value')
-#     def _value_pc(self):
-#         self.value2 = float(self.value) / 100
-
 
 class Org(models.Model):
 
@@ -56,6 +44,7 @@ class Item(models.Model):
         index=True,
         required=True,
         ondelete='restrict')
+    uniqueNumber = fields.Char(string='唯一编号')
     number = fields.Char(string='核算项目编码', required=True)
     name = fields.Char(string='核算项目名称', required=True, help="核算项目名称")
     itemClass = fields.Many2one(
@@ -88,8 +77,14 @@ class Item(models.Model):
             itemslist.append({'id': i.id, 'name': i.name,
                               'itemClass': i.itemClass.id})
         return itemslist
-        # return [{'id': i.id, 'name': i.name,
-        #                      'itemClass': i.itemClass.id} for i  in items]
+
+    @api.model
+    def create(self, values):
+        '''新增项目'''
+        values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
+            'item.uniqueNumber')
+        rl = super(Item, self).create(values)
+        return rl
 
 
 class RuleBook(models.Model):
@@ -133,6 +128,8 @@ class Account(models.Model):
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many(
         'accountcore.itemclass', string='包含的核算项目类别', ondelete='restrict')
+    itemClassesHtml = fields.Html(
+        string="包含的核算项目类别", compute='_itemClassesHtml')
     _sql_constraints = [('accountcore_account_number_unique', 'unique(number)',
                          '科目编码重复了!'),
                         ('accountcore_account_name_unique', 'unique(name)',
@@ -144,6 +141,7 @@ class Account(models.Model):
         index=True,
         ondelete='restrict')
     currentChildNumber = fields.Integer(default=10, string='新建下级科目待用编号')
+    explain = fields.Html(string='科目说明')
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
@@ -160,6 +158,20 @@ class Account(models.Model):
         '''获得科目下的核算项目'''
         itemClasses = self.browse([accountId]).itemClasses
         return [{'id': i.id, 'name': i.name} for i in itemClasses]
+
+    @api.multi
+    def _itemClassesHtml(self):
+        '''购建科目相关核算项目展示内容'''
+        content = None
+        itemTypes = None
+        for account in self:
+            content = ""
+            if account.itemClasses:
+                itemTypes = account.itemClasses
+                for itemType in itemTypes:
+                    content = content+"<span>\\"+itemType.name+"</span>"
+            account.itemClassesHtml = content
+        return True
 
 
 class CashFlowType(models.Model):
@@ -368,7 +380,6 @@ class Voucher(models.Model):
     @api.multi
     def _createEntrysHtml(self):
         '''购建凭证分录展示内容'''
-        start_cpu = time.clock()
         content = None
         entrys = None
         for voucher in self:
@@ -379,8 +390,6 @@ class Voucher(models.Model):
                     content = content+self._buildingEntryHtml(entry)
             content = content+"</table>"
             voucher.entrysHtml = content
-        end_cpu = time.clock()
-        print("%f cpu seconds" % (end_cpu-start_cpu))
         return True
 
     def _buildingEntryHtml(self, entry):
