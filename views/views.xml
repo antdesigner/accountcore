@@ -282,10 +282,10 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix voucher_list' default_order="org,voucherdate,number">
-         <!-- <tree  class='oe_accountcore_table_fix' default_order="org,voucherdate,number"> -->
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,number" limit='9999'>
+          <!-- <tree class='oe_accountcore_table_fix' default_order="org,voucherdate,number"> -->
           <field name='voucherdate' />
-          <field name='number' class='voucherNumber'/>
+          <field name='number' class='voucherNumber' />
           <field name='uniqueNumber' />
           <field name='entrysHtml' />
           <field name='createUser' />
@@ -297,6 +297,15 @@
           <field name='state' invisible='1'></field>
         </tree>
       </field>
+    </record>
+    <!-- accountcore.voucher_number_single action window -->
+    <record id="accountcore_seting_voucher_number_single_action" model="ir.actions.act_window">
+      <field name="name">修改凭证编号</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">accountcore.seting_voucher_number_single</field>
+      <field name="view_mode">form</field>
+      <field name="view_type">form</field>
+      <field name="target">new</field>
     </record>
     <record model='ir.ui.view' id='accountcore_voucher_form'>
       <field name='name'>记账凭证</field>
@@ -574,15 +583,7 @@
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
     </record>
-    <!-- accountcore.voucher_number_single action window -->
-    <record id="accountcore_seting_voucher_number_single_action" model="ir.actions.act_window">
-      <field name="name">修改凭证编号</field>
-      <field name="type">ir.actions.act_window</field>
-      <field name="res_model">accountcore.seting_voucher_number_single</field>
-      <field name="view_mode">form</field>
-      <field name="view_type">form</field>
-      <field name="target">new</field>
-    </record>
+
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
 
     <menuitem name='会计' id='accountcore_menu' />
