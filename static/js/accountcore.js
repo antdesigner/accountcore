@@ -470,8 +470,11 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
         renderButtons: function () {
             this._super.apply(this, arguments);
             if (this.$buttons) {
-                var btn = this.$buttons.find('.ac_voucher_number_sort'); //凭证编号排序按钮
-                btn.on('click', this.proxy('vouchersSortByNumber'));
+                var btns=this.$buttons;
+                var ac_voucher_number_sort_btn =btns.find('.ac_voucher_number_sort'); //凭证编号排序按钮
+                ac_voucher_number_sort_btn.on('click', this.proxy('vouchersSortByNumber'));
+                var ac_voucher_filter_btn = btns.find('.ac_voucher_filter');//查询按钮
+                ac_voucher_filter_btn.on('click', this.proxy('voucher_filter'));
             };
         },
         /**依据凭证编号对凭证列表进行排序
@@ -486,8 +489,11 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
         },
         _voucherNumbersort: function (a, b) {
             return $(a).find('.voucherNumber').text() - $(b).find('.voucherNumber').text();
-        }
-
+        },
+        //查询凭证
+        voucher_filter: function () {
+            alert('暂未实现');
+        },
     });
     var voucherListView = ListView.extend({
         config: _.extend({}, ListView.prototype.config, {

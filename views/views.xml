@@ -506,6 +506,26 @@
         </form>
       </field>
     </record>
+
+    <!-- accountcore.voucher search view -->
+    <record id="accountcore_voucher_search" model="ir.ui.view">
+      <field name="name">凭证查询</field>
+      <field name="model">accountcore.voucher</field>
+      <field name="arch" type="xml">
+        <search string="voucherFilter">
+          <field name="number" string="凭证编号等于" domain="[('number','=', self)]" />
+          <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
+          <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
+          <field name="state" string="Test" domain="[('state','=', self)]" />
+          <filter string="本月" name="month" domain="[('voucherdate','&gt;=', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&lt;',  (context_today() + relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
+          <filter string="上月" name="month2" domain="[('voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
+          <filter string="本年" name="year" domain="[('voucherdate','&lt;=', time.strftime('%Y-12-31 23:59:59')),('voucherdate','&gt;=', time.strftime('%Y-01-01 00:00:00'))]" />
+          <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
+          <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
+        </search>
+      </field>
+    </record>
+
     <record model='ir.actions.act_window' id='accountcore_org_action_window'>
       <field name='name'>核算机构</field>
       <field name='res_model'>accountcore.org</field>
@@ -628,4 +648,5 @@
     </record>
   </data>
 </odoo>
+
 

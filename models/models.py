@@ -263,7 +263,9 @@ class Voucher(models.Model):
                              default='creating')
     uniqueNumber = fields.Char(string='唯一编号')
     numberTasticsContainer_str = fields.Char(string='凭证可用编号策略', default="{}")
-    entrysHtml = fields.Html(string="分录内容", compute='_createEntrysHtml')
+    entrysHtml = fields.Html(
+        string="分录内容", compute='_createEntrysHtml', store=True)
+
     @api.multi
     def reviewing(self, ids):
         '''审核凭证'''
@@ -378,6 +380,7 @@ class Voucher(models.Model):
         return rl
 
     @api.multi
+    @api.depends('entrys')
     def _createEntrysHtml(self):
         '''购建凭证分录展示内容'''
         content = None
