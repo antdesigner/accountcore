@@ -1,12 +1,5 @@
 <odoo>
     <data>
-        <!-- <template id="accountcore_backend" name="accountcore assets" inherit_id="web.assets_backend">
-            <xpath expr="//script[last()]" position='after'>
-                <link rel='stylesheet' type='text/css' href=""/>
-                <script type='text/javascript' src=''/>
-            </xpath>
-        </template> -->
-
         <template id="accountcore_assets_css" inherit_id="web.assets_backend" name="accountcore assets">
             <xpath expr="link[last()]" position="after">
                 <link rel='stylesheet' type='text/css' href="/accountcore/static/css/accountcore.css" />
@@ -19,23 +12,115 @@
                 <script type="text/javascript" src="/accountcore/static/js/accountcore.js"></script>
             </xpath>
         </template>
-        <!-- <template id="listing"> -->
-        <!--   <ul> -->
-        <!--     <li t-foreach="objects" t-as="object"> -->
-        <!--       <a t-attf-href="#{ root }/objects/#{ object.id }"> -->
-        <!--         <t t-esc="object.display_name"/> -->
-        <!--       </a> -->
-        <!--     </li> -->
-        <!--   </ul> -->
-        <!-- </template> -->
-        <!-- <template id="object"> -->
-        <!--   <h1><t t-esc="object.display_name"/></h1> -->
-        <!--   <dl> -->
-        <!--     <t t-foreach="object._fields" t-as="field"> -->
-        <!--       <dt><t t-esc="field"/></dt> -->
-        <!--       <dd><t t-esc="object[field]"/></dd> -->
-        <!--     </t> -->
-        <!--   </dl> -->
-        <!-- </template> -->
+        <template id='accountsbalance_report'>
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2>Report title</h2>
+                            <p>This object's name is <span t-field="o.name" />
+                            </p>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <template id='voucher_report'>
+            <!-- <tfoot t-call="web.external_layout"> -->
+            <style>
+           td
+{
+vertical-align:middle !important;
+}
+.damount,.camount{
+white-space:nowrap !important;
+}
+table tr{
+page-break-inside: avoid !important;}
+.explain{
+font-size:0.7em}
+            </style>
+            <div class="page container text-center" style="page-break-after:always">
+                <div class="row">
+                    <h2 class='col'>记账凭证</h2>
+                </div>
+                <div class="row">
+                    <div class='col'>
+                        <span t-field='doc.voucherdate' />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class='col-8 text-left'>
+                        <span>机构:</span>
+                        <span t-field='doc.org' />
+                    </div>
+                    <div class='col-4 text-right'>
+                        <span>附件张数:</span>
+                        <span t-field='doc.appendixCount' />
+                        <span>凭证编号:</span>
+                        <span t-field='doc.number' />
+                    </div>
+                </div>
+                <div class="row">
+                    <table class='table table-bordered table-sm'>
+                        <thead style="white-space:nowrap;">
+                            <tr>
+                                <th>说明</th>
+                                <th>科目(核算项目）</th>
+                                <th>借方</th>
+                                <th>贷方</th>
+                                <!-- <th>核算项目</th> -->
+                                <!-- <th>现金流量</th> -->
+                            </tr>
+                        </thead>
+                        <tbody class="text-left">
+                            <tr t-foreach="doc.entrys" t-as="entry">
+                                <td>
+                                    <span t-field='entry.explain' class="explain" />
+                                </td>
+                                <td>
+                                    <span t-field="entry.account" />
+                                    <span t-if="entry.items">(</span>
+                                    <span t-field='entry.items' />
+                                    <span t-if="entry.items">)</span>
+                                </td>
+                                <td class="damount text-right">
+                                    <span t-if="entry.damount!=0" t-field="entry.damount"/>
+                                </td>
+                                <td class='camount text-right'>
+                                    <span t-if="entry.camount!=0" t-field="entry.camount" />
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class='col-4 text-left'>
+                        <span>记账:</span>
+                        <span t-field='doc.createUser' />
+                    </div>
+                    <div class='col-4'>
+                        <span>审核:</span>
+                        <span t-field='doc.reviewer' />
+                    </div>
+                    <div class='col-4 text-right'>
+                        <span>唯一编号:</span>
+                        <span t-field='doc.uniqueNumber' />
+                    </div>
+                </div>
+            </div>
+            <!-- </tfoot> -->
+        </template>
+        <template id='vouchers_report'>
+            <!-- <t t-call="web.html_container"> -->
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="accountcore.voucher_report" />
+                </t>
+            </t>
+        </template>
+
     </data>
 </odoo>

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
+<!-- 凭证的核算项目容器 -->
     <t t-name='accountcore_voucher_choice_items'>
         <div class="container ac-items-choice">
         </div>
     </t>
+    <!-- tree视图添加按钮 -->
     <t t-extend="ListView.buttons">
         <t t-jquery='div.o_list_buttons' t-operation="append">
             <t t-if="widget.displayName=='凭证列表'">

@@ -351,6 +351,7 @@
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account}" />
                 <!-- <field name='items' widget="choiceItemsModel" class='oe_ac_items' context="{'account':account}"></field> -->
                 <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+                <!-- <field name='currency_id' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field> -->
                 <control>
                   <create string="添加一行分录" />
                 </control>
@@ -378,8 +379,8 @@
               <field name="account" />
               <field name="damount" />
               <field name="camount" />
-              <field name="items" />
               <field name="cashFlow" />
+              <field name="items" />
               <!-- Add your fields here -->
 
             </group>
@@ -580,6 +581,7 @@
       <field name='view_mode'>tree,form</field>
       <field name="context">{'search_default_month': 1}</field>
     </record>
+
     <record model='ir.actions.act_window' id='accountore_voucher_new_actions_window'>
       <field name='name'>新增凭证</field>
       <field name='res_model'>accountcore.voucher</field>
@@ -606,11 +608,29 @@
     </record>
 
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
+   <record id="paperformat_a4half" model="report.paperformat">
+    <field name="name">会计凭证</field>
+    <field name="default" eval="True"/>
+    <field name="format">custom</field>
+    <field name="page_height">148</field>
+    <field name="page_width">210</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">10</field>
+    <field name="margin_left">20</field>
+    <field name="margin_right">7</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">35</field>
+    <field name="dpi">90</field>
+</record>
+
+    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.accountsbalance_report' />
+    <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'/>
 
     <menuitem name='会计' id='accountcore_menu' />
     <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
     <menuitem name='凭证列表' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="50" />
-    <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="51" />
+    <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" />
     <menuitem name='新增凭证' id='accountcore_voucher_new_menu' parent='accountcore_voucher_menu' action='accountore_voucher_new_actions_window' sequence='60' />
     <menuitem name='凭证默认值' id='accountcore_serdefaults_menu' parent='accountcore_menu' action='accountcore_userdefaults_action' sequence="45" />
     <menuitem name='凭证编号' id='accountcore_voucher_number_memu' parent='accountcore_menu' sequence='47' />
@@ -627,6 +647,8 @@
     <menuitem name='现金流量' id='accountcore_cashflow_menu' parent='accountcore_menu' sequence="53" />
     <menuitem name='现金流量项目类别' id='accountcore_cashflowtypw_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowtype_action_window' />
     <menuitem name='现金流量项目列表' id='accountcore_cashflows_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowitems_action_window' />
+    <menuitem name='账簿' id='accountcore_books_menu' parent='accountcore_menu' sequence="60" />
+    <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='accounctore_accountsbalance_report' />
 
     <!-- <menuitem name='设置默认值' id='accountcore_createchildaccount_menu' parent='accountcore_menu' action='accountcore_warzidcreatechildaccount_action' sequence="55" />  -->
   </data>
@@ -648,6 +670,7 @@
       <field name='padding'>8</field>
     </record>
   </data>
+
 </odoo>
 
 

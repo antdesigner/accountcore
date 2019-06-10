@@ -64,7 +64,7 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
     return ListRenderer;
 });
 // alert('hello world end');
-
+//凭证的核算项目字段
 odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.accountcoreVoucher', 'web.field_registry'], function (require) {
     "use strict";
     var relational_fields = require('web.relational_fields');
@@ -134,6 +134,7 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
         tiger_accountItems_m2m: tiger_accountItems_m2m
     };
 });
+//凭证的核算项目字段选择
 odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relational_fields', 'web.field_registry', 'web.core', 'web.field_utils'], function (require) {
     "use strict";
     var AbstractField = require('web.AbstractField');

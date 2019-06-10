@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
+import time
+import copy
+import decimal
+from odoo import http
+from odoo import exceptions
+import json
 from odoo import models, fields, api
 import sys
-import json
-from odoo import exceptions
-from odoo import http
-import decimal
-import copy
-import time
-sys.path.append('.\.\server')
+sys.path.append('.\\.\\server')
 
 
 class Org(models.Model):
-
+    '''会计核算机构'''
     _name = 'accountcore.org'
+    _description = '会计核算机构'
     number = fields.Char(string='核算机构编码', required=True)
     name = fields.Char(string='核算机构名称', required=True)
     # items = fields.One2many('accountcore.item', 'org', string="核算项目")
@@ -26,6 +27,7 @@ class Org(models.Model):
 class ItemClass(models.Model):
     '''核算项目类别'''
     _name = 'accountcore.itemclass'
+    _description = '核算项目类别'
     name = fields.Char(string='核算项目类别名称', required=True)
     number = fields.Char(string='核算项目类别编码', required=True)
     _sql_constraints = [('accountcore_itemclass_number_unique',
@@ -37,6 +39,7 @@ class ItemClass(models.Model):
 class Item(models.Model):
     '''核算项目'''
     _name = 'accountcore.item'
+    _description = '核算项目'
     org = fields.Many2one(
         'accountcore.org',
         string='核算机构',
@@ -88,8 +91,9 @@ class Item(models.Model):
 
 
 class RuleBook(models.Model):
-
+    '''会计账簿'''
     _name = 'accountcore.rulebook'
+    _description = '会计账簿'
     number = fields.Char(string='账簿编码', required=True)
     name = fields.Char(string='账簿名称', required=True, help='用于生成不同口径的账套')
     _sql_constraints = [('accountcore_rulebook_number_unique',
@@ -99,7 +103,9 @@ class RuleBook(models.Model):
 
 
 class AccountClass(models.Model):
+    '''会计科目类别'''
     _name = 'accountcore.accountclass'
+    _description = '会计科目类别'
     number = fields.Char(string='科目类别编码', required=True)
     name = fields.Char(string='科目类别名称', required=True)
     _sql_constraints = [('accountcore_accountclass_number_unique',
@@ -109,8 +115,9 @@ class AccountClass(models.Model):
 
 
 class Account(models.Model):
+    '''会计科目'''
     _name = 'accountcore.account'
-
+    _description = '会计科目'
     org = fields.Many2one(
         'accountcore.org',
         string='所属机构',
@@ -175,8 +182,9 @@ class Account(models.Model):
 
 
 class CashFlowType(models.Model):
-
+    '''现金流量类别'''
     _name = 'accountcore.cashflowtype'
+    _description = '现金流量类别'
     number = fields.Char(string='现金流量项目类别编码', required=True)
     name = fields.Char(string='现金流量项目类别', required=True)
     _sql_constraints = [('accountcore_cashflowtype_number_unique',
@@ -186,7 +194,9 @@ class CashFlowType(models.Model):
 
 
 class CashFlow(models.Model):
+    '''现金流量项目'''
     _name = 'accountcore.cashflow'
+    _description = '现金流量项目'
     cashFlowType = fields.Many2one(
         'accountcore.cashflowtype', string='现金流量类别', required=True, index=True)
     number = fields.Char(string="现金流量编码", required=True)
@@ -205,7 +215,9 @@ class VoucherFile(models.Model):
 
 
 class Source(models.Model):
+    '''凭证来源'''
     _name = 'accountcore.source'
+    _description = '凭证来源'
     number = fields.Char(string='凭证来源编码', required=True)
     name = fields.Char(string='凭证来源名称', required=True)
     _sql_constraints = [('accountcore_source_number_unique', 'unique(number)',
@@ -215,8 +227,9 @@ class Source(models.Model):
 
 
 class Voucher(models.Model):
-    '''会计凭证'''
+    '''会计记账凭证'''
     _name = 'accountcore.voucher'
+    _description = '会计记账凭证'
     name = fields.Char(default='凭证')
     voucherdate = fields.Date(string='记账日期', required=True, placeholder='记账日期')
     soucre = fields.Many2one(
@@ -286,30 +299,41 @@ class Voucher(models.Model):
         rl = super(Voucher, self).create(values)
         if 'entrys' in values:
             rl._checkVoucher(values)
+        rl._updateBalance()
         return rl
 
     @api.multi
     def write(self, values):
         '''修改编辑凭证'''
         self.ensure_one
+        self._updateBalance(isAdd=False)
         rl_bool = super(Voucher, self).write(values)
         if 'entrys' in values:
             self._checkVoucher(values)
+        self._updateBalance()
         return rl_bool
 
-    @api.depends('numberTasticsContainer_str')
-    def _getVoucherNumber(self):
-        '''获得凭证编号,依据用户默认的凭证编号策略'''
-        if(self.env.user.voucherNumberTastics):
-            currentUserNumberTastics_id = self.env.user.voucherNumberTastics.id
-        else:
-            for record in self:
-                record.number = 0
-            return True
-        for record in self:
-            record.number = self.getNumber(
-                record.numberTasticsContainer_str, currentUserNumberTastics_id)
-        return record.number
+    @api.multi
+    def copy(self, default=None):
+        '''复制凭证'''
+        updateFields = {'state': 'creating',
+                        'reviewer': None,
+                        'createUser': self.env.uid,
+                        'numberTasticsContainer_str': '{}',
+                        'appendixCount': 1}
+        rl = super(Voucher, self).copy(updateFields)
+        for entry in self.entrys:
+            entry.copy({'voucher': rl.id})
+        rl._updateBalance()
+        return rl
+
+    @api.multi
+    def unlink(self):
+        '''删除凭证'''
+        for voucher in self:
+            voucher._updateBalance(isAdd=False)
+        rl_bool = super(Voucher, self).unlink()
+        return rl_bool
 
     @staticmethod
     def getNumber(container_str, numberTastics_id):
@@ -325,6 +349,20 @@ class Voucher(models.Model):
         container[str(numberTastics_id)] = number
         newNumberDict = json.dumps(container)
         return newNumberDict
+
+    @api.depends('numberTasticsContainer_str')
+    def _getVoucherNumber(self):
+        '''获得凭证编号,依据用户默认的凭证编号策略'''
+        if(self.env.user.voucherNumberTastics):
+            currentUserNumberTastics_id = self.env.user.voucherNumberTastics.id
+        else:
+            for record in self:
+                record.number = 0
+            return True
+        for record in self:
+            record.number = self.getNumber(
+                record.numberTasticsContainer_str, currentUserNumberTastics_id)
+        return record.number
 
     @api.model
     def _checkVoucher(self, voucherDist):
@@ -364,20 +402,7 @@ class Voucher(models.Model):
 
     @api.model
     def _checkChashFlow(self, voucherDist):
-        pass
-
-    @api.multi
-    def copy(self, default=None):
-        '''复制凭证'''
-        updateFields = {'state': 'creating',
-                        'reviewer': None,
-                        'createUser': self.env.uid,
-                        'numberTasticsContainer_str': '{}',
-                        'appendixCount': 1}
-        rl = super(Voucher, self).copy(updateFields)
-        for entry in self.entrys:
-            entry.copy({'voucher': rl.id})
-        return rl
+        return True
 
     @api.multi
     @api.depends('entrys')
@@ -431,10 +456,48 @@ class Voucher(models.Model):
             str(self.env.user.voucherNumberTastics.id)+'": '+str(value)+'}%'
         return['|', ('numberTasticsContainer_str', 'like', tasticsValue1), ('numberTasticsContainer_str', 'like', tasticsValue2)]
 
+    @api.model
+    def _updateBalance(self, isAdd=True):
+        '''更新余额'''
+        if isAdd:
+            computMark = 1
+        else:
+            computMark = -1
+        year = self.voucherdate.year
+        month = self.voucherdate.month
+        orgId = self.org.id
+        for entry in self.entrys:
+            accountBalance = self._getBalanceRecord(entry)
+            if accountBalance.exists():
+                if entry.damount != 0:
+                    accountBalance.damount = accountBalance.damount+entry.damount*computMark
+                elif entry.camount != 0:
+                    accountBalance.camount = accountBalance.camount+entry.camount*computMark
+            else:
+                accountBalanceTable = self.env['accountcore.accounts_balance']
+                if entry.damount != 0:
+                    accountBalanceTable.sudo().create(
+                        {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'damount': entry.damount*computMark})
+                elif entry.camount != 0:
+                    accountBalanceTable.sudo().create(
+                        {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'camount': entry.camount*computMark})
+        return True
+
+    @api.model
+    def _getBalanceRecord(self, entry):
+        '''获得分录对应期间和会计科目的余额记录'''
+        accountBalanasTable = self.env['accountcore.accounts_balance']
+        year = entry.voucher.voucherdate.year
+        month = entry.voucher.voucherdate.month
+        record = accountBalanasTable.search(
+            [['org', '=', self.org.id], ['year', '=', year], ['month', '=', month], ['account', '=', entry.account.id]])
+        return record
+
 
 class Enty(models.Model):
     '''一条分录'''
     _name = 'accountcore.entry'
+    _description = "会计分录"
     voucher = fields.Many2one(
         'accountcore.voucher', string='所属凭证', index=True, ondelete='cascade')
     sequence = fields.Integer('Sequence')
@@ -444,21 +507,20 @@ class Enty(models.Model):
     items = fields.Many2many(
         'accountcore.item', string='核算项目', index=True, ondelete='restrict')
     currency_id = fields.Many2one(
+        # Monetory类型字段必须有
         'res.currency',
         compute='_get_company_currency',
         readonly=True,
+        oldname='currency',
         string="Currency",
         help='Utility field to express amount currency')
-    damount = fields.Monetary(string='借方金额')
-    camount = fields.Monetary(string='贷方金额')
+    damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
+    camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
     cashFlow = fields.Many2one(
         'accountcore.cashflow',
         string='现金流量项目',
         index=True,
         ondelete='restrict')
-
-    # accountItemClasses = fields.Many2many(
-    #     related='account.itemClasses', string='科目的核算项目类别')
 
     @api.onchange('damount')
     def _damountChange(self):
@@ -475,8 +537,10 @@ class Enty(models.Model):
     def _deleteItemsOnchange(self):
         self.items = None
 
+    @api.one
     def _get_company_currency(self):
-        pass
+        # Monetory类型字段必须有 currency_id
+        self.currency_id = self.env.user.company_id.currency_id
 
 
 class AccountcoreUserDefaults(models.TransientModel):
@@ -534,14 +598,6 @@ class AccountcoreUserDefaults(models.TransientModel):
             'json_value': defaultValue,
             'user_id': self.env.uid
         })
-
-# test
-
-
-class Academe(http.Controller):
-    @http.route('/academy/academy/', auth='public')
-    def index(self, **kw):
-        return "hello,world!"
 
 
 class CreateChildAccountWizard(models.TransientModel):
@@ -690,3 +746,32 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
         voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
             voucher.numberTasticsContainer_str, currentUserNumberTastics_id, newNumber)
         return True
+
+
+class AccountsBalanace(models.Model):
+    '''科目余额'''
+    _name = 'accountcore.accounts_balance'
+    _description = '科目余额'
+    org = fields.Many2one(
+        'accountcore.org',
+        string='所属机构',
+        required=True,
+        index=True,
+        ondelete='cascade')
+    year = fields.Integer(string='年份', required=True)
+    month = fields.Integer(string='月份', required=True)
+    account = fields.Many2one('accountcore.account',
+                              string='会计科目', required=True)
+    camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
+    damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
+    # Monetory类型字段必须有
+    currency_id = fields.Many2one(
+        'res.currency',
+        compute='_get_company_currency',
+        readonly=True,
+        string="Currency",
+        help='Utility field to express amount currency')
+    # Monetory 字段必须有
+
+    def _get_company_currency(self):
+        pass
