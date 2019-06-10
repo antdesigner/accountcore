@@ -307,6 +307,48 @@
       <field name="view_type">form</field>
       <field name="target">new</field>
     </record>
+
+    <record id='accountcore_userdefaults_form' model='ir.ui.view'>
+      <field name='name'>设置新增凭证默认值</field>
+      <field name='model'>accountcoure.userdefaults</field>
+      <field name='arch' type='xml'>
+        <form string='' create='false'>
+          <sheet>
+            <group col='2'>
+              <field name='default_voucherDate' required='1' />
+              <field name='default_org' required='1' />
+              <field name='default_ruleBook' required='1' />
+            </group>
+          </sheet>
+          <footer>
+            <button name="setDefaults" type="object" string="确定" class='btn-primary' />
+          </footer>
+        </form>
+      </field>
+    </record>
+    <!-- accountcore.seting_voucher_number_single form view -->
+    <record id="accoutcore_seting_voucher_number_single_form" model="ir.ui.view">
+      <field name="name">修改凭证编号</field>
+      <field name="model">accountcore.seting_voucher_number_single</field>
+      <field name="arch" type="xml">
+        <form string="">
+          <sheet>
+            <group>
+              <field name="newNumber" />
+            </group>
+          </sheet>
+          <footer>
+            <button name="setVoucherNumberSingle" type="object" string="确定" />
+          </footer>
+        </form>
+      </field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_userdefaults_action'>
+      <field name='name'>设置新增凭证默认值</field>
+      <field name='res_model'>accountcoure.userdefaults</field>
+      <field name='view_mode'>form</field>
+      <field name='target'>new</field>
+    </record>
     <record model='ir.ui.view' id='accountcore_voucher_form'>
       <field name='name'>记账凭证</field>
       <field name='model'>accountcore.voucher</field>
@@ -389,25 +431,6 @@
       </field>
     </record>
 
-    <record id='accountcore_userdefaults_form' model='ir.ui.view'>
-      <field name='name'>设置新增凭证默认值</field>
-      <field name='model'>accountcoure.userdefaults</field>
-      <field name='arch' type='xml'>
-        <form string='' create='false'>
-          <sheet>
-            <group col='2'>
-              <field name='default_voucherDate' required='1' />
-              <field name='default_org' required='1' />
-              <field name='default_ruleBook' required='1' />
-            </group>
-          </sheet>
-          <footer>
-            <button name="setDefaults" type="object" string="确定" class='btn-primary' />
-          </footer>
-        </form>
-      </field>
-    </record>
-
     <record id="accountcore_wizardcreatechildaccount_form" model="ir.ui.view">
       <field name="name">新增下级科目</field>
       <field name="model">accountcore.create_child_account</field>
@@ -455,6 +478,7 @@
         </form>
       </field>
     </record>
+
     <record id='accountcore_vouchre_number_statics_default_form' model='ir.ui.view'>
       <field name='name'>设置凭证编号策略</field>
       <field name='model'>accountcore.voucher_number_statics_default</field>
@@ -485,24 +509,6 @@
           </sheet>
           <footer>
             <button name="setingNumber" type="object" string="开始生成" class='btn-primary' />
-          </footer>
-        </form>
-      </field>
-    </record>
-
-    <!-- accountcore.seting_voucher_number_single form view -->
-    <record id="accoutcore_seting_voucher_number_single_form" model="ir.ui.view">
-      <field name="name">修改凭证编号</field>
-      <field name="model">accountcore.seting_voucher_number_single</field>
-      <field name="arch" type="xml">
-        <form string="">
-          <sheet>
-            <group>
-              <field name="newNumber" />
-            </group>
-          </sheet>
-          <footer>
-            <button name="setVoucherNumberSingle" type="object" string="确定" />
           </footer>
         </form>
       </field>
@@ -588,12 +594,6 @@
       <field name='view_mode'>form</field>
       <field name="target">new</field>
     </record>
-    <record model='ir.actions.act_window' id='accountcore_userdefaults_action'>
-      <field name='name'>设置新增凭证默认值</field>
-      <field name='res_model'>accountcoure.userdefaults</field>
-      <field name='view_mode'>form</field>
-      <field name='target'>new</field>
-    </record>
     <record model='ir.actions.act_window' id='accountcore_voucher_number_acionts_window'>
       <field name='name'>凭证编号策略列表</field>
       <field name='res_model'>accountcore.voucher_number_tastics</field>
@@ -608,24 +608,24 @@
     </record>
 
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
-   <record id="paperformat_a4half" model="report.paperformat">
-    <field name="name">会计凭证</field>
-    <field name="default" eval="True"/>
-    <field name="format">custom</field>
-    <field name="page_height">148</field>
-    <field name="page_width">210</field>
-    <field name="orientation">Portrait</field>
-    <field name="margin_top">10</field>
-    <field name="margin_bottom">10</field>
-    <field name="margin_left">20</field>
-    <field name="margin_right">7</field>
-    <field name="header_line" eval="False"/>
-    <field name="header_spacing">35</field>
-    <field name="dpi">90</field>
-</record>
+    <record id="paperformat_a4half" model="report.paperformat">
+      <field name="name">会计凭证</field>
+      <field name="default" eval="True" />
+      <field name="format">custom</field>
+      <field name="page_height">148</field>
+      <field name="page_width">210</field>
+      <field name="orientation">Portrait</field>
+      <field name="margin_top">10</field>
+      <field name="margin_bottom">10</field>
+      <field name="margin_left">20</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False" />
+      <field name="header_spacing">35</field>
+      <field name="dpi">90</field>
+    </record>
 
     <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.accountsbalance_report' />
-    <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'/>
+    <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half' />
 
     <menuitem name='会计' id='accountcore_menu' />
     <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
