@@ -91,11 +91,11 @@ class Item(models.Model):
 
 
 class RuleBook(models.Model):
-    '''会计账簿'''
+    '''账簿范围'''
     _name = 'accountcore.rulebook'
-    _description = '会计账簿'
+    _description = '账簿范围'
     number = fields.Char(string='账簿编码', required=True)
-    name = fields.Char(string='账簿名称', required=True, help='用于生成不同口径的账套')
+    name = fields.Char(string='账簿名称', required=True, help='用于生成不同范围的账套')
     _sql_constraints = [('accountcore_rulebook_number_unique',
                          'unique(number)', '账簿编码重复了!'),
                         ('accountcore_rulebook_name_unique', 'unique(name)',
@@ -761,7 +761,7 @@ class AccountsBalanace(models.Model):
     year = fields.Integer(string='年份', required=True)
     month = fields.Integer(string='月份', required=True)
     account = fields.Many2one('accountcore.account',
-                              string='会计科目', required=True)
+                              string='会计科目', required=True,index=True,ondelete='cascade')
     camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
     damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
     # Monetory类型字段必须有

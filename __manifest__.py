@@ -26,6 +26,7 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'data/default_data.xml'
     ],
     'qweb': [
         'views/accountcore.xml',
