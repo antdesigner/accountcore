@@ -41,6 +41,10 @@
             <field name="number">4</field>
             <field name="name">汇率变动产生的现金流量</field>
         </record>
+        <record id="source_1" model="accountcore.source">
+            <field name="number">1</field>
+            <field name="name">手工</field>
+        </record>
         <!-- 科目类别 -->
     <record id="account_class_1" model="accountcore.accountclass">
             <field name="number">1</field>
@@ -229,7 +233,5 @@
 <record id="account_6711" model="accountcore.account"><field name="org" eval="org_1" /><field name="accountClass" eval="account_class_6" /><field name="number">6711</field><field name="name">营业外支出</field><field name="cashFlowControl">0</field></record>
 <record id="account_6801" model="accountcore.account"><field name="org" eval="org_1" /><field name="accountClass" eval="account_class_6" /><field name="number">6801</field><field name="name">所得税</field><field name="cashFlowControl">0</field></record>
 <record id="account_6901" model="accountcore.account"><field name="org" eval="org_1" /><field name="accountClass" eval="account_class_6" /><field name="number">6901</field><field name="name">以前年度损益调整</field><field name="cashFlowControl">0</field></record>
-
- 
     </data>
 </odoo>

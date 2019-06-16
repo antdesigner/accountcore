@@ -297,7 +297,10 @@ class Voucher(models.Model):
         values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
             'voucher.uniqueNumber')
         rl = super(Voucher, self).create(values)
-        if 'entrys' in values:
+        isCopye = self.env.context.get('ac_from_copy')
+        if isCopye:
+            pass
+        else:
             rl._checkVoucher(values)
         rl._updateBalance()
         return rl
@@ -308,8 +311,9 @@ class Voucher(models.Model):
         self.ensure_one
         self._updateBalance(isAdd=False)
         rl_bool = super(Voucher, self).write(values)
-        if 'entrys' in values:
-            self._checkVoucher(values)
+        # if 'entrys' in values:
+        #     self._checkVoucher(values)
+        self._checkVoucher(values)
         self._updateBalance()
         return rl_bool
 
@@ -321,7 +325,8 @@ class Voucher(models.Model):
                         'createUser': self.env.uid,
                         'numberTasticsContainer_str': '{}',
                         'appendixCount': 1}
-        rl = super(Voucher, self).copy(updateFields)
+        rl = super(Voucher, self.with_context(
+            {'ac_from_copy': True})).copy(updateFields)
         for entry in self.entrys:
             entry.copy({'voucher': rl.id})
         rl._updateBalance()
@@ -375,10 +380,11 @@ class Voucher(models.Model):
     @api.model
     def _checkEntyCount(self, voucherDist):
         '''检查是否有分录'''
-        if 'entrys' in voucherDist:
+        # if 'entrys' in voucherDist:
+        if len(self.entrys) > 1:
             return True
         else:
-            raise exceptions.ValidationError('没有录入会计分录')
+            raise exceptions.ValidationError('需要录入两条以上的会计分录')
 
     @api.model
     def _checkCDBalance(self, voucherDist):
@@ -761,7 +767,7 @@ class AccountsBalanace(models.Model):
     year = fields.Integer(string='年份', required=True)
     month = fields.Integer(string='月份', required=True)
     account = fields.Many2one('accountcore.account',
-                              string='会计科目', required=True,index=True,ondelete='cascade')
+                              string='会计科目', required=True, index=True, ondelete='cascade')
     camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
     damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
     # Monetory类型字段必须有
