@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
         <!-- 创建类别 -->
         <record model="ir.module.category" id="accountcore">
             <field name="name">会计核心</field>
