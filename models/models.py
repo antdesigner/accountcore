@@ -45,10 +45,9 @@ class Item(models.Model):
         string='核算机构',
         help="核算项目所属核算机构",
         index=True,
-        required=True,
         ondelete='restrict')
     uniqueNumber = fields.Char(string='唯一编号')
-    number = fields.Char(string='核算项目编码', required=True)
+    number = fields.Char(string='核算项目编码')
     name = fields.Char(string='核算项目名称', required=True, help="核算项目名称")
     itemClass = fields.Many2one(
         'accountcore.itemclass',
