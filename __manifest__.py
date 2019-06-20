@@ -16,12 +16,13 @@
     'data': [
         'security/users.xml',
         'views/views.xml',
-        'views/templates.xml',
+        'views/voucher_print.xml',
+        'report/account_balance_report_temple.xml',
         'data/default_data.xml',
         'security/ir.model.access.csv',
     ],
     'qweb': [
-        'views/accountcore.xml',
+        'views/btn.xml',
     ],
     'demo': [
         'demo/demo.xml',

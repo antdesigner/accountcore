@@ -13,7 +13,7 @@ access_voucher_users_accounters,accountcore.voucher,model_accountcore_voucher,,1
 access_entry_users_accounters,accountcore.entry,model_accountcore_entry,,1,1,1,1
 access_voucher_number_tastics_users_accounters,accountcore.voucher_number_tastics,model_accountcore_voucher_number_tastics,,1,1,1,1
 access_accounts_balance_users_accounters,accountcore.accounts_balance,model_accountcore_accounts_balance,,1,1,1,1
-
+access_items_balance_,accountcore.items_balance,model_accountcore_items_balance,,1,1,1,1
 
 
 

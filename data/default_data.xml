@@ -248,7 +248,7 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_1" />
             <field name="number">1015</field>
-            <field name="name">其它货币资金</field>
+            <field name="name">其他货币资金</field>
             <field name="cashFlowControl">1</field>
         </record>
         <record id="account_1021" model="accountcore.account">
@@ -297,14 +297,14 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_1" />
             <field name="number">1122</field>
-            <field name="name">应收帐款</field>
+            <field name="name">应收账款</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_1123" model="accountcore.account">
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_1" />
             <field name="number">1123</field>
-            <field name="name">预付帐款</field>
+            <field name="name">预付账款</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_1131" model="accountcore.account">
@@ -339,7 +339,7 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_1" />
             <field name="number">1222</field>
-            <field name="name">应收分保帐款</field>
+            <field name="name">应收分保账款</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_1223" model="accountcore.account">
@@ -360,14 +360,14 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_1" />
             <field name="number">1231</field>
-            <field name="name">其它应收款</field>
+            <field name="name">其他应收款</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_1241" model="accountcore.account">
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_1" />
             <field name="number">1241</field>
-            <field name="name">坏帐准备</field>
+            <field name="name">坏账准备</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_1251" model="accountcore.account">
@@ -521,7 +521,7 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_1" />
             <field name="number">1511</field>
-            <field name="name">独立帐户资产</field>
+            <field name="name">独立账户资产</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_1521" model="accountcore.account">
@@ -801,14 +801,14 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_2" />
             <field name="number">2202</field>
-            <field name="name">应付帐款</field>
+            <field name="name">应付账款</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_2205" model="accountcore.account">
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_2" />
             <field name="number">2205</field>
-            <field name="name">预收帐款</field>
+            <field name="name">预收账款</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_2211" model="accountcore.account">
@@ -857,7 +857,7 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_2" />
             <field name="number">2261</field>
-            <field name="name">应付分保帐款</field>
+            <field name="name">应付分保账款</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_2311" model="accountcore.account">
@@ -948,7 +948,7 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_2" />
             <field name="number">2721</field>
-            <field name="name">独立帐户负债</field>
+            <field name="name">独立账户负债</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_2801" model="accountcore.account">
@@ -1221,7 +1221,7 @@
             <field name="org" eval="org_1" />
             <field name="accountClass" eval="account_class_6" />
             <field name="number">6402</field>
-            <field name="name">其它业务成本</field>
+            <field name="name">其他业务成本</field>
             <field name="cashFlowControl">0</field>
         </record>
         <record id="account_6405" model="accountcore.account">

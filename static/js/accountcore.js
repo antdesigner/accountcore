@@ -19,7 +19,6 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
             // }
             // $event.css('background-color', 'white');
             // // $event.parent().removeClass('amount-zero')
-            // alert('hello world');
         },
         init: function (parent, state, params) {
             var self = this;
@@ -115,6 +114,7 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
             ev.stopPropagation();
             var newValue = ev.data.changes[this.name];
             if (newValue) {
+                //改变了核算项目,例如:以前是A,现在选择了B
                 this._addTag(newValue);
                 var id = ev.target.ac_itemId;
                 if (id && id > 0 && id != newValue.id) {
@@ -122,7 +122,15 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
                 }
                 ev.target.ac_itemId = newValue.id;
                 ev.target.ac_itemName = newValue.display_name;
+                 //重要覆写
+                ev.stopPropagation();
+                return;                             
             };
+            //没有选择,或删除了核算项目,以前是A现在删除了A,没有选择其他的
+                this._removeTag(ev.target.ac_itemId);
+                ev.target.ac_itemId = null;
+                ev.target.ac_itemName = null;
+
             //重要覆写
             ev.stopPropagation();
         },
@@ -146,10 +154,13 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
     var _t = core._t;
     var ChoiceItemsMany2one = FieldMany2One.extend({
         events: _.extend({}, FieldMany2One.prototype.events, {
-
+            'blur input': '_onBlur',
             'keydown input': '_onKeydown',
 
         }),
+        _onBlur: function(e){
+        },
+
         /**输入时按tab键,跳到下一个项目
          * @param  {} e
          */
@@ -363,8 +374,6 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             var typeName = itemType.name;
             var typeId = 'itemType_' + itemType.id;
             var attrs = this.attrs;
-            // var items;
-
             var item = self._getItem(self.ac_items, itemType.id);
 
             var oneItemChoice = new ChoiceItemsMany2one(self, self.name, self.record, {

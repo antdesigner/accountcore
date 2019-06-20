@@ -186,6 +186,7 @@
                   <field name="name" />
                 </tree>
               </field>
+              <field name='accountItemClass'  domain="[('id','in',itemClasses)]"/>
               <field name="explain" />
             </group>
           </sheet>
@@ -623,8 +624,8 @@
       <field name="dpi">90</field>
     </record>
 
-    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.accountsbalance_report' />
-    <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half' />
+    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report'  />
+    <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
 
     <menuitem name='会计' id='accountcore_menu' />
     <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
@@ -646,10 +647,8 @@
     <menuitem name='现金流量' id='accountcore_cashflow_menu' parent='accountcore_menu' sequence="53" />
     <menuitem name='现金流量项目类别' id='accountcore_cashflowtypw_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowtype_action_window' />
     <menuitem name='现金流量项目列表' id='accountcore_cashflows_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowitems_action_window' />
-    <menuitem name='账簿' id='accountcore_books_menu' parent='accountcore_menu' sequence="60" groups="users_accounters"/>
+    <menuitem name='账簿' id='accountcore_books_menu' parent='accountcore_menu' sequence="60" />
     <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='accounctore_accountsbalance_report' />
-
-    <!-- <menuitem name='设置默认值' id='accountcore_createchildaccount_menu' parent='accountcore_menu' action='accountcore_warzidcreatechildaccount_action' sequence="55" />  -->
   </data>
   <data noupdate='True'>
     <record id='voucher_unique_number' model='ir.sequence'>
@@ -669,7 +668,6 @@
       <field name='padding'>8</field>
     </record>
   </data>
-
 </odoo>
 
 
