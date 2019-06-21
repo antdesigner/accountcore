@@ -186,7 +186,7 @@
                   <field name="name" />
                 </tree>
               </field>
-              <field name='accountItemClass'  domain="[('id','in',itemClasses)]"/>
+              <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
               <field name="explain" />
             </group>
           </sheet>
@@ -445,6 +445,14 @@
               <field name='number' readonly='1'></field>
               <field name='name'></field>
               <field name='cashFlowControl'></field>
+              <field name='itemClasses'>
+                <tree>
+                  <field name="number" />
+                  <field name="name" />
+                </tree>
+              </field>
+              <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
+              <field name="explain" />
             </group>
           </sheet>
         </form>

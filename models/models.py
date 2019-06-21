@@ -699,6 +699,11 @@ class CreateChildAccountWizard(models.TransientModel):
     number = fields.Char(string='科目编码', required=True)
     name = fields.Char(string='科目名称', required=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
+    itemClasses = fields.Many2many(
+        'accountcore.itemclass', string='包含的核算项目类别', ondelete='restrict')
+    accountItemClass = fields.Many2one(
+        'accountcore.itemclass', string='作为明细科目的核算项目类别', ondelete='restrict')
+    explain = fields.Html(string='科目说明')
     @api.model
     def default_get(self, field_names):
         default = super().default_get(field_names)
@@ -728,7 +733,7 @@ class CreateChildAccountWizard(models.TransientModel):
         fatherAccount.currentChildNumber = fatherAccount.currentChildNumber+1
         values.update(newAccount)
         rl = super(CreateChildAccountWizard, self).create(values)
-        accountTable.create(newAccount)
+        accountTable.create(values)
         return rl
 
 
