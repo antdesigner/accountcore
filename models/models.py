@@ -24,6 +24,20 @@ class Org(models.Model):
                          '核算机构名称重复了!')]
 
 
+class AccountsArch(models.Model):
+    '''会计科目体系'''
+    _name = 'accountcore.accounts_arch'
+    _description = '会计科目体系'
+    number = fields.Char(string='科目体系编码', required=True)
+    name = fields.Char(string='科目体系名称', required=True)
+    accounts = fields.One2many(
+        'accountcore.account', 'accountsArch', string='科目')
+    _sql_constraints = [('accountcore_accoutsarch_number_unique', 'unique(number)',
+                         '科目体系编码重复了!'),
+                        ('accountcore_accountsarch_name_unique', 'unique(name)',
+                         '科目体系名称重复了!')]
+
+
 class ItemClass(models.Model):
     '''核算项目类别'''
     _name = 'accountcore.itemclass'
@@ -121,6 +135,13 @@ class Account(models.Model):
         'accountcore.org',
         string='所属机构',
         help="科目所属机构",
+        index=True,
+        ondelete='restrict')
+
+    accountsArch = fields.Many2one(
+        'accountcore.accounts_arch',
+        string='所属科目体系',
+        help="科目所属体系",
         index=True,
         ondelete='restrict')
 
@@ -694,6 +715,13 @@ class CreateChildAccountWizard(models.TransientModel):
         index=True,
         ondelete='restrict')
 
+    accountsArch = fields.Many2one(
+        'accountcore.accounts_arch',
+        string='所属科目体系',
+        help="科目所属体系",
+        index=True,
+        ondelete='restrict')
+
     accountClass = fields.Many2one(
         'accountcore.accountclass',
         string='科目类别',
@@ -715,10 +743,11 @@ class CreateChildAccountWizard(models.TransientModel):
         fatherAccountId = self.env.context.get('active_id')
         fatherAccount = self.env['accountcore.account'].sudo().search(
             [['id', '=', fatherAccountId]])
+        default['accountsArch'] = fatherAccount.accountsArch.id
         default['fatherAccountId'] = fatherAccountId
         default['org'] = fatherAccount.org.id
         default['accountClass'] = fatherAccount.accountClass.id
-        default['direction']=fatherAccount.direction
+        default['direction'] = fatherAccount.direction
         default['cashFlowControl'] = fatherAccount.cashFlowControl
         default['number'] = fatherAccount.number + \
             '.' + str(fatherAccount.currentChildNumber)

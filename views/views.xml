@@ -13,7 +13,7 @@
         </tree>
       </field>
     </record>
-    <!-- accountcore.org form view -->
+     <!-- accountcore.org form view -->
     <record id="accountcore_org_action_window_form" model="ir.ui.view">
       <field name='name'>核算机构</field>
       <field name="model">accountcore.org</field>
@@ -21,6 +21,33 @@
         <form string="">
           <sheet>
             <h1>新增编辑=>核算机构</h1>
+            <hr></hr>
+            <group>
+              <field name="number" />
+              <field name="name" />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+     <record model='ir.ui.view' id='accountcore_accountsarch_list'>
+      <field name='name'>科目体系</field>
+      <field name='model'>accountcore.accounts_arch</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number' />
+          <field name='name' />
+        </tree>
+      </field>
+    </record>
+
+    <record id="accountcore_accountsarch_action_window_form" model="ir.ui.view">
+      <field name='name'>科目体系</field>
+      <field name="model">accountcore.accounts_arch</field>
+      <field name="arch" type="xml">
+        <form string="">
+          <sheet>
+            <h1>新增编辑=>科目体系</h1>
             <hr></hr>
             <group>
               <field name="number" />
@@ -153,10 +180,11 @@
       <field name='arch' type='xml'>
         <tree default_order='org,accountClass,number'>
           <field name='org'></field>
+          <field name='accountsArch'/>
           <field name='accountClass'></field>
           <field name='number'></field>
           <field name='name'></field>
-          <field name='direction'/>
+          <field name='direction' />
           <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='itemClassesHtml'>
           </field>
@@ -176,13 +204,14 @@
             <hr></hr>
             <group>
               <field name="org" />
+              <field name="accountsArch"/>
               <field name="accountClass" />
-              <field name='fatherAccountId' readonly='1'/>
+              <field name='fatherAccountId' readonly='1' />
             </group>
             <group>
-              <field name='number' attrs="{'readonly':[('fatherAccountId','&gt;',0)]}"/>
+              <field name='number' attrs="{'readonly':[('fatherAccountId','&gt;',0)]}" />
               <field name="name" />
-              <field name='direction' widget='radio'/>
+              <field name='direction' widget='radio' />
               <field name="cashFlowControl" />
             </group>
             <group>
@@ -253,7 +282,7 @@
             <group>
               <field name='cashFlowType' />
               <field name='number' />
-             <field name='direction' widget='radio'/>
+              <field name='direction' widget='radio' />
               <field name='name' />
             </group>
           </sheet>
@@ -438,14 +467,15 @@
           <sheet>
             <group>
               <field name='org' ></field>
+              <field name='accountsArch'/>
               <field name='accountClass' ></field>
               <field name='fatherAccountNumber' readonly='1'></field>
               <field name='fatherAccountId' readonly='1'></field>
             </group>
-            <group  >
+            <group>
               <field name='number' readonly='1'></field>
               <field name='name'></field>
-              <field name='direction' widget='radio'/>
+              <field name='direction' widget='radio' />
             </group>
             <group>
               <field name='cashFlowControl'></field>
@@ -552,7 +582,7 @@
               <field name="org" widget="many2many_checkboxes_floatleft" />
             </group>
             <group>
-              <field name="account" default_focus='1' domain="[('org','in',org)]" context="{'search_default_groupby_accountClass':True}">
+              <field name="account" default_focus='1' domain="['|',('org','in',org),('org','=',False)]" context="{'search_default_groupby_accountClass':True}">
                 <tree default_order='accountClass,number,org' >
                   <field name='org' />
                   <field name='accountClass' />
@@ -608,6 +638,12 @@
     <record model='ir.actions.act_window' id='accountcore_org_action_window'>
       <field name='name'>核算机构</field>
       <field name='res_model'>accountcore.org</field>
+      <field name='view_mode'>tree,form</field>
+      <field name="target">current</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountcore_accountsarch_action_window'>
+      <field name='name'>科目体系</field>
+      <field name='res_model'>accountcore.accounts_arch</field>
       <field name='view_mode'>tree,form</field>
       <field name="target">current</field>
     </record>
