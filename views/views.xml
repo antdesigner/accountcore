@@ -66,9 +66,9 @@
         <tree>
           <field name="org" />
           <field name='itemClass' />
-          <field name='uniqueNumber' readonly='1'></field>
           <field name='number' />
           <field name='name' />
+          <field name='uniqueNumber' readonly='1'></field>
         </tree>
       </field>
     </record>
@@ -156,6 +156,7 @@
           <field name='accountClass'></field>
           <field name='number'></field>
           <field name='name'></field>
+          <field name='direction'/>
           <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='itemClassesHtml'>
           </field>
@@ -176,10 +177,15 @@
             <group>
               <field name="org" />
               <field name="accountClass" />
-              <field name='fatherAccountId' />
-              <field name='number' />
+              <field name='fatherAccountId' readonly='1'/>
+            </group>
+            <group>
+              <field name='number' attrs="{'readonly':[('fatherAccountId','&gt;',0)]}"/>
               <field name="name" />
+              <field name='direction' widget='radio'/>
               <field name="cashFlowControl" />
+            </group>
+            <group>
               <field name='itemClasses'>
                 <tree>
                   <field name="number" />
@@ -187,6 +193,8 @@
                 </tree>
               </field>
               <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
+            </group>
+            <group>
               <field name="explain" />
             </group>
           </sheet>
@@ -245,7 +253,7 @@
             <group>
               <field name='cashFlowType' />
               <field name='number' />
-              <field name='direction' />
+             <field name='direction' widget='radio'/>
               <field name='name' />
             </group>
           </sheet>
@@ -381,19 +389,10 @@
                 <field name='sequence' widget='handle' class='' ></field>
                 <field name='explain' class='oe_ac_explain'></field>
                 <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
-                <!-- <field name="accountItemClasses" invisible='1'>
-                  <tree>
-                    <field name="id"></field>
-                    <field name="name"></field>
-                  </tree>
-                </field> -->
                 <field name='damount' sum='借方合计' class='amountColor'></field>
                 <field name='camount' sum='贷方合计' class='amountColor'></field>
-                <!-- <field name='items' widget="form.many2many_tags" class='oe_ac_items' context="{'account':account}"></field> -->
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account}" />
-                <!-- <field name='items' widget="choiceItemsModel" class='oe_ac_items' context="{'account':account}"></field> -->
                 <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-                <!-- <field name='currency_id' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field> -->
                 <control>
                   <create string="添加一行分录" />
                 </control>
@@ -438,13 +437,20 @@
         <form>
           <sheet>
             <group>
-              <field name='org' readonly='1'></field>
-              <field name='accountClass' readonly='1'></field>
+              <field name='org' ></field>
+              <field name='accountClass' ></field>
               <field name='fatherAccountNumber' readonly='1'></field>
               <field name='fatherAccountId' readonly='1'></field>
+            </group>
+            <group  >
               <field name='number' readonly='1'></field>
               <field name='name'></field>
+              <field name='direction' widget='radio'/>
+            </group>
+            <group>
               <field name='cashFlowControl'></field>
+            </group>
+            <group>
               <field name='itemClasses'>
                 <tree>
                   <field name="number" />
@@ -452,6 +458,8 @@
                 </tree>
               </field>
               <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
+            </group>
+            <group>
               <field name="explain" />
             </group>
           </sheet>
@@ -519,6 +527,62 @@
             <button name="setingNumber" type="object" string="开始生成" class='btn-primary' />
           </footer>
         </form>
+      </field>
+    </record>
+    <!-- 科目余额表查询 -->
+    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report'  />
+    <record id="accountcore_get_accounts_balance_form" model="ir.ui.view">
+      <field name='name'>科目余额查询</field>
+      <field name='model'>accountcore.get_account_balance</field>
+      <field name='arch' type='xml'>
+        <form>
+          <sheet>
+            <group>
+              <field name="startDate" />
+              <field name="endDate" />
+            </group>
+            <group col='6' class='oe_grey'>
+              <field name="onlyShowOneLevel" />
+              <field name="summaryLevelByLevel" />
+              <field name="noShowUnUsed" />
+              <field name="noShowZeroBalance" />
+              <field name="includeAccountItems" />
+            </group>
+            <group>
+              <field name="org" widget="many2many_checkboxes_floatleft" />
+            </group>
+            <group>
+              <field name="account" default_focus='1' domain="[('org','in',org)]" context="{'search_default_groupby_accountClass':True}">
+                <tree default_order='accountClass,number,org' >
+                  <field name='org' />
+                  <field name='accountClass' />
+                  <field name='fatherAccountId' />
+                  <field name='number' />
+                  <field name='name' />
+                  <control>
+                    <create string="选择查询的科目" />
+                  </control>
+                </tree>
+              </field>
+            </group>
+          </sheet>
+          <footer>
+            <button type="object" string='开始查询' class='btn-primary' name="doAction" />
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <!-- accountcore.voucher search view -->
+    <record id="accountcore_account_search" model="ir.ui.view">
+      <field name="name">科目查询</field>
+      <field name="model">accountcore.account</field>
+      <field name="arch" type="xml">
+        <search string="accountFilter">
+          <!-- <field name="org" string="全部可选核算机构" filter_domain="[('org','>', self)]" context="{'group_by':'accountClass'}"/> -->
+          <filter name="groupby_accountClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
+          <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+        </search>
       </field>
     </record>
 
@@ -614,6 +678,12 @@
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
     </record>
+    <record model='ir.actions.act_window' id='acccountcore_get_accounts_balance_actions_window'>
+      <field name="name">查询科目余额</field>
+      <field name="res_model">accountcore.get_account_balance</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
 
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
     <record id="paperformat_a4half" model="report.paperformat">
@@ -632,10 +702,9 @@
       <field name="dpi">90</field>
     </record>
 
-    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report'  />
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
 
-    <menuitem name='会计' id='accountcore_menu' />
+    <!-- <menuitem name='会计' id='accountcore_menu' />
     <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
     <menuitem name='凭证列表' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="50" />
     <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" />
@@ -656,7 +725,7 @@
     <menuitem name='现金流量项目类别' id='accountcore_cashflowtypw_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowtype_action_window' />
     <menuitem name='现金流量项目列表' id='accountcore_cashflows_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowitems_action_window' />
     <menuitem name='账簿' id='accountcore_books_menu' parent='accountcore_menu' sequence="60" />
-    <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='accounctore_accountsbalance_report' />
+    <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='acccountcore_get_accounts_balance_actions_window' /> -->
   </data>
   <data noupdate='True'>
     <record id='voucher_unique_number' model='ir.sequence'>

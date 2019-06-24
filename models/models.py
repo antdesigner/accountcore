@@ -131,11 +131,13 @@ class Account(models.Model):
         ondelete='restrict')
     number = fields.Char(string='科目编码', required=True)
     name = fields.Char(string='科目名称', required=True)
+    direction = fields.Selection(
+        [('1', '借'), ('-1', '贷')], string='余额方向', required=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many(
         'accountcore.itemclass', string='包含的核算项目类别', ondelete='restrict')
     accountItemClass = fields.Many2one(
-        'accountcore.itemclass', string='作为明细科目的核算项目类别', ondelete='restrict')
+        'accountcore.itemclass', string='作为明细科目的类别', ondelete='restrict')
     fatherAccountId = fields.Many2one(
         'accountcore.account',
         string='上级科目',
@@ -635,6 +637,7 @@ class AccountcoreUserDefaults(models.TransientModel):
         self._setDefault(
             modelName, 'voucherdate',
             json.dumps(self.default_voucherDate.strftime('%Y-%m-%d')))
+        self.env.user.currentOrg = self.default_org.id
         return True
 
     # 设置默认值
@@ -698,11 +701,13 @@ class CreateChildAccountWizard(models.TransientModel):
         ondelete='restrict')
     number = fields.Char(string='科目编码', required=True)
     name = fields.Char(string='科目名称', required=True)
+    direction = fields.Selection(
+        [('1', '借'), ('-1', '贷')], string='余额方向', required=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many(
         'accountcore.itemclass', string='包含的核算项目类别', ondelete='restrict')
     accountItemClass = fields.Many2one(
-        'accountcore.itemclass', string='作为明细科目的核算项目类别', ondelete='restrict')
+        'accountcore.itemclass', string='作为明细科目的类别', ondelete='restrict')
     explain = fields.Html(string='科目说明')
     @api.model
     def default_get(self, field_names):
@@ -713,6 +718,7 @@ class CreateChildAccountWizard(models.TransientModel):
         default['fatherAccountId'] = fatherAccountId
         default['org'] = fatherAccount.org.id
         default['accountClass'] = fatherAccount.accountClass.id
+        default['direction']=fatherAccount.direction
         default['cashFlowControl'] = fatherAccount.cashFlowControl
         default['number'] = fatherAccount.number + \
             '.' + str(fatherAccount.currentChildNumber)
@@ -753,6 +759,7 @@ class VoucherNumberTastics(models.Model):
 class ExtensionUser(models.Model):
     '''扩展基础用户属性'''
     _inherit = 'res.users'
+    currentOrg = fields.Many2one('accountcore.org', string="当前核算机构")
     voucherNumberTastics = fields.Many2one(
         'accountcore.voucher_number_tastics', string='默认凭证编号策略')
 
@@ -889,22 +896,33 @@ class ItemsBalanace(models.Model):
         pass
 
 
-class GetAccountBalance(models.TransientModel):
+class GetAccountsBalance(models.TransientModel):
     '''科目余额查询向导'''
     _name = 'accountcore.get_account_balance'
     startDate = fields.Date(string="开始期间", required=True,
                             default=fields.Date.today())
     endDate = fields.Date(string="结束期间", required=True,
                           default=fields.Date.today())
+    onlyShowOneLevel = fields.Boolean(string="只显示一级科目", default=False)
+    summaryLevelByLevel = fields.Boolean(string='逐级科目汇总', default=True)
+    includeAccountItems = fields.Boolean(string='包含核算项目', default=True)
+    noShowZeroBalance = fields.Boolean(string='余额为零不显示', default=False)
+    noShowUnUsed = fields.Boolean(string='从未使用不显示', default=True)
+    org = fields.Many2many(
+        'accountcore.org',
+        string='机构范围',
+        default=lambda s: s.env.user.currentOrg,
 
-    def setVoucherNumberSingle(self, argsDist):
+    )
+    account = fields.Many2many('accountcore.account', string='科目范围')
+
+    def doAction(self, args):
         '''设置修改凭证编号'''
-        newNumber = self.newNumber
-        currentUserNumberTastics_id = 0
-        if(self.env.user.voucherNumberTastics):
-            currentUserNumberTastics_id = self.env.user.voucherNumberTastics.id
-        voucher = self.env['accountcore.voucher'].sudo().browse(
-            argsDist['active_id'])
-        voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
-            voucher.numberTasticsContainer_str, currentUserNumberTastics_id, newNumber)
-        return True
+        i = 0
+        pass
+        return {
+            'display_name': '科目余额表',
+            'type': 'ir.actions.report',
+            'report_type': 'qweb-html',
+            'report_name': 'accountcore.account_balance_report',
+        }

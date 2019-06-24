@@ -1,4 +1,3 @@
-// alert('hello world123');
 odoo.define('accountcore.accountcoreListRenderer', function (require) {
     "use strict";
     var ListRenderer = require('web.ListRenderer');
@@ -9,16 +8,7 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
             'change table td.voucher_c_amount': '_entryamountChange',
         }),
         _entryamountChange: function (event) {
-            // var $event = $(event.currentTarget)
-            // alert(event.target.value);
-            // var newValue = event.target.value;
-            // if (newValue - 0 == 0) {
-            //     $event.css('background-color', 'red');
-            //     // $event.parent().addClass('amount-zero');
-            //     return;
-            // }
-            // $event.css('background-color', 'white');
-            // // $event.parent().removeClass('amount-zero')
+            // table td.voucher_c_amount 的元素改变事件处理
         },
         init: function (parent, state, params) {
             var self = this;
@@ -27,7 +17,7 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
         _renderBodyCell: function (record, node, colIndex, options) {
             var self = this;
             var newTd = this._super.apply(this, arguments);
-
+            // 如果给字段添加了class="amountColor"属性,那么这个字段为金额字段显示的值改变颜色
             var name = node.attrs.name;
             var amount = record.data[name];
             if (_hasClass(newTd, 'amountColor')) {
@@ -43,6 +33,7 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
                 break;
             case (amount - 0 == 0):
                 node.addClass('amount-zero');
+                // css定义在 server\addons\accountcore\static\css\accountcore.css
                 break;
             case (amount - 0 < 0):
                 node.addClass('amount-negative');
@@ -62,7 +53,6 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
     };
     return ListRenderer;
 });
-// alert('hello world end');
 //凭证的核算项目字段
 odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.accountcoreVoucher', 'web.field_registry'], function (require) {
     "use strict";
@@ -122,24 +112,31 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
                 }
                 ev.target.ac_itemId = newValue.id;
                 ev.target.ac_itemName = newValue.display_name;
-                 //重要覆写
+                //重要覆写
                 ev.stopPropagation();
-                return;                             
+                return;
             };
             //没有选择,或删除了核算项目,以前是A现在删除了A,没有选择其他的
-                this._removeTag(ev.target.ac_itemId);
-                ev.target.ac_itemId = null;
-                ev.target.ac_itemName = null;
+            this._removeTag(ev.target.ac_itemId);
+            ev.target.ac_itemId = null;
+            ev.target.ac_itemName = null;
 
             //重要覆写
             ev.stopPropagation();
         },
 
     });
+    var FieldMany2ManyCheckBoxes=relational_fields.FieldMany2ManyCheckBoxes;
+    var FieldMany2ManyCheckBoxes_flowToLeft=FieldMany2ManyCheckBoxes.extend({
+        template: 'FieldMany2ManyCheckBoxes_flowToLeft',
+    });  
     var fieldRegistry = require('web.field_registry');
     fieldRegistry.add('tiger_accountItems_m2m', tiger_accountItems_m2m);
+    // 继承many2many_checkboxes向左浮动
+    fieldRegistry.add('many2many_checkboxes_floatleft', FieldMany2ManyCheckBoxes_flowToLeft);;
     return {
-        tiger_accountItems_m2m: tiger_accountItems_m2m
+        tiger_accountItems_m2m: tiger_accountItems_m2m,
+        fieldMany2ManyCheckBoxes_flowToLeft:fieldMany2ManyCheckBoxes_flowToLeft,
     };
 });
 //凭证的核算项目字段选择
@@ -158,8 +155,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             'keydown input': '_onKeydown',
 
         }),
-        _onBlur: function(e){
-        },
+        _onBlur: function (e) {},
 
         /**输入时按tab键,跳到下一个项目
          * @param  {} e
@@ -480,10 +476,10 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
         renderButtons: function () {
             this._super.apply(this, arguments);
             if (this.$buttons) {
-                var btns=this.$buttons;
-                var ac_voucher_number_sort_btn =btns.find('.ac_voucher_number_sort'); //凭证编号排序按钮
+                var btns = this.$buttons;
+                var ac_voucher_number_sort_btn = btns.find('.ac_voucher_number_sort'); //凭证编号排序按钮
                 ac_voucher_number_sort_btn.on('click', this.proxy('vouchersSortByNumber'));
-                var ac_voucher_filter_btn = btns.find('.ac_voucher_filter');//查询按钮
+                var ac_voucher_filter_btn = btns.find('.ac_voucher_filter'); //查询按钮
                 ac_voucher_filter_btn.on('click', this.proxy('voucher_filter'));
             };
         },
@@ -513,3 +509,4 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     viewRegistry.add('voucherListView', voucherListView);
     return voucherListView;
 });
+//

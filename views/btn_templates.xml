@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
-<!-- 凭证的核算项目容器 -->
+    <!-- 凭证的核算项目容器 -->
     <t t-name='accountcore_voucher_choice_items'>
         <div class="container ac-items-choice">
         </div>
@@ -10,7 +10,7 @@
         <t t-jquery='div.o_list_buttons' t-operation="append">
             <t t-if="widget.displayName=='凭证列表'">
                 <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
-                 <!-- <button class='btn btn-secondary ac_voucher_filter' type="button">查询testme</button> -->
+                <!-- <button class='btn btn-secondary ac_voucher_filter' type="button">查询testme</button> -->
             </t>
             <t t-elif="widget.displayName=='已生成凭证编号'">
                 <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
