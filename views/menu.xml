@@ -9,7 +9,7 @@
         <menuitem name='凭证编号' id='accountcore_voucher_number_memu' parent='accountcore_menu' sequence='47' />
         <menuitem name='凭证编号策略列表' id='accountcore_voucher_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_voucher_number_acionts_window' sequence='50' />
         <menuitem name='切换凭证编号策略' id='accountcore_set_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_set_number_acionts_window' sequence='51' />
-        <menuitem name='账簿范围' id='acctountcore_rulebook_menu' parent='accountcore_menu' action='accountcore_rulebook_action_window' sequence="49" />
+        <menuitem name='凭证标签' id='acctountcore_rulebook_menu' parent='accountcore_menu' action='accountcore_rulebook_action_window' sequence="49" />
         <menuitem name='核算机构' id='accountcore_org_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="50" />
         <menuitem name='会计科目' id='accountcore_account_menu' parent='accountcore_menu' sequence="51" />
         <menuitem name='科目体系' id='accountcore_accountarch_menu' parent='accountcore_account_menu'  action='accountcore_accountsarch_action_window'/>

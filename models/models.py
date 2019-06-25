@@ -104,15 +104,15 @@ class Item(models.Model):
 
 
 class RuleBook(models.Model):
-    '''账簿范围'''
+    '''凭证标签'''
     _name = 'accountcore.rulebook'
-    _description = '账簿范围'
-    number = fields.Char(string='账簿编码', required=True)
-    name = fields.Char(string='账簿名称', required=True, help='用于生成不同范围的账套')
+    _description = '凭证标签'
+    number = fields.Char(string='凭证标签编码', required=True)
+    name = fields.Char(string='凭证标签名称', required=True, help='用于给凭证做标记')
     _sql_constraints = [('accountcore_rulebook_number_unique',
-                         'unique(number)', '账簿编码重复了!'),
+                         'unique(number)', '标签编码重复了!'),
                         ('accountcore_rulebook_name_unique', 'unique(name)',
-                         '账簿名称重复了!')]
+                         '标签名称重复了!')]
 
 
 class AccountClass(models.Model):
@@ -274,10 +274,9 @@ class Voucher(models.Model):
         required=True,
         index=True,
         ondelete='restrict')
-    ruleBook = fields.Many2one(
+    ruleBook = fields.Many2many(
         'accountcore.rulebook',
-        string='所属账簿',
-        required=True,
+        string='凭证标签',
         index=True,
         ondelete='restrict')
     number = fields.Integer(
@@ -645,7 +644,7 @@ class Enty(models.Model):
 class AccountcoreUserDefaults(models.TransientModel):
     '''用户设置模型字段的默认取值'''
     _name = 'accountcoure.userdefaults'
-    default_ruleBook = fields.Many2one('accountcore.rulebook', string='默认账套')
+    default_ruleBook = fields.Many2many('accountcore.rulebook', string='默认凭证标签')
     default_org = fields.Many2one('accountcore.org', string='默认机构')
     default_voucherDate = fields.Date(
         string='记账日期', default=fields.Date.today())
@@ -653,7 +652,7 @@ class AccountcoreUserDefaults(models.TransientModel):
     # 设置新增凭证,日期,机构和账套字段的默认值
     def setDefaults(self):
         modelName = 'accountcore.voucher'
-        self._setDefault(modelName, 'ruleBook', self.default_ruleBook.id)
+        self._setDefault(modelName, 'ruleBook', self.default_ruleBook)
         self._setDefault(modelName, 'org', self.default_org.id)
         self._setDefault(
             modelName, 'voucherdate',

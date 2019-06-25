@@ -15,9 +15,29 @@
             <field name='name'>中国事业单位会计科目体系</field>
         </record>
         <!-- 账簿类别 -->
-        <record id="rulebook_1" model="accountcore.rulebook">
-            <field name="number">1</field>
-            <field name="name">一般账簿</field>
+        <record id="rulebook_999" model="accountcore.rulebook">
+            <field name="number">999</field>
+            <field name="name">自动结转损益</field>
+        </record>
+           <record id="rulebook_998" model="accountcore.rulebook">
+            <field name="number">998</field>
+            <field name="name">自动转账</field>
+        </record>
+           <record id="rulebook_997" model="accountcore.rulebook">
+            <field name="number">997</field>
+            <field name="name">自动计提折旧</field>
+        </record>
+           <record id="rulebook_996" model="accountcore.rulebook">
+            <field name="number">996</field>
+            <field name="name">自动摊销</field>
+        </record>
+           <record id="rulebook_995" model="accountcore.rulebook">
+            <field name="number">995</field>
+            <field name="name">自动计提坏账</field>
+        </record>
+           <record id="rulebook_994" model="accountcore.rulebook">
+            <field name="number">994</field>
+            <field name="name">自动计息</field>
         </record>
         <record id="voucher_number_tastics_1" model="accountcore.voucher_number_tastics">
             <field name="number">1</field>

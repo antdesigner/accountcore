@@ -13,7 +13,7 @@
         </tree>
       </field>
     </record>
-     <!-- accountcore.org form view -->
+    <!-- accountcore.org form view -->
     <record id="accountcore_org_action_window_form" model="ir.ui.view">
       <field name='name'>核算机构</field>
       <field name="model">accountcore.org</field>
@@ -30,7 +30,7 @@
         </form>
       </field>
     </record>
-     <record model='ir.ui.view' id='accountcore_accountsarch_list'>
+    <record model='ir.ui.view' id='accountcore_accountsarch_list'>
       <field name='name'>科目体系</field>
       <field name='model'>accountcore.accounts_arch</field>
       <field name='arch' type='xml'>
@@ -120,7 +120,7 @@
       </field>
     </record>
     <record model='ir.ui.view' id='accountcore_rulebook_list'>
-      <field name='name'>账簿范围</field>
+      <field name='name'>凭证标签</field>
       <field name='model'>accountcore.rulebook</field>
       <field name='arch' type='xml'>
         <tree>
@@ -131,12 +131,12 @@
     </record>
     <!-- accountcore.rulebook form view -->
     <record id="accountcore_rulebooke_form" model="ir.ui.view">
-      <field name="name">账簿口径</field>
+      <field name="name">凭证标签</field>
       <field name="model">accountcore.rulebook</field>
       <field name="arch" type="xml">
         <form string="">
           <sheet>
-            <h1>新增编辑=>账簿范围</h1>
+            <h1>新增编辑=>凭证标签</h1>
             <hr></hr>
             <group>
               <field name="number" />
@@ -409,9 +409,10 @@
             </div>
             <group col='4' class='oe_grey'>
               <field name='org' col='2' options="{'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='ruleBook' col='2' options="{'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='number' col='1' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1' />
+              <!-- <field name='ruleBook' col='2' options="{'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" widget="many2many_tags"/> -->
+              <field name='ruleBook' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':0}" widget="many2many_tags"/>
+              <field name='number' col='1' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" class="oe_right" colspan="2"/>
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
@@ -660,7 +661,7 @@
       <field name='target'>current</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_rulebook_action_window'>
-      <field name='name'>账簿范围</field>
+      <field name='name'>凭证标签</field>
       <field name='res_model'>accountcore.rulebook</field>
       <field name='view_mode'>tree,form</field>
     </record>
@@ -740,28 +741,8 @@
 
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
 
-    <!-- <menuitem name='会计' id='accountcore_menu' />
-    <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
-    <menuitem name='凭证列表' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="50" />
-    <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" />
-    <menuitem name='新增凭证' id='accountcore_voucher_new_menu' parent='accountcore_voucher_menu' action='accountore_voucher_new_actions_window' sequence='60' />
-    <menuitem name='凭证默认值' id='accountcore_serdefaults_menu' parent='accountcore_menu' action='accountcore_userdefaults_action' sequence="45" />
-    <menuitem name='凭证编号' id='accountcore_voucher_number_memu' parent='accountcore_menu' sequence='47' />
-    <menuitem name='凭证编号策略列表' id='accountcore_voucher_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_voucher_number_acionts_window' sequence='50' />
-    <menuitem name='切换凭证编号策略' id='accountcore_set_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_set_number_acionts_window' sequence='51' />
-    <menuitem name='账簿范围' id='acctountcore_rulebook_menu' parent='accountcore_menu' action='accountcore_rulebook_action_window' sequence="49" />
-    <menuitem name='核算机构' id='accountcore_org_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="50" />
-    <menuitem name='会计科目' id='accountcore_account_menu' parent='accountcore_menu' sequence="51" />
-    <menuitem name='科目类别' id='acctountcore_accountclass_menu' parent='accountcore_account_menu' action='accountcore_accountclass_action_window' />
-    <menuitem name='科目列表' id='accountcore_accounts_menu' parent='accountcore_account_menu' action='accountcore_account_action_window' />
-    <menuitem name='核算项目' id='accountcore_item_menu' parent='accountcore_menu' sequence="52" />
-    <menuitem name='核算项目类别' id='accountcore_itemclass_menu' parent='accountcore_item_menu' action='accountcore_itemclass_action_window' />
-    <menuitem name='核算项目列表' id='accountcore_items_menu' parent='accountcore_item_menu' action='accountcore_items_action_window' />
-    <menuitem name='现金流量' id='accountcore_cashflow_menu' parent='accountcore_menu' sequence="53" />
-    <menuitem name='现金流量项目类别' id='accountcore_cashflowtypw_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowtype_action_window' />
-    <menuitem name='现金流量项目列表' id='accountcore_cashflows_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowitems_action_window' />
-    <menuitem name='账簿' id='accountcore_books_menu' parent='accountcore_menu' sequence="60" />
-    <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='acccountcore_get_accounts_balance_actions_window' /> -->
+    <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='acccountcore_get_accounts_balance_actions_window' />
+
   </data>
   <data noupdate='True'>
     <record id='voucher_unique_number' model='ir.sequence'>
