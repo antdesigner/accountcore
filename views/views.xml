@@ -123,7 +123,7 @@
       <field name='name'>凭证标签</field>
       <field name='model'>accountcore.rulebook</field>
       <field name='arch' type='xml'>
-        <tree>
+        <tree default_order="number">
           <field name='number'></field>
           <field name='name'></field>
         </tree>
@@ -408,10 +408,10 @@
               </center>
             </div>
             <group col='4' class='oe_grey'>
-              <field name='org' col='2' options="{'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}"  attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1' />
               <!-- <field name='ruleBook' col='2' options="{'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" widget="many2many_tags"/> -->
-              <field name='ruleBook' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':0}" widget="many2many_tags"/>
+              <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags"/>
               <field name='number' col='1' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" class="oe_right" colspan="2"/>
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
