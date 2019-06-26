@@ -956,8 +956,9 @@ class AccountsBalanace(models.Model):
         ondelete='cascade')
     createDate = fields.Date(
         string="创建日期", required=True)
-    year = fields.Integer(string='年份', required=True, index=True)
-    month = fields.Integer(string='月份', required=True)
+    year = fields.Integer(string='年份', required=True,
+                          index=True)  # 通过createDate生成,不要直接修改
+    month = fields.Integer(string='月份', required=True)  # 通过createDate生成,不要直接修改
     isbegining = fields.Boolean(string="是启用期间", default=False)
     account = fields.Many2one('accountcore.account',
                               string='会计科目', required=True, index=True, ondelete='cascade')
@@ -983,7 +984,22 @@ class AccountsBalanace(models.Model):
     def _get_company_currency(self):
         pass
 
+    @api.onchange('createDate')
+    def chage_period(self):
+        self.year = self.createDate.year
+        self.month = self.createDate.month
 
+    @api.model
+    def create(self, values):
+        '''新增一条科目期初'''
+        if self.check_repeat():
+            pass
+        else:    
+        
+        rl = super(Voucher, self).create(values)
+
+
+        return rl
 # class ItemsBalanace(models.Model):
 #     '''核算项目余额'''
 #     _name = 'accountcore.items_balance'

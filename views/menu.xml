@@ -1,8 +1,8 @@
 <odoo>
     <data>
         <menuitem name='会计' id='accountcore_menu' />
-        <!-- <menuitem name="启用期初" id='accountcore_begining_menu' parent='accountcore_menu' sequence='35'/> -->
-        <!-- <menuitem name="科目初始余额" id='accountcore_begining_balance_menu' parent='accountcore_begining_menu' action='acccountcore_accounts_balance_actions_window'/> -->
+        <menuitem name="启用期初" id='accountcore_begining_menu' parent='accountcore_menu' sequence='35'/>
+        <menuitem name="科目初始余额" id='accountcore_begining_balance_menu' parent='accountcore_begining_menu' action='acccountcore_accounts_balance_actions_window'/>
         <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
         <menuitem name='凭证列表' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="50" />
         <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" />

@@ -238,10 +238,10 @@
         <tree default_order='org,year,month' editable='top' create='1'>
           <field name='org'></field>
           <field name='createDate' string='启用日期'/>
-          <field name='year'></field>
-          <field name='month'></field>
-          <field name='isbegining'></field>
-          <field name='account'></field>
+          <field name='year' invisible='1'></field>
+          <field name='month' invisible='1'></field>
+          <field name='isbegining' invisible='1'></field>
+          <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='accountItemClass'/>
           <field name='items' domain="[('itemClass.id','=',accountItemClass)]"/>
           <field name="beginingDamount" string='日初借方余额'/>
@@ -772,11 +772,12 @@
       <field name="res_model">accountcore.accounts_balance</field>
       <field name="view_mode">tree,form</field>
       <field name="target">current</field>
+      <field name='context'>{'default_isbegining':True}</field>
     </record>
 
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
 
-    <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='acccountcore_get_accounts_balance_actions_window' />
+    <!-- <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='acccountcore_get_accounts_balance_actions_window' /> -->
 
   </data>
   <data noupdate='True'>
