@@ -989,14 +989,15 @@ class AccountsBalanace(models.Model):
         self.year = self.createDate.year
         self.month = self.createDate.month
 
-    @api.model
-    def create(self, values):
-        '''新增一条科目期初'''
-        if self.check_repeat():
-            pass
-        else:    
-            rl = super(Voucher, self).create(values)
-        return rl
+    # @api.model
+    # def create(self, values):
+    #     '''新增一条科目期初'''
+    #     if self.check_repeat():
+    #         pass
+    #     else:    
+    #         rl = super(Voucher, self).create(values)
+    #     return rl
+    
 # class ItemsBalanace(models.Model):
 #     '''核算项目余额'''
 #     _name = 'accountcore.items_balance'
