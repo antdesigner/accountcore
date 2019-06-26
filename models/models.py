@@ -995,10 +995,7 @@ class AccountsBalanace(models.Model):
         if self.check_repeat():
             pass
         else:    
-        
-        rl = super(Voucher, self).create(values)
-
-
+            rl = super(Voucher, self).create(values)
         return rl
 # class ItemsBalanace(models.Model):
 #     '''核算项目余额'''
