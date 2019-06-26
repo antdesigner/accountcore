@@ -492,71 +492,140 @@ class Voucher(models.Model):
     @api.model
     def _updateBalance(self, isAdd=True):
         '''更新余额'''
-        self._updateAccountBalance(isAdd)
-        self._updateItemBalance(isAdd)
+        itemClass_need = False
+        for entry in self.entrys:
+            itemClass_need = entry.account.accountItemClass
+            if not(itemClass_need):
+                self._updateAccountBalance(entry, isAdd)  # 不带核算项目的分录更新科目余额表
+            else:
+                self._updateItemBalance(entry, isAdd)  # 带核算项目的分录
 
     @api.model
-    def _updateAccountBalance(self, isAdd=True):
+    def _updateAccountBalance(self, entry, isAdd=True):
         '''更新科目余额'''
         if isAdd:
             computMark = 1
         else:
             computMark = -1
-        year = self.voucherdate.year
-        month = self.voucherdate.month
+        currentDate = self.voucherdate
+        year = currentDate.year
+        month = currentDate.month
         orgId = self.org.id
-        for entry in self.entrys:
-            accountBalance = self._getAccountBalanceRecord(entry)
-            if accountBalance.exists():
-                if entry.damount != 0:
-                    accountBalance.damount = accountBalance.damount+entry.damount*computMark
-                elif entry.camount != 0:
-                    accountBalance.camount = accountBalance.camount+entry.camount*computMark
-            else:
-                accountBalanceTable = self.env['accountcore.accounts_balance']
-                if entry.damount != 0:
-                    accountBalanceTable.sudo().create(
-                        {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'damount': entry.damount*computMark})
-                elif entry.camount != 0:
-                    accountBalanceTable.sudo().create(
-                        {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'camount': entry.camount*computMark})
+        accountBalance = self._getAccountBalanceRecord(entry)
+        if accountBalance.exists():
+            if entry.damount != 0:
+                accountBalance.damount = accountBalance.damount+entry.damount*computMark
+            elif entry.camount != 0:
+                accountBalance.camount = accountBalance.camount+entry.camount*computMark
+        else:
+            accountBalanceTable = self.env['accountcore.accounts_balance']
+            if entry.damount != 0:
+                accountBalanceTable.sudo().create(
+                    {'org': orgId, 'createDate': currentDate, 'year': year, 'month': month, 'account': entry.account.id, 'damount': entry.damount*computMark})
+            elif entry.camount != 0:
+                accountBalanceTable.sudo().create(
+                    {'org': orgId, 'createDate': currentDate, 'year': year, 'month': month, 'account': entry.account.id, 'camount': entry.camount*computMark})
         return True
 
+    # @api.model
+    # def _updateAccountBalance(self, isAdd=True):
+    #     '''更新科目余额'''
+    #     if isAdd:
+    #         computMark = 1
+    #     else:
+    #         computMark = -1
+    #     year = self.voucherdate.year
+    #     month = self.voucherdate.month
+    #     orgId = self.org.id
+    #     for entry in self.entrys:
+    #         accountBalance = self._getAccountBalanceRecord(entry)
+    #         if accountBalance.exists():
+    #             if entry.damount != 0:
+    #                 accountBalance.damount = accountBalance.damount+entry.damount*computMark
+    #             elif entry.camount != 0:
+    #                 accountBalance.camount = accountBalance.camount+entry.camount*computMark
+    #         else:
+    #             accountBalanceTable = self.env['accountcore.accounts_balance']
+    #             if entry.damount != 0:
+    #                 accountBalanceTable.sudo().create(
+    #                     {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'damount': entry.damount*computMark})
+    #             elif entry.camount != 0:
+    #                 accountBalanceTable.sudo().create(
+    #                     {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'camount': entry.camount*computMark})
+    #     return True
+
     @api.model
-    def _updateItemBalance(self, isAdd=True):
+    def _updateItemBalance(self,  entry, isAdd=True):
         '''更新核算项目余额'''
         if isAdd:
             computMark = 1
         else:
             computMark = -1
-        year = self.voucherdate.year
-        month = self.voucherdate.month
+        currentDate = self.voucherdate
+        year = currentDate.year
+        month = currentDate.month
         orgId = self.org.id
-        for entry in self.entrys:
-            itemClass_need = entry.account.accountItemClass
-            if not(itemClass_need):
+        # for entry in self.entrys:
+        #     itemClass_need = entry.account.accountItemClass
+        #     if not(itemClass_need):
+        #         continue
+        #     else:
+        itemClass_need = entry.account.accountItemClass
+        accountId = entry.account.id
+        for item in entry.items:
+            if (item.itemClass.id != itemClass_need.id):
                 continue
+            itemBalance = self._getItemBalanceRecord(
+                accountId, item.id)
+            if itemBalance.exists():
+                if entry.damount != 0:
+                    itemBalance.damount = itemBalance.damount+entry.damount*computMark
+                elif entry.camount != 0:
+                    itemBalance.camount = itemBalance.camount+entry.camount*computMark
             else:
-                accountId = entry.account.id
-                for item in entry.items:
-                    if (item.itemClass.id != itemClass_need.id):
-                        continue
-                    itemBalance = self._getItemBalanceRecord(
-                        accountId, item.id)
-                    if itemBalance.exists():
-                        if entry.damount != 0:
-                            itemBalance.damount = itemBalance.damount+entry.damount*computMark
-                        elif entry.camount != 0:
-                            itemBalance.camount = itemBalance.camount+entry.camount*computMark
-                    else:
-                        itemBalanceTable = self.env['accountcore.items_balance']
-                        if entry.damount != 0:
-                            itemBalanceTable.sudo().create(
-                                {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'item': item.id, 'damount': entry.damount*computMark})
-                        elif entry.camount != 0:
-                            itemBalanceTable.sudo().create(
-                                {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'item': item.id, 'camount': entry.camount*computMark})
+                itemBalanceTable = self.env['accountcore.accounts_balance']
+                if entry.damount != 0:
+                    itemBalanceTable.sudo().create(
+                        {'org': orgId, 'createDate': currentDate, 'year': year, 'month': month, 'account': entry.account.id, 'items': item.id, 'damount': entry.damount*computMark})
+                elif entry.camount != 0:
+                    itemBalanceTable.sudo().create(
+                        {'org': orgId, 'createDate': currentDate, 'year': year, 'month': month, 'account': entry.account.id, 'items': item.id, 'camount': entry.camount*computMark})
         return True
+    #   @api.model
+    # def _updateItemBalance(self, isAdd=True):
+    #     '''更新核算项目余额'''
+    #     if isAdd:
+    #         computMark = 1
+    #     else:
+    #         computMark = -1
+    #     year = self.voucherdate.year
+    #     month = self.voucherdate.month
+    #     orgId = self.org.id
+    #     for entry in self.entrys:
+    #         itemClass_need = entry.account.accountItemClass
+    #         if not(itemClass_need):
+    #             continue
+    #         else:
+    #             accountId = entry.account.id
+    #             for item in entry.items:
+    #                 if (item.itemClass.id != itemClass_need.id):
+    #                     continue
+    #                 itemBalance = self._getItemBalanceRecord(
+    #                     accountId, item.id)
+    #                 if itemBalance.exists():
+    #                     if entry.damount != 0:
+    #                         itemBalance.damount = itemBalance.damount+entry.damount*computMark
+    #                     elif entry.camount != 0:
+    #                         itemBalance.camount = itemBalance.camount+entry.camount*computMark
+    #                 else:
+    #                     itemBalanceTable = self.env['accountcore.items_balance']
+    #                     if entry.damount != 0:
+    #                         itemBalanceTable.sudo().create(
+    #                             {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'item': item.id, 'damount': entry.damount*computMark})
+    #                     elif entry.camount != 0:
+    #                         itemBalanceTable.sudo().create(
+    #                             {'org': orgId, 'year': year, 'month': month, 'account': entry.account.id, 'item': item.id, 'camount': entry.camount*computMark})
+    #     return True
 
     @api.model
     def _getAccountBalanceRecord(self, entry):
@@ -565,18 +634,28 @@ class Voucher(models.Model):
         year = entry.voucher.voucherdate.year
         month = entry.voucher.voucherdate.month
         record = accountBalanasTable.search(
-            [['org', '=', self.org.id], ['year', '=', year], ['month', '=', month], ['account', '=', entry.account.id]])
+            [['org', '=', self.org.id], ['year', '=', year], ['month', '=', month], ['account', '=', entry.account.id], ['items', '=', False], ['isbegining', '=', False]])
         return record
 
     @api.model
     def _getItemBalanceRecord(self, accountId, itemId):
         '''获得分录对应期间和会计科目下的核算项目的余额记录'''
-        itemBalanasTable = self.env['accountcore.items_balance']
+        itemBalanasTable = self.env['accountcore.accounts_balance']
         year = self.voucherdate.year
         month = self.voucherdate.month
         record = itemBalanasTable.search(
-            [['org', '=', self.org.id], ['year', '=', year], ['month', '=', month], ['account', '=', accountId], ['item', '=', itemId]])
+            [['org', '=', self.org.id], ['year', '=', year], ['month', '=', month], ['account', '=', accountId], ['items', '=', itemId], ['isbegining', '=', False]])
         return record
+
+    # @api.model
+    # def _getItemBalanceRecord(self, accountId, itemId):
+    #     '''获得分录对应期间和会计科目下的核算项目的余额记录'''
+    #     itemBalanasTable = self.env['accountcore.items_balance']
+    #     year = self.voucherdate.year
+    #     month = self.voucherdate.month
+    #     record = itemBalanasTable.search(
+    #         [['org', '=', self.org.id], ['year', '=', year], ['month', '=', month], ['account', '=', accountId], ['item', '=', itemId]])
+    #     return record
 
     @api.model
     def _checkRequiredItemClass(self):
@@ -644,7 +723,8 @@ class Enty(models.Model):
 class AccountcoreUserDefaults(models.TransientModel):
     '''用户设置模型字段的默认取值'''
     _name = 'accountcoure.userdefaults'
-    default_ruleBook = fields.Many2many('accountcore.rulebook', string='默认凭证标签')
+    default_ruleBook = fields.Many2many(
+        'accountcore.rulebook', string='默认凭证标签')
     default_org = fields.Many2one('accountcore.org', string='默认机构')
     default_voucherDate = fields.Date(
         string='记账日期', default=fields.Date.today())
@@ -652,7 +732,7 @@ class AccountcoreUserDefaults(models.TransientModel):
     # 设置新增凭证,日期,机构和账套字段的默认值
     def setDefaults(self):
         modelName = 'accountcore.voucher'
-        self._setDefault(modelName, 'ruleBook', self.default_ruleBook)
+        self._setDefault(modelName, 'ruleBook', self.default_ruleBook.ids)
         self._setDefault(modelName, 'org', self.default_org.id)
         self._setDefault(
             modelName, 'voucherdate',
@@ -874,12 +954,23 @@ class AccountsBalanace(models.Model):
         required=True,
         index=True,
         ondelete='cascade')
-    year = fields.Integer(string='年份', required=True)
+    createDate = fields.Date(
+        string="创建日期", required=True)
+    year = fields.Integer(string='年份', required=True, index=True)
     month = fields.Integer(string='月份', required=True)
+    isbegining = fields.Boolean(string="是启用期间", default=False)
     account = fields.Many2one('accountcore.account',
                               string='会计科目', required=True, index=True, ondelete='cascade')
-    camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
-    damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
+    accountItemClass = fields.Many2one(
+        'accountcore.itemclass', string='核算项目类别', related='account.accountItemClass')
+    items = fields.Many2one('accountcore.item', string='核算项目',
+                            index=True, ondelete='cascade')
+    beginingDamount = fields.Monetary(string="期初借方")  # 当月初
+    beginingCamount = fields.Monetary(string='期初贷方')
+    damount = fields.Monetary(string='本期借方金额')  # Monetory类型字段必须有currency_id
+    camount = fields.Monetary(string='本期贷方金额')  # Monetory类型字段必须有currency_id
+    cumulativeDamount = fields.Monetary(string='本年借方累计')
+    cumulativeCamount = fields.Monetary(string='本年贷方累计')
     # Monetory类型字段必须有
     currency_id = fields.Many2one(
         'res.currency',
@@ -893,35 +984,40 @@ class AccountsBalanace(models.Model):
         pass
 
 
-class ItemsBalanace(models.Model):
-    '''核算项目余额'''
-    _name = 'accountcore.items_balance'
-    _description = '核算项目余额'
-    org = fields.Many2one(
-        'accountcore.org',
-        string='所属机构',
-        required=True,
-        index=True,
-        ondelete='cascade')
-    year = fields.Integer(string='年份', required=True)
-    month = fields.Integer(string='月份', required=True)
-    account = fields.Many2one('accountcore.account',
-                              string='会计科目', required=True, index=True, ondelete='cascade')
-    item = fields.Many2one('accountcore.item', string='核算项目',
-                           required=True, index=True, ondelete='cascade')
-    camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
-    damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
-    # Monetory类型字段必须有
-    currency_id = fields.Many2one(
-        'res.currency',
-        compute='_get_company_currency',
-        readonly=True,
-        string="Currency",
-        help='Utility field to express amount currency')
-    # Monetory 字段必须有
+# class ItemsBalanace(models.Model):
+#     '''核算项目余额'''
+#     _name = 'accountcore.items_balance'
+#     _description = '核算项目余额'
+#     org = fields.Many2one(
+#         'accountcore.org',
+#         string='所属机构',
+#         required=True,
+#         index=True,
+#         ondelete='cascade')
+#     year = fields.Integer(string='年份', required=True)
+#     month = fields.Integer(string='月份', required=True)
+#     isbeginig = fields.Boolean(string="启用期间", default=False)
+#     account = fields.Many2one('accountcore.account',
+#                               string='会计科目', required=True, index=True, ondelete='cascade')
+#     item = fields.Many2one('accountcore.item', string='核算项目',
+#                            required=True, index=True, ondelete='cascade')
+#     beginingDamount = fields.Monetary(string="期初借方")  # 当月初
+#     beginingCamount = fields.Monetary(string='期初贷方')
+#     camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
+#     damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
+#     cumulativeDamount = fields.Monetary(string='本年累计借方')
+#     cumulativeCamount = fields.Monetary(string='本年累计贷方')
+#     # Monetory类型字段必须有
+#     currency_id = fields.Many2one(
+#         'res.currency',
+#         compute='_get_company_currency',
+#         readonly=True,
+#         string="Currency",
+#         help='Utility field to express amount currency')
+#     # Monetory 字段必须有
 
-    def _get_company_currency(self):
-        pass
+#     def _get_company_currency(self):
+#         pass
 
 
 class GetAccountsBalance(models.TransientModel):

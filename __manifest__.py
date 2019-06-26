@@ -14,9 +14,9 @@
     'application': True,
     'images': ['static/description/icon.png'],
     'data': [
+        'views/assetsAdd_templates.xml',
         'security/users.xml',
         'views/views.xml',
-        'views/assetsAdd_templates.xml',
         'report/voucher_print_templates.xml',
         'report/account_balance_report_template.xml',
         'views/menu.xml',

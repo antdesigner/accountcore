@@ -230,6 +230,34 @@
         </form>
       </field>
     </record>
+
+    <record model='ir.ui.view' id='accountcore_accounts_balance_list'>
+      <field name='name'>科目启用期初余额</field>
+      <field name='model'>accountcore.accounts_balance</field>
+      <field name='arch' type='xml'>
+        <tree default_order='org,year,month' editable='top' create='1'>
+          <field name='org'></field>
+          <field name='createDate' string='启用日期'/>
+          <field name='year'></field>
+          <field name='month'></field>
+          <field name='isbegining'></field>
+          <field name='account'></field>
+          <field name='accountItemClass'/>
+          <field name='items' domain="[('itemClass.id','=',accountItemClass)]"/>
+          <field name="beginingDamount" string='日初借方余额'/>
+          <field name="beginingCamount" string='日初贷方余额'/>
+          <field name="damount" string='月借方已发生额'/>
+          <field name="camount" string='月贷方已发生额'/>
+          <field name="cumulativeDamount" string='本年借方累计发生额'/>
+          <field name="cumulativeCamount" string='本年借方累计发生额'/>
+          <!-- <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
+          <field name='itemClassesHtml'>
+          </field>
+          <field name='fatherAccountId' invisible='1'></field> -->
+        </tree>
+      </field>
+    </record>
+
     <record model='ir.ui.view' id='account_cashflowtype_list'>
       <field name='name'>现金流量类别列表</field>
       <field name='model'>accountcore.cashflowtype</field>
@@ -408,7 +436,7 @@
               </center>
             </div>
             <group col='4' class='oe_grey'>
-              <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}"  attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1' />
               <!-- <field name='ruleBook' col='2' options="{'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" widget="many2many_tags"/> -->
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags"/>
@@ -737,6 +765,13 @@
       <field name="header_line" eval="False" />
       <field name="header_spacing">35</field>
       <field name="dpi">90</field>
+    </record>
+
+    <record model='ir.actions.act_window' id='acccountcore_accounts_balance_actions_window'>
+      <field name="name">科目启用期初余额</field>
+      <field name="res_model">accountcore.accounts_balance</field>
+      <field name="view_mode">tree,form</field>
+      <field name="target">current</field>
     </record>
 
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />

@@ -136,7 +136,7 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
     fieldRegistry.add('many2many_checkboxes_floatleft', FieldMany2ManyCheckBoxes_flowToLeft);;
     return {
         tiger_accountItems_m2m: tiger_accountItems_m2m,
-        fieldMany2ManyCheckBoxes_flowToLeft:fieldMany2ManyCheckBoxes_flowToLeft,
+        fieldMany2ManyCheckBoxes_flowToLeft:FieldMany2ManyCheckBoxes_flowToLeft,
     };
 });
 //凭证的核算项目字段选择
