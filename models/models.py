@@ -503,7 +503,11 @@ class Voucher(models.Model):
         month = currentDate.month
         orgId = self.org.id
         accountId = entry.account.id
-        itemId = (entry.getItemByitemClass(entry.account.accountItemClass)).id
+        item=entry.getItemByitemClass(entry.account.accountItemClass)
+        if item:
+            itemId = item.id
+        else:
+            itemId = False
         if isAdd:
             computMark = 1  # 增加金额
         else:
