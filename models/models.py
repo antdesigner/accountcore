@@ -912,51 +912,6 @@ class AccountsBalance(models.Model):
             self.year = self.createDate.year
             self.month = self.createDate.month
 
-<<<<<<< HEAD
-    # @api.model
-    # def create(self, values):
-    #     '''新增一条科目期初'''
-    #     if self.check_repeat():
-    #         pass
-    #     else:    
-    #         rl = super(Voucher, self).create(values)
-    #     return rl
-    
-# class ItemsBalanace(models.Model):
-#     '''核算项目余额'''
-#     _name = 'accountcore.items_balance'
-#     _description = '核算项目余额'
-#     org = fields.Many2one(
-#         'accountcore.org',
-#         string='所属机构',
-#         required=True,
-#         index=True,
-#         ondelete='cascade')
-#     year = fields.Integer(string='年份', required=True)
-#     month = fields.Integer(string='月份', required=True)
-#     isbeginig = fields.Boolean(string="启用期间", default=False)
-#     account = fields.Many2one('accountcore.account',
-#                               string='会计科目', required=True, index=True, ondelete='cascade')
-#     item = fields.Many2one('accountcore.item', string='核算项目',
-#                            required=True, index=True, ondelete='cascade')
-#     beginingDamount = fields.Monetary(string="期初借方")  # 当月初
-#     beginingCamount = fields.Monetary(string='期初贷方')
-#     camount = fields.Monetary(string='贷方金额')  # Monetory类型字段必须有currency_id
-#     damount = fields.Monetary(string='借方金额')  # Monetory类型字段必须有currency_id
-#     cumulativeDamount = fields.Monetary(string='本年累计借方')
-#     cumulativeCamount = fields.Monetary(string='本年累计贷方')
-#     # Monetory类型字段必须有
-#     currency_id = fields.Many2one(
-#         'res.currency',
-#         compute='_get_company_currency',
-#         readonly=True,
-#         string="Currency",
-#         help='Utility field to express amount currency')
-#     # Monetory 字段必须有
-
-#     def _get_company_currency(self):
-#         pass
-=======
     @api.model
     def create(self, values):
         '''新增一条科目期初'''
@@ -987,16 +942,6 @@ class AccountsBalance(models.Model):
     @api.model
     def changeCamount(self, amount):
         self.camount = self.camount+amount
-
-    # @api.model
-    # def getPreAndNextAccountBalance(slef):
-
-    #     return {
-    #         "pre":,
-    #         "next":,
-    #     }
->>>>>>> accountBalancereport
-
 
 class GetAccountsBalance(models.TransientModel):
     '''科目余额查询向导'''
