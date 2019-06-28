@@ -235,21 +235,21 @@
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,year,month' editable='top' create='1'>
-          <field name='org'></field>
+        <tree default_order='org,year,month' editable='top' create='1' limit='9999'>
+          <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期'/>
           <field name='year' invisible='1'></field>
           <field name='month' invisible='1'></field>
           <field name='isbegining' invisible='1'></field>
           <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='accountItemClass'/>
-          <field name='items' domain="[('itemClass.id','=',accountItemClass)]"/>
-          <field name="beginingDamount" string='日初借方余额'/>
-          <field name="beginingCamount" string='日初贷方余额'/>
-          <field name="damount" string='月借方已发生额'/>
-          <field name="camount" string='月贷方已发生额'/>
-          <field name="cumulativeDamount" string='本年借方累计发生额'/>
-          <field name="cumulativeCamount" string='本年借方累计发生额'/>
+          <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}"/>
+          <field name="beginingDamount" string='月初借方余额' sum="合计"/>
+          <field name="beginingCamount" string='月初贷方余额' sum="合计"/>
+          <field name="damount" string='月借方已发生额' sum="合计"/>
+          <field name="camount" string='月贷方已发生额' sum="合计"/>
+          <field name="cumulativeDamount" string='本年借方累计发生额' sum="合计"/>
+          <field name="cumulativeCamount" string='本年借方累计发生额' sum="合计"/>
           <!-- <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='itemClassesHtml'>
           </field>
@@ -438,7 +438,6 @@
             <group col='4' class='oe_grey'>
               <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1' />
-              <!-- <field name='ruleBook' col='2' options="{'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" widget="many2many_tags"/> -->
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags"/>
               <field name='number' col='1' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" class="oe_right" colspan="2"/>
             </group>
@@ -773,11 +772,10 @@
       <field name="view_mode">tree,form</field>
       <field name="target">current</field>
       <field name='context'>{'default_isbegining':True}</field>
+      <field name='domain'>[('isbegining','=',True)]</field>
     </record>
 
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
-
-    <!-- <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_books_menu' action='acccountcore_get_accounts_balance_actions_window' /> -->
 
   </data>
   <data noupdate='True'>
