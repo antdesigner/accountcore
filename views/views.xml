@@ -596,7 +596,7 @@
         <form>
           <sheet>
             <group>
-              <field name="startDate" />
+              <field name="startDate" edit='0'/>
               <field name="endDate" />
             </group>
             <group col='6' class='oe_grey'>
@@ -625,7 +625,7 @@
             </group>
           </sheet>
           <footer>
-            <button type="object" string='开始查询' class='btn-primary' name="doAction" />
+            <button type="object" string='开始查询' class='btn-primary' name="doAction"  />
           </footer>
         </form>
       </field>

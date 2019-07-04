@@ -1,13 +1,29 @@
 <odoo>
-        <template id='account_balance_report'>
-            <t t-call="web.html_container">
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <h2>Report title</h2>
-                        <p>This object's name is <t t-esc='test'/>
-                        </p>
+    <template id='account_balance_report'>
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Report title</h2>
+                    <div>
+                        <table>
+                            <t t-foreach="doc_model" t-as="balance">
+                                <tr>
+                                    <td >
+                                        <span t-field='balance.account'></span>
+                                    </td>
+                                    <td >
+                                        <span t-field='balance.beginingDamount' t-options="{'widget':'digits(16,2)'}"></span>
+                                    </td>
+                                    <td >
+                                        <span t-field='balance.beginingCamount'></span>
+                                    </td>
+
+                                </tr>
+                            </t>
+                        </table>
                     </div>
-                </t>
+                </div>
             </t>
-        </template>
+        </t>
+    </template>
 </odoo>
