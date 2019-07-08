@@ -559,7 +559,7 @@ class Voucher(models.Model):
             accountBalance.endDamount, accountBalance.endCamount)
         # else 不存在就新增一条,但必须是科目的必选核算项目类
 
-    def _builBalance(self, haveItem, accountBalanceMark, entry, entry_damount, entry_camount):
+    def _buildBalance(self, haveItem, accountBalanceMark, entry, entry_damount, entry_camount):
         '''在余额表创建一条余额记录，该科目包含核算项目'''
         accountBalanceTable = self.env['accountcore.accounts_balance']
         # 不排除启用期初那条记录
