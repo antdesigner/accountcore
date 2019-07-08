@@ -528,7 +528,7 @@ class Voucher(models.Model):
                         entry_damount, accountBalance, entry_camount)
                 # else 不存在就新增一条,但必须是科目的必选核算项目类
                 elif item_.id == itemId:
-                    self._builBalance(True, accountBalanceMark, entry,
+                    self._buildBalance(True, accountBalanceMark, entry,
                                       entry_damount, entry_camount)
         # else 一条会计分录没有核算项目
         else:
