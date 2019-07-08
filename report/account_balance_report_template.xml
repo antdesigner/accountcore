@@ -1,29 +1,129 @@
 <odoo>
     <template id='account_balance_report'>
-        <t t-call="web.html_container">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <h2>Report title</h2>
-                    <div>
-                        <table>
-                            <t t-foreach="doc_model" t-as="balance">
+        <style>
+           td
+{
+vertical-align:middle !important;
+}
+.damount,.camount{
+white-space:nowrap !important;
+}
+table tr{
+page-break-inside: avoid !important;}
+        </style>
+        <!-- <t t-call="web.html_container"> -->
+        <t t-call="web.basic_layout">
+            <div class="page container text-center" style="page-break-after:always">
+            <t t-set="start" t-value="data['form']['startDate']"/>
+            <t t-set="end" t-value="data['form']['endDate']"/>
+                <h4 t-if="start=='1970-01-01' and end=='9999-12-31'">全部期间科目余额表</h4>
+                <h4 t-else=""><t t-esc="(start[0:7]).replace('-','年')"/>月到<t t-esc="(end[0:7]).replace('-','年')"/>月期间科目余额表</h4>
+                <div>
+                    <table class='o_list_view table table-bordered table-sm table-responsive'>
+                        <thead style="white-space:nowrap;">
+                            <tr>
+                                <th>机构ID</th>
+                                <th>科目类别</th>
+                                <th>上级科目id</th>
+                                <th>科目Id</th>
+                                <th>科目编码 </th>
+                                <th>科目名称</th>
+                                <th>余额方向</th>
+                                <th>项目类别ID</th>
+                                <th>项目类别名称</th>
+                                <th>项目ID</th>
+                                <th>项目名称</th>
+                                <th>期初借方</th>
+                                <th>期初贷方</th>
+                                <th>借方发生额</th>
+                                <th>贷方发生额</th>
+                                <th>期末借方</th>
+                                <th>期末贷方</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-left">
+                            <t t-foreach="docs" t-as="balance">
                                 <tr>
-                                    <td >
-                                        <span t-field='balance.account'></span>
+                                    <td>
+                                        <span t-esc='balance.org_id'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.account_class_id'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.account_father_id'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.account_id'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.account_number'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.account_name'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.direction'></span>
                                     </td>
                                     <td >
-                                        <span t-field='balance.beginingDamount' t-options="{'widget':'digits(16,2)'}"></span>
+                                        <span t-esc='balance.item_class_id'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.item_class_name'></span>
+                                    </td>
+                                    <td>
+                                        <span t-esc='balance.item_id'></span>
                                     </td>
                                     <td >
-                                        <span t-field='balance.beginingCamount'></span>
+                                        <span t-esc='balance.item_name'></span>
                                     </td>
-
+                                    <td class="damount text-right">
+                                        <span t-if='balance.beginingDamount==0'></span>
+                                        <span t-else="">
+                                            <t t-esc="'{:,.2f}'.format(balance.beginingDamount)"/>
+                                        </span>
+                                    </td>
+                                    <td class="camount text-right">
+                                        <span t-if='balance.beginingCamount==0'></span>
+                                        <span t-else="">
+                                            <t t-esc="'{:,.2f}'.format(balance.beginingCamount)"/>
+                                        </span>
+                                    </td>
+                                    <td class="damount text-right">
+                                        <span t-if='balance.damount==0'></span>
+                                        <span t-else="">
+                                            <t t-esc="'{:,.2f}'.format(balance.damount)"/>
+                                        </span>
+                                    </td>
+                                    <td class="camount text-right">
+                                        <span t-if='balance.camount==0'></span>
+                                        <span t-else="">
+                                            <t t-esc="'{:,.2f}'.format(balance.camount)"/>
+                                        </span>
+                                    </td>
+                                    <td class='damount text-right'>
+                                        <t t-set="endDAmount" t-value='balance.beginingDamount+balance.damount'/>
+                                        <span t-if="endDAmount==0"></span>
+                                        <span t-else="">
+                                            <t t-esc="'{:,.2f}'.format(endDAmount)"/>
+                                        </span>
+                                    </td>
+                                    <td class="camount text-right">
+                                        <t t-set="endCAmount" t-value='balance.beginingCamount+balance.camount'/>
+                                        <span t-if="endCAmount==0"></span>
+                                        <span t-else="">
+                                            <t t-esc="'{:,.2f}'.format(endCAmount)"/>
+                                        </span>
+                                    </td>
                                 </tr>
                             </t>
-                        </table>
-                    </div>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
                 </div>
-            </t>
+            </div>
         </t>
+        <!-- </t> -->
     </template>
 </odoo>

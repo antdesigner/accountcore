@@ -603,8 +603,10 @@
               <field name="onlyShowOneLevel" />
               <field name="summaryLevelByLevel" />
               <field name="noShowUnUsed" />
-              <field name="noShowZeroBalance" />
+              <field name="merger_orgs"/>
               <field name="includeAccountItems" />
+              <field name="noShowZeroBalance" />
+              <field name="no_show_no_hanppend"/>
             </group>
             <group>
               <field name="org" widget="many2many_checkboxes_floatleft" />
@@ -625,7 +627,7 @@
             </group>
           </sheet>
           <footer>
-            <button type="object" string='开始查询' class='btn-primary' name="doAction"  />
+            <button type="object" string='开始查询' class='btn-primary' name="doAction" />
           </footer>
         </form>
       </field>
