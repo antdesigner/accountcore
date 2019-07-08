@@ -101,7 +101,7 @@ class AccountBalanceReport(models.AbstractModel):
 
     def _getRecordsBeforStart(self, params):
         '''获得查询日期前的余额记录,已经按科目项目年份月份进行排序，方便取查询期间范围前的最近一期的余额记录'''
-        query = '''SELECT org_id,t2."accountClass" as account_class_id,
+        query = '''SELECT year,month,org_id,t2."accountClass" as account_class_id,
         t2."fatherAccountId" as account_father_id,
         t2.id as account_id,
         t2.number as account_number,
@@ -113,14 +113,18 @@ class AccountBalanceReport(models.AbstractModel):
         t5.item_number,
         t5.item_name,
         t."beginingDamount" ,
-        t."beginingCamount" 
+        t."beginingCamount" ,
+        isbegining
         FROM
                 (SELECT
+                    year,
+                    month,
                     org as org_id,
                     account as account_id,
                     items as item_id ,
                     "beginingDamount",
-                    "beginingCamount"       
+                    "beginingCamount",
+                    isbegining      
                 FROM
                     accountcore_accounts_balance
                 WHERE   
@@ -128,9 +132,7 @@ class AccountBalanceReport(models.AbstractModel):
                     OR
                     year =%s AND month <= %s)
                     AND
-                    org in %s
-                ORDER BY
-                    org,account,items,year desc ,month desc,isbegining desc)
+                    org in %s)
         AS t
         LEFT OUTER JOIN  accountcore_account as t2 
         ON t.account_id =t2.id
@@ -143,7 +145,8 @@ class AccountBalanceReport(models.AbstractModel):
                         left outer join accountcore_itemclass as t4 
                         on  t3."itemClass"=t4.id) 
                         as t5
-        ON t.item_id=t5.item_id'''
+        ON t.item_id=t5.item_id
+        ORDER BY  org_id,account_number,item_id,year desc ,month desc,isbegining desc'''
         self.env.cr.execute(query, params)
         return self.env.cr.dictfetchall()
 
@@ -165,7 +168,7 @@ class AccountBalanceReport(models.AbstractModel):
         t.camount ,
         False as havepre 
         FROM
-                (SELECT  org as org_id,
+                (SELECT org as org_id,
                         account as account_id,
                         items as item_id ,
                         sum(damount) as damount,
@@ -177,8 +180,6 @@ class AccountBalanceReport(models.AbstractModel):
                     AND
                     org in %s
                 GROUP BY
-                    org,account,items
-                ORDER BY
                     org,account,items)
         AS t
         LEFT OUTER JOIN  accountcore_account as t2 
@@ -193,7 +194,8 @@ class AccountBalanceReport(models.AbstractModel):
                             on  t3."itemClass"=t4.id) 
                             as t5
         ON t.item_id=t5.item_id
-        WHERE t.account_id in %s '''
+        WHERE t.account_id in %s 
+        ORDER BY org_id,account_number,item_id'''
         self.env.cr.execute(query, params)
         return self.env.cr.dictfetchall()
 
