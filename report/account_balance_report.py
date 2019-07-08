@@ -79,7 +79,7 @@ class AccountBalanceReport(models.AbstractModel):
         # 添加查询期间有发生额，但查询期间之前没有余额记录的相关科目记录
         for one in DandCAmounts:
             if one['havepre'] == False:
-                balance_current = Balance(temp_accountId, temp_itemId)
+                balance_current = Balance(temp_orgId,temp_accountId, temp_itemId)
                 balance_current.org_id = one['org_id']
                 balance_current.account_class_id = one['account_class_id']
                 balance_current.account_father_id = one['account_father_id']
