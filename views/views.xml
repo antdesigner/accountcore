@@ -178,7 +178,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,accountClass,number'>
+        <tree default_order='org,accountClass,number' limit='9999'>
           <field name='org'></field>
           <field name='accountsArch'/>
           <field name='accountClass'></field>
@@ -244,12 +244,12 @@
           <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='accountItemClass'/>
           <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}"/>
-          <field name="beginingDamount" string='月初借方余额' sum="合计"/>
-          <field name="beginingCamount" string='月初贷方余额' sum="合计"/>
-          <field name="damount" string='月借方已发生额' sum="合计"/>
-          <field name="camount" string='月贷方已发生额' sum="合计"/>
+          <field name="beginingDamount" string='月初余额(借方)' sum="合计"/>
+          <field name="beginingCamount" string='月初余额(贷方)' sum="合计"/>
+          <field name="damount" string='月已发生额(借方)' sum="合计"/>
+          <field name="camount" string='月已发生额(贷方)' sum="合计"/>
           <field name="cumulativeDamount" string='本年借方累计发生额' sum="合计"/>
-          <field name="cumulativeCamount" string='本年借方累计发生额' sum="合计"/>
+          <field name="cumulativeCamount" string='本年贷方累计发生额' sum="合计"/>
           <!-- <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='itemClassesHtml'>
           </field>
@@ -382,7 +382,14 @@
             <group col='2'>
               <field name='default_voucherDate' required='1' />
               <field name='default_org' required='1' />
-              <field name='default_ruleBook' required='1' />
+              <field name='default_ruleBook' required='1' >
+              <tree>
+               <field name='name'/>
+                  <control>
+                  <create string="添加标签" />
+                </control>
+              </tree>
+              </field>
             </group>
           </sheet>
           <footer>
@@ -602,8 +609,8 @@
             <group col='6' class='oe_grey'>
               <field name="onlyShowOneLevel" />
               <field name="summaryLevelByLevel" />
-              <field name="noShowUnUsed" />
-              <field name="merger_orgs"/>
+              <field name="noShowNoAmount" />
+              <field name="order_orgs"/>
               <field name="includeAccountItems" />
               <field name="noShowZeroBalance" />
               <field name="no_show_no_hanppend"/>

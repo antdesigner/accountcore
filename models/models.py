@@ -68,10 +68,12 @@ class Item(models.Model):
     name = fields.Char(string='核算项目名称', required=True, help="核算项目名称")
     itemClass = fields.Many2one(
         'accountcore.itemclass',
-        string='核算项目类别',
+        string='核算项目类别ID',
         index=True,
         required=True,
         ondelete='restrict')
+    item_class_name = fields.Char(
+        related='itemClass.name', string='核算项目类别', store=True)
     _sql_constraints = [('accountcore_item_number_unique', 'unique(number)',
                          '核算项目编码重复了!'),
                         ('accountcore_item_name_unique', 'unique(name)',
@@ -529,7 +531,7 @@ class Voucher(models.Model):
                 # else 不存在就新增一条,但必须是科目的必选核算项目类
                 elif item_.id == itemId:
                     self._buildBalance(True, accountBalanceMark, entry,
-                                      entry_damount, entry_camount)
+                                       entry_damount, entry_camount)
         # else 一条会计分录没有核算项目
         else:
             accountBalance = self._getBalanceRecord(
@@ -1281,10 +1283,10 @@ class GetAccountsBalance(models.TransientModel):
     summaryLevelByLevel = fields.Boolean(string='逐级汇总科目', default=True)
     includeAccountItems = fields.Boolean(string='包含核算项目', default=True)
     no_show_no_hanppend = fields.Boolean(string='不显示无发生额的科目', default=False)
-    merger_orgs = fields.Boolean(string='合并多机构相同科目', default=False)
+    order_orgs = fields.Boolean(string='多机构分开显示', default=False)
     noShowZeroBalance = fields.Boolean(string='不显示余额为零的科目', default=False)
-    noShowUnUsed = fields.Boolean(
-        string='从未使用不显示', default=True, readonly=True)
+    noShowNoAmount = fields.Boolean(
+        string='没有任何金额不显示', default=True)
     org = fields.Many2many(
         'accountcore.org',
         string='机构范围',

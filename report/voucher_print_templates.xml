@@ -1,18 +1,6 @@
 <odoo>
     <data>
-        <!-- <template id="accountcore_assets_css" inherit_id="web.assets_backend" name="accountcore assets">
-            <xpath expr="link[last()]" position="after">
-                <link rel='stylesheet' type='text/css' href="/accountcore/static/css/accountcore.css" />
-            </xpath>
-        </template>
-        <template id="accountcore_assets_js" inherit_id="web.assets_backend" name="accountcore jsassets">
-            <xpath expr="script[last()]" position="after">
-                <script type="text/javascript" src="/accountcore/static/js/accountcore.js"></script>
-            </xpath>
-        </template> -->
-    
         <template id='voucher_report'>
-            <!-- <tfoot t-call="web.external_layout"> -->
             <style>
            td
 {
@@ -50,7 +38,7 @@ font-size:0.7em}
                 <div class="row">
                     <table class='table table-bordered table-sm'>
                         <thead style="white-space:nowrap;">
-                            <tr>
+                            <tr class="row">
                                 <th>说明</th>
                                 <th>科目(核算项目）</th>
                                 <th>借方</th>
@@ -60,7 +48,7 @@ font-size:0.7em}
                             </tr>
                         </thead>
                         <tbody class="text-left">
-                            <tr t-foreach="doc.entrys" t-as="entry">
+                            <tr t-foreach="doc.entrys" t-as="entry" class="row">
                                 <td>
                                     <span t-field='entry.explain' class="explain" />
                                 </td>
@@ -97,10 +85,8 @@ font-size:0.7em}
                     </div>
                 </div>
             </div>
-            <!-- </tfoot> -->
         </template>
         <template id='vouchers_report'>
-            <!-- <t t-call="web.html_container"> -->
             <t t-call="web.basic_layout">
                 <t t-foreach="docs" t-as="doc">
                     <t t-call="accountcore.voucher_report" />
