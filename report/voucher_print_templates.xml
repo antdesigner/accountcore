@@ -38,7 +38,7 @@ font-size:0.7em}
                 <div class="row">
                     <table class='table table-bordered table-sm'>
                         <thead style="white-space:nowrap;">
-                            <tr class="row">
+                            <tr>
                                 <th>说明</th>
                                 <th>科目(核算项目）</th>
                                 <th>借方</th>
@@ -48,7 +48,7 @@ font-size:0.7em}
                             </tr>
                         </thead>
                         <tbody class="text-left">
-                            <tr t-foreach="doc.entrys" t-as="entry" class="row">
+                            <tr t-foreach="doc.entrys" t-as="entry" >
                                 <td>
                                     <span t-field='entry.explain' class="explain" />
                                 </td>

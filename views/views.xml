@@ -242,7 +242,7 @@
           <field name='month' invisible='1'></field>
           <field name='isbegining' invisible='1'></field>
           <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-          <field name='accountItemClass'/>
+          <field name='accountItemClass' string="类别"/>
           <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}"/>
           <field name="beginingDamount" string='月初余额(借方)' sum="合计"/>
           <field name="beginingCamount" string='月初余额(贷方)' sum="合计"/>
@@ -250,10 +250,6 @@
           <field name="camount" string='月已发生额(贷方)' sum="合计"/>
           <field name="cumulativeDamount" string='本年借方累计发生额' sum="合计"/>
           <field name="cumulativeCamount" string='本年贷方累计发生额' sum="合计"/>
-          <!-- <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
-          <field name='itemClassesHtml'>
-          </field>
-          <field name='fatherAccountId' invisible='1'></field> -->
         </tree>
       </field>
     </record>
@@ -595,7 +591,23 @@
       </field>
     </record>
     <!-- 科目余额表查询 -->
-    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report'  />
+    <record id="paperformat_for_balances" model="report.paperformat"> 
+   <field name="name">科目余额表</field> 
+   <field name="default" eval="True" /> 
+   <field name="format">A4</field> 
+   <field name="page_height">0</field> 
+   <field name="page_width">0</field> 
+   <field name="orientation">Landscape</field> 
+   <field name="margin_top">10</field> 
+   <field name="margin_bottom">20</field> 
+   <field name="margin_left">7</field> 
+   <field name="margin_right">7</field> 
+   <field name="header_line" eval="False" />     
+   <field name="header_spacing">35</field> 
+   <field name="dpi">90</field> 
+    </record>
+
+    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report' paperformat='paperformat_for_balances' />
     <record id="accountcore_get_accounts_balance_form" model="ir.ui.view">
       <field name='name'>科目余额查询</field>
       <field name='model'>accountcore.get_account_balance</field>
