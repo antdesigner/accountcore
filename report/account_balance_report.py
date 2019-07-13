@@ -147,7 +147,7 @@ class AccountBalanceReport(models.AbstractModel):
                         FROM
                             accountcore_accounts_balance
                         WHERE
-                            (year > %s
+                            (year < %s
                             OR
                             year =%s AND month <= %s)
                             AND

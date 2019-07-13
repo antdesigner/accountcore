@@ -117,5 +117,9 @@ page-break-inside: avoid !important;}
                 </div>
             </div>
         </t>
+        <script>
+        $(function(){
+        });
+        </script>
     </template>
 </odoo>
