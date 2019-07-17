@@ -19,6 +19,7 @@
         'views/views.xml',
         'report/voucher_print_templates.xml',
         'report/account_balance_report_template.xml',
+        'report/account_subsidiary_book_template.xml',
         'views/menu.xml',
         'data/default_data.xml',
         'security/ir.model.access.csv',

@@ -161,7 +161,7 @@ class Account(models.Model):
         [('1', '借'), ('-1', '贷')], string='余额方向', required=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many(
-        'accountcore.itemclass', string='科目核算项目类别', ondelete='restrict')
+        'accountcore.itemclass', string='科目要统计的核算项目类别', ondelete='restrict')
     accountItemClass = fields.Many2one(
         'accountcore.itemclass', string='作为明细科目的类别', ondelete='restrict')
     fatherAccountId = fields.Many2one(
@@ -178,6 +178,27 @@ class Account(models.Model):
                          '科目编码重复了!'),
                         ('accountcore_account_name_unique', 'unique(name)',
                          '科目名称重复了!')]
+
+    @api.onchange('accountItemClass')
+    def _checkAccountItem(self):
+        '''改变作为明细科目的核算项目类别'''
+        account_id = self.env.context.get('account_id')
+        old_accountItemClass = self.env['accountcore.account'].sudo().browse(
+            [account_id]).accountItemClass
+        old_accountItemClass_id = old_accountItemClass.id
+        accountBalances = self.env['accountcore.accounts_balance'].sudo().search(
+            [('account', '=', account_id), ('items', '=', old_accountItemClass_id)])
+        if accountBalances.exists():
+            raise exceptions.ValidationError(
+                '该科目下的核算项目['+old_accountItemClass.name+']已经使用,不能改变.你可以添加新的明细科目,在新的明细科目下设置你想要的核算项目类别')
+
+    @api.onchange('itemClasses')
+    def _checkItemClasses(self):
+        '''改变科目的核算项目类别 '''
+        item_ids = [item.id for item in self.itemClasses]
+        if  self.accountItemClass and self.accountItemClass.id not in item_ids:
+            raise exceptions.ValidationError(
+                '['+self.accountItemClass.name+"]已经作为明细科目的类别,不能删除.如果要删除,请你在'作为明细的类别'中先取消它")
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
@@ -632,6 +653,7 @@ class Enty(models.Model):
     _description = "会计分录"
     voucher = fields.Many2one(
         'accountcore.voucher', string='所属凭证', index=True, ondelete='cascade')
+    org = fields.Many2one(related="voucher.org", store=True, string="核算机构")
     sequence = fields.Integer('Sequence')
     explain = fields.Char(string='说明')
     account = fields.Many2one(
@@ -653,6 +675,29 @@ class Enty(models.Model):
         string='现金流量项目',
         index=True,
         ondelete='restrict')
+    # 必录的核算项目
+    account_item = fields.Many2one(
+        string='*核算项目', compute="_getAccountItem", store=True)
+    items_html = fields.Html(
+        string="分录内容", compute='_createItemsHtml', store=True)
+
+    @api.multi
+    def _createItemsHtml(self):
+        pass
+
+    @api.multi
+    @api.depends('items', 'account')
+    def _getAccountItem(self):
+        for entry in self:
+            if not entry.account.accountItemClass:
+                entry.account_item = None
+                return
+            if entry.items:
+                for item in entry.items:
+                    if item.itemClass.id == entry.account.accountItemClass.id:
+                        entry.account_item = item.id
+                        return
+                entry.account_item = None
 
     @api.onchange('damount')
     def _damountChange(self):
@@ -1280,11 +1325,12 @@ class GetAccountsBalance(models.TransientModel):
     startDate = fields.Date(string="开始期间")
     endDate = fields.Date(string="结束期间")
     onlyShowOneLevel = fields.Boolean(string="只显示一级科目", default=False)
-    summaryLevelByLevel = fields.Boolean(string='逐级汇总科目', default=True)
+    summaryLevelByLevel = fields.Boolean(
+        string='逐级汇总科目', default=True, readonly=True)
     includeAccountItems = fields.Boolean(string='包含核算项目', default=True)
-    no_show_no_hanppend = fields.Boolean(string='不显示无发生额的科目', default=False)
+    no_show_no_hanppend = fields.Boolean(string='隐藏无发生额的科目', default=False)
     order_orgs = fields.Boolean(string='多机构分开显示', default=False)
-    noShowZeroBalance = fields.Boolean(string='不显示余额为零的科目', default=False)
+    noShowZeroBalance = fields.Boolean(string='隐藏余额为零的科目', default=False)
     noShowNoAmount = fields.Boolean(
         string='没有任何金额不显示', default=True)
     org = fields.Many2many(
@@ -1297,7 +1343,7 @@ class GetAccountsBalance(models.TransientModel):
         'accountcore.account', string='科目范围', required=True)
 
     @api.multi
-    def doAction(self, args):
+    def getReport(self, args):
         '''查询科目余额'''
         self.ensure_one()
         if len(self.org) == 0:
@@ -1311,7 +1357,6 @@ class GetAccountsBalance(models.TransientModel):
         datas = {
             'form': data
         }
-        pass
         return self.env.ref('accountcore.accounctore_accountsbalance_report').report_action([], data=datas)
 
     def _setDefaultDate(self):
@@ -1320,4 +1365,50 @@ class GetAccountsBalance(models.TransientModel):
         if not self.endDate:
             self.endDate = '9999-12-31'
         if self.startDate > self.endDate:
-            raise exceptions.ValidationError('你开始日期不能大于结束日期')
+            raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
+
+
+class GetSubsidiaryBook(models.TransientModel):
+    "科目明细账查询向导"
+    _name = 'accountcore.get_subsidiary_book'
+    startDate = fields.Date(string='开始月份')
+    endDate = fields.Date(string='结束月份')
+    orgs = fields.Many2many(
+        'accountcore.org',
+        string='机构范围',
+        default=lambda s: s.env.user.currentOrg, required=True)
+    account = fields.Many2one(
+        'accountcore.account', string='查询的科目', required=True)
+    item = fields.Many2one('accountcore.org', string='查询的核算项目')
+    voucher_number_tastics = fields.Many2one(
+        'accountcore.voucher_number_tastics',
+        string='凭证号策略',
+        required=True,
+        default=lambda s: s.env.user.voucherNumberTastics)
+
+    @api.multi
+    def getReport(self, *args):
+        self.ensure_one()
+        if len(self.org) == 0:
+            raise exceptions.ValidationError('你还没选择机构范围！')
+            return False
+        if self.account:
+            raise exceptions.ValidationError('你需要选择查询的科目！')
+            return False
+        if voucher_number_tastics:
+            raise exceptions.ValidationError('你需要选择查询凭证编码策略！')
+            return False
+        self._setDefaultDate()
+        [data] = self.read()
+        datas = {
+            'form': data
+        }
+        return self.env.ref('accountcore.subsidiarybook_report').report_action([], data=datas)
+
+    def _setDefaultDate(self):
+        if not self.startDate:
+            self.startDate = '1970-01-01'
+        if not self.endDate:
+            self.endDate = '9999-12-31'
+        if self.startDate > self.endDate:
+            raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')

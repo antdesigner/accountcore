@@ -1,0 +1,109 @@
+<odoo>
+    <template id='subsidiary_book_report'>
+        <style>
+        </style>
+        <t t-call="web.basic_layout">
+            <div class="container text-center" style='display:flex;flex-direction:column;'>
+                <t t-set="start" t-value="data['form']['startDate']">
+                </t>
+                <t t-set="end" t-value="data['form']['endDate']">
+                </t>
+                <div class="row">
+                    <h4 class='col'>科目明细账</h4>
+                </div>
+                <div class="row">
+                    <span class='col'>编号策略</span>
+                    <h6 class='col' t-if="start=='1970-01-01' and end=='9999-12-31'">1970年1月至9999年12月</h6>
+                    <h6 class='col' t-else="">
+                        <t t-esc="(start[0:7]).replace('-','年')"></t>
+                        <span>月至</span>
+                        <span t-if="end!='9999-12-31'">
+                            <t t-esc="(end[0:7]).replace('-','年')"></t>月
+                        </span>
+                        <span t-if="end=='9999-12-31'">9999年12月</span>
+                    </h6>
+                </div>
+                <div class="row">
+                    <div class="">
+                        <table class='table  table-bordered table-sm table-striped table-hover'>
+                            <thead>
+                                <tr>
+                                    <th>凭证日期</th>
+                                    <th>凭证号</th>
+                                    <th>唯一号</th>
+                                    <th>凭证标签</th>
+                                    <th>机构名称</th>
+                                    <th>分录摘要</th>
+                                    <th>科目编码</th>
+                                    <th>科目名称</th>
+                                    <th>核算项目</th>
+                                    <th>借方金额</th>
+                                    <th>贷方金额</th>
+                                    <th></th>
+                                    <th>期末余额</th>
+                                    <th>现金流量</th>
+                                </tr>
+                            </thead>
+                            <tbody class='text-left'>
+                                <td t-foreach="docs" t-as="entry">
+                                    <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'], 'account_father_id':account['account_father_id']}">
+                                        <td>
+                                            <span t-esc='voucherdate'></span>
+                                        </td>
+                                        <td>
+                                            <span t-esc='number'></span>
+                                        </td>
+                                        <td>
+                                            <span t-esc='uniqueNumber'></span>
+                                        </td>
+                                        <td class='org_name' colspan="2">
+                                            <span t-esc="account['org_name']"></span>
+                                        </td>
+                                        <td>
+                                            <span t-esc='explain'></span>
+                                        </td>
+                                        <td class='account_numeber' >
+                                            <span t-esc="account['account_number']"></span>
+                                        </td>
+                                        <td class='account_name' colspan="4">
+                                            <span t-else="" t-esc="account['account_name']"></span>
+                                        </td>
+                                        <td>
+                                            <span t-esc='items_name'></span>
+                                        </td>
+                                        <td class='damount text-right' colspan="2">
+                                            <span t-if="account['damount']!=0" t-esc="'{:,.2f}'.format(account['damount'])"></span>
+                                            <span t-else=""></span>
+                                        </td>
+                                        <td class='camount text-right' colspan="2">
+                                            <span t-if="account['camount']!=0" t-esc="'{:,.2f}'.format(account['camount'])"></span>
+                                            <span t-else=""></span>
+                                        </td>
+                                        <t t-set='endAmount' t-value="account['beginingDamount']+account['damount']-account['beginingCamount']-account['camount']"></t>
+                                        <td class='endDamount text-right' colspan="2">
+                                            <span t-if="direction=='1' and endAmount &gt; 0" t-esc="'{:,.2f}'.format(endAmount)"></span>
+                                            <span t-elif="direction=='1' and endAmount == 0"></span>
+                                            <span t-elif="direction=='1' and endAmount &lt; 0" t-esc="'{:,.2f}'.format(endAmount)"></span>
+                                            <span t-elif="direction=='-1'"></span>
+                                        </td>
+                                        <td>
+                                            <t t-set='direction' t-value="account['direction']"></t>
+                                        </td>
+                                        <td><span t-esc='cashFlow'></span></td>
+                                    </tr>
+                                </td>
+                            </tbody>
+                            <tfoot>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+        <div><!--todo-tiger:''-->todo</div>
+        <script>
+$(function(){
+});
+        </script>
+    </template>
+</odoo>

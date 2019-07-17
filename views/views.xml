@@ -180,7 +180,7 @@
       <field name='arch' type='xml'>
         <tree default_order='org,accountClass,number' limit='9999'>
           <field name='org'></field>
-          <field name='accountsArch'/>
+          <field name='accountsArch' />
           <field name='accountClass'></field>
           <field name='number'></field>
           <field name='name'></field>
@@ -204,7 +204,7 @@
             <hr></hr>
             <group>
               <field name="org" />
-              <field name="accountsArch"/>
+              <field name="accountsArch" />
               <field name="accountClass" />
               <field name='fatherAccountId' readonly='1' />
             </group>
@@ -217,11 +217,12 @@
             <group>
               <field name='itemClasses'>
                 <tree>
+                  <field name="id" invisible='1'/>
                   <field name="number" />
                   <field name="name" />
                 </tree>
               </field>
-              <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
+              <field name='accountItemClass' domain="[('id','in',itemClasses)]" context="{'account_id':id}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <group>
               <field name="explain" />
@@ -237,19 +238,19 @@
       <field name='arch' type='xml'>
         <tree default_order='org,year,month' editable='top' create='1' limit='9999'>
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-          <field name='createDate' string='启用日期'/>
+          <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>
           <field name='month' invisible='1'></field>
           <field name='isbegining' invisible='1'></field>
           <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-          <field name='accountItemClass' string="类别"/>
-          <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}"/>
-          <field name="beginingDamount" string='月初余额(借方)' sum="合计"/>
-          <field name="beginingCamount" string='月初余额(贷方)' sum="合计"/>
-          <field name="damount" string='月已发生额(借方)' sum="合计"/>
-          <field name="camount" string='月已发生额(贷方)' sum="合计"/>
-          <field name="cumulativeDamount" string='本年借方累计发生额' sum="合计"/>
-          <field name="cumulativeCamount" string='本年贷方累计发生额' sum="合计"/>
+          <field name='accountItemClass' string="类别" class="oe_grey" />
+          <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}" />
+          <field name="beginingDamount" string='月初余额(借方)' sum="合计" />
+          <field name="beginingCamount" string='月初余额(贷方)' sum="合计" />
+          <field name="damount" string='月已发生额(借方)' sum="合计" />
+          <field name="camount" string='月已发生额(贷方)' sum="合计" />
+          <field name="cumulativeDamount" string='本年借方累计发生额' sum="合计" />
+          <field name="cumulativeCamount" string='本年贷方累计发生额' sum="合计" />
         </tree>
       </field>
     </record>
@@ -379,12 +380,12 @@
               <field name='default_voucherDate' required='1' />
               <field name='default_org' required='1' />
               <field name='default_ruleBook' required='1' >
-              <tree>
-               <field name='name'/>
+                <tree>
+                  <field name='name' />
                   <control>
-                  <create string="添加标签" />
-                </control>
-              </tree>
+                    <create string="添加标签" />
+                  </control>
+                </tree>
               </field>
             </group>
           </sheet>
@@ -441,8 +442,8 @@
             <group col='4' class='oe_grey'>
               <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1' />
-              <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags"/>
-              <field name='number' col='1' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" class="oe_right" colspan="2"/>
+              <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
+              <field name='number' col='1' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" class="oe_right" colspan="2" />
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
@@ -498,7 +499,7 @@
           <sheet>
             <group>
               <field name='org' ></field>
-              <field name='accountsArch'/>
+              <field name='accountsArch' />
               <field name='accountClass' ></field>
               <field name='fatherAccountNumber' readonly='1'></field>
               <field name='fatherAccountId' readonly='1'></field>
@@ -591,23 +592,23 @@
       </field>
     </record>
     <!-- 科目余额表查询 -->
-    <record id="paperformat_for_balances" model="report.paperformat"> 
-   <field name="name">科目余额表</field> 
-   <field name="default" eval="True" /> 
-   <field name="format">A4</field> 
-   <field name="page_height">0</field> 
-   <field name="page_width">0</field> 
-   <field name="orientation">Landscape</field> 
-   <field name="margin_top">10</field> 
-   <field name="margin_bottom">20</field> 
-   <field name="margin_left">7</field> 
-   <field name="margin_right">7</field> 
-   <field name="header_line" eval="False" />     
-   <field name="header_spacing">35</field> 
-   <field name="dpi">90</field> 
+    <record id="paperformat_A4_Landspace" model="report.paperformat">
+      <field name="name">科目余额表</field>
+      <field name="default" eval="True" />
+      <field name="format">A4</field>
+      <field name="page_height">0</field>
+      <field name="page_width">0</field>
+      <field name="orientation">Landscape</field>
+      <field name="margin_top">10</field>
+      <field name="margin_bottom">20</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False" />
+      <field name="header_spacing">35</field>
+      <field name="dpi">90</field>
     </record>
 
-    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report' paperformat='paperformat_for_balances' />
+    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report' paperformat='paperformat_A4_Landspace' />
     <record id="accountcore_get_accounts_balance_form" model="ir.ui.view">
       <field name='name'>科目余额查询</field>
       <field name='model'>accountcore.get_account_balance</field>
@@ -615,20 +616,20 @@
         <form>
           <sheet>
             <group>
-              <field name="startDate" edit='0'/>
+              <field name="startDate" editable='0' />
               <field name="endDate" />
             </group>
             <group col='6' class='oe_grey'>
               <field name="onlyShowOneLevel" />
-              <field name="summaryLevelByLevel" />
               <field name="noShowNoAmount" />
-              <field name="order_orgs"/>
-              <field name="includeAccountItems" />
+              <field name="summaryLevelByLevel" />
+              <field name="no_show_no_hanppend" />
               <field name="noShowZeroBalance" />
-              <field name="no_show_no_hanppend"/>
+              <field name="includeAccountItems" />
             </group>
             <group>
               <field name="org" widget="many2many_checkboxes_floatleft" />
+              <field name="order_orgs" />
             </group>
             <group>
               <field name="account" default_focus='1' domain="['|',('org','in',org),('org','=',False)]" context="{'search_default_groupby_accountClass':True}">
@@ -646,12 +647,41 @@
             </group>
           </sheet>
           <footer>
-            <button type="object" string='开始查询' class='btn-primary' name="doAction" />
+            <button type="object" string='开始查询' class='btn-primary' name="getReport" />
           </footer>
         </form>
       </field>
     </record>
-
+    <report id='accountcore.subsidiarybook_report' model='accountcore.voucher' string='科目明细账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='paperformat_A4_Landspace' />
+    <!-- accountcore.get_subsidiary_book form vie -->
+    <record id="accountcore_get_subsidiary_book_form" model="ir.ui.view">
+      <field name="name">查询科目明细账</field>
+      <field name="model">accountcore.get_subsidiary_book</field>
+      <field name="arch" type="xml">
+        <form string="">
+          <sheet>
+            <group>
+              <field name="startDate" editable='0'/>
+              <field name="endDate" />
+            </group>
+            <group>
+              <field name="orgs" widget="many2many_checkboxes_floatleft" />
+            </group>
+            <group>
+              <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_groupby_accountClass':True}">
+              </field>
+              <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}"/>
+            </group>
+            <group>
+              <field name="voucher_number_tastics" options="{'no_create_edit':1,'no_create':1,'no_open':1}"/>
+            </group>
+            <footer>
+              <button name="getReport" type="object" class='btn-primary' string="开始查询" />
+            </footer>
+          </sheet>
+        </form>
+      </field>
+    </record>
     <!-- accountcore.voucher search view -->
     <record id="accountcore_account_search" model="ir.ui.view">
       <field name="name">科目查询</field>
@@ -763,13 +793,18 @@
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
     </record>
-    <record model='ir.actions.act_window' id='acccountcore_get_accounts_balance_actions_window'>
+    <record model='ir.actions.act_window' id='accountcore_get_accounts_balance_actions_window'>
       <field name="name">查询科目余额</field>
       <field name="res_model">accountcore.get_account_balance</field>
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
-
+    <record model='ir.actions.act_window' id='accountcore_get_subsidiary_book_window'>
+      <field name="name">查询科目明细账</field>
+      <field name="res_model">accountcore.get_subsidiary_book</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>

@@ -14,6 +14,7 @@ white-space:nowrap !important;}}
 .account_number{text-overflow:ellipsis;}
 table tr{
 page-break-inside: avoid !important;}
+.org_name{text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
 
         </style>
         <t t-call="web.basic_layout">
@@ -22,14 +23,15 @@ page-break-inside: avoid !important;}
                 </t>
                 <t t-set="end" t-value="data['form']['endDate']">
                 </t>
+                <div class="row"><h4 class='col'>科目余额表</h4></div>
                 <div class="row">
-                    <h4 class='col' t-if="start=='1970-01-01' and end=='9999-12-31'">全部期间科目余额表</h4>
-                    <h4 class='col' t-else="">
+                    <h6 class='col' t-if="start=='1970-01-01' and end=='9999-12-31'">1970年1月至9999年12月</h6>
+                    <h6 class='col' t-else="">
                         <t t-esc="(start[0:7]).replace('-','年')"></t>
-                        <span>月到</span>
-                        <t t-esc="(end[0:7]).replace('-','年')"></t>
-                        <span>月期间科目余额表</span>
-                    </h4>
+                        <span>月至</span>
+                        <span t-if="end!='9999-12-31'"><t t-esc="(end[0:7]).replace('-','年')"></t>月</span>
+                        <span t-if="end=='9999-12-31'">9999年12月</span>
+                    </h6>
                 </div>
                 <div class="row">
                     <div class="">
@@ -38,7 +40,7 @@ page-break-inside: avoid !important;}
                                 <tr>
                                     <th rowspan='2' colspan="2">机构名称</th>
                                     <th rowspan='2'>科目编码</th>
-                                    <th rowspan='2' colspan="3">科目名称</th>
+                                    <th rowspan='2' colspan="4">科目名称</th>
                                     <th colspan="4">期初余额</th>
                                     <th colspan="4">发生金额</th>
                                     <th colspan="4">期末余额</th>
@@ -61,7 +63,7 @@ page-break-inside: avoid !important;}
                                         <td class='account_numeber' >
                                             <span t-esc="account['account_number']"></span>
                                         </td>
-                                        <td class='account_name' colspan="3">
+                                        <td class='account_name' colspan="4">
                                             <span t-if="'item_id' in account">
                                                 <span>[</span>
                                                 <t t-esc="account['item_class_name']"></t>
