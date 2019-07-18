@@ -196,7 +196,7 @@ class Account(models.Model):
     def _checkItemClasses(self):
         '''改变科目的核算项目类别 '''
         item_ids = [item.id for item in self.itemClasses]
-        if  self.accountItemClass and self.accountItemClass.id not in item_ids:
+        if self.accountItemClass and self.accountItemClass.id not in item_ids:
             raise exceptions.ValidationError(
                 '['+self.accountItemClass.name+"]已经作为明细科目的类别,不能删除.如果要删除,请你在'作为明细的类别'中先取消它")
 
@@ -333,6 +333,8 @@ class Voucher(models.Model):
     numberTasticsContainer_str = fields.Char(string='凭证可用编号策略', default="{}")
     entrysHtml = fields.Html(
         string="分录内容", compute='_createEntrysHtml', store=True)
+    roolbook_html = fields.Html(
+        string="凭证的标签", compute='_buildRuleBook', store=True)
 
     @api.multi
     def reviewing(self, ids):
@@ -479,6 +481,16 @@ class Voucher(models.Model):
             content = content+"</table>"
             voucher.entrysHtml = content
         return True
+
+    @api.multi
+    @api.depends('ruleBook')
+    def _buildRuleBook(self):
+        '''购建凭证标签展示内容'''
+        for voucher in self:
+            content = '<table>'
+            for item in voucher.ruleBook:
+                content = content+'<tr><td>'+item.name+'</td></tr>'
+            voucher.roolbook_html = content+"</table>"
 
     def _buildingEntryHtml(self, entry):
         content = ""

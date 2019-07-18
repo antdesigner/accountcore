@@ -350,10 +350,10 @@
           <field name='voucherdate' />
           <field name='number' class='voucherNumber' />
           <field name='uniqueNumber' />
+          <field name='roolbook_html' />
           <field name='entrysHtml' />
           <field name='createUser' />
           <field name='reviewer' />
-          <field name='ruleBook' />
           <field name='appendixCount' />
           <field name='soucre' />
           <field name='state' invisible='1'></field>
