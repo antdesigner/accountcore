@@ -249,8 +249,8 @@
           <field name="beginingCamount" string='月初余额(贷方)' sum="合计" />
           <field name="damount" string='月已发生额(借方)' sum="合计" />
           <field name="camount" string='月已发生额(贷方)' sum="合计" />
-          <field name="cumulativeDamount" string='本年借方累计发生额' sum="合计" />
-          <field name="cumulativeCamount" string='本年贷方累计发生额' sum="合计" />
+          <field name="beginCumulativeDamount" string='本年借方累计发生额' sum="合计" />
+          <field name="beginCumulativeCamount" string='本年贷方累计发生额' sum="合计" />
         </tree>
       </field>
     </record>
@@ -652,7 +652,7 @@
         </form>
       </field>
     </record>
-    <report id='accountcore.subsidiarybook_report' model='accountcore.voucher' string='科目明细账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='paperformat_A4_Landspace' />
+    <report id='accountcore.subsidiarybook_report' model='accountcore.entry' string='科目明细账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='paperformat_A4_Landspace' />
     <!-- accountcore.get_subsidiary_book form vie -->
     <record id="accountcore_get_subsidiary_book_form" model="ir.ui.view">
       <field name="name">查询科目明细账</field>

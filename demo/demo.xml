@@ -1,5 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-    <!--  -->
-    </data>
+
+        <record id='org_2' model='accountcore.org'>
+            <field name='number'>2</field>
+            <field name='name'>重庆西部数据科技有限公司</field>
+        </record>
+        <record id='org_3' model='accountcore.org'>
+            <field name='number'>3</field>
+            <field name='name'>重庆西部数据科技有限公司江北分公司</field>
+        </record>
+        <record id='org_4' model='accountcore.org'>
+            <field name='number'>4</field>
+            <field name='name'>重庆西部数据科技有限公司渝北分公司</field>
+        </record>
+        <record id='item_1' model='accountcore.item'>
+            <field name='itemClass' eval='item_class_1'></field>
+            <field name='name'>北京博坤实时大数据科技有限公司</field>
+        </record>
+        <record id='item_2' model='accountcore.item'>
+            <field name='itemClass' eval='item_class_1'></field>
+            <field name='name'>北京众泰乘用车技术有限公司</field>
+        </record>
+        <record id='item_3' model='accountcore.item'>
+            <field name='itemClass' ref='item_class_2'></field>
+            <field name='name'>张珊珊</field>
+        </record>
+        <record id='item_4' model='accountcore.item'>
+            <field name='itemClass' ref='item_class_2'></field>
+            <field name='name'>王新</field>
+        </record>
+
 </odoo>

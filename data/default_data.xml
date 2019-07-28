@@ -44,7 +44,7 @@
             <field name="name">内账</field>
         </record>
         <!-- 核算项目类别 -->
-        <record id="item_calss_1" model="accountcore.itemclass">
+        <record id="item_class_1" model="accountcore.itemclass">
             <field name="number">1</field>
             <field name="name">往来</field>
         </record>

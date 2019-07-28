@@ -13,14 +13,16 @@
     width: 1070px;
 
 }
-
-
+.ac_rulebook td{
+    white-space: normal !important;
+    vertical-align: middle !important;
+    border: 0px;
+}
 
 .oe_accountcore_entrys td {
     white-space: normal !important;
     vertical-align: middle !important;
     border: 0px;
-
 }
 
 /* 凭证列表表格结束 */
