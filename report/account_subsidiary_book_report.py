@@ -30,6 +30,8 @@ class SubsidiaryBook(models.AbstractModel):
         # 向导中选择的科目
         main_account = self.env['accountcore.account'].sudo().search(
             [('id', '=', account_id)])
+        tasticsTypes = self.env['accountcore.voucher_number_tastics'].sudo(
+        ).search([('id', '!=', 0)])
         # 获得查询科目及其全部明细科目的ID列表,通过科目编号查找
         accountMeChild = main_account.getMeAndChild_ids()
         # 依据是否在查询向导中选择了核算项目,构建不同的查询参数,从数据库取出明细
@@ -74,6 +76,7 @@ class SubsidiaryBook(models.AbstractModel):
                                  beginingOfYearBalance,
                                  beginBlances,
                                  entryArchs,
+                                 tasticsTypes,
                                  self.voucher_number_tastics_id)
         return {'doc_ids': docids,
                 'docs': entrys,
@@ -430,6 +433,7 @@ class EntrysAssembler():
                  beginingOfYearBalance=None,
                  beginBalances=None,
                  entryArchs=None,
+                 tasticsTypes=None,
                  voucher_number_tastics_id=None):
         self.main_account = main_account
         self.item = item
@@ -437,7 +441,8 @@ class EntrysAssembler():
         self.beginingOfYearBalance = beginingOfYearBalance
         self.beginBalances = beginBalances
         self.entryArchs = entryArchs
-        self.default_tastice = voucher_number_tastics_id
+        self.tasticsTypes = tasticsTypes
+        self.default_tastics = voucher_number_tastics_id
         self.entrys = []
 
         self._generating()

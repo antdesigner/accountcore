@@ -24,7 +24,9 @@ page-break-inside: avoid !important;}
                 </t>
                 <t t-set='direction' t-value='docs.main_account.direction'></t>
                 <t t-set='account_name' t-value='docs.main_account.name'></t>
-                 <t t-set='item' t-value='docs.item'></t>
+                <t t-set='item' t-value='docs.item'></t>
+                <!-- 凭证编号策略ID -->
+                <span id="default_tastics" style="display:none" t-esc='docs.default_tastics'></span>
                 <t t-set='by' t-value='docs.beginingOfYearBalance'></t>
                 <div class="row">
                     <h4 class='col'>科目明细账</h4>
@@ -45,9 +47,17 @@ page-break-inside: avoid !important;}
                         <t t-esc='account_name'></t>
                     </span>
                     <span t-if='item' class='col text-left'>核算项目:                        
-                        <t  t-esc='item[1]'></t>
+                        <t t-esc='item[1]'></t>
                     </span>
-                    <span class='col'>编号策略</span>
+                    <div class='col'>编号策略:
+                        <select id='tastics_select' class='text-left' style="border-width:0px">
+                            <t t-foreach='docs.tasticsTypes' t-as='type'>
+                                <option t-attf-value="{{type.id}}">
+                                    <t t-esc="type.name" />
+                                </option>
+                            </t>
+                        </select>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="">
@@ -80,8 +90,8 @@ page-break-inside: avoid !important;}
                                         <td>
                                             <span t-esc='entry.month'></span>
                                         </td>
-                                        <td>
-                                            <span t-esc="entry.numberTasticsContainer_str"></span>
+                                        <td t-attf-tastics='{{entry.numberTasticsContainer_str}}'>
+                                            <span t-attf-class="number"></span>
                                         </td>
                                         <td>
                                             <span t-esc="entry.uniqueNumber"></span>
@@ -131,8 +141,31 @@ page-break-inside: avoid !important;}
             </div>
         </t>
         <script>
-$(function(){
+var voucherNumbers = $("td[tastics]");
+var default_tastics = $("#default_tastics").text();
+var tastics_select = $("#tastics_select")
+$(function () {
+    flashVouchersNumber(default_tastics);
+    initTasticSelect();
 });
+
+function getVoucherNumber(str, voucher_number_tastics_id) {
+    //获得在某一编号策略下的凭证编号
+    var number = JSON.parse(str)[voucher_number_tastics_id];
+    return number;
+};
+
+function flashVouchersNumber(voucher_number_tastics_id) {
+    //刷新凭证编号
+    $.each(voucherNumbers, function (i, n) {
+        $(this).find(".number").text(getVoucherNumber($(this).attr("tastics"), voucher_number_tastics_id));
+    });
+};
+function initTasticSelect() {
+    tastics_select.on('change', function (e) {
+        flashVouchersNumber($(e.target).find("option:selected").val());
+    });
+};
         </script>
     </template>
 </odoo>
