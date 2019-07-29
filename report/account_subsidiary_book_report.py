@@ -25,7 +25,7 @@ class SubsidiaryBook(models.AbstractModel):
                         form['endDate'])
         org_ids = form['orgs']
         account_id = form['account'][0]
-        item_id = form['item']
+        item = form['item']
         self.voucher_number_tastics_id = form['voucher_number_tastics'][0]
         # 向导中选择的科目
         main_account = self.env['accountcore.account'].sudo().search(
@@ -34,7 +34,7 @@ class SubsidiaryBook(models.AbstractModel):
         accountMeChild = main_account.getMeAndChild_ids()
         # 依据是否在查询向导中选择了核算项目,构建不同的查询参数,从数据库取出明细
         # if选择了核算项目
-        if item_id:
+        if item:
             item_id = form['item'][0]
             # 用于获得分录明细
             params = (period.start_year,
@@ -69,6 +69,7 @@ class SubsidiaryBook(models.AbstractModel):
         beginingOfYearBalance = self._getBeginingOfYearBalance(params2)
         beginBlances = self._getBeginBalances(params)
         entrys = EntrysAssembler(main_account,
+                                 item,
                                  period,
                                  beginingOfYearBalance,
                                  beginBlances,
@@ -424,12 +425,14 @@ class EntrysAssembler():
 
     def __init__(self,
                  main_account,
+                 item,
                  period=None,
                  beginingOfYearBalance=None,
                  beginBalances=None,
                  entryArchs=None,
                  voucher_number_tastics_id=None):
         self.main_account = main_account
+        self.item = item
         self.period = period
         self.beginingOfYearBalance = beginingOfYearBalance
         self.beginBalances = beginBalances
@@ -559,7 +562,7 @@ class EntrysAssembler():
 
             tmp_year = e.year
             tmp_month = e.month
-        
+
         # 添加查询期间最后的本月合计
         self.entrys.append(SumMonth(tmp_year,
                                     tmp_month,

@@ -24,6 +24,7 @@ page-break-inside: avoid !important;}
                 </t>
                 <t t-set='direction' t-value='docs.main_account.direction'></t>
                 <t t-set='account_name' t-value='docs.main_account.name'></t>
+                 <t t-set='item' t-value='docs.item'></t>
                 <t t-set='by' t-value='docs.beginingOfYearBalance'></t>
                 <div class="row">
                     <h4 class='col'>科目明细账</h4>
@@ -42,6 +43,9 @@ page-break-inside: avoid !important;}
                 <div class="row">
                     <span class='col text-left'>科目:                        
                         <t t-esc='account_name'></t>
+                    </span>
+                    <span t-if='item' class='col text-left'>核算项目:                        
+                        <t  t-esc='item[1]'></t>
                     </span>
                     <span class='col'>编号策略</span>
                 </div>
