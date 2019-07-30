@@ -747,12 +747,12 @@ class Enty(models.Model):
     items_html = fields.Html(string="分录内容",
                              compute='_createItemsHtml',
                              store=True)
-
+    
     @api.multi
-    @api.depends('items.name', 'account_item')
+    @api.depends('items.name', 'account_item','items.item_class_name')
     def _createItemsHtml(self):
         for entry in self:
-            content = ["<div>"+item.name+"</div>" for item in entry.items]
+            content = ["<div>["+item.item_class_name+"]"+item.name+"</div>" for item in entry.items]
             entry.items_html = ''.join(content)
 
     @api.multi

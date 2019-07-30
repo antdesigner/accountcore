@@ -22,7 +22,7 @@
             <!-- <button class='btn btn-secondary' type="button">只显示一级科目</button>
             <button class='btn btn-secondary' type="button">余额为零不显示</button>
             <button class='btn btn-secondary' type="button">无发生额不显示</button> -->
-            <button class='btn btn-secondary' type="button">合并机构显示</button>
+            <!-- <button class='btn btn-secondary' type="button">合并机构显示</button> -->
             <!-- <button class='btn btn-secondary ac_voucher_filter' type="button">查询testme</button> -->
         </t>
     </t>

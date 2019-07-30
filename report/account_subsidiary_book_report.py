@@ -213,7 +213,7 @@ class SubsidiaryBook(models.AbstractModel):
     def build_entryArchs(self, entrys):
         '''构建明细记录'''
         # 选择的凭证编号策略
-        tastic_id = self.voucher_number_tastics_id
+        tastics_id = self.voucher_number_tastics_id
         # 对数据库取得的明细数据转化为对象列表
         entryArchs = []
         for entry in entrys:
@@ -227,7 +227,7 @@ class SubsidiaryBook(models.AbstractModel):
             entry_arch.numberTasticsContainer_str = entry['numberTasticsContainer_str']
             entry_arch.number = VoucherNumberTastics.get_number(
                 entry['numberTasticsContainer_str'],
-                tastic_id)
+                tastics_id)
             entry_arch.uniqueNumber = entry['uniqueNumber']
             entry_arch.roolbook_html = entry['roolbook_html']
             entry_arch.explain = entry['explain']
@@ -434,7 +434,7 @@ class EntrysAssembler():
                  beginBalances=None,
                  entryArchs=None,
                  tasticsTypes=None,
-                 voucher_number_tastics_id=None):
+                 voucher_number_tastics_id=None):                                   
         self.main_account = main_account
         self.item = item
         self.period = period
