@@ -19,13 +19,14 @@
         <menuitem name='科目体系' id='accountcore_accountarch_menu' parent='accountcore_account_menu' action='accountcore_accountsarch_action_window'/>
         <menuitem name='科目类别' id='acctountcore_accountclass_menu' parent='accountcore_account_menu' action='accountcore_accountclass_action_window' />
         <menuitem name='科目列表' id='accountcore_accounts_menu' parent='accountcore_account_menu' action='accountcore_account_action_window' />
+        <menuitem name='特殊科目' id='accountcore_special_accounts_menu' parent='accountcore_account_menu' action='acccountcore_special_accounts_actions_window' />
         <menuitem name='核算项目' id='accountcore_item_menu' parent='accountcore_account_menu' />
         <menuitem name='核算项目类别' id='accountcore_itemclass_menu' parent='accountcore_item_menu' action='accountcore_itemclass_action_window' />
         <menuitem name='核算项目列表' id='accountcore_items_menu' parent='accountcore_item_menu' action='accountcore_items_action_window' />
         <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
         <menuitem name='凭证标签' id='acctountcore_rulebook_menu' parent='accountcore_voucher_menu' action='accountcore_rulebook_action_window' sequence="49" />
-        <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" />
-        <menuitem name='凭证列表' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="50" />
+        <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="50" />
+        <menuitem name='凭证列表' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="55" />
         <menuitem name='新增凭证' id='accountcore_voucher_new_menu' parent='accountcore_voucher_menu' action='accountore_voucher_new_actions_window' sequence='60' />
         <menuitem name='凭证编号' id='accountcore_voucher_number_memu' parent='accountcore_voucher_menu' sequence='47' />
         <menuitem name='凭证编号策略列表' id='accountcore_voucher_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_voucher_number_acionts_window' sequence='50' />

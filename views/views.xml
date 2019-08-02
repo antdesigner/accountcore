@@ -217,7 +217,7 @@
             <group>
               <field name='itemClasses'>
                 <tree>
-                  <field name="id" invisible='1'/>
+                  <field name="id" invisible='1' />
                   <field name="number" />
                   <field name="name" />
                 </tree>
@@ -345,7 +345,7 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,number" limit='9999'>
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,number" limit='300'>
           <field name='org' />
           <field name='voucherdate' />
           <field name='number' class='voucherNumber' />
@@ -360,6 +360,43 @@
         </tree>
       </field>
     </record>
+
+    <record model='ir.ui.view' id='accountcore_special_accounts_list'>
+      <field name='name'>特殊科目列表</field>
+      <field name='model'>accountcore.special_accounts</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='name' />
+          <field name='children' />
+          <field name='purpos' />
+        </tree>
+      </field>
+    </record>
+
+    <record id="accountcore_special_account_form" model="ir.ui.view">
+      <field name="name">特殊科目</field>
+      <field name="model">accountcore.special_accounts</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <h1>新增编辑=>特殊科目</h1>
+            <hr></hr>
+            <group>
+              <field name="name" />
+              <field name='purpos' />
+            </group>
+            <group>
+            <field name='accounts'/>
+            <field name='children'/>
+            </group>
+            <group>
+            <field name='items' />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
     <!-- accountcore.voucher_number_single action window -->
     <record id="accountcore_seting_voucher_number_single_action" model="ir.actions.act_window">
       <field name="name">修改凭证编号</field>
@@ -661,7 +698,7 @@
         <form string="">
           <sheet>
             <group>
-              <field name="startDate" editable='0'/>
+              <field name="startDate" editable='0' />
               <field name="endDate" />
             </group>
             <group>
@@ -670,10 +707,10 @@
             <group>
               <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_groupby_accountClass':True}">
               </field>
-              <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}"/>
+              <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <group>
-              <field name="voucher_number_tastics" options="{'no_create_edit':1,'no_create':1,'no_open':1}"/>
+              <field name="voucher_number_tastics" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <footer>
               <button name="getReport" type="object" class='btn-primary' string="开始查询" />
@@ -775,6 +812,12 @@
       <field name="context">{'search_default_month': 1}</field>
     </record>
 
+    <record model="ir.actions.act_window" id="acccountcore_special_accounts_actions_window">
+      <field name="name">特殊科目列表</field>
+      <field name="res_model">accountcore.special_accounts</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+
     <record model='ir.actions.act_window' id='accountore_voucher_new_actions_window'>
       <field name='name'>新增凭证</field>
       <field name='res_model'>accountcore.voucher</field>
@@ -805,6 +848,7 @@
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
+
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>

@@ -747,12 +747,13 @@ class Enty(models.Model):
     items_html = fields.Html(string="分录内容",
                              compute='_createItemsHtml',
                              store=True)
-    
+
     @api.multi
-    @api.depends('items.name', 'account_item','items.item_class_name')
+    @api.depends('items.name', 'account_item', 'items.item_class_name')
     def _createItemsHtml(self):
         for entry in self:
-            content = ["<div>["+item.item_class_name+"]"+item.name+"</div>" for item in entry.items]
+            content = ["<div>["+item.item_class_name+"]" +
+                       item.name+"</div>" for item in entry.items]
             entry.items_html = ''.join(content)
 
     @api.multi
@@ -1514,6 +1515,21 @@ class AccountBalanceMark(object):
             or (r.year == self.year
                 and r.month > self.month)))).sorted(key=lambda a: (a.year, a.month, not a.isbegining))
         return next_balanceRecords
+
+
+class SpecialAccounts(models.Model):
+    '''特殊的会计科目'''
+    _name = "accountcore.special_accounts"
+    _description = '特殊的会计科目'
+    name = fields.Char(string='特殊性', required=True)
+    purpos = fields.Html(string='用途说明')
+    accounts = fields.Many2many('accountcore.account',
+                                string='科目',
+                                required=True)
+    children = fields.Boolean(string='包含明细科目')
+    items = fields.Many2many('accountcore.item', string='核算项目')
+    _sql_constraints = [('accountcore_special_accounts_name_unique', 'unique(name)',
+                         '特殊性描述重复了!')]
 
 
 class GetAccountsBalance(models.TransientModel):
