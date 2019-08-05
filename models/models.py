@@ -735,9 +735,9 @@ class Enty(models.Model):
                                   string="Currency",
                                   help='Utility field to express amount currency')
     # Monetory类型字段必须有currency_id
-    damount = fields.Monetary(string='借方金额')
+    damount = fields.Monetary(string='借方金额', default=0)
     # Monetory类型字段必须有currency_id
-    camount = fields.Monetary(string='贷方金额')
+    camount = fields.Monetary(string='贷方金额', default=0)
     cashFlow = fields.Many2one('accountcore.cashflow',
                                string='现金流量项目',
                                index=True,
