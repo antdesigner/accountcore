@@ -7,7 +7,9 @@ from odoo import exceptions
 import json
 from odoo import models, fields, api
 import datetime
+import calendar
 import sys
+from odoo.tools.misc import profile
 sys.path.append('.\\.\\server')
 _logger = logging.getLogger(__name__)
 
@@ -1631,12 +1633,191 @@ class GetSubsidiaryBook(models.TransientModel):
 
 
 class Period(object):
-    '''会计期间'''
+    '''一个期间'''
 
     def __init__(self, start_date, end_date):
-        self.start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-        self.end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+        if isinstance(start_date, str):
+            self.start_date = datetime.datetime.strptime(
+                start_date, '%Y-%m-%d')
+        else:
+            self.start_date = start_date
+        if isinstance(end_date, str):
+            self.end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+        else:
+            self.end_date = end_date
         self.start_year = self.start_date.year
         self.end_year = self.end_date.year
         self.start_month = self.start_date.month
         self.end_month = self.end_date.month
+
+    @profile('C:\\prof.profile')
+    def getPeriodList(self):
+        '''获得日期范围内的会计期间列表'''
+
+        months = (self.end_year - self.start_year) * \
+            12 + self.end_month - self.start_month
+        month_range = ['%s-%s-%s' % (self.start_year + mon//12, mon % 12+1, 1)
+                       for mon in range(self.start_month-1, self.start_month + months)]
+        voucherPeriods = [VoucherPeriod(
+            datetime.datetime.strptime(d, '%Y-%m-%d')) for d in month_range]
+
+        return voucherPeriods
+
+
+class VoucherPeriod(object):
+    '''一个会计期间,月份'''
+
+    def __init__(self, date):
+        self.date = date
+        self.year = date.year
+        self.month = date.month
+        # 当月第一天
+        self.firstDate = datetime.date(year=self.year,
+                                       month=self.month,
+                                       day=1)
+        # 当月天数
+        self.days = calendar.monthrange(self.year,
+                                        self.month)[1]
+        # 当月最后一天
+        self.endDate = datetime.date(year=self.year,
+                                     month=self.month,
+                                     day=self.days)
+
+
+class currencyDown_sunyi(models.TransientModel):
+    "自动结转损益向导"
+    _name = 'accountcore.currency_down_sunyi'
+    startDate = fields.Date(string='开始月份', required=True)
+    endDate = fields.Date(string='结束月份', required=True)
+    orgs = fields.Many2many(
+        'accountcore.org',
+        string='机构范围',
+        default=lambda s: s.env.user.currentOrg, required=True)
+
+    def soucre(s): return s.env.ref('rulebook_999')
+
+    @api.multi
+    def do(self, *args):
+        '''执行结转损益'''
+        self.ensure_one()
+        if len(self.orgs) == 0:
+            raise exceptions.ValidationError('你还没选择机构范围！')
+            return False
+        if self.startDate > self.endDate:
+            raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
+
+        # 获得需要结转的会计期间
+        periods = Period(self.startDate, self.endDate).getPeriodList()
+
+        self.t_entry = self.env['accountcore.entry']
+        # 本年利润科目
+        self.ben_nian_li_run_account = self.env['accountcore.special_accounts'].sudo().search([
+            ('name', '=', '本年利润科目')]).accounts
+        # 损益调整科目
+        self.sun_yi_tiao_zhen_account = self.env['accountcore.special_accounts'].sudo().search([
+            ('name', '=', '以前年度损益调整科目')]).accounts
+        # 依次处理选种机构
+        # 生成的凭证列表
+        voucher_ids = []
+        for org in self.orgs:
+            # 依次处理会计期间
+            for p in periods:
+                voucher = self._do_currencyDown(org, p)
+                if voucher:
+                    voucher_ids.append(voucher.id)
+
+        return {'name': '自动生成的结转损益凭证',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'accountcore.voucher',
+                'view_id': False,
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in',  voucher_ids)]
+                }
+
+    def _do_currencyDown(self, org, voucher_period):
+        '''结转指定机构某会计期间的损益'''
+
+        # 找出损益类相关科目
+        accounts = self._get_sunyi_accounts(org)
+        # 获得损益类相关科目在期间的余额
+        accountsBalance = self._get_balances(org, voucher_period, accounts)
+        # 根据余额生成结转损益的凭证
+        voucher = self._creat_voucher(accountsBalance, org, voucher_period)
+        return voucher
+
+    def _get_sunyi_accounts(self, org):
+        '''获得该机构的结转损益类科目'''
+        # 属于损益类别的科目,但不包括"以前年度损益调整"
+        accounts = self.env['accountcore.account'].sudo().search([('accountClass.name', '=', '损益类'),
+                                                                  ('id', '!=',
+                                                                   self.sun_yi_tiao_zhen_account.id),
+                                                                  '|', ('org',
+                                                                        '=', org.id),
+                                                                  ('org', '=', False)])
+        return accounts
+
+    def _get_balances(self, org, voucer_period, accounts):
+        '''获得某一机构在一个会计月份的余额记录'''
+        ids = accounts.mapped('id')
+        balances = self.env['accountcore.accounts_balance'].sudo().search([('org', '=', org.id),
+                                                                           ('year', '=',
+                                                                            voucer_period.year),
+                                                                           ('month', '=',
+                                                                            voucer_period.month),
+                                                                           ('account', 'in', ids)])
+        return balances
+
+    def _creat_voucher(self, accountsBalance, org, voucer_period):
+        '''新增结转损益凭证'''
+        # 结转到本年利润的借方合计
+        sum_d = 0
+        # 结转到本年利润的贷方合计
+        sum_c = 0
+
+        entrys_value = []
+        # 根据科目余额生成分录
+        for b in accountsBalance:
+            endAmount = b.endDamount-b.endCamount
+            if b.account.direction == '1':
+                if endAmount != 0:
+                    entrys_value.append({"explain": '结转损益',
+                                         "account": b.account.id,
+                                         "items": b.items.id,
+                                         "camount": endAmount
+                                         })
+                    sum_d = sum_d+endAmount
+            else:
+                if endAmount != 0:
+                    entrys_value.append({"explain": '结转损益',
+                                         "account": b.account.id,
+                                         "items": b.items.id,
+                                         "damount": -endAmount
+                                         })
+                    sum_c = sum_c+endAmount
+        # 本年利润科目分录
+
+        # 结转到贷方
+        if sum_d != 0:
+            entrys_value.append({"explain": '结转损益',
+                                 "account": self.ben_nian_li_run_account.id,
+                                 "damount": sum_d
+                                 })
+        # 结转到借方
+        if sum_c != 0:
+            entrys_value.append({"explain": '结转损益',
+                                 "account": self.ben_nian_li_run_account.id,
+                                 "camount": sum_c
+                                 })
+        if len(entrys_value) < 2:
+            return None
+        entrys = self.t_entry.sudo().create(entrys_value)
+
+        voucher = self.env['accountcore.voucher'].sudo().create({
+            'voucherdate': voucer_period.endDate,
+            'org': org.id,
+            'soucre': self.env.ref('accountcore.source_2').id,
+            'ruleBook': [(6, 0, [self.env.ref('accountcore.rulebook_999').id])],
+            'entrys': [(6, 0, entrys.ids)]
+        })
+        return voucher

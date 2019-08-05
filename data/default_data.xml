@@ -73,6 +73,10 @@
             <field name="number">1</field>
             <field name="name">手工</field>
         </record>
+        <record id="source_2" model="accountcore.source">
+            <field name="number">2</field>
+            <field name="name">机制</field>
+        </record>
         <!-- 现金流量项目 -->
         <record id="cashflow_1" model="accountcore.cashflow">
             <field name="cashFlowType" eval="cashflow_class_1" />

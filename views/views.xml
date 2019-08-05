@@ -386,11 +386,11 @@
               <field name='purpos' />
             </group>
             <group>
-            <field name='accounts'/>
-            <field name='children'/>
+              <field name='accounts' />
+              <field name='children' />
             </group>
             <group>
-            <field name='items' />
+              <field name='items' />
             </group>
           </sheet>
         </form>
@@ -719,6 +719,28 @@
         </form>
       </field>
     </record>
+
+    <record id="accountcore_voucher_sunyi_form" model="ir.ui.view">
+      <field name="name">自动结转损益</field>
+      <field name="model">accountcore.currency_down_sunyi</field>
+      <field name="arch" type="xml">
+        <form >
+          <sheet>
+            <group>
+              <field name="startDate" editable='0' />
+              <field name="endDate" />
+            </group>
+            <group>
+              <field name="orgs" widget="many2many_checkboxes_floatleft" />
+            </group>
+          </sheet>
+          <footer>
+            <button name="do" type="object" string="开始生成凭证" class='btn-primary' />
+          </footer>
+        </form>
+      </field>
+    </record>
+    
     <!-- accountcore.voucher search view -->
     <record id="accountcore_account_search" model="ir.ui.view">
       <field name="name">科目查询</field>
@@ -849,6 +871,12 @@
       <field name="target">new</field>
     </record>
 
+    <record model='ir.actions.act_window' id='accountore_voucher_shunyi_actions_window'>
+      <field name="name">结转损益</field>
+      <field name="res_model">accountcore.currency_down_sunyi</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>
