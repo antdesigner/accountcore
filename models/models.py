@@ -10,8 +10,12 @@ import datetime
 import calendar
 import sys
 from odoo.tools.misc import profile
+import multiprocessing
 sys.path.append('.\\.\\server')
 _logger = logging.getLogger(__name__)
+
+# 新增,修改,删除凭证时对科目余额的改变加锁
+vocher_lock = multiprocessing.Lock()
 
 
 class Org(models.Model):
@@ -388,7 +392,8 @@ class Voucher(models.Model):
     @api.model
     def create(self, values):
         '''新增凭证'''
-
+        # 只允许一条分录更新余额表
+        vocher_lock.acquire()
         values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
             'voucher.uniqueNumber')
         rl = super(Voucher, self).create(values)
@@ -398,6 +403,7 @@ class Voucher(models.Model):
         else:
             rl._checkVoucher(values)
         rl._updateBalance()
+        vocher_lock.release()
         return rl
 
     @api.multi
@@ -1337,14 +1343,28 @@ class AccountsBalance(models.Model):
     def getCumulativeDamount(self):
         '''计算本年借方累计发生额'''
         # 机构科目项目在本年内1月到本月的余额记录
+        # 如果是改变启用期初,就不处理
+        if self.isbegining == True:
+            self.cumulativeDamount=self.beginCumulativeDamount
+            return True
         records = self.search(
             [('year', '=', self.year),
-             ('month', "<=", self.month),
-             ('org', '=', self.org.id),
-             ('account', '=', self.account.id),
-             ('items', '=', self.items.id)])
-        # 对damount字段求和
+                ('month', "<=", self.month),
+                ('org', '=', self.org.id),
+                ('account', '=', self.account.id),
+                ('items', '=', self.items.id)])
         yearDamount = sum(records.mapped('damount'))
+        # 如果是改变启用期初
+        # else:
+        #     records = self.search(
+        #         [('year', '=', self.year),
+        #          ('month', "<", self.month),
+        #          ('org', '=', self.org.id),
+        #          ('account', '=', self.account.id),
+        #          ('items', '=', self.items.id)])
+        #     yearDamount = sum(records.mapped('damount'))+self.damount
+        # 对damount字段求和
+
         # 当年有启用期初,就需要加上启用期初的本年累计
         beginingRecord = records.filtered(lambda r: r.isbegining)
         if beginingRecord.exists():
@@ -1355,14 +1375,27 @@ class AccountsBalance(models.Model):
     @api.depends('beginingCamount', 'camount')
     def getCumulativeCamount(self):
         '''计算本年借方累计发生额'''
+        # 如果不是改变启用期初,就不处理
+        if self.isbegining == True:
+            self.cumulativeCamount=self.beginCumulativeCamount
+            return True
         records = self.search(
             [('year', '=', self.year),
-             ('month', "<=", self.month),
-             ('org', '=', self.org.id),
-             ('account', '=', self.account.id),
-             ('items', '=', self.items.id)])
+                ('month', "<=", self.month),
+                ('org', '=', self.org.id),
+                ('account', '=', self.account.id),
+                ('items', '=', self.items.id)])
         # 对camount字段求和
         yearCamount = sum(records.mapped('camount'))
+        # else:
+        #     records = self.search(
+        #         [('year', '=', self.year),
+        #          ('month', "<", self.month),
+        #          ('org', '=', self.org.id),
+        #          ('account', '=', self.account.id),
+        #          ('items', '=', self.items.id)])
+        #     # 对camount字段求和
+        #     yearCamount = sum(records.mapped('camount'))+self.camount
         # 当年有启用期初,就需要加上启用期初的本年累计
         beginingRecord = records.filtered(lambda r: r.isbegining)
         if beginingRecord.exists():
