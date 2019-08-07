@@ -199,8 +199,11 @@ class Account(models.Model):
             [('account', '=', account_id),
              ('items', '=', old_accountItemClass_id)])
         if accountBalances.exists():
-            raise exceptions.ValidationError('该科目下的核算项目['+old_accountItemClass.name+'] \
+            if old_accountItemClass:
+                raise exceptions.ValidationError('该科目下的核算项目['+old_accountItemClass.name+'] \
                 已经使用,不能改变.你可以添加新的明细科目,在新的明细科目下设置你想要的核算项目类别')
+            else:
+                raise exceptions.ValidationError('该科目已经使用,不能改变.你可以添加新的明细科目,在新的明细科目下设置你想要的核算项目类别')
 
     @api.onchange('itemClasses')
     def _checkItemClasses(self):
@@ -1824,9 +1827,7 @@ class currencyDown_sunyi(models.TransientModel):
         if len(entrys_value) < 2:
             return None
         entrys = self.t_entry.sudo().create(entrys_value)
-        # ac_from_copy 和复制凭证一样,跳过对分录必须录入核算项的检查,见 voucher._checkVoucher
-        voucher = self.env['accountcore.voucher'].sudo().with_context(
-            {'ac_from_copy': True}).create({
+        voucher = self.env['accountcore.voucher'].sudo().create({
                 'voucherdate': voucer_period.endDate,
                 'org': org.id,
                 'soucre': self.env.ref('accountcore.source_2').id,
