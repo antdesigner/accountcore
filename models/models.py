@@ -1111,6 +1111,7 @@ class AccountsBalance(models.Model):
                                         compute='getCumulativeCamount',
                                         store=True,
                                         default=0)
+                                        
     beginCumulativeDamount = fields.Monetary(string='月初本年借方累计', default=0)
     beginCumulativeCamount = fields.Monetary(string='月初本年贷方累计', default=0)
     preRecord = fields.Many2one(
@@ -1200,8 +1201,8 @@ class AccountsBalance(models.Model):
                 oldSelf['camount'] = self.camount
                 oldSelf['endDamount'] = self.endDamount
                 oldSelf['endCamount'] = self.endCamount
-                oldSelf['cumulativeDamount'] = self.beginCumulativeDamount
-                oldSelf['cumulativeCamount'] = self.beginCumulativeCamount
+                oldSelf['cumulativeDamount'] = self.beginCumulativeDamount+self.damount
+                oldSelf['cumulativeCamount'] = self.beginCumulativeCamount+self.camount
                 oldSelf['beginCumulativeDamount'] = self.beginCumulativeDamount
                 oldSelf['beginCumulativeCamount'] = self.beginCumulativeCamount
                 oldSelf['preRecord'] = None
@@ -1332,7 +1333,7 @@ class AccountsBalance(models.Model):
             return
 
     @api.multi
-    @api.depends('beginingDamount', 'damount')
+    @api.depends('beginCumulativeDamount', 'damount')
     def getEndingBalance_D(self):
         '''计算期末贷方余额'''
         for record in self:
@@ -1345,7 +1346,7 @@ class AccountsBalance(models.Model):
         # 机构科目项目在本年内1月到本月的余额记录
         # 如果是改变启用期初,就不处理
         if self.isbegining == True:
-            self.cumulativeDamount=self.beginCumulativeDamount
+            self.cumulativeDamount = self.beginCumulativeDamount+self.damount
             return True
         records = self.search(
             [('year', '=', self.year),
@@ -1354,30 +1355,18 @@ class AccountsBalance(models.Model):
                 ('account', '=', self.account.id),
                 ('items', '=', self.items.id)])
         yearDamount = sum(records.mapped('damount'))
-        # 如果是改变启用期初
-        # else:
-        #     records = self.search(
-        #         [('year', '=', self.year),
-        #          ('month', "<", self.month),
-        #          ('org', '=', self.org.id),
-        #          ('account', '=', self.account.id),
-        #          ('items', '=', self.items.id)])
-        #     yearDamount = sum(records.mapped('damount'))+self.damount
-        # 对damount字段求和
-
-        # 当年有启用期初,就需要加上启用期初的本年累计
         beginingRecord = records.filtered(lambda r: r.isbegining)
         if beginingRecord.exists():
             yearDamount = yearDamount+beginingRecord.beginCumulativeDamount
         self.cumulativeDamount = yearDamount
         return True
 
-    @api.depends('beginingCamount', 'camount')
+    @api.depends('beginCumulativeCamount', 'camount')
     def getCumulativeCamount(self):
         '''计算本年借方累计发生额'''
         # 如果不是改变启用期初,就不处理
         if self.isbegining == True:
-            self.cumulativeCamount=self.beginCumulativeCamount
+            self.cumulativeCamount = self.beginCumulativeCamount+self.camount
             return True
         records = self.search(
             [('year', '=', self.year),
@@ -1387,16 +1376,6 @@ class AccountsBalance(models.Model):
                 ('items', '=', self.items.id)])
         # 对camount字段求和
         yearCamount = sum(records.mapped('camount'))
-        # else:
-        #     records = self.search(
-        #         [('year', '=', self.year),
-        #          ('month', "<", self.month),
-        #          ('org', '=', self.org.id),
-        #          ('account', '=', self.account.id),
-        #          ('items', '=', self.items.id)])
-        #     # 对camount字段求和
-        #     yearCamount = sum(records.mapped('camount'))+self.camount
-        # 当年有启用期初,就需要加上启用期初的本年累计
         beginingRecord = records.filtered(lambda r: r.isbegining)
         if beginingRecord.exists():
             yearCamount = yearCamount+beginingRecord.beginCumulativeCamount

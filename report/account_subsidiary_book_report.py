@@ -470,6 +470,8 @@ class EntrysAssembler():
         thisYearbegins = list(
             filter(lambda b: b['year'] == tmp_year, self.beginBalances))
         # 启用期初对年初借方影响
+        # d = sum([b['begin_d']-b['cumulative_d']+b['damount']
+        #          for b in thisYearbegins])
         d = sum([b['begin_d']-b['cumulative_d']+b['damount']
                  for b in thisYearbegins])
         tmp_begin_year_d = tmp_begin_year_d+d

@@ -249,8 +249,8 @@
           <field name="beginingCamount" string='月初余额(贷方)' sum="合计" />
           <field name="damount" string='月已发生额(借方)' sum="合计" />
           <field name="camount" string='月已发生额(贷方)' sum="合计" />
-          <field name="beginCumulativeDamount" string='本年借方累计发生额' sum="合计" />
-          <field name="beginCumulativeCamount" string='本年贷方累计发生额' sum="合计" />
+          <field name="beginCumulativeDamount" string='月初本年借方累计发生额' sum="合计" />
+          <field name="beginCumulativeCamount" string='月初本年贷方累计发生额' sum="合计" />
         </tree>
       </field>
     </record>
