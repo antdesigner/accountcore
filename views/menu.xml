@@ -18,10 +18,10 @@
         <menuitem name='会计科目' id='accountcore_account_menu' parent='accountcore_menu' sequence="38" />
         <menuitem name='科目体系' id='accountcore_accountarch_menu' parent='accountcore_account_menu' action='accountcore_accountsarch_action_window'/>
         <menuitem name='科目类别' id='acctountcore_accountclass_menu' parent='accountcore_account_menu' action='accountcore_accountclass_action_window' />
-        <menuitem name='科目列表' id='accountcore_accounts_menu' parent='accountcore_account_menu' action='accountcore_account_action_window' />
+        <menuitem name='科目管理' id='accountcore_accounts_menu' parent='accountcore_account_menu' action='accountcore_account_action_window' />
         <menuitem name='核算项目' id='accountcore_item_menu' parent='accountcore_account_menu' />
         <menuitem name='核算项目类别' id='accountcore_itemclass_menu' parent='accountcore_item_menu' action='accountcore_itemclass_action_window' />
-        <menuitem name='核算项目列表' id='accountcore_items_menu' parent='accountcore_item_menu' action='accountcore_items_action_window' />
+        <menuitem name='核算项目管理' id='accountcore_items_menu' parent='accountcore_item_menu' action='accountcore_items_action_window' />
         <menuitem name='特殊科目' id='accountcore_special_accounts_menu' parent='accountcore_account_menu' action='acccountcore_special_accounts_actions_window' />
         <menuitem name='记账凭证' id='accountcore_voucher_menu' parent='accountcore_menu' sequence="40" />
         <menuitem name='凭证标签' id='acctountcore_rulebook_menu' parent='accountcore_voucher_menu' action='accountcore_rulebook_action_window' sequence="49" />

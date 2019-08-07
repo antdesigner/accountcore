@@ -1111,7 +1111,7 @@ class AccountsBalance(models.Model):
                                         compute='getCumulativeCamount',
                                         store=True,
                                         default=0)
-                                        
+
     beginCumulativeDamount = fields.Monetary(string='月初本年借方累计', default=0)
     beginCumulativeCamount = fields.Monetary(string='月初本年贷方累计', default=0)
     preRecord = fields.Many2one(
@@ -1795,7 +1795,7 @@ class currencyDown_sunyi(models.TransientModel):
                 if endAmount != 0:
                     entrys_value.append({"explain": '结转损益',
                                          "account": b.account.id,
-                                         "items": b.items.id,
+                                         "items": [(6, 0,[b.items.id])],
                                          "camount": endAmount
                                          })
                     sum_d = sum_d+endAmount
@@ -1803,7 +1803,7 @@ class currencyDown_sunyi(models.TransientModel):
                 if endAmount != 0:
                     entrys_value.append({"explain": '结转损益',
                                          "account": b.account.id,
-                                         "items": b.items.id,
+                                         "items": [(6, 0,[b.items.id])],
                                          "damount": -endAmount
                                          })
                     sum_c = sum_c+endAmount
@@ -1824,12 +1824,13 @@ class currencyDown_sunyi(models.TransientModel):
         if len(entrys_value) < 2:
             return None
         entrys = self.t_entry.sudo().create(entrys_value)
-
-        voucher = self.env['accountcore.voucher'].sudo().create({
-            'voucherdate': voucer_period.endDate,
-            'org': org.id,
-            'soucre': self.env.ref('accountcore.source_2').id,
-            'ruleBook': [(6, 0, [self.env.ref('accountcore.rulebook_999').id])],
-            'entrys': [(6, 0, entrys.ids)]
-        })
+        # ac_from_copy 和复制凭证一样,跳过对分录必须录入核算项的检查,见 voucher._checkVoucher
+        voucher = self.env['accountcore.voucher'].sudo().with_context(
+            {'ac_from_copy': True}).create({
+                'voucherdate': voucer_period.endDate,
+                'org': org.id,
+                'soucre': self.env.ref('accountcore.source_2').id,
+                'ruleBook': [(6, 0, [self.env.ref('accountcore.rulebook_999').id])],
+                'entrys': [(6, 0, entrys.ids)]
+            })
         return voucher
