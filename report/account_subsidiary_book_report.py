@@ -395,6 +395,21 @@ class BeginBalance(EntryArch):
         self.is_not_begining = False
 
 
+class PrebeginBalance(EntryArch):
+    '''启用期初以前'''
+
+    def __init__(self, year, month, direction, damount, camount):
+        super(PrebeginBalance, self).__init__()
+        self.explain = '年初至启用期'
+        self.year = year
+        self.month = month
+        self.direction = direction
+        self.voucherdate = year
+        self.damount = damount
+        self.camount = camount
+        self.is_not_begining = False
+
+
 class SumMonth(EntryArch):
     '''本月合计'''
 
@@ -434,7 +449,7 @@ class EntrysAssembler():
                  beginBalances=None,
                  entryArchs=None,
                  tasticsTypes=None,
-                 voucher_number_tastics_id=None):                                   
+                 voucher_number_tastics_id=None):
         self.main_account = main_account
         self.item = item
         self.period = period
@@ -586,13 +601,19 @@ class EntrysAssembler():
     def _addBegingBalance(self):
         '''把查询期间的启用期初加入分录列表'''
         for b in self.beginBalances:
+            pre_begin = PrebeginBalance(b['year'],
+                                        b['month'],
+                                        self.main_account.direction,
+                                        b['cumulative_d']-b['damount'],
+                                        b['cumulative_c']-b['camount'])
             begin = BeginBalance(b['year'],
                                  b['month'],
                                  self.main_account.direction,
                                  b['damount'],
                                  b['camount'])
+            self.entryArchs.append(pre_begin)
             self.entryArchs.append(begin)
-        self.entryArchs.sort(key=lambda e: (str(e.voucherdate),
-                                            e.year,
+        self.entryArchs.sort(key=lambda e: (e.year,
                                             e.month,
+                                            str(e.voucherdate),
                                             e.is_not_begining))

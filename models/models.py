@@ -1340,7 +1340,7 @@ class AccountsBalance(models.Model):
             record.endDamount = record.beginingDamount+record.damount
         return True
 
-    @api.depends('beginingDamount', 'damount')
+    @api.depends('beginCumulativeDamount', 'damount')
     def getCumulativeDamount(self):
         '''计算本年借方累计发生额'''
         # 机构科目项目在本年内1月到本月的余额记录
