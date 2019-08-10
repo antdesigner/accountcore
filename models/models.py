@@ -731,7 +731,7 @@ class Voucher(models.Model):
                                       ['isbegining', '=', False]])
         return record
 
-
+v_
 class Enty(models.Model):
     '''一条分录'''
     _name = 'accountcore.entry'
@@ -741,8 +741,8 @@ class Enty(models.Model):
                               index=True,
                               ondelete='cascade')
     org = fields.Many2one(related="voucher.org", store=True, string="核算机构")
-    year = fields.Integer(related="voucher.year", store=True, string="年")
-    month = fields.Integer(related="voucher.month", store=True, string="月")
+    v_year = fields.Integer(related="voucher.year", store=True, string="年")
+    v_month = fields.Integer(related="voucher.month", store=True, string="月")
     updata_balance = fields.Boolean(string='是否更新科目余额', default=False)
     sequence = fields.Integer('Sequence')
     explain = fields.Char(string='说明')
@@ -1573,8 +1573,8 @@ class AccountsBalance(models.Model):
         '''获得分录对应期间和会计科目下的核算项目的余额记录，排除启用期初那条记录'''
         balanasTable = self.env['accountcore.accounts_balance']
         org = entry.org.id
-        year = entry.year
-        month = entry.month
+        year = entry.v_year
+        month = entry.v_month
         record = balanasTable.search([['org', '=', org],
                                       ['year', '=', year],
                                       ['month', '=', month],
