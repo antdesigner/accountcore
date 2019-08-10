@@ -731,7 +731,7 @@ class Voucher(models.Model):
                                       ['isbegining', '=', False]])
         return record
 
-v_
+
 class Enty(models.Model):
     '''一条分录'''
     _name = 'accountcore.entry'
