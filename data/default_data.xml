@@ -43,7 +43,7 @@
             <field name="number">1</field>
             <field name="name">内账</field>
         </record>
-        <!-- 核算项目类别 -->
+        <!-- 核算项目类别开始 -->
         <record id="item_class_1" model="accountcore.itemclass">
             <field name="number">1</field>
             <field name="name">往来</field>
@@ -52,7 +52,36 @@
             <field name="number">2</field>
             <field name="name">员工</field>
         </record>
-        <!-- 现金流量类别 -->
+          <record id="item_class_3" model="accountcore.itemclass">
+            <field name="number">3</field>
+            <field name="name">部门</field>
+        </record>
+        <record id="item_class_4" model="accountcore.itemclass">
+            <field name="number">4</field>
+            <field name="name">成本费用</field>
+        </record>
+          <record id="item_class_5" model="accountcore.itemclass">
+            <field name="number">5</field>
+            <field name="name">原材料</field>
+        </record>
+        <record id="item_class_6" model="accountcore.itemclass">
+            <field name="number">6</field>
+            <field name="name">库存商品</field>
+        </record>
+          <record id="item_class_7" model="accountcore.itemclass">
+            <field name="number">7</field>
+            <field name="name">低值易耗品</field>
+        </record>
+          <record id="item_class_8" model="accountcore.itemclass">
+            <field name="number">8</field>
+            <field name="name">固定资产</field>
+        </record>
+         <record id="item_class_9" model="accountcore.itemclass">
+            <field name="number">9</field>
+            <field name="name">无形资产</field>
+        </record>
+        <!-- 核算项目类别结束 -->
+        <!-- 现金流量类别开始 -->
         <record id="cashflow_class_1" model="accountcore.cashflowtype">
             <field name="number">1</field>
             <field name="name">经营活动产生的现金流量</field>
@@ -77,7 +106,8 @@
             <field name="number">2</field>
             <field name="name">机制</field>
         </record>
-        <!-- 现金流量项目 -->
+        <!-- 现金流量类别结束 -->
+        <!-- 现金流量项目开始 -->
         <record id="cashflow_1" model="accountcore.cashflow">
             <field name="cashFlowType" eval="cashflow_class_1" />
             <field name="number">1</field>
@@ -222,7 +252,8 @@
             <field name="name">汇率变动流出</field>
             <field name="direction">-1</field>
         </record>
-        <!-- 科目类别 -->
+        <!-- 现金流量类别结束 -->
+        <!-- 科目类别开始 -->
         <record id="account_class_1" model="accountcore.accountclass">
             <field name="number">1</field>
             <field name="name">资产类</field>
@@ -247,7 +278,8 @@
             <field name="number">6</field>
             <field name="name">损益类</field>
         </record>
-        <!-- 科目表 -->
+        <!-- 科目类别结束 -->
+        <!-- 科目表开始 -->
         <record id='account_1' model='accountcore.account'><field name='org' eval='False' /><field name='accountClass' eval='account_class_1' /><field name='number' >1001</field><field name='name' >库存现金</field><field name='direction' >1</field><field name='cashFlowControl' >1</field><field name='accountsArch' eval='accountsarch_1' /></record>
 <record id='account_2' model='accountcore.account'><field name='org' eval='False' /><field name='accountClass' eval='account_class_1' /><field name='number' >1002</field><field name='name' >银行存款</field><field name='direction' >1</field><field name='cashFlowControl' >1</field><field name='accountsArch' eval='accountsarch_1' /></record>
 <record id='account_3' model='accountcore.account'><field name='org' eval='False' /><field name='accountClass' eval='account_class_1' /><field name='number' >1003</field><field name='name' >存放中央银行款项</field><field name='direction' >1</field><field name='cashFlowControl' >0</field><field name='accountsArch' eval='accountsarch_1' /></record>
@@ -410,7 +442,8 @@
 <record id='account_160' model='accountcore.account'><field name='org' eval='False' /><field name='accountClass' eval='account_class_6' /><field name='number' >6711</field><field name='name' >营业外支出</field><field name='direction' >1</field><field name='cashFlowControl' >0</field><field name='accountsArch' eval='accountsarch_1' /></record>
 <record id='account_161' model='accountcore.account'><field name='org' eval='False' /><field name='accountClass' eval='account_class_6' /><field name='number' >6801</field><field name='name' >所得税</field><field name='direction' >1</field><field name='cashFlowControl' >0</field><field name='accountsArch' eval='accountsarch_1' /></record>
 <record id='account_162' model='accountcore.account'><field name='org' eval='False' /><field name='accountClass' eval='account_class_6' /><field name='number' >6901</field><field name='name' >以前年度损益调整</field><field name='direction' >1</field><field name='cashFlowControl' >0</field><field name='accountsArch' eval='accountsarch_1' /></record>
-<!-- 特殊会计科目 -->
+<!-- 科目表结束 -->
+<!-- 特殊会计科目开始 -->
 <record id='special_accounts_1' model='accountcore.special_accounts'>
 <field name='name' >本年利润科目</field>
 <field name='purpos' >用于自动结转损益</field>
@@ -429,5 +462,6 @@
 <field name='children' >0</field>
 <field name='accounts' eval="[(6,0,[account_162])]" />
 </record>
+<!-- 特殊科目结束 -->
     </data>
 </odoo>

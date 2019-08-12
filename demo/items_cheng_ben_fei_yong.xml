@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- 成本费用项目开始 -->
+<record id='item_cheng_ben_fei_yong_1' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >职工工资</field></record>
+<record id='item_cheng_ben_fei_yong_2' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >社会保险</field></record>
+<record id='item_cheng_ben_fei_yong_3' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >工会经费</field></record>
+<record id='item_cheng_ben_fei_yong_4' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >职工福利费</field></record>
+<record id='item_cheng_ben_fei_yong_5' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >租金</field></record>
+<record id='item_cheng_ben_fei_yong_6' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >物业管理费</field></record>
+<record id='item_cheng_ben_fei_yong_7' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >水费</field></record>
+<record id='item_cheng_ben_fei_yong_8' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >电费</field></record>
+<record id='item_cheng_ben_fei_yong_9' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >空调暖气费</field></record>
+<record id='item_cheng_ben_fei_yong_10' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >电话及网络费</field></record>
+<record id='item_cheng_ben_fei_yong_11' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >工服相关</field></record>
+<record id='item_cheng_ben_fei_yong_12' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >维修维护</field></record>
+<record id='item_cheng_ben_fei_yong_13' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >装修摊销</field></record>
+<record id='item_cheng_ben_fei_yong_14' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >快递费</field></record>
+<record id='item_cheng_ben_fei_yong_15' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >员工健康证</field></record>
+<record id='item_cheng_ben_fei_yong_16' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >外包服务</field></record>
+<record id='item_cheng_ben_fei_yong_17' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >办公设备折旧 </field></record>
+<record id='item_cheng_ben_fei_yong_18' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >电子设备折旧 </field></record>
+<record id='item_cheng_ben_fei_yong_19' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >运输设备折旧 </field></record>
+<record id='item_cheng_ben_fei_yong_20' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >店铺设备折旧 </field></record>
+<record id='item_cheng_ben_fei_yong_21' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >差旅费</field></record>
+<record id='item_cheng_ben_fei_yong_22' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >办公用品</field></record>
+<record id='item_cheng_ben_fei_yong_23' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >低值易耗品</field></record>
+<record id='item_cheng_ben_fei_yong_24' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >广告促销费</field></record>
+<record id='item_cheng_ben_fei_yong_25' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >送货费用</field></record>
+<record id='item_cheng_ben_fei_yong_26' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >咨询费</field></record>
+<record id='item_cheng_ben_fei_yong_27' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >奖金</field></record>
+<record id='item_cheng_ben_fei_yong_28' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >电话费及网络费</field></record>
+<record id='item_cheng_ben_fei_yong_29' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >会计服务</field></record>
+<record id='item_cheng_ben_fei_yong_30' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >审计服务</field></record>
+<record id='item_cheng_ben_fei_yong_31' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >人力资源服务费</field></record>
+<record id='item_cheng_ben_fei_yong_32' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >信息服务</field></record>
+<record id='item_cheng_ben_fei_yong_33' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >律师服务费</field></record>
+<record id='item_cheng_ben_fei_yong_34' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >公司保险费用摊销</field></record>
+<record id='item_cheng_ben_fei_yong_35' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >无形资产摊销</field></record>
+<record id='item_cheng_ben_fei_yong_36' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >业务招待费</field></record>
+<record id='item_cheng_ben_fei_yong_37' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >流动资产盘亏</field></record>
+<record id='item_cheng_ben_fei_yong_38' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >银行手续费</field></record>
+<record id='item_cheng_ben_fei_yong_39' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >利息支出</field></record>
+<record id='item_cheng_ben_fei_yong_40' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >工厂租金</field></record>
+<record id='item_cheng_ben_fei_yong_41' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >工厂外包服务</field></record>
+<record id='item_cheng_ben_fei_yong_42' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >品控与品管检测费相关</field></record>
+<record id='item_cheng_ben_fei_yong_43' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >低值易耗品消耗</field></record>
+<record id='item_cheng_ben_fei_yong_44' model='accountcore.item'><field name='itemClass' eval='item_class_4' /><field name='name' >劳动保护费</field></record>
+
+<!-- 成本费用项目结束 -->
+</odoo>

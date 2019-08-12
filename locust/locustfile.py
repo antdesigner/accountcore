@@ -228,12 +228,14 @@ class UserBehavior(TaskSet):
 
 
     def on_start(self):
-        dbname = 'acntbox'
+        # 数据库需要改变成自己的
+        dbname = 'accountcore'
+        # user,uid可能也需要修改(查看数据库res_users表id字段)
         users = [
-            {'user': 'user001', 'pass': 'user001', 'uid': 7},
-            {'user': 'user002', 'pass': 'user002', 'uid': 8},
-            {'user': 'user003', 'pass': 'user003', 'uid': 9},
-            {'user': 'user004', 'pass': 'user004', 'uid': 10},
+            {'user': 'user_101', 'pass': '666666', 'uid': 9},
+            {'user': 'user_102', 'pass': '666666', 'uid': 10},
+            {'user': 'user_103', 'pass': '666666', 'uid': 11},
+            {'user': 'user_104', 'pass': '666666', 'uid': 12},
         ]
         user = users[int(random.random()*len(users))]
         self.uid = user['uid']

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- 固定资产项目开始 -->
+<record id='item_gu_ding_zi_chan_1' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >大型搅拌机23434</field></record>
+<record id='item_gu_ding_zi_chan_2' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >烤箱ff</field></record>
+<record id='item_gu_ding_zi_chan_3' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >驱蚊机123</field></record>
+<record id='item_gu_ding_zi_chan_4' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >东风大35345h</field></record>
+<record id='item_gu_ding_zi_chan_5' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >五菱宏光2wrw</field></record>
+<record id='item_gu_ding_zi_chan_6' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >惠普打印机234</field></record>
+<record id='item_gu_ding_zi_chan_7' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >联想打印机345</field></record>
+<record id='item_gu_ding_zi_chan_8' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >小票机2424</field></record>
+<record id='item_gu_ding_zi_chan_9' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >监控系统seen1245</field></record>
+<record id='item_gu_ding_zi_chan_10' model='accountcore.item'><field name='itemClass' eval='item_class_8' /><field name='name' >收银机ss</field></record>
+<!-- 固定资产项目结束 -->
+</odoo>

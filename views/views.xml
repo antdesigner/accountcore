@@ -236,7 +236,7 @@
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,year,month' editable='top' create='1' limit='999'>
+        <tree default_order='org,year,month,accountItemClass' editable='top' create='1' limit='999'>
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>
@@ -486,7 +486,7 @@
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
                 <field name='sequence' widget='handle' class='' ></field>
                 <field name='explain' class='oe_ac_explain'></field>
-                <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
+                <field name='account' context="{'search_default_groupby_accountClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                 <field name='damount' sum='借方合计' class='amountColor'></field>
                 <field name='camount' sum='贷方合计' class='amountColor'></field>
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account}" />
@@ -754,6 +754,28 @@
       </field>
     </record>
 
+    <record id="accountcore_item_search" model="ir.ui.view">
+      <field name="name">核算项目查询</field>
+      <field name="model">accountcore.item</field>
+      <field name="arch" type="xml">
+        <search string="itemFilter">
+          <filter name="groupby_itemClass" string="按项目类别分组" context = "{'group_by': 'itemClass'}" />
+          <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+        </search>
+      </field>
+    </record>
+
+    <record id="accountcore_accounts_balance_search" model="ir.ui.view">
+      <field name="name">启用期初查询</field>
+      <field name="model">accountcore.accounts_balance</field>
+      <field name="arch" type="xml">
+        <search string="balanceFilter">
+          <filter name="groupby_account" string="按科目分组" context = "{'group_by': 'account'}" />
+          <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+        </search>
+      </field>
+    </record>
+
     <!-- accountcore.voucher search view -->
     <record id="accountcore_voucher_search" model="ir.ui.view">
       <field name="name">凭证查询</field>
@@ -786,7 +808,7 @@
       <field name="target">current</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_itemclass_action_window'>
-      <field name='name'>核算项目</field>
+      <field name='name'>核算项目类别</field>
       <field name='res_model'>accountcore.itemclass</field>
       <field name='view_mode'>tree,form</field>
       <field name='target'>current</field>
@@ -796,6 +818,7 @@
       <field name='res_model'>accountcore.item</field>
       <field name='view_mode'>tree,form</field>
       <field name='target'>current</field>
+       <field name="context">{'search_default_groupby_itemClass': 1}</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_rulebook_action_window'>
       <field name='name'>凭证标签</field>
@@ -811,6 +834,7 @@
       <field name='name'>科目列表</field>
       <field name='res_model'>accountcore.account</field>
       <field name='view_mode'>tree,form</field>
+      <field name="context">{'search_default_groupby_accountClass': 1}</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_cashflowtype_action_window'>
       <field name='name'>现金流量项目类别</field>
@@ -899,7 +923,7 @@
       <field name="res_model">accountcore.accounts_balance</field>
       <field name="view_mode">tree,form</field>
       <field name="target">current</field>
-      <field name='context'>{'default_isbegining':True}</field>
+      <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1}</field>
       <field name='domain'>[('isbegining','=',True)]</field>
     </record>
 

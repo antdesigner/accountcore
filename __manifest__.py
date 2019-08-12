@@ -29,9 +29,23 @@
         'static/xml/base_extend.xml',
     ],
     'demo': [
-        'demo/demo.xml',
+        'demo/users.xml',
+        'demo/org.xml',
+        'demo/items_wang_lai.xml',
+        'demo/items_bu_men.xml',
+        'demo/items_yuan_gong.xml',
+        'demo/items_yuan_cai_liao.xml',
+        'demo/items_ku_cun_shang_pin.xml',
+        'demo/items_yuan_cai_liao.xml',
+        'demo/items_yuan_cai_liao.xml',
+        'demo/items_cheng_ben_fei_yong.xml',
+        'demo/items_di_zhi_yi_hao.xml',
+        'demo/items_gu_ding_zi_chan.xml',
+        'demo/items_wu_xing_zi_chan.xml',
+        'demo/accounts.xml',
     ],
     'css': [
         'static/css/accountcore.css',
-    ]
+    ],
+    'post_init_hook': '_load_demo',
 }

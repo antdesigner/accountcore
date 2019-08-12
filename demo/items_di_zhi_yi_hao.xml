@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- 低值易耗品开始 -->
+<record id='item_di_zhi_yi_hao_1' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >袋子</field></record>
+<record id='item_di_zhi_yi_hao_2' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >盒子</field></record>
+<record id='item_di_zhi_yi_hao_3' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >餐具</field></record>
+<record id='item_di_zhi_yi_hao_4' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >纸垫</field></record>
+<record id='item_di_zhi_yi_hao_5' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >节日包装</field></record>
+<record id='item_di_zhi_yi_hao_6' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >消耗品</field></record>
+<record id='item_di_zhi_yi_hao_7' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >清洁用品</field></record>
+<record id='item_di_zhi_yi_hao_8' model='accountcore.item'><field name='itemClass' eval='item_class_7' /><field name='name' >办公用品(低值易耗)</field></record>
+<!-- 低值易耗品结束 -->
+</odoo>

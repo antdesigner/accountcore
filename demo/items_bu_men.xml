@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- 部门项目开始 -->
+<record id='item_bu_men_1' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >工程部</field></record>
+<record id='item_bu_men_2' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >市场部</field></record>
+<record id='item_bu_men_3' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >市场1组</field></record>
+<record id='item_bu_men_4' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >市场2组</field></record>
+<record id='item_bu_men_5' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >行政部</field></record>
+<record id='item_bu_men_6' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >人力资源部</field></record>
+<record id='item_bu_men_7' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >财务部</field></record>
+<record id='item_bu_men_8' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >生产部</field></record>
+<record id='item_bu_men_9' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >生产一组</field></record>
+<record id='item_bu_men_10' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >生产二组</field></record>
+<record id='item_bu_men_11' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >法务部</field></record>
+<record id='item_bu_men_12' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >采购部</field></record>
+<record id='item_bu_men_13' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >公关部</field></record>
+<record id='item_bu_men_14' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >董事局</field></record>
+<record id='item_bu_men_15' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >总经办</field></record>
+<record id='item_bu_men_16' model='accountcore.item'><field name='itemClass' eval='item_class_3' /><field name='name' >质量管理部</field></record>
+<!-- 部门项目结束 -->
+</odoo>

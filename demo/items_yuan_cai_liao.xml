@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- 原材料开始 -->
+<record id='item_yuan_cai_liao_1' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >巧克力</field></record>
+<record id='item_yuan_cai_liao_2' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >调料</field></record>
+<record id='item_yuan_cai_liao_3' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >奶制品</field></record>
+<record id='item_yuan_cai_liao_4' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >干货</field></record>
+<record id='item_yuan_cai_liao_5' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >香料,色素</field></record>
+<record id='item_yuan_cai_liao_6' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >面粉,预拌粉</field></record>
+<record id='item_yuan_cai_liao_7' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >新鲜蔬菜水果</field></record>
+<record id='item_yuan_cai_liao_8' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >冷冻蔬菜水果</field></record>
+<record id='item_yuan_cai_liao_9' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >肉,海鲜</field></record>
+<record id='item_yuan_cai_liao_10' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >罐头</field></record>
+<record id='item_yuan_cai_liao_11' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >糖</field></record>
+<record id='item_yuan_cai_liao_12' model='accountcore.item'><field name='itemClass' eval='item_class_5' /><field name='name' >酒</field></record>
+<!-- 原材料结束 -->
+</odoo>

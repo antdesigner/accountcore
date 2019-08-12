@@ -214,12 +214,15 @@ class Account(models.Model):
                 '['+self.accountItemClass.name+"]已经作为明细科目的类别,不能删除.如果要删除,请你在'作为明细的类别'中先取消它")
 
     @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
+    def name_search(self, name='', args=None, operator='ilike', limit=0):
         args = args or []
         domain = []
         if name:
             domain = ['|', ('number', operator, name),
                       ('name', operator, name)]
+        # 源代码默认为160,突破其限制   详细见 /web/static/src/js/views/form_common.js          
+        if limit == 160:
+            limit = 0
         pos = self.search(domain+args, limit=limit, order='number')
         return pos.name_get()
 
@@ -1575,12 +1578,12 @@ class AccountsBalance(models.Model):
         org = entry.org.id
         year = entry.v_year
         month = entry.v_month
-        record = balanasTable.search([['org', '=', org],
-                                      ['year', '=', year],
-                                      ['month', '=', month],
-                                      ['account', '=', entry.account.id],
-                                      ['items', '=', itemId],
-                                      ['isbegining', '=', False]])
+        record = balanasTable.searcFh([['org', '=', org],
+                                       ['year', '=', year],
+                                       ['month', '=', month],
+                                       ['account', '=', entry.account.id],
+                                       ['items', '=', itemId],
+                                       ['isbegining', '=', False]])
         return record
 
 
