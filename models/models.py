@@ -220,7 +220,7 @@ class Account(models.Model):
         if name:
             domain = ['|', ('number', operator, name),
                       ('name', operator, name)]
-        # 源代码默认为160,突破其限制   详细见 /web/static/src/js/views/form_common.js          
+        # 源代码默认为160,突破其限制   详细见 /web/static/src/js/views/form_common.js
         if limit == 160:
             limit = 0
         pos = self.search(domain+args, limit=limit, order='number')

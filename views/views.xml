@@ -628,6 +628,34 @@
         </form>
       </field>
     </record>
+
+    <record id="accountcore_accounts_balance_form" model="ir.ui.view">
+      <field name="name">启用期初</field>
+      <field name="model">accountcore.accounts_balance</field>
+      <field name="arch" type="xml">
+        <form >
+          <sheet>
+            <group>
+              <field name="org" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+              <field name="createDate" string='启用日期'></field>
+              <field name="year" invisible='1'></field>
+              <field name="month" invisible='1'></field>
+              <field name="isbegining" invisible='1'></field>
+              <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+              <field name='accountItemClass' string="核算项目类别" class="oe_grey" />
+              <field name="items" domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}"></field>
+              <field name="beginingDamount" string='月初余额(借方)'></field>
+              <field name="beginingCamount" string='月初余额(贷方)'></field>
+              <field name="damount" string='月已发生额(借方)'></field>
+              <field name="camount" string='月已发生额(贷方)'></field>
+              <field name="beginCumulativeDamount" string='月初本年借方累计发生额'></field>
+              <field name="beginCumulativeCamount" string='月初本年借方累计发生额'></field>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
     <!-- 科目余额表查询 -->
     <record id="paperformat_A4_Landspace" model="report.paperformat">
       <field name="name">科目余额表</field>
