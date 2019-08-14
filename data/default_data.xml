@@ -1,6 +1,11 @@
 <odoo>
     <!-- 初始化数据 -->
     <data noupdate="1">
+        <!-- 全局标签-开始 -->
+        <record id='glob_tag_1' model='accountcore.glob_tag'><field name='name' >glob_tag_1</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field></record>
+        <record id='glob_tag_2' model='accountcore.glob_tag'><field name='name' >glob_tag_2</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field></record>
+        <record id='glob_tag_3' model='accountcore.glob_tag'><field name='name' >glob_tag_3</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field></record>
+        <!-- 全局标签-结束 -->
         <!-- 机构 -->
         <record id="org_1" model="accountcore.org">
             <field name="number">1</field>

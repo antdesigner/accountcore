@@ -22,6 +22,7 @@
         'report/account_subsidiary_book_template.xml',
         'views/menu.xml',
         'data/default_data.xml',
+        'data/help_data.xml',
         'security/ir.model.access.csv',
     ],
     'qweb': [

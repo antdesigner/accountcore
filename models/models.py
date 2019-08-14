@@ -17,7 +17,14 @@ _logger = logging.getLogger(__name__)
 vocher_lock = multiprocessing.Lock()
 
 
-class Org(models.Model):
+class Glob_tag_Modle(models.AbstractModel):
+    _name = "accountcore.glob_tag_model"
+    glob_tag = fields.Many2many('accountcore.glob_tag',
+                                string='全局标签',
+                                index=True)
+
+
+class Org(models.Model, Glob_tag_Modle):
     '''会计核算机构'''
     _name = 'accountcore.org'
     _description = '会计核算机构'
@@ -26,13 +33,14 @@ class Org(models.Model):
     accounts = fields.One2many('accountcore.account',
                                'org',
                                string='科目')
+
     _sql_constraints = [('accountcore_org_number_unique', 'unique(number)',
                          '核算机构编码重复了!'),
                         ('accountcore_org_name_unique', 'unique(name)',
                          '核算机构名称重复了!')]
 
 
-class AccountsArch(models.Model):
+class AccountsArch(models.Model, Glob_tag_Modle):
     '''会计科目体系'''
     _name = 'accountcore.accounts_arch'
     _description = '会计科目体系'
@@ -40,13 +48,14 @@ class AccountsArch(models.Model):
     name = fields.Char(string='科目体系名称', required=True)
     accounts = fields.One2many(
         'accountcore.account', 'accountsArch', string='科目')
+
     _sql_constraints = [('accountcore_accoutsarch_number_unique', 'unique(number)',
                          '科目体系编码重复了!'),
                         ('accountcore_accountsarch_name_unique', 'unique(name)',
                          '科目体系名称重复了!')]
 
 
-class ItemClass(models.Model):
+class ItemClass(models.Model, Glob_tag_Modle):
     '''核算项目类别'''
     _name = 'accountcore.itemclass'
     _description = '核算项目类别'
@@ -58,7 +67,7 @@ class ItemClass(models.Model):
                          '核算项目类别名称重复了!')]
 
 
-class Item(models.Model):
+class Item(models.Model, Glob_tag_Modle):
     '''核算项目'''
     _name = 'accountcore.item'
     _description = '核算项目'
@@ -79,7 +88,8 @@ class Item(models.Model):
                                 ondelete='restrict')
     item_class_name = fields.Char(related='itemClass.name',
                                   string='核算项目类别',
-                                  store=True)
+                                  store=True,
+                                  ondelete='restrict')
     _sql_constraints = [('accountcore_item_number_unique', 'unique(number)',
                          '核算项目编码重复了!'),
                         ('accountcore_item_name_unique', 'unique(name)',
@@ -127,7 +137,7 @@ class RuleBook(models.Model):
                          '标签名称重复了!')]
 
 
-class AccountClass(models.Model):
+class AccountClass(models.Model, Glob_tag_Modle):
     '''会计科目类别'''
     _name = 'accountcore.accountclass'
     _description = '会计科目类别'
@@ -139,7 +149,7 @@ class AccountClass(models.Model):
                          '科目类别名称重复了!')]
 
 
-class Account(models.Model):
+class Account(models.Model, Glob_tag_Modle):
     '''会计科目'''
     _name = 'accountcore.account'
     _description = '会计科目'
@@ -259,7 +269,7 @@ class Account(models.Model):
         return self.search([('number', 'like', self.number)]).mapped('id')
 
 
-class CashFlowType(models.Model):
+class CashFlowType(models.Model, Glob_tag_Modle):
     '''现金流量类别'''
     _name = 'accountcore.cashflowtype'
     _description = '现金流量类别'
@@ -271,7 +281,7 @@ class CashFlowType(models.Model):
                          '现金流量类别名称重复了!')]
 
 
-class CashFlow(models.Model):
+class CashFlow(models.Model, Glob_tag_Modle):
     '''现金流量项目'''
     _name = 'accountcore.cashflow'
     _description = '现金流量项目'
@@ -295,7 +305,7 @@ class VoucherFile(models.Model):
     appedixfileType = fields.Char(string='文件类型', required=True)
 
 
-class Source(models.Model):
+class Source(models.Model, Glob_tag_Modle):
     '''凭证来源'''
     _name = 'accountcore.source'
     _description = '凭证来源'
@@ -1941,3 +1951,38 @@ class currencyDown_sunyi(models.TransientModel):
             'entrys': [(6, 0, entrys.ids)]
         })
         return voucher
+
+
+class HelpClass(models.Model):
+    '''帮助类别'''
+    _name = 'accountcore.help_class'
+    _description = '帮助类别'
+    name = fields.Char(string='帮助类别', required=True)
+    _sql_constraints = [('accountcore_help_class_name_unique', 'unique(name)',
+                         '帮助类别名称重复了!')]
+
+
+class GlobTag(models.Model):
+    '''模块全局标签'''
+    _name = 'accountcore.glob_tag'
+    _description = '模块全局标签'
+    name = fields.Char(string='全局标签名称', required=True)
+    summary =fields.Char(string='使用范围和简介',required=True)
+    js_code = fields.Text(string='js代码')
+    python_code = fields.Text(string='python代码')
+    sql_code = fields.Text(string='sql代码')
+    str_code = fields.Text(string='字符串')
+    application = fields.Html(string='详细使用说明')
+    _sql_constraints = [('accountcore_glob_tag_name_unique', 'unique(name)',
+                         '模块全局标签重复了!')]
+
+
+class Helpes(models.Model):
+    '''详细帮助'''
+    _name = 'accountcore.helps'
+    _description = '详细帮助'
+    name = fields.Char(string='标题', required=True)
+    help_class = fields.Many2one('accountcore.help_class',
+                                 string='帮助类别',
+                                 required=True)
+    content = fields.Html(string='内容')

@@ -10,6 +10,7 @@
         <tree>
           <field name='number' />
           <field name='name' />
+          <field name='glob_tag' widget='many2many_tags'/>
         </tree>
       </field>
     </record>
@@ -25,6 +26,7 @@
             <group>
               <field name="number" />
               <field name="name" />
+              <field name='glob_tag'  widget='many2many_tags'/>
             </group>
           </sheet>
         </form>
@@ -37,6 +39,7 @@
         <tree>
           <field name='number' />
           <field name='name' />
+          <field name='glob_tag'  widget='many2many_tags'/>
         </tree>
       </field>
     </record>
@@ -52,6 +55,7 @@
             <group>
               <field name="number" />
               <field name="name" />
+              <field name='glob_tag'  widget='many2many_tags'/>
             </group>
           </sheet>
         </form>
@@ -65,6 +69,7 @@
         <tree>
           <field name='number' />
           <field name='name' />
+          <field name='glob_tag'  widget='many2many_tags'/>
         </tree>
       </field>
     </record>
@@ -81,6 +86,7 @@
             <group>
               <field name='number' />
               <field name="name" />
+              <field name='glob_tag'  widget='many2many_tags'/>
             </group>
           </sheet>
         </form>
@@ -96,6 +102,7 @@
           <field name='number' />
           <field name='name' />
           <field name='uniqueNumber' readonly='1'></field>
+          <field name='glob_tag'  widget='many2many_tags'/>
         </tree>
       </field>
     </record>
@@ -114,6 +121,7 @@
               <field name="org" />
               <field name="itemClass" />
               <field name="name" />
+              <field name='glob_tag'  widget='many2many_tags'/>
             </group>
           </sheet>
         </form>
@@ -153,6 +161,7 @@
         <tree>
           <field name='number'></field>
           <field name='name'></field>
+          <field name='glob_tag'  widget='many2many_tags'/>
         </tree>
       </field>
     </record>
@@ -168,6 +177,7 @@
             <group>
               <field name="number" />
               <field name="name" />
+              <field name='glob_tag'  widget='many2many_tags'/>
             </group>
           </sheet>
         </form>
@@ -186,8 +196,8 @@
           <field name='name'></field>
           <field name='direction' />
           <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
-          <field name='itemClassesHtml'>
-          </field>
+          <field name='itemClassesHtml'></field>
+          <field name='glob_tag'  widget='many2many_tags'/>
           <field name='fatherAccountId' invisible='1'></field>
         </tree>
       </field>
@@ -224,6 +234,7 @@
               </field>
               <field name='accountItemClass' domain="[('id','in',itemClasses)]" context="{'account_id':id}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
+            <field name='glob_tag'  widget='many2many_tags'/>
             <group>
               <field name="explain" />
             </group>
@@ -262,6 +273,7 @@
         <tree>
           <field name='number'></field>
           <field name='name'></field>
+          <field name='glob_tag'  widget='many2many_tags'/>
         </tree>
       </field>
     </record>
@@ -278,6 +290,7 @@
             <group>
               <field name="number" />
               <field name='name' />
+              <field name='glob_tag'  widget='many2many_tags'/>
             </group>
           </sheet>
         </form>
@@ -322,6 +335,7 @@
         <tree>
           <field name='number'></field>
           <field name='name'></field>
+          <field name='glob_tag'  widget='many2many_tags'/>
         </tree>
       </field>
     </record>
@@ -396,6 +410,91 @@
         </form>
       </field>
     </record>
+
+    <record model='ir.ui.view' id='accountcore_help_class_list'>
+      <field name='name'>帮助类别列表</field>
+      <field name='model'>accountcore.help_class</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='name'></field>
+        </tree>
+      </field>
+    </record>
+
+    <record model='ir.ui.view' id='accountcore_helps_list'>
+      <field name='name'>详细帮助列表</field>
+      <field name='model'>accountcore.helps</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='name' ></field>
+          <field name='help_class' ></field>
+        </tree>
+      </field>
+    </record>
+
+    <record id="accountcore_helps_form" model="ir.ui.view">
+      <field name="name">详细帮助</field>
+      <field name="model">accountcore.helps</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <h1>新增编辑=>详细帮助</h1>
+            <hr></hr>
+            <group>
+              <field name="name" ></field>
+              <field name='help_class' options="{'no_create_edit':1,'no_create':1,'no_open':1}" ></field>
+              <field name='content' ></field>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record model='ir.ui.view' id='accountcore_glob_tag_list'>
+      <field name='name'>全局标签列表</field>
+      <field name='model'>accountcore.glob_tag</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='name' ></field>
+          <field name="summary"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="accountcore_glob_tag_form" model="ir.ui.view">
+      <field name="name">全局标签</field>
+      <field name="model">accountcore.glob_tag</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <h1>新增编辑=>全局标签</h1>
+            <hr></hr>
+            <group>
+              <field name="name"></field>
+              <field name="summary"/>
+            </group>
+            <notebook>
+            <page string='用途说明'>
+              <field name="application" ></field>
+             </page>
+             <page string='js代码'>
+              <field name='js_code'></field>
+             </page>
+            <page string='python代码'>
+              <field name='python_code'></field>
+              </page>
+              <page string='sql代码'>
+              <field name='sql_code'></field>
+             </page>
+             <page string='字符串'>
+              <field name='str_code'></field>
+             </page>
+          </notebook>
+           </sheet>
+        </form>
+      </field>
+    </record>
+
 
     <!-- accountcore.voucher_number_single action window -->
     <record id="accountcore_seting_voucher_number_single_action" model="ir.actions.act_window">
@@ -768,7 +867,7 @@
         </form>
       </field>
     </record>
-    
+
     <!-- accountcore.voucher search view -->
     <record id="accountcore_account_search" model="ir.ui.view">
       <field name="name">科目查询</field>
@@ -846,7 +945,7 @@
       <field name='res_model'>accountcore.item</field>
       <field name='view_mode'>tree,form</field>
       <field name='target'>current</field>
-       <field name="context">{'search_default_groupby_itemClass': 1}</field>
+      <field name="context">{'search_default_groupby_itemClass': 1}</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_rulebook_action_window'>
       <field name='name'>凭证标签</field>
@@ -889,6 +988,18 @@
     <record model="ir.actions.act_window" id="acccountcore_special_accounts_actions_window">
       <field name="name">特殊科目列表</field>
       <field name="res_model">accountcore.special_accounts</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="acccountcore_glob_tag_actions_window">
+      <field name="name">全局标签列表</field>
+      <field name="res_model">accountcore.glob_tag</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="acccountcore_helps_actions_window">
+      <field name="name">帮助列表</field>
+      <field name="res_model">accountcore.helps</field>
       <field name='view_mode'>tree,form</field>
     </record>
 
