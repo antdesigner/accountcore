@@ -583,7 +583,7 @@
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
-                <field name='sequence' widget='handle' class='' ></field>
+                <!-- <field name='sequence' widget='handle' class='' ></field> -->
                 <field name='explain' class='oe_ac_explain'></field>
                 <field name='account' context="{'search_default_groupby_accountClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                 <field name='damount' sum='借方合计' class='amountColor'></field>

@@ -2,7 +2,7 @@
     <data>
         <menuitem name='会计' id='accountcore_menu' />
         <menuitem name='向导帮助' id='accountcore_guide_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="30" />
-        <menuitem name='第1步:快速了解' id='accountcore_guide_menu_0' parent='accountcore_guide_menu' action='accountcore_org_action_window' sequence="5" /> 
+        <menuitem name='第1步:快速了解' id='accountcore_guide_menu_0' parent='accountcore_guide_menu' action='acccountcore_helps_actions_window' sequence="5" /> 
         <menuitem name='第2步:添加核算机构' id='accountcore_guide_menu_1' parent='accountcore_guide_menu' action='accountcore_org_action_window' sequence="10" />
         <menuitem name='第3步:添加核算项目类别' id='accountcore_guide_menu_2' parent='accountcore_guide_menu' action='accountcore_itemclass_action_window' sequence="20" />
         <menuitem name='第4步:添加核算项目' id='accountcore_guide_menu_3' parent='accountcore_guide_menu' action='accountcore_items_action_window' sequence="30" />
