@@ -191,12 +191,18 @@ class Account(models.Model, Glob_tag_Model):
                                       help="科目的上级科目",
                                       index=True,
                                       ondelete='restrict')
+    childs_ids = fields.One2many('accountcore.account',
+                                 'fatherAccountId',
+                                 string='直接下级科目',
+                                 ondelete='restrict')
+    # is_end = fields.Boolean(string='是否最明细级科目')
     currentChildNumber = fields.Integer(default=10,
                                         string='新建下级科目待用编号')
     explain = fields.Html(string='科目说明')
-    itemClassesHtml = fields.Html(string="科目的核算项目类别",
+    itemClassesHtml = fields.Html(string="核算类别",
                                   help="录入凭证分录时可以选择的核算项目.其中带*的相当于明细科目,为必选.其他不带*的为统计项目,可选",
-                                  compute='_itemClassesHtml')
+                                  compute='_itemClassesHtml',
+                                  store=True)
     _sql_constraints = [('accountcore_account_number_unique', 'unique(number)',
                          '科目编码重复了!'),
                         ('accountcore_account_name_unique', 'unique(name)',
@@ -253,6 +259,7 @@ class Account(models.Model, Glob_tag_Model):
                 for i in itemClasses]
 
     @api.multi
+    @api.depends('itemClasses', 'accountItemClass')
     def _itemClassesHtml(self):
         '''购建科目相关核算项目展示内容'''
         content = None
@@ -275,6 +282,10 @@ class Account(models.Model, Glob_tag_Model):
         self.ensure_one()
         # 通过科目编码来判断
         return self.search([('number', 'like', self.number)]).mapped('id')
+
+    # @api.multi
+    # @api.depends('fa')
+    # def _is_end(self):
 
 
 class CashFlowType(models.Model, Glob_tag_Model):
@@ -899,7 +910,7 @@ class AccountcoreUserDefaults(models.TransientModel):
                          json.dumps(self.default_voucherDate.strftime('%Y-%m-%d')))
         if self.default_real_date:
             self._setDefault(modelName, 'real_date',
-                         json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
+                             json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
         self.env.user.currentOrg = self.default_org.id
         return True
 
@@ -1016,7 +1027,9 @@ class CreateChildAccountWizard(models.TransientModel):
         fatherAccount.currentChildNumber = fatherAccount.currentChildNumber+1
         values.update(newAccount)
         rl = super(CreateChildAccountWizard, self).create(values)
-        accountTable.create(values)
+        a = accountTable.create(values)
+        # 添加到上级科目的直接下级
+        fatherAccount.write({'childs_ids': [(4, a.id)]})
         return rl
 
 

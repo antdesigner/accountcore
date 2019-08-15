@@ -10,7 +10,7 @@
         <tree>
           <field name='number' />
           <field name='name' />
-          <field name='glob_tag' widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -26,7 +26,7 @@
             <group>
               <field name="number" />
               <field name="name" />
-              <field name='glob_tag'  widget='many2many_tags'/>
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -39,7 +39,7 @@
         <tree>
           <field name='number' />
           <field name='name' />
-          <field name='glob_tag'  widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -55,7 +55,7 @@
             <group>
               <field name="number" />
               <field name="name" />
-              <field name='glob_tag'  widget='many2many_tags'/>
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -69,7 +69,7 @@
         <tree>
           <field name='number' />
           <field name='name' />
-          <field name='glob_tag'  widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -86,7 +86,7 @@
             <group>
               <field name='number' />
               <field name="name" />
-              <field name='glob_tag'  widget='many2many_tags'/>
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -102,7 +102,7 @@
           <field name='number' />
           <field name='name' />
           <field name='uniqueNumber' readonly='1'></field>
-          <field name='glob_tag'  widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -121,7 +121,7 @@
               <field name="org" />
               <field name="itemClass" />
               <field name="name" />
-              <field name='glob_tag'  widget='many2many_tags'/>
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -161,7 +161,7 @@
         <tree>
           <field name='number'></field>
           <field name='name'></field>
-          <field name='glob_tag'  widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -177,7 +177,7 @@
             <group>
               <field name="number" />
               <field name="name" />
-              <field name='glob_tag'  widget='many2many_tags'/>
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -197,8 +197,9 @@
           <field name='direction' />
           <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='itemClassesHtml'></field>
-          <field name='glob_tag'  widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
           <field name='fatherAccountId' invisible='1'></field>
+          <!-- <field name="childs_ids"/> -->
         </tree>
       </field>
     </record>
@@ -220,7 +221,7 @@
             </group>
             <group>
               <field name='number' attrs="{'readonly':[('fatherAccountId','&gt;',0)]}" />
-              <field name="name" />
+              <field name="name"  default_focus='1'/>
               <field name='direction' widget='radio' />
               <field name="cashFlowControl" />
             </group>
@@ -234,10 +235,32 @@
               </field>
               <field name='accountItemClass' domain="[('id','in',itemClasses)]" context="{'account_id':id}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
-            <field name='glob_tag'  widget='many2many_tags'/>
+            <group>
+              <field name='glob_tag' widget='many2many_tags' />
+            </group>
             <group>
               <field name="explain" />
+              </group>
+              <group>
+               <field name="childs_ids">
+               <tree default_order='org,accountClass,number' create='0' limit='80' >
+                  <field name='org'></field>
+                  <field name='accountsArch' />
+                  <field name='accountClass'></field>
+                  <field name='number'></field>
+                  <field name='name'></field>
+                  <field name='direction' />
+                  <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
+                  <field name='itemClassesHtml'></field>
+                  <field name='glob_tag' widget='many2many_tags' />
+                  <field name='fatherAccountId' invisible='1'></field>
+                  <field name="childs_ids"/>
+                </tree>
+               </field>
             </group>
+            <center>
+            <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
+            </center>
           </sheet>
         </form>
       </field>
@@ -273,7 +296,7 @@
         <tree>
           <field name='number'></field>
           <field name='name'></field>
-          <field name='glob_tag'  widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -290,7 +313,7 @@
             <group>
               <field name="number" />
               <field name='name' />
-              <field name='glob_tag'  widget='many2many_tags'/>
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -335,7 +358,7 @@
         <tree>
           <field name='number'></field>
           <field name='name'></field>
-          <field name='glob_tag'  widget='many2many_tags'/>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -441,8 +464,8 @@
             <h1>新增编辑=>详细帮助</h1>
             <hr></hr>
             <group>
-              <field name="name" ></field>
-              <field name='help_class' options="{'no_create_edit':1,'no_create':1,'no_open':1}" ></field>
+              <field name="name"></field>
+              <field name='help_class' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
               <field name='content' ></field>
             </group>
           </sheet>
@@ -456,7 +479,7 @@
       <field name='arch' type='xml'>
         <tree>
           <field name='name' ></field>
-          <field name="summary"/>
+          <field name="summary" />
         </tree>
       </field>
     </record>
@@ -471,26 +494,26 @@
             <hr></hr>
             <group>
               <field name="name"></field>
-              <field name="summary"/>
+              <field name="summary" />
             </group>
             <notebook>
-            <page string='用途说明'>
-              <field name="application" ></field>
-             </page>
-             <page string='js代码'>
-              <field name='js_code'></field>
-             </page>
-            <page string='python代码'>
-              <field name='python_code'></field>
+              <page string='用途说明'>
+                <field name="application"></field>
+              </page>
+              <page string='js代码'>
+                <field name='js_code'></field>
+              </page>
+              <page string='python代码'>
+                <field name='python_code'></field>
               </page>
               <page string='sql代码'>
-              <field name='sql_code'></field>
-             </page>
-             <page string='字符串'>
-              <field name='str_code'></field>
-             </page>
-          </notebook>
-           </sheet>
+                <field name='sql_code'></field>
+              </page>
+              <page string='字符串'>
+                <field name='str_code'></field>
+              </page>
+            </notebook>
+          </sheet>
         </form>
       </field>
     </record>
@@ -579,7 +602,7 @@
             <group col='4' class='oe_grey'>
               <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1' />
-              <field name='real_date' col='2' attrs="{'readonly':[('state','=','reviewed')]}"  />            
+              <field name='real_date' col='2' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='number' col='2' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
             </group>
@@ -876,9 +899,13 @@
       <field name="model">accountcore.account</field>
       <field name="arch" type="xml">
         <search string="accountFilter">
-          <!-- <field name="org" string="全部可选核算机构" filter_domain="[('org','>', self)]" context="{'group_by':'accountClass'}"/> -->
+          <field name="name" string="科目名称包含" domain="[('name','ilike', self)]" />
+          <field name="number" string="科目编号包含" domain="[('number','ilike', self)]" />
+          <field name="glob_tag" string="全局标签包含"   domain="[('glob_tagr','ilike', self)]" widget='many2one' />
+          <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
+          <filter string="分配现金流量的科目"  name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
           <filter name="groupby_accountClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
-          <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+          <filter name="group_by_arch" string="按科目体系分组" context = "{'group_by': 'accountsArch'}" />
         </search>
       </field>
     </record>
@@ -888,6 +915,10 @@
       <field name="model">accountcore.item</field>
       <field name="arch" type="xml">
         <search string="itemFilter">
+          <field name="name" string="项目名称包含" domain="[('name','ilike', self)]" />
+          <field name="number" string="项目编号包含" domain="[('number','ilike', self)]" />
+          <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one'/>
+          <field name="uniqueNumber" string="唯一编号包含" domain="[('uniqueNumber','ilike', self)]" />
           <filter name="groupby_itemClass" string="按项目类别分组" context = "{'group_by': 'itemClass'}" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
         </search>
