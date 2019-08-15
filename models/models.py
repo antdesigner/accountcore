@@ -884,7 +884,7 @@ class AccountcoreUserDefaults(models.TransientModel):
                                   string='默认机构')
     default_voucherDate = fields.Date(string='记账日期',
                                       default=fields.Date.today())
-    default_real_date = fields.Date(string='记账日期')
+    default_real_date = fields.Date(string='业务日期')
 
     # 设置新增凭证,日期,机构和账套字段的默认值
     def setDefaults(self):
