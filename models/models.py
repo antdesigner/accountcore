@@ -333,6 +333,7 @@ class Voucher(models.Model):
     voucherdate = fields.Date(string='记账日期',
                               required=True,
                               placeholder='记账日期')
+    real_date = fields.Date(string='业务日期', placehplder='业务日期')
     # 前端通过voucherDate生成,不要直接修改
     year = fields.Integer(string='年份',
                           compute='_getYearMonth',
@@ -883,6 +884,7 @@ class AccountcoreUserDefaults(models.TransientModel):
                                   string='默认机构')
     default_voucherDate = fields.Date(string='记账日期',
                                       default=fields.Date.today())
+    default_real_date = fields.Date(string='记账日期')
 
     # 设置新增凭证,日期,机构和账套字段的默认值
     def setDefaults(self):
@@ -895,6 +897,9 @@ class AccountcoreUserDefaults(models.TransientModel):
                          self.default_org.id)
         self._setDefault(modelName, 'voucherdate',
                          json.dumps(self.default_voucherDate.strftime('%Y-%m-%d')))
+        if self.default_real_date:
+            self._setDefault(modelName, 'real_date',
+                         json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
         self.env.user.currentOrg = self.default_org.id
         return True
 
@@ -1124,7 +1129,6 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
         return True
 
 
-
 class AccountsBalance(models.Model):
     '''科目余额'''
     _name = 'accountcore.accounts_balance'
@@ -1192,7 +1196,8 @@ class AccountsBalance(models.Model):
     def _get_company_currency(self):
         self.currency_id = self.env.user.company_id.currency_id
 
-    @api.onchange('createDate')
+    # @api.onchange('createDate')
+    @api.depends('createDate')
     def chage_period(self):
         if self.createDate:
             self.year = self.createDate.year

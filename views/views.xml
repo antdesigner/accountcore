@@ -514,6 +514,7 @@
           <sheet>
             <group col='2'>
               <field name='default_voucherDate' required='1' />
+              <field name='default_real_date'  />
               <field name='default_org' required='1' />
               <field name='default_ruleBook' required='1' >
                 <tree>
@@ -578,8 +579,9 @@
             <group col='4' class='oe_grey'>
               <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1' />
+              <field name='real_date' col='2' attrs="{'readonly':[('state','=','reviewed')]}"  />            
+              <field name='number' col='2' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
-              <field name='number' col='1' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" class="oe_right" colspan="2" />
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
