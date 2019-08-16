@@ -194,9 +194,9 @@
           <field name='accountClass'></field>
           <field name='number'></field>
           <field name='name'></field>
-          <field name='direction' />
-          <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='itemClassesHtml'></field>
+          <field name='direction' />
+          <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='glob_tag' widget='many2many_tags' />
           <field name='fatherAccountId' invisible='1'></field>
           <!-- <field name="childs_ids"/> -->
@@ -249,9 +249,9 @@
                   <field name='accountClass'></field>
                   <field name='number'></field>
                   <field name='name'></field>
-                  <field name='direction' />
-                  <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
                   <field name='itemClassesHtml'></field>
+                  <field name='direction' />
+                  <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
                   <field name='glob_tag' widget='many2many_tags' />
                   <field name='fatherAccountId' invisible='1'></field>
                   <field name="childs_ids"/>
@@ -259,7 +259,7 @@
                </field>
             </group>
             <center>
-            <button string='增加下级科目' type='action' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
+            <button string='增加下级科目' type='action' class='btn-secondary' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
             </center>
           </sheet>
         </form>
