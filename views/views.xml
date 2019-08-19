@@ -188,7 +188,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,accountClass,number' limit='80'>
+        <tree default_order='org,accountClass,number' limit='9999'>
           <field name='org'></field>
           <field name='accountsArch' />
           <field name='accountClass'></field>
@@ -221,7 +221,7 @@
             </group>
             <group>
               <field name='number' attrs="{'readonly':[('fatherAccountId','&gt;',0)]}" />
-              <field name="name"  default_focus='1'/>
+              <field name="name" default_focus='1' />
               <field name='direction' widget='radio' />
               <field name="cashFlowControl" />
             </group>
@@ -240,10 +240,10 @@
             </group>
             <group>
               <field name="explain" />
-              </group>
-              <group>
-               <field name="childs_ids">
-               <tree default_order='org,accountClass,number' create='0' limit='80' >
+            </group>
+            <group>
+              <field name="childs_ids">
+                <tree default_order='org,accountClass,number' create='0' limit='80' >
                   <field name='org'></field>
                   <field name='accountsArch' />
                   <field name='accountClass'></field>
@@ -254,12 +254,12 @@
                   <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
                   <field name='glob_tag' widget='many2many_tags' />
                   <field name='fatherAccountId' invisible='1'></field>
-                  <field name="childs_ids"/>
+                  <field name="childs_ids" />
                 </tree>
-               </field>
+              </field>
             </group>
             <center>
-            <button string='增加下级科目' type='action' class='btn-secondary' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
+              <button string='增加下级科目' type='action' class='btn-secondary' name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
             </center>
           </sheet>
         </form>
@@ -501,16 +501,16 @@
                 <field name="application"></field>
               </page>
               <page string='js代码'>
-                <field name='js_code'></field>
+                <field name='js_code' widget='ace'></field>
               </page>
               <page string='python代码'>
-                <field name='python_code'></field>
+                <field name='python_code' widget='ace'></field>
               </page>
               <page string='sql代码'>
-                <field name='sql_code'></field>
+                <field name='sql_code' widget='ace'></field>
               </page>
               <page string='字符串'>
-                <field name='str_code'></field>
+                <field name='str_code' widget='ace'></field>
               </page>
             </notebook>
           </sheet>
@@ -608,12 +608,14 @@
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
-                <!-- <field name='sequence' widget='handle' class='' ></field> -->
+                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
+                <field name='org' invisible='1'/>
                 <field name='explain' class='oe_ac_explain'></field>
                 <field name='account' context="{'search_default_groupby_accountClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                 <field name='damount' sum='借方合计' class='amountColor'></field>
                 <field name='camount' sum='贷方合计' class='amountColor'></field>
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account}" />
+                <field name='account_item' invisible='1'/>
                 <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
                 <control>
                   <create string="添加一行分录" />
@@ -626,6 +628,12 @@
               <field name='createUser' />
               <field name='reviewer' />
             </group>
+            <div>
+              <script>
+        $(function(){ $('[data-toggle="tooltip"]').tooltip();  
+        });
+              </script>
+            </div>
           </sheet>
         </form>
       </field>
@@ -667,7 +675,7 @@
             </group>
             <group>
               <field name='number' readonly='1'></field>
-              <field name='name'></field>
+              <field name='name' default_focus='1'></field>
               <field name='direction' widget='radio' />
             </group>
             <group>
@@ -901,9 +909,9 @@
         <search string="accountFilter">
           <field name="name" string="科目名称包含" domain="[('name','ilike', self)]" />
           <field name="number" string="科目编号包含" domain="[('number','ilike', self)]" />
-          <field name="glob_tag" string="全局标签包含"   domain="[('glob_tagr','ilike', self)]" widget='many2one' />
+          <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
-          <filter string="分配现金流量的科目"  name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
+          <filter string="分配现金流量的科目" name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
           <filter name="groupby_accountClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
           <filter name="group_by_arch" string="按科目体系分组" context = "{'group_by': 'accountsArch'}" />
         </search>
@@ -917,7 +925,7 @@
         <search string="itemFilter">
           <field name="name" string="项目名称包含" domain="[('name','ilike', self)]" />
           <field name="number" string="项目编号包含" domain="[('number','ilike', self)]" />
-          <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one'/>
+          <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
           <field name="uniqueNumber" string="唯一编号包含" domain="[('uniqueNumber','ilike', self)]" />
           <filter name="groupby_itemClass" string="按项目类别分组" context = "{'group_by': 'itemClass'}" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
@@ -1065,6 +1073,12 @@
       <field name="res_model">accountcore.get_subsidiary_book</field>
       <field name="view_mode">form</field>
       <field name="target">new</field>
+    </record>
+    <record model='ir.actions.act_window' id='accountore_voucher_id_actions_window'>
+      <field name='name'>凭证</field>
+      <field name='res_model'>accountcore.voucher</field>
+      <field name='view_mode'>form</field>
+      <field name="target">fullscreen</field>
     </record>
 
     <record model='ir.actions.act_window' id='accountore_voucher_shunyi_actions_window'>

@@ -126,17 +126,17 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
         },
 
     });
-    var FieldMany2ManyCheckBoxes=relational_fields.FieldMany2ManyCheckBoxes;
-    var FieldMany2ManyCheckBoxes_flowToLeft=FieldMany2ManyCheckBoxes.extend({
+    var FieldMany2ManyCheckBoxes = relational_fields.FieldMany2ManyCheckBoxes;
+    var FieldMany2ManyCheckBoxes_flowToLeft = FieldMany2ManyCheckBoxes.extend({
         template: 'FieldMany2ManyCheckBoxes_flowToLeft',
-    });  
+    });
     var fieldRegistry = require('web.field_registry');
     fieldRegistry.add('tiger_accountItems_m2m', tiger_accountItems_m2m);
     // 继承many2many_checkboxes向左浮动
     fieldRegistry.add('many2many_checkboxes_floatleft', FieldMany2ManyCheckBoxes_flowToLeft);;
     return {
         tiger_accountItems_m2m: tiger_accountItems_m2m,
-        fieldMany2ManyCheckBoxes_flowToLeft:FieldMany2ManyCheckBoxes_flowToLeft,
+        fieldMany2ManyCheckBoxes_flowToLeft: FieldMany2ManyCheckBoxes_flowToLeft,
     };
 });
 //凭证的核算项目字段选择
@@ -465,7 +465,6 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
 
     }
 });
-
 //给凭证列表视图添加按钮
 odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     "use strict";

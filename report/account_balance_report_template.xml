@@ -17,22 +17,32 @@ page-break-inside: avoid !important;}
 .org_name{text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
 
         </style>
+
         <t t-call="web.basic_layout">
-            <div class="container text-center" style='display:flex;flex-direction:column;'>
+
+            <div class="container center text-center" style='display:flex;flex-direction:column;'>
                 <t t-set="start" t-value="data['form']['startDate']">
                 </t>
                 <t t-set="end" t-value="data['form']['endDate']">
                 </t>
-                <div class="row"><h4 class='col'>科目余额表</h4></div>
+
+                <div class="row">
+                    <h4 class='col'>科目余额表</h4>
+                </div>
+
                 <div class="row">
                     <h6 class='col' t-if="start=='1970-01-01' and end=='9999-12-31'">1970年1月至9999年12月</h6>
                     <h6 class='col' t-else="">
                         <t t-esc="(start[0:7]).replace('-','年')"></t>
                         <span>月至</span>
-                        <span t-if="end!='9999-12-31'"><t t-esc="(end[0:7]).replace('-','年')"></t>月</span>
+                        <span t-if="end!='9999-12-31'">
+                            <t t-esc="(end[0:7]).replace('-','年')"></t>月
+                        </span>
                         <span t-if="end=='9999-12-31'">9999年12月</span>
+
                     </h6>
                 </div>
+               
                 <div class="row">
                     <div class="">
                         <table class='table  table-bordered table-sm table-striped table-hover'>
@@ -57,7 +67,7 @@ page-break-inside: avoid !important;}
                             <tbody class='text-left'>
                                 <t t-foreach="docs" t-as="account">
                                     <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'], 'account_father_id':account['account_father_id']}">
-                                        <td class='org_name' colspan="2">
+                                        <td class='org_name' colspan="2" data-toggle="tooltip" t-att-title="account['org_name']">
                                             <span t-esc="account['org_name']"></span>
                                         </td>
                                         <td class='account_numeber' >
@@ -119,8 +129,15 @@ page-break-inside: avoid !important;}
                 </div>
             </div>
         </t>
+        <div class="footer o_standard_footer">
+            <div class="text-right">
+                <div t-if="report_type == 'pdf'" >
+                    Page: <span class="page"/> / <span class="topage"/>
+                </div>
+            </div>
+        </div>
         <script>
-        $(function(){
+        $(function(){ $('[data-toggle="tooltip"]').tooltip();  
         });
         </script>
     </template>
