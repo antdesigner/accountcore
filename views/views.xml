@@ -578,6 +578,12 @@
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
     </record>
+    <record model='ir.actions.act_window' id='accountcore_get_subsidiary_book_window'>
+      <field name="name">查询科目明细账</field>
+      <field name="res_model">accountcore.get_subsidiary_book</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
     <record model='ir.ui.view' id='accountcore_voucher_form'>
       <field name='name'>记账凭证</field>
       <field name='model'>accountcore.voucher</field>
@@ -1017,7 +1023,7 @@
     <record model='ir.actions.act_window' id='accountcore_source_action_window'>
       <field name='name'>凭证来源</field>
       <field name='res_model'>accountcore.source</field>
-      <field name='view_mode'>tree,form</field>
+      <field name='veiw_mode'>tree,form</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_vouchers_action_window'>
       <field name='name'>凭证列表</field>
@@ -1068,12 +1074,7 @@
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
-    <record model='ir.actions.act_window' id='accountcore_get_subsidiary_book_window'>
-      <field name="name">查询科目明细账</field>
-      <field name="res_model">accountcore.get_subsidiary_book</field>
-      <field name="view_mode">form</field>
-      <field name="target">new</field>
-    </record>
+    
     <record model='ir.actions.act_window' id='accountore_voucher_id_actions_window'>
       <field name='name'>凭证</field>
       <field name='res_model'>accountcore.voucher</field>
