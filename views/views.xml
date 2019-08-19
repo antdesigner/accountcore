@@ -1017,7 +1017,7 @@
     <record model='ir.actions.act_window' id='accountcore_source_action_window'>
       <field name='name'>凭证来源</field>
       <field name='res_model'>accountcore.source</field>
-      <field name='veiw_mode'>tree,form</field>
+      <field name='view_mode'>tree,form</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_vouchers_action_window'>
       <field name='name'>凭证列表</field>
