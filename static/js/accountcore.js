@@ -509,3 +509,4 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     return voucherListView;
 });
 //
+odoo.define("accountcore.tool",funtion)

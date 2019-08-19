@@ -246,7 +246,37 @@ class Account(models.Model, Glob_tag_Model):
         if limit == 160:
             limit = 0
         pos = self.search(domain+args, limit=limit, order='number')
-        return pos.name_get()
+        # return pos.name_get()
+        return pos._my_name_get()
+
+    @api.multi
+    def _my_name_get(self):
+        # 原name_get基类方法:
+        # result = []
+        # name = self._rec_name
+        # if name in self._fields:
+        #     convert = self._fields[name].convert_to_display_name
+        #     for record in self:
+        #         result.append((record.id, convert(record[name], record)))
+        # else:
+        #     for record in self:
+        #         result.append((record.id, "%s,%s" % (record._name, record.id)))
+        result = []
+        name = self._rec_name
+        if name in self._fields:
+            convert = self._fields[name].convert_to_display_name
+            for record in self:
+                # if record['org'].name:
+                #     org_name = record['org'].name
+                # else:
+                #     org_name = ''
+                result.append(
+                    (record.id, (record['number']).ljust(14, '_') + convert(record[name], record)))
+        else:
+            for record in self:
+                result.append((record.id, "%s,%s" % (record._name, record.id)))
+
+        return result
 
     @api.model
     def get_itemClasses(self, accountId):
