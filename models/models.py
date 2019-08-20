@@ -510,6 +510,9 @@ class Voucher(models.Model):
     @api.multi
     def unlink(self):
         '''删除凭证'''
+        for voucher in self:
+            if voucher.state == "reviewed":
+                raise exceptions.ValidationError('有凭证已审核不能删除，请选择未审核凭证')
         vocher_lock.acquire()
         for voucher in self:
             voucher._updateBalance(isAdd=False)

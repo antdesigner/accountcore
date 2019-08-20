@@ -1123,7 +1123,7 @@
       <field name='code'>voucher.uniqueNumber</field>
       <field name='prefix'>V</field>
       <field name='suffix'></field>
-      <field name='padding'>7</field>
+      <field name='padding'>6</field>
     </record>
   </data>
   <data noupdate='True'>

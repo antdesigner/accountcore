@@ -13,11 +13,15 @@
         </record>
         <record id='accountsarch_1' model='accountcore.accounts_arch'>
             <field name='number'>1</field>
-            <field name='name'>中国企业会计科目体系</field>
+            <field name='name'>通用科目</field>
         </record>
         <record id='accountsarch_2' model='accountcore.accounts_arch'>
             <field name='number'>2</field>
-            <field name='name'>中国事业单位会计科目体系</field>
+            <field name='name'>某行业专用明细科目</field>
+        </record>
+        <record id='accountsarch_3' model='accountcore.accounts_arch'>
+            <field name='number'>3</field>
+            <field name='name'>某方案专用明细科目</field>
         </record>
         <!-- 账簿类别 -->
         <record id="rulebook_999" model="accountcore.rulebook">
@@ -283,6 +287,19 @@
             <field name="number">6</field>
             <field name="name">损益类</field>
         </record>
+        <record id="account_class_91" model="accountcore.accountclass">
+            <field name="number">91</field>
+            <field name="name">净资产类</field>
+        </record>
+        <record id="account_class_92" model="accountcore.accountclass">
+            <field name="number">92</field>
+            <field name="name">收入类</field>
+        </record>
+        <record id="account_class_6" model="accountcore.accountclass">
+            <field name="number">93</field>
+            <field name="name">支出类</field>
+        </record>
+
         <!-- 科目类别结束 -->
         <!-- 科目表开始 -->
         <record id='account_1' model='accountcore.account'><field name='org' eval='False' /><field name='accountClass' eval='account_class_1' /><field name='number' >1001</field><field name='name' >库存现金</field><field name='direction' >1</field><field name='cashFlowControl' >1</field><field name='accountsArch' eval='accountsarch_1' /></record>
