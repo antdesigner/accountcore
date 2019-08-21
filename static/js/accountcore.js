@@ -110,6 +110,7 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
                 if (id && id > 0 && id != newValue.id) {
                     this._removeTag(id);
                 }
+
                 ev.target.ac_itemId = newValue.id;
                 ev.target.ac_itemName = newValue.display_name;
                 //重要覆写
@@ -297,6 +298,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         },
 
         _onFieldChanged: function (event) {
+            this.lastChangeEvent = event;//test
             var newItem = event.data.changes.items;
             this.ac_newItemName = newItem.display_name;
             this.ac_newItemId = newItem.id;
@@ -509,4 +511,4 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     return voucherListView;
 });
 //
-odoo.define("accountcore.tool",funtion)
+

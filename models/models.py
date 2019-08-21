@@ -271,7 +271,7 @@ class Account(models.Model, Glob_tag_Model):
                 # else:
                 #     org_name = ''
                 result.append(
-                    (record.id, (record['number']).ljust(14, '_') + convert(record[name], record)))
+                    (record.id, (record['number']).ljust(11, '_') + convert(record[name], record)))
         else:
             for record in self:
                 result.append((record.id, "%s,%s" % (record._name, record.id)))
@@ -439,6 +439,30 @@ class Voucher(models.Model):
     roolbook_html = fields.Html(string="凭证的标签",
                                 compute='_buildRuleBook',
                                 store=True)
+    sum_amount = fields.Monetary(string='借贷方差额', default=0, compute='total')
+
+    # Monetory类型字段必须有
+    currency_id = fields.Many2one('res.currency',
+                                  compute='_get_company_currency',
+                                  readonly=True,
+                                  oldname='currency',
+                                  string="Currency",
+                                  help='Utility field to express amount currency')
+
+    @api.one
+    def _get_company_currency(self):
+        # Monetory类型字段必须有 currency_id
+        self.currency_id = self.env.user.company_id.currency_id
+
+    @api.depends('entrys')
+    def total(self):
+        d_amount = 0
+        c_amount = 0
+        for e in self.entrys:
+            d_amount = e.damount+d_amount
+            c_amount = e.camount+c_amount
+        self.sum_amount = d_amount-c_amount
+        return True
 
     @api.multi
     @api.depends('voucherdate')

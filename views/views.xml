@@ -100,7 +100,9 @@
           <field name="org" />
           <field name='itemClass' />
           <field name='number' />
-          <field name='name' />
+          <!-- 必须用dislay_name,因为凭证里选择核算项目字段的自定义tiger_accountItems_m2m（widget） 继承的系统FieldMany2One部件，
+          在搜索时，核算项目的搜索视图需要有display_name字段，选择后填入input中，要不然inpunt为空白-->
+          <field name="display_name"/>
           <field name='uniqueNumber' readonly='1'></field>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
@@ -618,8 +620,8 @@
                 <field name='org' invisible='1'/>
                 <field name='explain' class='oe_ac_explain'></field>
                 <field name='account' context="{'search_default_groupby_accountClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
-                <field name='damount' sum='借方合计' class='amountColor'></field>
-                <field name='camount' sum='贷方合计' class='amountColor'></field>
+                <field name='damount' sum='ac_dsum' class='amountColor'></field>
+                <field name='camount' sum='ac_csum' class='amountColor'></field>
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account}" />
                 <field name='account_item' invisible='1'/>
                 <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
@@ -628,6 +630,10 @@
                 </control>
               </tree>
             </field>
+            <div class="ac-warning"  styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}" >
+            <span>借贷方差额：</span>
+            <field name="sum_amount"/>
+            </div>
             <group col='8' class='oe_grey'>
               <field name='uniqueNumber' readonly='1'></field>
               <field name='soucre' />
@@ -636,8 +642,15 @@
             </group>
             <div>
               <script>
-        $(function(){ $('[data-toggle="tooltip"]').tooltip();  
-        });
+        $(function () {
+         $('[data-toggle="tooltip"]').tooltip();
+         $('td[name="damount"]').on('')
+         $('td[title="camount"]').get(0);
+     });
+
+     function sumChange() {
+         alert('sumChange');
+     }
               </script>
             </div>
           </sheet>
