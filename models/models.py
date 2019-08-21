@@ -439,7 +439,7 @@ class Voucher(models.Model):
     roolbook_html = fields.Html(string="凭证的标签",
                                 compute='_buildRuleBook',
                                 store=True)
-    sum_amount = fields.Monetary(string='借贷方差额', default=0, compute='total')
+    sum_amount = fields.Monetary(string='借贷方差额', default=0, compute='_balance_check')
 
     # Monetory类型字段必须有
     currency_id = fields.Many2one('res.currency',
@@ -454,15 +454,16 @@ class Voucher(models.Model):
         # Monetory类型字段必须有 currency_id
         self.currency_id = self.env.user.company_id.currency_id
 
-    @api.depends('entrys')
-    def total(self):
+    @api.onchange('entrys')
+    def _balance_check(self):
+        '''凭证借方-贷方差额显示'''
         d_amount = 0
         c_amount = 0
         for e in self.entrys:
             d_amount = e.damount+d_amount
             c_amount = e.camount+c_amount
         self.sum_amount = d_amount-c_amount
-        return True
+
 
     @api.multi
     @api.depends('voucherdate')
@@ -487,33 +488,39 @@ class Voucher(models.Model):
         '''新增凭证'''
         # 只允许一条分录更新余额表,进程锁
         vocher_lock.acquire()
-        values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
-            'voucher.uniqueNumber')
-        rl = super(Voucher, self).create(values)
-        # 如果是复制新增就不执行凭证检查
-        isCopye = self.env.context.get('ac_from_copy')
-        if isCopye:
-            pass
-        else:
-            rl._checkVoucher(values)
-        rl._updateBalance()
-        # 跟新处理并发冲突
-        self.env.cr.commit()
-        vocher_lock.release()
+        # 出错了，必须释放锁，要不就会死锁
+        try:
+            values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
+                'voucher.uniqueNumber')
+            rl = super(Voucher, self).create(values)
+            # 如果是复制新增就不执行凭证检查
+            isCopye = self.env.context.get('ac_from_copy')
+            if isCopye:
+                pass
+            else:
+                rl._checkVoucher(values)
+            rl._updateBalance()
+            # 跟新处理并发冲突
+            self.env.cr.commit()
+        finally:
+            vocher_lock.release()
         return rl
 
     @api.multi
     def write(self, values):
         '''修改编辑凭证'''
         vocher_lock.acquire()
-        self.ensure_one
-        self._updateBalance(isAdd=False)  # 先从余额表减去原来的金额
-        rl_bool = super(Voucher, self).write(values)
-        self._checkVoucher(values)
-        self._updateBalance()  # 再从余额表加上新的金额
-        # 跟新处理并发冲突
-        self.env.cr.commit()
-        vocher_lock.release()
+        # 出错了，必须释放锁，要不就会死锁
+        try:
+            self.ensure_one
+            self._updateBalance(isAdd=False)  # 先从余额表减去原来的金额
+            rl_bool = super(Voucher, self).write(values)
+            self._checkVoucher(values)
+            self._updateBalance()  # 再从余额表加上新的金额
+            # 跟新处理并发冲突
+            self.env.cr.commit()
+        finally:
+            vocher_lock.release()
         return rl_bool
 
     @api.multi
