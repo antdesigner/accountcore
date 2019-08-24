@@ -190,7 +190,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,accountClass,number' limit='80'>
+        <tree default_order='org,accountClass,number' limit='9999'>
           <field name='org'></field>
           <field name='accountsArch' />
           <field name='accountClass'></field>
@@ -272,7 +272,7 @@
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree  js_class='balanceListView'  default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='9999'>
+        <tree  js_class='balanceListView'  default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>
