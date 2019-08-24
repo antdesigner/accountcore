@@ -298,7 +298,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         },
 
         _onFieldChanged: function (event) {
-            this.lastChangeEvent = event;//test
+            this.lastChangeEvent = event; //test
             var newItem = event.data.changes.items;
             this.ac_newItemName = newItem.display_name;
             this.ac_newItemId = newItem.id;
@@ -511,4 +511,57 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     return voucherListView;
 });
 //
+//启用期初列表视图
+odoo.define('accountcore.balanceListView', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var CheckBalance=require('accountcore.begin_balance_check')
+    var balanceListController = ListController.extend({
+        renderButtons: function () {
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+                var btns = this.$buttons;
+                var check_balance_btn= new CheckBalance(this);
+                check_balance_btn.appendTo(btns);
+            };
+        },
+  
+    });
+    var balanceListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: balanceListController,
+        }),
+    });
+    viewRegistry.add('balanceListView', balanceListView);
+    return balanceListView;
+});
+odoo.define("accountcore.begin_balance_check", function (require) {
+    "use strict";
+    var Widget = require('web.Widget');
+    var CheckBalance = Widget.extend({
+        template: 'accountcore.check_balance',
+        events: {
+            'click': '_do_check',
+        },
+        _do_check: function () {
+            alert('开始试算平衡');
+            this.do_notify('结果','该功能还在开发中!');
+            this._rpc({
+                model: 'accountcore.account',
+                method: 'get_itemClasses',
+                args: [176],
+            }).then(function (items) {
+                // _.map(items,function(){
+                //     s=s+self.name;
+                //   });
+                console.log('over!');
+            }, function () {
+                console.log('error!');
+            });
+        },
 
+    });
+    return CheckBalance;
+});

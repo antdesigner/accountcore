@@ -190,7 +190,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,accountClass,number' limit='9999'>
+        <tree default_order='org,accountClass,number' limit='999'>
           <field name='org'></field>
           <field name='accountsArch' />
           <field name='accountClass'></field>
@@ -272,14 +272,16 @@
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,year,month,accountItemClass' editable='top' create='1' limit='80'>
+        <tree  js_class='balanceListView'  default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='9999'>
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>
           <field name='month' invisible='1'></field>
           <field name='isbegining' invisible='1'></field>
+          <field name='account_number' invisible='1'></field>
+          <field name="account_class_id" string="类别" />
           <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-          <field name='accountItemClass' string="类别" class="oe_grey" />
+          <field name='accountItemClass' string="项目类别" class="oe_grey" />
           <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}" />
           <field name="beginingDamount" string='月初余额(借方)' sum="合计" />
           <field name="beginingCamount" string='月初余额(贷方)' sum="合计" />
@@ -287,6 +289,7 @@
           <field name="camount" string='月已发生额(贷方)' sum="合计" />
           <field name="beginCumulativeDamount" string='月初本年借方累计发生额' sum="合计" />
           <field name="beginCumulativeCamount" string='月初本年贷方累计发生额' sum="合计" />
+
         </tree>
       </field>
     </record>
@@ -538,10 +541,10 @@
         <form string='' create='false'>
           <sheet>
             <group col='2'>
-              <field name='default_voucherDate' required='1' />
-              <field name='default_real_date'  />
-              <field name='default_org' required='1' />
-              <field name='default_ruleBook' required='1' >
+              <field name='default_voucherDate' required='1' default_focus='2'/>
+              <field name='default_real_date'  default_focus='3'/>
+              <field name='default_org' required='1' default_focus='1'/>
+              <field name='default_ruleBook' required='1' default_focus='4'>
                 <tree>
                   <field name='name' />
                   <control>
@@ -592,11 +595,11 @@
       <field name='arch' type='xml'>
         <form>
           <header>
-            <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
             <button string='取消审核' type='object' name='cancelReview' attrs="{'invisible':[('state','=','creating')]}"></button>
+            <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
             <button string='修改凭证编号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
-            <button string='设置默认值' type='action' name='%(accountcore_userdefaults_action)d'></button>
-            <field name='state' widget='statusbar' ></field>
+            <button string='设为默认值' type='action' name='%(accountcore_userdefaults_action)d' context="{'default_default_voucherDate':voucherdate,'default_default_org':org,'default_default_real_date':real_date,'default_default_ruleBook':ruleBook}"></button>
+            <field name='state' widget='statusbar' class='text-danger'></field>
           </header>
           <sheet>
             <center>
@@ -616,10 +619,10 @@
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
-                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
+                <button name='%(accountcore_get_subsidiary_book_window)d'  context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
                 <field name='org' invisible='1'/>
                 <field name='explain' class='oe_ac_explain'></field>
-                <field name='account' context="{'search_default_groupby_accountClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
+                <field name='account' context="{'search_default_group_by_accountClassClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                 <field name='damount' sum='ac_dsum' class='amountColor'></field>
                 <field name='camount' sum='ac_csum' class='amountColor'></field>
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account}" />
@@ -632,7 +635,7 @@
             </field>
             <div class="ac-warning"  styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}" >
             <span>借贷方差额：</span>
-            <field name="sum_amount"/>
+            <field name="sum_amount"/><span id="auto_balance" style="margin-left:5px">自动平衡</span>
             </div>
             <group col='8' class='oe_grey'>
               <field name='uniqueNumber' readonly='1'></field>
@@ -644,13 +647,10 @@
               <script>
         $(function () {
          $('[data-toggle="tooltip"]').tooltip();
-         $('td[name="damount"]').on('')
-         $('td[title="camount"]').get(0);
+         $('#auto_balance').on('click',function(){
+           alert('平衡');
+         });
      });
-
-     function sumChange() {
-         alert('sumChange');
-     }
               </script>
             </div>
           </sheet>
@@ -800,7 +800,7 @@
               <field name="damount" string='月已发生额(借方)'></field>
               <field name="camount" string='月已发生额(贷方)'></field>
               <field name="beginCumulativeDamount" string='月初本年借方累计发生额'></field>
-              <field name="beginCumulativeCamount" string='月初本年借方累计发生额'></field>
+              <field name="beginCumulativeCamount" string='月初本年贷方累计发生额'></field>
             </group>
           </sheet>
         </form>
@@ -824,7 +824,7 @@
       <field name="dpi">90</field>
     </record>
 
-    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report' paperformat='paperformat_A4_Landspace' />
+    <!-- <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report' paperformat='paperformat_A4_Landspace' /> -->
     <record id="accountcore_get_accounts_balance_form" model="ir.ui.view">
       <field name='name'>科目余额查询</field>
       <field name='model'>accountcore.get_account_balance</field>
@@ -848,7 +848,7 @@
               <field name="order_orgs" />
             </group>
             <group>
-              <field name="account" default_focus='1' domain="['|',('org','in',org),('org','=',False)]" context="{'search_default_groupby_accountClass':True}">
+              <field name="account" default_focus='1' domain="['|',('org','in',org),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
                 <tree default_order='accountClass,number,org' >
                   <field name='org' />
                   <field name='accountClass' />
@@ -884,7 +884,7 @@
               <field name="orgs" widget="many2many_checkboxes_floatleft" />
             </group>
             <group>
-              <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_groupby_accountClass':True}">
+              <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
               </field>
               <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
@@ -931,7 +931,7 @@
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
           <filter string="分配现金流量的科目" name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
-          <filter name="groupby_accountClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
+          <filter name="group_by_accountClassClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
           <filter name="group_by_arch" string="按科目体系分组" context = "{'group_by': 'accountsArch'}" />
         </search>
       </field>
@@ -957,8 +957,15 @@
       <field name="model">accountcore.accounts_balance</field>
       <field name="arch" type="xml">
         <search string="balanceFilter">
-          <filter name="groupby_account" string="按科目分组" context = "{'group_by': 'account'}" />
+          <field name="account" string="科目名称包含" domain="[('account.name','ilike', self)]" />
+          <field name="account_number" string="科目编号包含" domain="[('account_number','ilike', self)]" />
+          <field name="items" string="项目名称包含" domain="[('items.name','ilike', self)]" />          
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+          <filter name="group_by_account_class_id" string="按科目类别分组" context = "{'group_by': 'account_class_id'}" />
+          <filter name="group_by_account_number" string="按科目编码分组" context = "{'group_by': 'account_number'}" />
+          <filter name="group_by_accountClass" string="按科目分组" context = "{'group_by': 'account'}" />
+          <filter name="group_by_accountItemClass" string="按核算项目类别分组" context = "{'group_by': 'accountItemClass'}" />
+          <filter name="group_by_items" string="按项目分组" context = "{'group_by': 'items'}" />
         </search>
       </field>
     </record>
@@ -1021,7 +1028,7 @@
       <field name='name'>科目列表</field>
       <field name='res_model'>accountcore.account</field>
       <field name='view_mode'>tree,form</field>
-      <field name="context">{'search_default_groupby_accountClass': 1}</field>
+      <field name="context">{'search_default_group_by_accountClassClass': 1}</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_cashflowtype_action_window'>
       <field name='name'>现金流量项目类别</field>
@@ -1039,6 +1046,7 @@
       <field name='view_mode'>tree,form</field>
     </record>
     <record model='ir.actions.act_window' id='accountcore_vouchers_action_window'>
+      <!-- “凭证列表” 名字不能更改，有关button联引用 btn_templates.xml -->
       <field name='name'>凭证列表</field>
       <field name='res_model'>accountcore.voucher</field>
       <field name='view_mode'>tree,form</field>
@@ -1123,7 +1131,7 @@
       <field name="res_model">accountcore.accounts_balance</field>
       <field name="view_mode">tree,form</field>
       <field name="target">current</field>
-      <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1}</field>
+      <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1,'search_default_group_by_account_class_id':1}</field>
       <field name='domain'>[('isbegining','=',True)]</field>
     </record>
 

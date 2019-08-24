@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+import random
 from . import controllers
 from . import models
 from . import report
-import datetime
-import random
 from odoo import fields, api, SUPERUSER_ID
 
 # 核算项目类别ID开始

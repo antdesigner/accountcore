@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
-import logging
-import time
-import copy
-import decimal
-from odoo import exceptions
-import json
-from odoo import models, fields, api
-import datetime
 import calendar
-import sys
+import datetime
+import json
+import logging
 import multiprocessing
-sys.path.append('.\\.\\server')
-_logger = logging.getLogger(__name__)
+from odoo import exceptions
+from odoo import models, fields, api
+import sys
+sys.path.append('.\\.\\server\\odoo')
 
+LOGGER = logging.getLogger(__name__)
 # 新增,修改,删除凭证时对科目余额的改变加锁
-vocher_lock = multiprocessing.Lock()
+VOCHER_LOCK = multiprocessing.Lock()
 
 
 class Glob_tag_Model(models.AbstractModel):
@@ -377,12 +374,12 @@ class Voucher(models.Model):
     real_date = fields.Date(string='业务日期', placehplder='业务日期')
     # 前端通过voucherDate生成,不要直接修改
     year = fields.Integer(string='年份',
-                          compute='_getYearMonth',
+                          compute='getYearMonth',
                           store=True,
                           index=True)
     # 前端通过voucherDate生成,不要直接修改
     month = fields.Integer(string='月份',
-                           compute='_getYearMonth',
+                           compute='getYearMonth',
                            store=True,
                            index=True)
     soucre = fields.Many2one('accountcore.source',
@@ -404,8 +401,8 @@ class Voucher(models.Model):
                                 ondelete='restrict')
     number = fields.Integer(string='凭证编号',
                             help='该编号更据不同凭证编号策略会不同,一张凭证可以有多个不同编号',
-                            compute='_getVoucherNumber',
-                            search="_searchNumber")
+                            compute='getVoucherNumber',
+                            search="searchNumber")
     appendixCount = fields.Integer(string='附件张数',
                                    default=1,
                                    required=True)
@@ -434,28 +431,30 @@ class Voucher(models.Model):
     numberTasticsContainer_str = fields.Char(string='凭证可用编号策略',
                                              default="{}")
     entrysHtml = fields.Html(string="分录内容",
-                             compute='_createEntrysHtml',
+                             compute='createEntrysHtml',
                              store=True)
     roolbook_html = fields.Html(string="凭证的标签",
-                                compute='_buildRuleBook',
+                                compute='buildRuleBook',
                                 store=True)
-    sum_amount = fields.Monetary(string='借贷方差额', default=0, compute='_balance_check')
+    sum_amount = fields.Monetary(
+        string='借贷方差额', default=0, compute='balance_check')
 
     # Monetory类型字段必须有
     currency_id = fields.Many2one('res.currency',
-                                  compute='_get_company_currency',
+                                  compute='get_company_currency',
                                   readonly=True,
                                   oldname='currency',
                                   string="Currency",
                                   help='Utility field to express amount currency')
 
-    @api.one
-    def _get_company_currency(self):
+    @api.multi
+    def get_company_currency(self):
+        self.ensure_one
         # Monetory类型字段必须有 currency_id
         self.currency_id = self.env.user.company_id.currency_id
 
     @api.onchange('entrys')
-    def _balance_check(self):
+    def balance_check(self):
         '''凭证借方-贷方差额显示'''
         d_amount = 0
         c_amount = 0
@@ -464,10 +463,9 @@ class Voucher(models.Model):
             c_amount = e.camount+c_amount
         self.sum_amount = d_amount-c_amount
 
-
     @api.multi
     @api.depends('voucherdate')
-    def _getYearMonth(self):
+    def getYearMonth(self):
         for v in self:
             v.year = v.voucherdate.year
             v.month = v.voucherdate.month
@@ -487,7 +485,7 @@ class Voucher(models.Model):
     def create(self, values):
         '''新增凭证'''
         # 只允许一条分录更新余额表,进程锁
-        vocher_lock.acquire()
+        VOCHER_LOCK.acquire()
         # 出错了，必须释放锁，要不就会死锁
         try:
             values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
@@ -498,29 +496,29 @@ class Voucher(models.Model):
             if isCopye:
                 pass
             else:
-                rl._checkVoucher(values)
-            rl._updateBalance()
+                rl.checkVoucher(values)
+            rl.updateBalance()
             # 跟新处理并发冲突
             self.env.cr.commit()
         finally:
-            vocher_lock.release()
+            VOCHER_LOCK.release()
         return rl
 
     @api.multi
     def write(self, values):
         '''修改编辑凭证'''
-        vocher_lock.acquire()
+        self.ensure_one
+        VOCHER_LOCK.acquire()
         # 出错了，必须释放锁，要不就会死锁
         try:
-            self.ensure_one
-            self._updateBalance(isAdd=False)  # 先从余额表减去原来的金额
+            self.updateBalance(isAdd=False)  # 先从余额表减去原来的金额
             rl_bool = super(Voucher, self).write(values)
-            self._checkVoucher(values)
-            self._updateBalance()  # 再从余额表加上新的金额
+            self.checkVoucher(values)
+            self.updateBalance()  # 再从余额表加上新的金额
             # 跟新处理并发冲突
             self.env.cr.commit()
         finally:
-            vocher_lock.release()
+            VOCHER_LOCK.release()
         return rl_bool
 
     @api.multi
@@ -533,9 +531,13 @@ class Voucher(models.Model):
                         'appendixCount': 1}
         rl = super(Voucher, self.with_context(
             {'ac_from_copy': True})).copy(updateFields)
-        for entry in self.entrys:
-            entry.copy({'voucher': rl.id})
-        rl._updateBalance()
+        VOCHER_LOCK.acquire()
+        try:
+            for entry in self.entrys:
+                entry.copy({'voucher': rl.id})
+            rl.updateBalance()
+        finally:
+            VOCHER_LOCK.release()
         return rl
 
     @api.multi
@@ -544,13 +546,15 @@ class Voucher(models.Model):
         for voucher in self:
             if voucher.state == "reviewed":
                 raise exceptions.ValidationError('有凭证已审核不能删除，请选择未审核凭证')
-        vocher_lock.acquire()
+        VOCHER_LOCK.acquire()
         for voucher in self:
-            voucher._updateBalance(isAdd=False)
+            voucher.updateBalance(isAdd=False)
         rl_bool = super(Voucher, self).unlink()
         # 跟新处理并发冲突
-        self.env.cr.commit()
-        vocher_lock.release()
+        try:
+            self.env.cr.commit()
+        finally:
+            VOCHER_LOCK.release()
         return rl_bool
 
     @staticmethod
@@ -569,7 +573,7 @@ class Voucher(models.Model):
         return newNumberDict
 
     @api.depends('numberTasticsContainer_str')
-    def _getVoucherNumber(self):
+    def getVoucherNumber(self):
         '''获得凭证编号,依据用户默认的凭证编号策略'''
         # if 用户设置了默认编号策略
         if(self.env.user.voucherNumberTastics):
@@ -584,7 +588,7 @@ class Voucher(models.Model):
         return record.number
 
     @api.model
-    def _checkVoucher(self, voucherDist):
+    def checkVoucher(self, voucherDist):
         '''凭证检查'''
         self._checkEntyCount(voucherDist)
         self._checkCDBalance(voucherDist)
@@ -629,7 +633,7 @@ class Voucher(models.Model):
 
     @api.multi
     @api.depends('entrys', 'entrys.account.name', 'entrys.items.name')
-    def _createEntrysHtml(self):
+    def createEntrysHtml(self):
         '''创建凭证分录展示内容'''
         content = None
         entrys = None
@@ -645,7 +649,7 @@ class Voucher(models.Model):
 
     @api.multi
     @api.depends('ruleBook', 'ruleBook.name')
-    def _buildRuleBook(self):
+    def buildRuleBook(self):
         '''购建凭证标签展示内容'''
         for voucher in self:
             content = '<table class="ac_rulebook">'
@@ -677,7 +681,7 @@ class Voucher(models.Model):
             content = content+"<td class='oe_ac_cashflow'></td></tr>"
         return content
 
-    def _searchNumber(self, operater, value):
+    def searchNumber(self, operater, value):
         '''计算字段凭证编号的查找'''
         comparetag = ('>', '>=', '<', '<=')
         if operater in comparetag:
@@ -706,7 +710,7 @@ class Voucher(models.Model):
         return True
 
     @api.model
-    def _updateBalance(self, isAdd=True):
+    def updateBalance(self, isAdd=True):
         '''更新余额'''
         for entry in self.entrys:
             # isAdd 表示是否依据分录金额减少(false)还是增加余额表金额(TRUE)
@@ -869,7 +873,7 @@ class Enty(models.Model):
                              ondelete='restrict')
     # Monetory类型字段必须有
     currency_id = fields.Many2one('res.currency',
-                                  compute='_get_company_currency',
+                                  compute='get_company_currency',
                                   readonly=True,
                                   oldname='currency',
                                   string="Currency",
@@ -929,7 +933,7 @@ class Enty(models.Model):
         self.items = None
 
     @api.one
-    def _get_company_currency(self):
+    def get_company_currency(self):
         # Monetory类型字段必须有 currency_id
         self.currency_id = self.env.user.company_id.currency_id
 
@@ -1229,6 +1233,12 @@ class AccountsBalance(models.Model):
                               required=True,
                               index=True,
                               ondelete='cascade')
+    account_number = fields.Char(related='account.number',
+                              string='科目编码',
+                              store=True)
+    account_class_id = fields.Many2one(related='account.accountClass',
+                                       string='科目类别',
+                                       store=True)
     accountItemClass = fields.Many2one('accountcore.itemclass',
                                        string='核算项目类别',
                                        related='account.accountItemClass')
@@ -1264,13 +1274,13 @@ class AccountsBalance(models.Model):
         'accountcore.accounts_balance', string='最近后一期记录')
     # Monetory类型字段必须有,要不无法正常显示
     currency_id = fields.Many2one('res.currency',
-                                  compute='_get_company_currency',
+                                  compute='get_company_currency',
                                   readonly=True,
                                   string="Currency",
                                   help='Utility field to express amount currency')
 
     @api.one
-    def _get_company_currency(self):
+    def get_company_currency(self):
         self.currency_id = self.env.user.company_id.currency_id
 
     # @api.onchange('createDate')
@@ -1631,7 +1641,7 @@ class AccountsBalance(models.Model):
             self._updateAccountBalance(entry)
 
     # @api.model
-    # def _updateBalance(self, isAdd=True):
+    # def updateBalance(self, isAdd=True):
     #     '''更新余额'''
     #     for entry in self.entrys:
     #         self._updateAccountBalance(entry, isAdd)
@@ -1978,7 +1988,7 @@ class currencyDown_sunyi(models.TransientModel):
                 'res_model': 'accountcore.voucher',
                 'view_id': False,
                 'type': 'ir.actions.act_window',
-                'domain': [('id', 'in',  voucher_ids)]
+                'domain': [('id', 'in', voucher_ids)]
                 }
 
     def _do_currencyDown(self, org, voucher_period):

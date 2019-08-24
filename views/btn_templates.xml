@@ -17,14 +17,10 @@
             </t>
         </t>
     </t>
-    <t t-extend="report.client_action.ControlButtons">
-        <t t-jquery='div.o_report_no_edit_mode' t-operation="append">
-            <!-- <button class='btn btn-secondary' type="button">只显示一级科目</button>
-            <button class='btn btn-secondary' type="button">余额为零不显示</button>
-            <button class='btn btn-secondary' type="button">无发生额不显示</button> -->
-            <!-- <button class='btn btn-secondary' type="button">合并机构显示</button> -->
-            <!-- <button class='btn btn-secondary ac_voucher_filter' type="button">查询testme</button> -->
-        </t>
+    <!-- 科目期初平衡检查按钮 -->
+    <t t-name='accountcore.check_balance'>
+        <button class='btn btn-secondary ac_balance_check' type="button">平衡检查</button>
     </t>
 </templates>
+
 

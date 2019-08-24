@@ -84,26 +84,26 @@ table tr {
                             <table class='table table-bordered table-sm table-hover'>
                                 <thead>
                                     <tr>
-                                        <th>凭证日期</th>
+                                        <th colspan="2">凭证日期</th>
                                         <th style="width:2rem">月</th>
                                         <th style="width:5rem">凭证编号</th>
-                                        <th>机构名称</th>
-                                        <th>分录摘要</th>
-                                        <th>科目编码</th>
-                                        <th>科目名称</th>
-                                        <th>核算项目</th>
-                                        <th>借方金额</th>
-                                        <th>贷方金额</th>
+                                        <th colspan="3">分录摘要</th>
+                                        <th colspan="3">机构名称</th>
+                                        <!-- <th>科目编码</th> -->
+                                        <th colspan="5">科目和项目</th>
+                                        <!-- <th>核算项目</th> -->
+                                        <th colspan="2">借方金额</th>
+                                        <th colspan="2">贷方金额</th>
                                         <th style="width:2rem">方向</th>
-                                        <th>余额</th>
-                                        <th>现金流量</th>
+                                        <th colspan="2">余额</th>
+                                        <!-- <th colspan="2">现金流量</th> -->
                                     </tr>
                                 </thead>
                                 <tbody class='text-left'>
                                     <t t-set='openVoucher_id' t_value='%(accountore_voucher_id_actions_window)d'></t>
                                     <t t-foreach="docs.entrys" t-as="entry">
                                         <tr style="page-break-inside: avoid !important;" >
-                                            <td>
+                                            <td colspan="2">
                                                 <span t-esc="entry.voucherdate"></span>
                                             </td>
                                             <td style="width:2rem" class='text-center'>
@@ -115,39 +115,40 @@ table tr {
                                                 <br />
                                                 <span t-esc="entry.uniqueNumber"></span>
                                             </td>
-                                            <td>
-                                                <span t-esc='entry.org_name'></span>
-                                            </td>
-                                            <td>
+                                            <td colspan="3">
                                                 <span t-raw='entry.roolbook_html'></span>
                                                 <span t-esc='entry.explain'></span>
-
                                             </td>
-                                            <td>
+                                            <td colspan="3">
+                                                <span t-esc='entry.org_name'></span>
+                                            </td>
+                                            <!-- <td>
                                                 <span t-esc='entry.account_number'></span>
+                                            </td> -->
+                                            <td colspan="5">
+                                            <span t-esc='entry.account_number'></span>
+                                                <span t-esc='entry.account_name'></span><br/>
+                                                 <span t-raw="entry.items_html"></span>
                                             </td>
-                                            <td>
-                                                <span t-esc='entry.account_name'></span>
-                                            </td>
-                                            <td>
+                                            <!-- <td>
                                                 <span t-raw="entry.items_html"></span>
-                                            </td>
-                                            <td class='damount text-right'>
+                                            </td> -->
+                                            <td  colspan="2" class='damount text-right'>
                                                 <span t-if='entry.damount!=0' t-esc="'{:,.2f}'.format(entry.damount)"></span>
                                             </td>
-                                            <td class='camount text-right'>
+                                            <td colspan="2" class='camount text-right'>
                                                 <span t-if='entry.camount!=0' t-esc="'{:,.2f}'.format(entry.camount)"></span>
                                             </td>
                                             <td style="width:2rem" class='text-center'>
                                                 <span t-if="entry.direction=='1'">借</span>
                                                 <span t-else="">贷</span>
                                             </td>
-                                            <td class='bamount text-right'>
+                                            <td  colspan="2" class='bamount text-right'>
                                                 <span t-if='entry.balance!=0' t-esc="'{:,.2f}'.format(entry.balance)"></span>
                                             </td>
-                                            <td>
+                                            <!-- <td colspan="2">
                                                 <span t-esc='entry.cash_flow'></span>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     </t>
                                 </tbody>

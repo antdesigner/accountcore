@@ -1,4 +1,6 @@
 <odoo>
+<!-- 查询科目余额表用 -->
+    <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report' paperformat='paperformat_A4_Landspace' />
     <template id='account_balance_report'>
         <style>
 h4{padding-top:2rem;padding-bottom:1rem;}
@@ -11,25 +13,78 @@ white-space:nowrap !important;}
 @media print{
 .beginingDamount,.beginingCamount,.damount,.camount,.endDamount,.endCamount{
 white-space:nowrap !important;}}
-.account_number{text-overflow:ellipsis;}
+.account_number{}
 table tr{
 page-break-inside: avoid !important;}
-.org_name{text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
-
+.org_name{}
         </style>
+        <!-- 通过列表选择 -->
+        <t t-if='lines'>
+               <t t-call="web.basic_layout">
+            <div class="container center text-center" style='display:flex;flex-direction:column;'>
+                <div class="row">
+                    <h4 class='col'>启用期初余额表</h4>
+                </div>        
+                <div class="row">
+                    <div class="">
+                        <table class='table  table-bordered table-sm table-striped table-hover'>
+                            <thead>
+                                <tr>
+                                    <th rowspan='2' colspan="2">机构名称</th>
+                                    <th rowspan='2' colspan="2">启用日期</th>
+                                    <!-- <th rowspan='2' colspan="1">科目编码</th> -->
+                                    <th rowspan='2'  colspan="4">科目和项目</th>
+                                    <th colspan="4">年初余额</th>
+                                    <th colspan="4">累计发生</th>
+                                    <th colspan="4">启用余额</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="2">借方</th>
+                                    <th colspan="2">贷方</th>
+                                    <th colspan="2">借方</th>
+                                    <th colspan="2">贷方</th>
+                                    <th colspan="2">借方</th>
+                                    <th colspan="2">贷方</th>
+                                </tr>
+                            </thead>
+                            <tbody class='text-left'>
+                                <t t-foreach="lines" t-as="l">
+                                    <tr style="page-break-inside: avoid !important;" >
+                                    <td colspan="2"><span t-esc='l.org.name'></span></td>
+                                    <td colspan="2" class='text-center'><span t-esc='l.createDate'></span></td>
+                                    <!-- <td colspan=""><span t-esc='l.account_number'></span></td> -->
 
+                                    <td t-if='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/>[<span t-esc='l.accountItemClass.name'></span>]<span t-esc='l.items.name'></span></td>
+                                    <td t-else='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/><span t-esc='l.accountItemClass.name'></span><span t-esc='l.items.name'></span></td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingDamount-l.beginCumulativeDamount)"></span></td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingCamount-l.beginCumulativeCamount)"></span></td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.damount+l.beginCumulativeDamount)"></span></td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.camount+l.beginCumulativeCamount)"></span></td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingDamount+l.damount)"></span></td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingCamount+l.camount)"></span></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        </t>
+        <!-- 通过科目余额表查询 -->
+        <t t-if='not lines'>
         <t t-call="web.basic_layout">
-
             <div class="container center text-center" style='display:flex;flex-direction:column;'>
                 <t t-set="start" t-value="data['form']['startDate']">
                 </t>
                 <t t-set="end" t-value="data['form']['endDate']">
                 </t>
-
                 <div class="row">
                     <h4 class='col'>科目余额表</h4>
                 </div>
-
                 <div class="row">
                     <h6 class='col' t-if="start=='1970-01-01' and end=='9999-12-31'">1970年1月至9999年12月</h6>
                     <h6 class='col' t-else="">
@@ -39,18 +94,17 @@ page-break-inside: avoid !important;}
                             <t t-esc="(end[0:7]).replace('-','年')"></t>月
                         </span>
                         <span t-if="end=='9999-12-31'">9999年12月</span>
-
                     </h6>
-                </div>
-               
+                </div>             
                 <div class="row">
                     <div class="">
                         <table class='table  table-bordered table-sm table-striped table-hover'>
                             <thead>
                                 <tr>
-                                    <th rowspan='2' colspan="2">机构名称</th>
-                                    <th rowspan='2'>科目编码</th>
-                                    <th rowspan='2' colspan="4">科目名称</th>
+                                    <th rowspan='2' colspan="3">机构名称</th>
+                                    <!-- <th rowspan='2'>科目编码</th>
+                                    <th rowspan='2' colspan="4">科目名称</th> -->
+                                     <th rowspan='2' colspan="6">科目和项目</th> 
                                     <th colspan="4">期初余额</th>
                                     <th colspan="4">发生金额</th>
                                     <th colspan="4">期末余额</th>
@@ -67,10 +121,10 @@ page-break-inside: avoid !important;}
                             <tbody class='text-left'>
                                 <t t-foreach="docs" t-as="account">
                                     <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'], 'account_father_id':account['account_father_id']}">
-                                        <td class='org_name' colspan="2" data-toggle="tooltip" t-att-title="account['org_name']">
+                                        <td class='org_name' colspan="3" data-toggle="tooltip" t-att-title="account['org_name']">
                                             <span t-esc="account['org_name']"></span>
                                         </td>
-                                        <td class='account_numeber' >
+                                        <!-- <td class='account_numeber' >
                                             <span t-esc="account['account_number']"></span>
                                         </td>
                                         <td class='account_name' colspan="4">
@@ -82,7 +136,25 @@ page-break-inside: avoid !important;}
                                                 <span t-esc="account['item_name']"></span>
                                             </span>
                                             <span t-else="" t-esc="account['account_name']"></span>
+                                        </td> 
+                                               <td class='account_numeber' >
+
+                                            <span t-esc="account['account_number']"></span>
+                                        </td>-->
+                                        <td class='account_name' colspan="6">
+                                        <span t-esc="account['account_number']"></span>
+                                            <span t-if="'item_id' in account">
+                                            <span t-esc="account['account_name']"></span>
+                                            <br/>
+                                                <span>[</span>
+                                                <t t-esc="account['item_class_name']"></t>
+                                                <span>]
+                                                </span>
+                                                <span t-esc="account['item_name']"></span>
+                                            </span>
+                                            <span t-else="" t-esc="account['account_name']"></span>
                                         </td>
+                                        
                                         <t t-set='direction' t-value="account['direction']"></t>
                                         <t t-set='beginingAmount' t-value="account['beginingDamount']-account['beginingCamount']"></t>
                                         <td class='beginingDamount text-right' colspan="2">
@@ -128,6 +200,7 @@ page-break-inside: avoid !important;}
                     </div>
                 </div>
             </div>
+        </t>
         </t>
         <div class="footer o_standard_footer">
             <div class="text-right">

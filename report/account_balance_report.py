@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import time
 import copy
+import datetime
 import decimal
+import json
+import time
 from odoo import http
 from odoo import exceptions
-import json
 from odoo import models, fields, api
-import datetime
 import sys
 sys.path.append('.\\.\\server')
 
@@ -15,7 +15,11 @@ class AccountBalanceReport(models.AbstractModel):
     _name = 'report.accountcore.account_balance_report'
     @api.model
     def _get_report_values(self, docids, data=None):
-
+        # if 是在月列表选择（例如启用期初）
+        lines = docids
+        if lines:
+            lines = self.env['accountcore.accounts_balance'].sudo().browse(docids)
+            return {'lines': lines}
         form = data['form']
         # 获取查询向导的表单数据
         noShowNoAmount = form['noShowNoAmount']
@@ -141,7 +145,7 @@ class AccountBalanceReport(models.AbstractModel):
             AccountsArch_filter_includeAccountItems(includeAccountItems),
             AccountsArch_filter_order_orgs(order_orgs))
 
-        return {'doc_ids': docids,
+        return {'lines': lines,
                 'docs': accountsArchWithItems,
                 'data': data}
 
