@@ -11,14 +11,17 @@ import sys
 sys.path.append('.\\.\\server')
 
 
+# 查询科目余额表
 class AccountBalanceReport(models.AbstractModel):
+    '''科目余额表'''
     _name = 'report.accountcore.account_balance_report'
     @api.model
     def _get_report_values(self, docids, data=None):
         # if 是在月列表选择（例如启用期初）
         lines = docids
         if lines:
-            lines = self.env['accountcore.accounts_balance'].sudo().browse(docids)
+            lines = self.env['accountcore.accounts_balance'].sudo().browse(
+                docids)
             return {'lines': lines}
         form = data['form']
         # 获取查询向导的表单数据
@@ -256,6 +259,7 @@ class AccountBalanceReport(models.AbstractModel):
         return self.env.cr.dictfetchall()
 
 
+# 一条余额记录
 class Balance(object):
     '''一条余额记录'''
     __slots__ = ['org_id',
@@ -312,6 +316,7 @@ class Balance(object):
         return getattr(self, item)
 
 
+# 余额记录的明细容器
 class Balances(object):
     '''余额记录的明细容器'''
 
@@ -341,6 +346,7 @@ class Balances(object):
         return self.org_account_items.values()
 
 
+# 科目余额管理器
 class AccountsArchManager(object):
     '''科目余额管理器'''
 
@@ -398,130 +404,7 @@ class AccountsArchManager(object):
                                       reverse=reverse_it)
 
 
-class AccountsArch_filter_org(object):
-    '''筛选机构'''
-
-    def __init__(self, org_ids):
-        self.__org_ids = org_ids
-
-    def __call__(self, accountsArch):
-        newAccountsArch = [a for a in accountsArch
-                           if a['org_id'] in self.__org_ids]
-        return newAccountsArch
-
-
-class AccountsArch_filter_accounts(object):
-    '''筛选科目'''
-
-    def __init__(self, account_ids):
-        self.__account_ids = account_ids
-
-    def __call__(self, accountsArch):
-        newAccountsArch = [a for a in accountsArch
-                           if a['account_id'] in self.__account_ids]
-        return newAccountsArch
-
-
-class AccountsArch_filter_noShowNoAmount(object):
-    '''无金额不显示'''
-
-    def __init__(self, noShowNoAmount=True):
-        self.__noShowNoAmount = noShowNoAmount
-
-    def __call__(self, accountsArch):
-        if self.__noShowNoAmount:
-            newAccountsArch = [a for a in accountsArch
-                               if any([(a['beginingDamount']-a['beginingCamount']) != 0,
-                                       a['damount'] != 0,
-                                       a['camount'] != 0])]
-            return newAccountsArch
-        else:
-            return accountsArch
-
-
-class AccountsArch_filter_noShowZeroBalance(object):
-    '''余额为零不显示'''
-
-    def __init__(self, noShowZeroBalance=True):
-        self.__noShowZeroBalance = noShowZeroBalance
-
-    def __call__(self, accountsArch):
-        if self.__noShowZeroBalance:
-            newAccountsArch = [a for a in accountsArch
-                               if (a['beginingDamount']
-                                   + a['damount']
-                                   - a['beginingCamount']
-                                   - a['camount'] != 0)]
-            return newAccountsArch
-        else:
-            return accountsArch
-
-
-class AccountsArch_filter_no_show_no_hanppend(object):
-    '''不显示无发生额的科目'''
-
-    def __init__(self, no_show_no_hanppend=False):
-        self.__no_show_no_hanppend = no_show_no_hanppend
-
-    def __call__(self, accountsArch):
-        if self.__no_show_no_hanppend:
-            newAccountsArch = [a for a in accountsArch
-                               if a['damount'] != 0
-                               or a['camount'] != 0]
-            return newAccountsArch
-        else:
-            return accountsArch
-
-
-class AccountsArch_filter_onlyShowOneLevel(object):
-    '''只显示一级科目'''
-
-    def __init__(self, onlyShowOneLevel=False):
-        self.__onlyShowOneLevel = onlyShowOneLevel
-
-    def __call__(self, accountsArch):
-        if self.__onlyShowOneLevel:
-            newAccountsArch = [a for a in accountsArch
-                               if not a['account_father_id']
-                               and('item_id' not in a
-                                   or not a['item_id'])]
-            return newAccountsArch
-        else:
-            return accountsArch
-
-
-class AccountsArch_filter_includeAccountItems(object):
-    '''不显示核算项目'''
-
-    def __init__(self, includeAccountItems=True):
-        self.__includeAccountItems = includeAccountItems
-
-    def __call__(self, accountsArch):
-        if self.__includeAccountItems:
-            return accountsArch
-        else:
-            newAccountsArch = [a for a in accountsArch
-                               if ('item_id' not in a
-                                   or not a['item_id'])]
-            return newAccountsArch
-
-
-class AccountsArch_filter_order_orgs(object):
-    '''多机构分开显示'''
-
-    def __init__(self, order_orgs=True):
-        self.__order_orgs = order_orgs
-
-    def __call__(self, accountsArch):
-        if self.__order_orgs:
-            accountsArch.sort(key=lambda t: (t['org_id'],
-                                             t['account_number']))
-            return accountsArch
-
-        else:
-            return accountsArch
-
-
+# 科目余额管理器管理对象
 class AccountArch(object):
     '''科目余额管理器管理对象'''
 
@@ -550,3 +433,136 @@ class AccountArch(object):
 
     def update(self, balance):
         self.account.update(dict(balance))
+
+# 筛选定义-开始
+# 筛选机构
+class AccountsArch_filter_org(object):
+    '''筛选机构'''
+
+    def __init__(self, org_ids):
+        self.__org_ids = org_ids
+
+    def __call__(self, accountsArch):
+        newAccountsArch = [a for a in accountsArch
+                           if a['org_id'] in self.__org_ids]
+        return newAccountsArch
+
+
+# 筛选科目
+class AccountsArch_filter_accounts(object):
+    '''筛选科目'''
+
+    def __init__(self, account_ids):
+        self.__account_ids = account_ids
+
+    def __call__(self, accountsArch):
+        newAccountsArch = [a for a in accountsArch
+                           if a['account_id'] in self.__account_ids]
+        return newAccountsArch
+
+
+# 无金额不显示
+class AccountsArch_filter_noShowNoAmount(object):
+    '''无金额不显示'''
+
+    def __init__(self, noShowNoAmount=True):
+        self.__noShowNoAmount = noShowNoAmount
+
+    def __call__(self, accountsArch):
+        if self.__noShowNoAmount:
+            newAccountsArch = [a for a in accountsArch
+                               if any([(a['beginingDamount']-a['beginingCamount']) != 0,
+                                       a['damount'] != 0,
+                                       a['camount'] != 0])]
+            return newAccountsArch
+        else:
+            return accountsArch
+
+
+# 余额为零不显示
+class AccountsArch_filter_noShowZeroBalance(object):
+    '''余额为零不显示'''
+
+    def __init__(self, noShowZeroBalance=True):
+        self.__noShowZeroBalance = noShowZeroBalance
+
+    def __call__(self, accountsArch):
+        if self.__noShowZeroBalance:
+            newAccountsArch = [a for a in accountsArch
+                               if (a['beginingDamount']
+                                   + a['damount']
+                                   - a['beginingCamount']
+                                   - a['camount'] != 0)]
+            return newAccountsArch
+        else:
+            return accountsArch
+
+
+# 不显示无发生额的科目
+class AccountsArch_filter_no_show_no_hanppend(object):
+    '''不显示无发生额的科目'''
+
+    def __init__(self, no_show_no_hanppend=False):
+        self.__no_show_no_hanppend = no_show_no_hanppend
+
+    def __call__(self, accountsArch):
+        if self.__no_show_no_hanppend:
+            newAccountsArch = [a for a in accountsArch
+                               if a['damount'] != 0
+                               or a['camount'] != 0]
+            return newAccountsArch
+        else:
+            return accountsArch
+
+
+# 只显示一级科目
+class AccountsArch_filter_onlyShowOneLevel(object):
+    '''只显示一级科目'''
+
+    def __init__(self, onlyShowOneLevel=False):
+        self.__onlyShowOneLevel = onlyShowOneLevel
+
+    def __call__(self, accountsArch):
+        if self.__onlyShowOneLevel:
+            newAccountsArch = [a for a in accountsArch
+                               if not a['account_father_id']
+                               and('item_id' not in a
+                                   or not a['item_id'])]
+            return newAccountsArch
+        else:
+            return accountsArch
+
+
+# 不显示核算项目
+class AccountsArch_filter_includeAccountItems(object):
+    '''不显示核算项目'''
+
+    def __init__(self, includeAccountItems=True):
+        self.__includeAccountItems = includeAccountItems
+
+    def __call__(self, accountsArch):
+        if self.__includeAccountItems:
+            return accountsArch
+        else:
+            newAccountsArch = [a for a in accountsArch
+                               if ('item_id' not in a
+                                   or not a['item_id'])]
+            return newAccountsArch
+
+
+# 多机构分开显示
+class AccountsArch_filter_order_orgs(object):
+    '''多机构分开显示'''
+
+    def __init__(self, order_orgs=True):
+        self.__order_orgs = order_orgs
+
+    def __call__(self, accountsArch):
+        if self.__order_orgs:
+            accountsArch.sort(key=lambda t: (t['org_id'],
+                                             t['account_number']))
+            return accountsArch
+
+        else:
+            return accountsArch
+# 筛选定义-结束

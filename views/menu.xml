@@ -1,5 +1,6 @@
 <odoo>
     <data>
+    <!-- 主菜单 -->
         <menuitem name='会计' id='accountcore_menu' />
         <menuitem name='向导帮助' id='accountcore_guide_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="30" />
         <menuitem name='第1步:快速了解' id='accountcore_guide_menu_0' parent='accountcore_guide_menu' action='acccountcore_helps_actions_window' sequence="5" /> 

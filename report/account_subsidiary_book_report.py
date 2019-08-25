@@ -13,8 +13,9 @@ from ..models.models import VoucherNumberTastics, Period
 sys.path.append('.\\.\\server')
 
 
+# 查询明细账
 class SubsidiaryBook(models.AbstractModel):
-    '''科目余额表'''
+    '''查询明细账'''
     _name = 'report.accountcore.subsidiary_book_report'
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -314,6 +315,7 @@ class SubsidiaryBook(models.AbstractModel):
         return self.env.cr.dictfetchall()
 
 
+# 明细账明细
 class EntryArch(object):
     '''明细账明细'''
     __slots__ = ['voucher_id',
@@ -364,6 +366,7 @@ class EntryArch(object):
         self.is_not_begining = True
 
 
+# 年初余额
 class BeginYear(EntryArch):
     '''年初余额'''
 
@@ -380,6 +383,7 @@ class BeginYear(EntryArch):
             damount-camount) if direction == '1' else (camount-damount)
 
 
+# 启用期初
 class BeginBalance(EntryArch):
     '''启用期初'''
 
@@ -395,6 +399,7 @@ class BeginBalance(EntryArch):
         self.is_not_begining = False
 
 
+# 启用期初以前
 class PrebeginBalance(EntryArch):
     '''启用期初以前'''
 
@@ -410,6 +415,7 @@ class PrebeginBalance(EntryArch):
         self.is_not_begining = False
 
 
+# 本月合计
 class SumMonth(EntryArch):
     '''本月合计'''
 
@@ -424,6 +430,7 @@ class SumMonth(EntryArch):
         self.camount = camount
 
 
+# 本年累计
 class CumulativeYear(EntryArch):
     '''本年累计'''
 
@@ -438,6 +445,7 @@ class CumulativeYear(EntryArch):
         self.camount = camount
 
 
+# 明细账组装器
 class EntrysAssembler():
     '''明细账组装器'''
 

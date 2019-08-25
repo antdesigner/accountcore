@@ -374,23 +374,23 @@ def getAccounIdByNum(t_account, number):
 def buildOneBalance(org_id, account,  date_str, year, month, item_id=False):
     '''创建一条期初'''
     if account.direction == '1':
-        beginingDamount = int(random.random()*300)*100.01
+        beginingDamount = round(int(random.random()*300)*100.01, 2)
         beginingCamount = 0
     else:
         beginingDamount = 0
-        beginingCamount = int(random.random()*300)*100.01
-    damount = int(random.random()*300)*10.00
-    camount = int(random.random()*300)*10.95
+        beginingCamount = round(int(random.random()*300)*100.01, 2)
+    damount = round(int(random.random()*300)*10.00, 2)
+    camount = round(int(random.random()*300)*10.95, 2)
     if month == 1:
         beginCumulativeDamount = 0
         beginCumulativeCamount = 0
     elif account.accountClass.name == '损益类':
         # 损益类借贷方累计发生额一般相等
-        beginCumulativeDamount = int(random.random()*300)*120.30
+        beginCumulativeDamount = round(int(random.random()*300)*120.30, 2)
         beginCumulativeCamount = beginCumulativeDamount
     else:
-        beginCumulativeDamount = int(random.random()*300)*120.30
-        beginCumulativeCamount = int(random.random()*300)*130.40
+        beginCumulativeDamount = round(int(random.random()*300)*120.30, 2)
+        beginCumulativeCamount = round(int(random.random()*300)*130.40, 2)
 
     b = {'org': org_id,
          'createDate': date_str,

@@ -1,4 +1,5 @@
 <odoo>
+    <!-- 明细账 -->
     <template id='subsidiary_book_report'>
         <style>
     h4 {

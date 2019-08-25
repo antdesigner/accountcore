@@ -5,7 +5,7 @@
         <div class="container ac-items-choice">
         </div>
     </t>
-    <!-- tree视图添加按钮 -->
+    <!-- 给系统自带的tree视图添加按钮 -->
     <t t-extend="ListView.buttons">
         <t t-jquery='div.o_list_buttons' t-operation="append">
             <t t-if="widget.displayName=='凭证列表'">

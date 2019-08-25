@@ -1,8 +1,8 @@
 <odoo>
   <data>
-
+    <!-- 窗体动作-打开新增下级科目向导 -->
     <act_window id="accountcore_warzidcreatechildaccounts_action" name="添加下级科目" src_model="accountcore.account" res_model="accountcore.create_child_account" view_type="form" view_mode="form" target="new" multi="False" />
-
+    <!-- list-核算机构 -->
     <record model='ir.ui.view' id='accountcore_org_list'>
       <field name='name'>核算机构</field>
       <field name='model'>accountcore.org</field>
@@ -14,7 +14,7 @@
         </tree>
       </field>
     </record>
-    <!-- accountcore.org form view -->
+    <!--form-核算机构 -->
     <record id="accountcore_org_action_window_form" model="ir.ui.view">
       <field name='name'>核算机构</field>
       <field name="model">accountcore.org</field>
@@ -32,6 +32,7 @@
         </form>
       </field>
     </record>
+    <!-- list-科目体系 -->
     <record model='ir.ui.view' id='accountcore_accountsarch_list'>
       <field name='name'>科目体系</field>
       <field name='model'>accountcore.accounts_arch</field>
@@ -43,7 +44,7 @@
         </tree>
       </field>
     </record>
-
+    <!--form-科目体系 -->
     <record id="accountcore_accountsarch_action_window_form" model="ir.ui.view">
       <field name='name'>科目体系</field>
       <field name="model">accountcore.accounts_arch</field>
@@ -61,7 +62,7 @@
         </form>
       </field>
     </record>
-
+    <!-- list-核算项目类比 -->
     <record model='ir.ui.view' id='accountcore_itemclass_list'>
       <field name='name'>核算项目类别</field>
       <field name='model'>accountcore.itemclass</field>
@@ -73,8 +74,7 @@
         </tree>
       </field>
     </record>
-
-    <!-- accountcore.itemclass form view -->
+    <!--form-核算项目类别 -->
     <record id="accountcore_itemclass_form" model="ir.ui.view">
       <field name="name">核算项目类别</field>
       <field name="model">accountcore.itemclass</field>
@@ -92,6 +92,7 @@
         </form>
       </field>
     </record>
+    <!-- list-核算项目 -->
     <record model='ir.ui.view' id='accountcore_items_list'>
       <field name='name'>核算项目列表</field>
       <field name='model'>accountcore.item</field>
@@ -102,13 +103,13 @@
           <field name='number' />
           <!-- 必须用dislay_name,因为凭证里选择核算项目字段的自定义tiger_accountItems_m2m（widget） 继承的系统FieldMany2One部件，
           在搜索时，核算项目的搜索视图需要有display_name字段，选择后填入input中，要不然inpunt为空白-->
-          <field name="display_name"/>
+          <field name="display_name" />
           <field name='uniqueNumber' readonly='1'></field>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
-
+    <!--form-核算项目 -->
     <record id="accountcoure_item_view_form" model="ir.ui.view">
       <field name="name">新增编辑=>核算项目</field>
       <field name="model">accountcore.item</field>
@@ -129,6 +130,7 @@
         </form>
       </field>
     </record>
+    <!-- list-凭证标签 -->
     <record model='ir.ui.view' id='accountcore_rulebook_list'>
       <field name='name'>凭证标签</field>
       <field name='model'>accountcore.rulebook</field>
@@ -139,7 +141,7 @@
         </tree>
       </field>
     </record>
-    <!-- accountcore.rulebook form view -->
+    <!--form-凭证标签 -->
     <record id="accountcore_rulebooke_form" model="ir.ui.view">
       <field name="name">凭证标签</field>
       <field name="model">accountcore.rulebook</field>
@@ -156,6 +158,7 @@
         </form>
       </field>
     </record>
+    <!-- list-科目类别列表 -->
     <record model='ir.ui.view' id='accountcore_accountclass_list'>
       <field name='name'>科目类别列表</field>
       <field name='model'>accountcore.accountclass</field>
@@ -167,7 +170,7 @@
         </tree>
       </field>
     </record>
-    <!-- accountcore.accountclass form view -->
+    <!--form-科目类别 -->
     <record id="accountcore_accountclass_form" model="ir.ui.view">
       <field name="name">科目类别</field>
       <field name="model">accountcore.accountclass</field>
@@ -185,7 +188,7 @@
         </form>
       </field>
     </record>
-
+    <!-- list-会计科目 -->
     <record model='ir.ui.view' id='accountcore_accounts_list'>
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
@@ -205,8 +208,7 @@
         </tree>
       </field>
     </record>
-
-    <!-- accountcore.account form view -->
+    <!--form-会计科目 -->
     <record id="accountcore_account_form" model="ir.ui.view">
       <field name="name">会计科目</field>
       <field name="model">accountcore.account</field>
@@ -267,12 +269,12 @@
         </form>
       </field>
     </record>
-
+    <!-- list-启用期初 -->
     <record model='ir.ui.view' id='accountcore_accounts_balance_list'>
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree  js_class='balanceListView'  default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
+        <tree js_class='balanceListView' default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>
@@ -293,7 +295,7 @@
         </tree>
       </field>
     </record>
-
+    <!-- list-现金流量类别 -->
     <record model='ir.ui.view' id='account_cashflowtype_list'>
       <field name='name'>现金流量类别列表</field>
       <field name='model'>accountcore.cashflowtype</field>
@@ -305,8 +307,7 @@
         </tree>
       </field>
     </record>
-
-    <!-- accountcore.cashflowtype form view -->
+    <!--form-现金流量类别 -->
     <record id="accountcore_cashflowtype_form" model="ir.ui.view">
       <field name="name">现金流量类别</field>
       <field name="model">accountcore.cashflowtype</field>
@@ -324,6 +325,7 @@
         </form>
       </field>
     </record>
+    <!-- list-现金流量项目 -->
     <record model='ir.ui.view' id='accountcore_cashflows_list'>
       <field name='name'>现金流量项目列表</field>
       <field name='model'>accountcore.cashflow</field>
@@ -336,7 +338,7 @@
         </tree>
       </field>
     </record>
-    <!-- accountcore.cashflow form view -->
+    <!--form-现金流量项目 -->
     <record id="accountcore_cashflow_form" model="ir.ui.view">
       <field name="name">现金流量项目</field>
       <field name="model">accountcore.cashflow</field>
@@ -355,7 +357,7 @@
         </form>
       </field>
     </record>
-
+    <!-- list-凭证来源 -->
     <record model='ir.ui.view' id='accountcore_source_list'>
       <field name='name'>凭证来源列表</field>
       <field name='model'>accountcore.source</field>
@@ -367,6 +369,7 @@
         </tree>
       </field>
     </record>
+    <!-- from-凭证来源 -->
     <record id="accountcore_source_form" model="ir.ui.view">
       <field name="name">凭证来源</field>
       <field name="model">accountcore.source</field>
@@ -383,6 +386,7 @@
         </form>
       </field>
     </record>
+    <!-- list-记账凭证 -->
     <record model='ir.ui.view' id='accountcore_voucher_list'>
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
@@ -402,7 +406,7 @@
         </tree>
       </field>
     </record>
-
+    <!-- list-特殊科目列表 -->
     <record model='ir.ui.view' id='accountcore_special_accounts_list'>
       <field name='name'>特殊科目列表</field>
       <field name='model'>accountcore.special_accounts</field>
@@ -414,7 +418,7 @@
         </tree>
       </field>
     </record>
-
+    <!-- form-特殊科目 -->
     <record id="accountcore_special_account_form" model="ir.ui.view">
       <field name="name">特殊科目</field>
       <field name="model">accountcore.special_accounts</field>
@@ -438,7 +442,7 @@
         </form>
       </field>
     </record>
-
+    <!-- list-帮助类别 -->
     <record model='ir.ui.view' id='accountcore_help_class_list'>
       <field name='name'>帮助类别列表</field>
       <field name='model'>accountcore.help_class</field>
@@ -448,7 +452,7 @@
         </tree>
       </field>
     </record>
-
+    <!-- list-详细帮助 -->
     <record model='ir.ui.view' id='accountcore_helps_list'>
       <field name='name'>详细帮助列表</field>
       <field name='model'>accountcore.helps</field>
@@ -459,7 +463,7 @@
         </tree>
       </field>
     </record>
-
+    <!-- form-详细帮助 -->
     <record id="accountcore_helps_form" model="ir.ui.view">
       <field name="name">详细帮助</field>
       <field name="model">accountcore.helps</field>
@@ -477,7 +481,7 @@
         </form>
       </field>
     </record>
-
+    <!-- list-全局标签 -->
     <record model='ir.ui.view' id='accountcore_glob_tag_list'>
       <field name='name'>全局标签列表</field>
       <field name='model'>accountcore.glob_tag</field>
@@ -488,7 +492,7 @@
         </tree>
       </field>
     </record>
-
+    <!-- form-全局标签 -->
     <record id="accountcore_glob_tag_form" model="ir.ui.view">
       <field name="name">全局标签</field>
       <field name="model">accountcore.glob_tag</field>
@@ -522,9 +526,7 @@
         </form>
       </field>
     </record>
-
-
-    <!-- accountcore.voucher_number_single action window -->
+    <!-- 报表动作-修改凭证编号 -->
     <record id="accountcore_seting_voucher_number_single_action" model="ir.actions.act_window">
       <field name="name">修改凭证编号</field>
       <field name="type">ir.actions.act_window</field>
@@ -533,7 +535,7 @@
       <field name="view_type">form</field>
       <field name="target">new</field>
     </record>
-
+    <!-- form-设置新增凭证默认值向导 -->
     <record id='accountcore_userdefaults_form' model='ir.ui.view'>
       <field name='name'>设置新增凭证默认值</field>
       <field name='model'>accountcoure.userdefaults</field>
@@ -541,9 +543,9 @@
         <form string='' create='false'>
           <sheet>
             <group col='2'>
-              <field name='default_voucherDate' required='1' default_focus='2'/>
-              <field name='default_real_date'  default_focus='3'/>
-              <field name='default_org' required='1' default_focus='1'/>
+              <field name='default_voucherDate' required='1' default_focus='2' />
+              <field name='default_real_date' default_focus='3' />
+              <field name='default_org' required='1' default_focus='1' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
               <field name='default_ruleBook' required='1' default_focus='4'>
                 <tree>
                   <field name='name' />
@@ -560,7 +562,7 @@
         </form>
       </field>
     </record>
-    <!-- accountcore.seting_voucher_number_single form view -->
+    <!-- form-修改凭证编号向导 -->
     <record id="accoutcore_seting_voucher_number_single_form" model="ir.ui.view">
       <field name="name">修改凭证编号</field>
       <field name="model">accountcore.seting_voucher_number_single</field>
@@ -577,18 +579,21 @@
         </form>
       </field>
     </record>
+    <!-- 窗体动作-打开设置新增凭证默认值 -->
     <record model='ir.actions.act_window' id='accountcore_userdefaults_action'>
       <field name='name'>设置新增凭证默认值</field>
       <field name='res_model'>accountcoure.userdefaults</field>
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
     </record>
+    <!-- 窗体动作-打开查询科目明细账 -->
     <record model='ir.actions.act_window' id='accountcore_get_subsidiary_book_window'>
       <field name="name">查询科目明细账</field>
       <field name="res_model">accountcore.get_subsidiary_book</field>
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
+    <!-- form-记账凭证 -->
     <record model='ir.ui.view' id='accountcore_voucher_form'>
       <field name='name'>记账凭证</field>
       <field name='model'>accountcore.voucher</field>
@@ -619,23 +624,24 @@
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
-                <button name='%(accountcore_get_subsidiary_book_window)d'  context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
-                <field name='org' invisible='1'/>
+                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
+                <field name='org' invisible='1' />
                 <field name='explain' class='oe_ac_explain'></field>
                 <field name='account' context="{'search_default_group_by_accountClassClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                 <field name='damount' sum='ac_dsum' class='amountColor'></field>
                 <field name='camount' sum='ac_csum' class='amountColor'></field>
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account}" />
-                <field name='account_item' invisible='1'/>
+                <field name='account_item' invisible='1' />
                 <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
                 <control>
                   <create string="添加一行分录" />
                 </control>
               </tree>
             </field>
-            <div class="ac-warning"  styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}" >
-            <span>借贷方差额：</span>
-            <field name="sum_amount"/><span id="auto_balance" style="margin-left:5px">自动平衡</span>
+            <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
+              <span>借贷方差额：</span>
+              <field name="sum_amount" />
+              <span id="auto_balance" style="margin-left:5px">自动平衡</span>
             </div>
             <group col='8' class='oe_grey'>
               <field name='uniqueNumber' readonly='1'></field>
@@ -645,8 +651,7 @@
             </group>
             <div>
               <script>
-        $(function () {
-         $('[data-toggle="tooltip"]').tooltip();
+        $(function () { $('[data-toggle="tooltip"]').tooltip();
          $('#auto_balance').on('click',function(){
            alert('平衡');
          });
@@ -657,7 +662,7 @@
         </form>
       </field>
     </record>
-    <!-- accountcore.entry form view -->
+    <!-- form-会计分录 -->
     <record id="accountcore_entry_form" model="ir.ui.view">
       <field name="name">会计分录</field>
       <field name="model">accountcore.entry</field>
@@ -678,7 +683,7 @@
         </form>
       </field>
     </record>
-
+    <!-- form-新增下级科目向导 -->
     <record id="accountcore_wizardcreatechildaccount_form" model="ir.ui.view">
       <field name="name">新增下级科目</field>
       <field name="model">accountcore.create_child_account</field>
@@ -716,6 +721,7 @@
         </form>
       </field>
     </record>
+    <!-- list-凭证编号策略 -->
     <record id='accountcore_vouchre_number_statics_tree' model='ir.ui.view'>
       <field name='name'>凭证编号策略列表</field>
       <field name='model'>accountcore.voucher_number_tastics</field>
@@ -726,8 +732,7 @@
         </tree>
       </field>
     </record>
-
-    <!-- accountcore.voucher_number_tastics form view -->
+    <!-- form-凭证编号策略 -->
     <record id="accountcore_voucher_number_tatics_form" model="ir.ui.view">
       <field name="name">凭证编号策略</field>
       <field name="model">accountcore.voucher_number_tastics</field>
@@ -744,15 +749,15 @@
         </form>
       </field>
     </record>
-
+    <!-- form-设置凭证编号策略 -->
     <record id='accountcore_vouchre_number_statics_default_form' model='ir.ui.view'>
       <field name='name'>设置凭证编号策略</field>
       <field name='model'>accountcore.voucher_number_statics_default</field>
       <field name='arch' type='xml'>
-        <form create='false'>
+        <form string='' create='false'>
           <sheet>
             <group>
-              <field name='voucherNumberTastics' required='1' />
+              <field name='voucherNumberTastics' required='1' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
           </sheet>
           <footer>
@@ -761,7 +766,7 @@
         </form>
       </field>
     </record>
-
+    <!-- form-自动生成凭证编号 -->
     <record id="accountcore_seting_vouchers_number_form" model="ir.ui.view">
       <field name="name">自动生成凭证编号</field>
       <field name="model">accountcore.seting_vouchers_number</field>
@@ -779,7 +784,7 @@
         </form>
       </field>
     </record>
-
+    <!-- form-启用期初 -->
     <record id="accountcore_accounts_balance_form" model="ir.ui.view">
       <field name="name">启用期初</field>
       <field name="model">accountcore.accounts_balance</field>
@@ -806,8 +811,7 @@
         </form>
       </field>
     </record>
-
-    <!-- 科目余额表查询 -->
+    <!-- 科目余额表，明细账等纸张格式 -->
     <record id="paperformat_A4_Landspace" model="report.paperformat">
       <field name="name">科目余额表</field>
       <field name="default" eval="True" />
@@ -823,8 +827,7 @@
       <field name="header_spacing">35</field>
       <field name="dpi">90</field>
     </record>
-
-    <!-- <report id='accounctore_accountsbalance_report' model='accountcore.accounts_balance' string='科目余额表' report_type='qweb-html' name='accountcore.account_balance_report' paperformat='paperformat_A4_Landspace' /> -->
+    <!-- form-科目余额表查询向导 -->
     <record id="accountcore_get_accounts_balance_form" model="ir.ui.view">
       <field name='name'>科目余额查询</field>
       <field name='model'>accountcore.get_account_balance</field>
@@ -869,7 +872,7 @@
       </field>
     </record>
     <report id='accountcore.subsidiarybook_report' model='accountcore.entry' string='科目明细账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='paperformat_A4_Landspace' />
-    <!-- accountcore.get_subsidiary_book form vie -->
+    <!-- form-查询明细账向导 -->
     <record id="accountcore_get_subsidiary_book_form" model="ir.ui.view">
       <field name="name">查询科目明细账</field>
       <field name="model">accountcore.get_subsidiary_book</field>
@@ -898,7 +901,7 @@
         </form>
       </field>
     </record>
-
+    <!-- form-自动结转损益向导 -->
     <record id="accountcore_voucher_sunyi_form" model="ir.ui.view">
       <field name="name">自动结转损益</field>
       <field name="model">accountcore.currency_down_sunyi</field>
@@ -919,8 +922,7 @@
         </form>
       </field>
     </record>
-
-    <!-- accountcore.voucher search view -->
+    <!-- 搜索视图-科目 -->
     <record id="accountcore_account_search" model="ir.ui.view">
       <field name="name">科目查询</field>
       <field name="model">accountcore.account</field>
@@ -936,7 +938,7 @@
         </search>
       </field>
     </record>
-
+    <!-- 搜索视图-核算项目 -->
     <record id="accountcore_item_search" model="ir.ui.view">
       <field name="name">核算项目查询</field>
       <field name="model">accountcore.item</field>
@@ -951,7 +953,7 @@
         </search>
       </field>
     </record>
-
+    <!-- 搜索视图-启用期初 -->
     <record id="accountcore_accounts_balance_search" model="ir.ui.view">
       <field name="name">启用期初查询</field>
       <field name="model">accountcore.accounts_balance</field>
@@ -959,7 +961,7 @@
         <search string="balanceFilter">
           <field name="account" string="科目名称包含" domain="[('account.name','ilike', self)]" />
           <field name="account_number" string="科目编号包含" domain="[('account_number','ilike', self)]" />
-          <field name="items" string="项目名称包含" domain="[('items.name','ilike', self)]" />          
+          <field name="items" string="项目名称包含" domain="[('items.name','ilike', self)]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_account_class_id" string="按科目类别分组" context = "{'group_by': 'account_class_id'}" />
           <filter name="group_by_account_number" string="按科目编码分组" context = "{'group_by': 'account_number'}" />
@@ -969,8 +971,7 @@
         </search>
       </field>
     </record>
-
-    <!-- accountcore.voucher search view -->
+    <!-- 搜素视图-凭证 -->
     <record id="accountcore_voucher_search" model="ir.ui.view">
       <field name="name">凭证查询</field>
       <field name="model">accountcore.voucher</field>
@@ -988,25 +989,28 @@
         </search>
       </field>
     </record>
-
+    <!-- 窗体动作-打开核算机构 -->
     <record model='ir.actions.act_window' id='accountcore_org_action_window'>
       <field name='name'>核算机构</field>
       <field name='res_model'>accountcore.org</field>
       <field name='view_mode'>tree,form</field>
       <field name="target">current</field>
     </record>
+    <!-- 窗体动作-打开科目体系 -->
     <record model='ir.actions.act_window' id='accountcore_accountsarch_action_window'>
       <field name='name'>科目体系</field>
       <field name='res_model'>accountcore.accounts_arch</field>
       <field name='view_mode'>tree,form</field>
       <field name="target">current</field>
     </record>
+    <!-- 窗体动作-打开核算项目类别 -->
     <record model='ir.actions.act_window' id='accountcore_itemclass_action_window'>
       <field name='name'>核算项目类别</field>
       <field name='res_model'>accountcore.itemclass</field>
       <field name='view_mode'>tree,form</field>
       <field name='target'>current</field>
     </record>
+    <!-- 窗体动作-打开核算项目列表 -->
     <record model='ir.actions.act_window' id='accountcore_items_action_window'>
       <field name='name'>核算项目列表</field>
       <field name='res_model'>accountcore.item</field>
@@ -1014,6 +1018,7 @@
       <field name='target'>current</field>
       <field name="context">{'search_default_groupby_itemClass': 1}</field>
     </record>
+    <!-- 窗体动作-打开凭证标签 -->
     <record model='ir.actions.act_window' id='accountcore_rulebook_action_window'>
       <field name='name'>凭证标签</field>
       <field name='res_model'>accountcore.rulebook</field>
@@ -1024,27 +1029,32 @@
       <field name='res_model'>accountcore.accountclass</field>
       <field name='view_mode'>tree,form</field>
     </record>
+    <!-- 窗体动作-打开科目列表 -->
     <record model='ir.actions.act_window' id='accountcore_account_action_window'>
       <field name='name'>科目列表</field>
       <field name='res_model'>accountcore.account</field>
       <field name='view_mode'>tree,form</field>
       <field name="context">{'search_default_group_by_accountClassClass': 1}</field>
     </record>
+    <!-- 窗体动作-打开现金流量项目类别 -->
     <record model='ir.actions.act_window' id='accountcore_cashflowtype_action_window'>
       <field name='name'>现金流量项目类别</field>
       <field name='res_model'>accountcore.cashflowtype</field>
       <field name='view_mode'>tree,form</field>
     </record>
+    <!-- 窗体动作-打开现金流量项目列表 -->
     <record model='ir.actions.act_window' id='accountcore_cashflowitems_action_window'>
       <field name='name'>现金流量项目列表</field>
       <field name='res_model'>accountcore.cashflow</field>
       <field name='view_mode'>tree,form</field>
     </record>
+    <!-- 窗体动作-打开凭证来源 -->
     <record model='ir.actions.act_window' id='accountcore_source_action_window'>
       <field name='name'>凭证来源</field>
       <field name='res_model'>accountcore.source</field>
       <field name='view_mode'>tree,form</field>
     </record>
+    <!-- 窗体动作-打开凭证列表 -->
     <record model='ir.actions.act_window' id='accountcore_vouchers_action_window'>
       <!-- “凭证列表” 名字不能更改，有关button联引用 btn_templates.xml -->
       <field name='name'>凭证列表</field>
@@ -1052,64 +1062,69 @@
       <field name='view_mode'>tree,form</field>
       <field name="context">{'search_default_month': 1}</field>
     </record>
-
+    <!-- 窗体动作-打开特殊科目列表 -->
     <record model="ir.actions.act_window" id="acccountcore_special_accounts_actions_window">
       <field name="name">特殊科目列表</field>
       <field name="res_model">accountcore.special_accounts</field>
       <field name='view_mode'>tree,form</field>
     </record>
-
+    <!-- 窗体动作-打开全局标签列表 -->
     <record model="ir.actions.act_window" id="acccountcore_glob_tag_actions_window">
       <field name="name">全局标签列表</field>
       <field name="res_model">accountcore.glob_tag</field>
       <field name='view_mode'>tree,form</field>
     </record>
-
+    <!-- 窗体动作-打开帮助列表 -->
     <record model="ir.actions.act_window" id="acccountcore_helps_actions_window">
       <field name="name">帮助列表</field>
       <field name="res_model">accountcore.helps</field>
       <field name='view_mode'>tree,form</field>
     </record>
-
+    <!-- 窗体动作-打开新增凭证 -->
     <record model='ir.actions.act_window' id='accountore_voucher_new_actions_window'>
       <field name='name'>新增凭证</field>
       <field name='res_model'>accountcore.voucher</field>
       <field name='view_mode'>form</field>
       <field name="target">new</field>
     </record>
+    <!-- 窗体动作-打开凭证编号策略列表 -->
     <record model='ir.actions.act_window' id='accountcore_voucher_number_acionts_window'>
       <field name='name'>凭证编号策略列表</field>
       <field name='res_model'>accountcore.voucher_number_tastics</field>
       <field name='view_mode'>tree,form</field>
       <field name='target'>current</field>
     </record>
+    <!-- 窗体动作-打开设置凭证编号策略默认值向导 -->
     <record model='ir.actions.act_window' id='accountcore_set_number_acionts_window'>
       <field name='name'>设置凭证编号策略默认值</field>
       <field name='res_model'>accountcore.voucher_number_statics_default</field>
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
     </record>
+    <!-- 窗体动作-打开查询科目余额向导 -->
     <record model='ir.actions.act_window' id='accountcore_get_accounts_balance_actions_window'>
       <field name="name">查询科目余额</field>
       <field name="res_model">accountcore.get_account_balance</field>
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
-    
+    <!-- 窗体动作-通过明细账等打开凭证 -->
     <record model='ir.actions.act_window' id='accountore_voucher_id_actions_window'>
       <field name='name'>凭证</field>
       <field name='res_model'>accountcore.voucher</field>
       <field name='view_mode'>form</field>
       <field name="target">fullscreen</field>
     </record>
-
+    <!-- 窗体动作-打开结转损益向导 -->
     <record model='ir.actions.act_window' id='accountore_voucher_shunyi_actions_window'>
       <field name="name">结转损益</field>
       <field name="res_model">accountcore.currency_down_sunyi</field>
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
+    <!-- 窗体动作-打开自动生成多张凭证编码向导-->
     <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
+    <!-- 纸张定义-凭证打印 -->
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>
       <field name="default" eval="True" />
@@ -1125,7 +1140,7 @@
       <field name="header_spacing">35</field>
       <field name="dpi">90</field>
     </record>
-
+    <!-- 窗体动作-打开科目启用期初余额 -->
     <record model='ir.actions.act_window' id='acccountcore_accounts_balance_actions_window'>
       <field name="name">科目启用期初余额</field>
       <field name="res_model">accountcore.accounts_balance</field>
@@ -1134,10 +1149,10 @@
       <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1,'search_default_group_by_account_class_id':1}</field>
       <field name='domain'>[('isbegining','=',True)]</field>
     </record>
-
+    <!-- 报表动作-凭证打印 -->
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
-
   </data>
+  <!-- 记账凭证唯一编号 -->
   <data noupdate='True'>
     <record id='voucher_unique_number' model='ir.sequence'>
       <field name='name'>记账凭证唯一号</field>
@@ -1147,6 +1162,7 @@
       <field name='padding'>6</field>
     </record>
   </data>
+  <!-- 核算项目唯一编号 -->
   <data noupdate='True'>
     <record id='item_unique_number' model='ir.sequence'>
       <field name='name'>核算项目唯一号</field>

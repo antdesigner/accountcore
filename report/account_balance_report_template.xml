@@ -18,7 +18,7 @@ table tr{
 page-break-inside: avoid !important;}
 .org_name{}
         </style>
-        <!-- 通过列表选择 -->
+        <!-- 通过列表选择(例如：启用期初) -->
         <t t-if='lines'>
                <t t-call="web.basic_layout">
             <div class="container center text-center" style='display:flex;flex-direction:column;'>
@@ -202,6 +202,7 @@ page-break-inside: avoid !important;}
             </div>
         </t>
         </t>
+        <!-- 页脚 -->
         <div class="footer o_standard_footer">
             <div class="text-right">
                 <div t-if="report_type == 'pdf'" >

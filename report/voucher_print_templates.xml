@@ -1,6 +1,8 @@
 <odoo>
     <data>
+            <!-- 凭证打印 -->
         <template id='voucher_report'>
+
             <style>
            td
 {
