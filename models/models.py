@@ -4,8 +4,7 @@ import datetime
 import json
 import logging
 import multiprocessing
-from odoo import exceptions
-from odoo import models, fields, api
+from odoo import models, fields, api, SUPERUSER_ID, exceptions
 import sys
 sys.path.append('.\\.\\server\\odoo')
 
@@ -1530,8 +1529,27 @@ class AccountsBalance(models.Model):
                                        ['isbegining', '=', False]])
         return record
 
+    @classmethod
+    def getBeginOfOrg(cls, org):
+        '''获得机构的启用期初记录'''
+        domain = [('org', '=', org.id), ('isbegining', '=', True)]
+        env = org.env['accountcore.accounts_balance']
+        return env.sudo().search(domain)
+
+    @classmethod
+    def getFielValueOf(cls, field_name, records):
+        '''获取记录中某字段值'''
+        return records.mapped(field_name)
+
+    @classmethod
+    def _sumFieldOf(cls, field_name, records):
+        '''对某字段求和'''
+        fieldsValue = cls.getFielValueOf(field_name, records)
+        return sum(fieldsValue)
 
 # 科目余额用对象
+
+
 class AccountBalanceMark(object):
     def __init__(self, orgId, accountId, itemId, createDate, accountBalanceTable, isbegining):
         self.org = orgId
@@ -2151,4 +2169,103 @@ class currencyDown_sunyi(models.TransientModel):
             'entrys': [(6, 0, entrys.ids)]
         })
         return voucher
-# 向导部分-结束
+
+
+# 启用期初试算平衡向导
+class BeginBalanceCheck(models.TransientModel):
+    '''启用期初试算平衡向导'''
+    _name = 'accountcore.begin_balance_check'
+    org_ids = fields.Many2many('accountcore.org',
+                               string='选择检查机构',
+                               required=True)
+    result = fields.Html(string='检查结果')
+
+    @api.multi
+    def do_check(self, *args):
+        '''对选中机构执行平衡检查'''
+        self.ensure_one()
+        check_result = {}
+        result_htmlStr = ''
+        for org in self.org_ids:
+            check_result[org.name] = self._check(org)
+        for (key, value) in check_result.items():
+            result_htmlStr = result_htmlStr+"<p>" + \
+                key+"</p>"+"".join([v[1] for v in value])
+        self.result = result_htmlStr
+        return {
+            'name': '启用期初平衡检查',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+            'res_model': 'accountcore.begin_balance_check',
+            'res_id': self.id,
+        }
+
+    def _check(self, org):
+        '''对一个机构执行平衡检查'''
+        rl = []
+        # 获得机构期初
+        balance_records = AccountsBalance.getBeginOfOrg(org)
+        # 检查月初本年累计发生额借方合计=贷方合计
+        rl.append(self._checkCumulativeAmountBalance(balance_records))
+        # 检查月初余额借方合计=贷方合计
+        rl.append(self._checkBeginingAmountBalance(balance_records))
+        # 检查月已发生额借方合计=贷方合计
+        rl.append(self._checkAmountBalance(balance_records))
+        # 检查资产=负债+所有者权益+收入-理论
+        rl.append(self._checkBalance(balance_records))
+        return rl
+
+    def _checkCumulativeAmountBalance(self, balance_records):
+        '''检查月初本年累计发生额借方合计'''
+        damount = AccountsBalance._sumFieldOf(
+            'cumulativeDamount', balance_records)
+        camount = AccountsBalance._sumFieldOf(
+            'cumulativeCamount', balance_records)
+        imbalanceAmount = damount-camount
+        if imbalanceAmount == 0:
+            rl_html = "<div>月初本年累计借方("+str(damount) + \
+                ")-月初本年累计贷方("+str(camount)+")=0</div>"
+            return (True, rl_html)
+        else:
+            rl_html = "<div>月初本年累计借方合计("+str(damount)+")-月初本年累计贷方合计(" + \
+                str(camount)+")="+str(imbalanceAmount)+"</div>"
+            return (False, rl_html)
+
+    def _checkBeginingAmountBalance(self, balance_records):
+        '''检查月初余额借方合计'''
+        damount = AccountsBalance._sumFieldOf('beginingDamount',
+                                              balance_records)
+        camount = AccountsBalance._sumFieldOf('beginingCamount',
+                                              balance_records)
+        imbalanceAmount = damount-camount
+        if imbalanceAmount == 0:
+            rl_html = "<div>月初借方余额合计(" + str(damount) + \
+                ")-月初贷方贷方余额合计(" + str(camount) + ")=0</div>"
+            return (True, rl_html)
+        else:
+            rl_html = "<div>月初借方余额合计(" + str(damount) + ")-月初贷方余额合计(" + \
+                str(camount)+")="+str(imbalanceAmount)+"</div>"
+            return (False, rl_html)
+
+    def _checkAmountBalance(self, balance_records):
+        '''检查月已发生额借方合计'''
+        damount = AccountsBalance._sumFieldOf('damount',
+                                              balance_records)
+        camount = AccountsBalance._sumFieldOf('camount',
+                                              balance_records)
+        imbalanceAmount = damount-camount
+        if imbalanceAmount == 0:
+            rl_html = "<div>月已发生额合计(" + str(damount) + \
+                ")-月已发生额合计(" + str(camount) + ")=0</div>"
+            return (True, rl_html)
+        else:
+            rl_html = "<div>月已发生额合计(" + str(damount) + ")-月已发生额合计(" + \
+                str(camount)+")="+str(imbalanceAmount)+"</div>"
+            return (False, rl_html)
+
+    def _checkBalance(self, balance_records):
+        '''检查资产=负债+所有者权益+收入-理论'''
+        return (True, "开发中....")
+        # 向导部分-结束

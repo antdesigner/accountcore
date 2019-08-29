@@ -549,27 +549,34 @@ odoo.define("accountcore.begin_balance_check", function (require) {
         },
         _do_check: function () {
             var self = this;
-            framework.blockUI();
-            alert('开始试算平衡');
-            this._rpc({
-                model: 'accountcore.account',
-                method: 'get_itemClasses',
-                args: [176],
-            }).then(function (items) {
-                // _.map(items,function(){
-                //     s=s+self.name;
-                //   });
-
-                console.log('over!');
-                setTimeout(function () {
-                    framework.unblockUI();
-                    self.do_notify('结果', '该功能还在开发中!');
-                }, 5000);
-
-            }, function () {
-                console.log('error!');
-                FrameWork.unbolckUI();
+            this.do_action({
+                name:'启用期初平衡检查',
+                type:'ir.actions.act_window',
+                res_model:'accountcore.begin_balance_check',
+                views:[[false,'form']],
+                target:'new'
             });
+            // framework.blockUI();
+            // alert('开始试算平衡');
+            // this._rpc({
+            //     model: 'accountcore.account',
+            //     method: 'get_itemClasses',
+            //     args: [176],
+            // }).then(function (items) {
+            //     // _.map(items,function(){
+            //     //     s=s+self.name;
+            //     //   });
+
+            //     console.log('over!');
+            //     setTimeout(function () {
+            //         framework.unblockUI();
+            //         self.do_notify('结果', '该功能还在开发中!');
+            //     }, 5000);
+
+            // }, function () {
+            //     console.log('error!');
+            //     FrameWork.unbolckUI();
+            // });
         },
 
     });
