@@ -1159,16 +1159,16 @@
         <form string="">
           <sheet>
             <group>
-              <field name="org_ids" >
+              <field name='result' readonly='1'/>
+              <field name="org_ids">
                 <tree>
                   <field name='number'/>
                   <field name='name' />
                   <control>
-                    <create string="增加待检查机构" />
+                    <create string="选择机构" />
                   </control>
                 </tree>
                 </field>
-              <field name='result' readonly='1'/>
             </group>
           </sheet>
           <footer>

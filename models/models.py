@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import calendar
 import datetime
+from decimal import Decimal
 import json
 import logging
 import multiprocessing
@@ -1091,9 +1092,9 @@ class AccountsBalance(models.Model):
     def get_company_currency(self):
         self.currency_id = self.env.user.company_id.currency_id
 
-    # @api.onchange('createDate')
+    @api.onchange('createDate')
     @api.depends('createDate')
-    def chage_period(self):
+    def change_period(self):
         if self.createDate:
             self.year = self.createDate.year
             self.month = self.createDate.month
@@ -1135,7 +1136,7 @@ class AccountsBalance(models.Model):
             if mySelf.isbegining:
                 mySelf.updateCumulative(-mySelf.beginCumulativeDamount,
                                         -mySelf.beginCumulativeCamount)
-        rl_bool = super(AccountsBalance, self).unlink()
+        rl_bool=super(AccountsBalance, self).unlink()
         return rl_bool
 
     @api.multi
@@ -1545,8 +1546,8 @@ class AccountsBalance(models.Model):
     def _sumFieldOf(cls, field_name, records):
         '''对某字段求和'''
         fieldsValue = cls.getFielValueOf(field_name, records)
-        return sum(fieldsValue)
-
+        fieldsValue_= [(Decimal.from_float(v)).quantize(Decimal('0.00')) for v in fieldsValue]
+        return sum(fieldsValue_)
 # 科目余额用对象
 
 
@@ -2176,7 +2177,7 @@ class BeginBalanceCheck(models.TransientModel):
     '''启用期初试算平衡向导'''
     _name = 'accountcore.begin_balance_check'
     org_ids = fields.Many2many('accountcore.org',
-                               string='选择检查机构',
+                               string='待检查机构',
                                required=True)
     result = fields.Html(string='检查结果')
 
@@ -2189,8 +2190,8 @@ class BeginBalanceCheck(models.TransientModel):
         for org in self.org_ids:
             check_result[org.name] = self._check(org)
         for (key, value) in check_result.items():
-            result_htmlStr = result_htmlStr+"<p>" + \
-                key+"</p>"+"".join([v[1] for v in value])
+            result_htmlStr = result_htmlStr+"<h6>" + \
+                key+"</h6>"+"".join([v[1] for v in value])
         self.result = result_htmlStr
         return {
             'name': '启用期初平衡检查',
@@ -2225,12 +2226,13 @@ class BeginBalanceCheck(models.TransientModel):
             'cumulativeCamount', balance_records)
         imbalanceAmount = damount-camount
         if imbalanceAmount == 0:
-            rl_html = "<div>月初本年累计借方("+str(damount) + \
-                ")-月初本年累计贷方("+str(camount)+")=0</div>"
+            rl_html = "<div><span class='text-success fa fa-check'></span>月初本年借方累计发生额=月初本年贷方累计发生额[" + \
+                str(damount) + "="+str(camount)+"]</div>"
             return (True, rl_html)
         else:
-            rl_html = "<div>月初本年累计借方合计("+str(damount)+")-月初本年累计贷方合计(" + \
-                str(camount)+")="+str(imbalanceAmount)+"</div>"
+            rl_html = "<div><span class='text-danger fa fa-close'></span>月初本年借方累计发生额合计=月初本年贷方累计发生额合计[" + \
+                str(damount)+"-" + str(camount) + \
+                "="+str(imbalanceAmount)+"]</div>"
             return (False, rl_html)
 
     def _checkBeginingAmountBalance(self, balance_records):
@@ -2241,12 +2243,13 @@ class BeginBalanceCheck(models.TransientModel):
                                               balance_records)
         imbalanceAmount = damount-camount
         if imbalanceAmount == 0:
-            rl_html = "<div>月初借方余额合计(" + str(damount) + \
-                ")-月初贷方贷方余额合计(" + str(camount) + ")=0</div>"
+            rl_html = "<div><span class='text-success fa fa-check'></span>月初借方余额合计=月初贷方贷方余额合计[" + \
+                str(damount) + "=" + str(camount) + "]</div>"
             return (True, rl_html)
         else:
-            rl_html = "<div>月初借方余额合计(" + str(damount) + ")-月初贷方余额合计(" + \
-                str(camount)+")="+str(imbalanceAmount)+"</div>"
+            rl_html = "<div><span class='text-danger fa fa-close'></span>月初借方余额合计=月初贷方余额合计[" +  \
+                str(damount) + "-" + str(camount) + \
+                "="+str(imbalanceAmount)+"]</div>"
             return (False, rl_html)
 
     def _checkAmountBalance(self, balance_records):
@@ -2257,15 +2260,16 @@ class BeginBalanceCheck(models.TransientModel):
                                               balance_records)
         imbalanceAmount = damount-camount
         if imbalanceAmount == 0:
-            rl_html = "<div>月已发生额合计(" + str(damount) + \
-                ")-月已发生额合计(" + str(camount) + ")=0</div>"
+            rl_html = "<div><span class='text-success fa fa-check'></span>月借方已发生额合计=月贷方已发生额合计[" + \
+                str(damount) + "=" + str(camount) + "]</div>"
             return (True, rl_html)
         else:
-            rl_html = "<div>月已发生额合计(" + str(damount) + ")-月已发生额合计(" + \
-                str(camount)+")="+str(imbalanceAmount)+"</div>"
+            rl_html = "<div><span class='text-danger fa fa-exclamation'></span>月借方已发生额合计=月贷方已发生额合计[" + \
+                str(damount) + "-" + str(camount) + \
+                "="+str(imbalanceAmount)+"]</div>"
             return (False, rl_html)
 
     def _checkBalance(self, balance_records):
-        '''检查资产=负债+所有者权益+收入-理论'''
-        return (True, "开发中....")
+        '''检查资产=负债+所有者权益+收入-成本'''
+        return (True, ".....")
         # 向导部分-结束
