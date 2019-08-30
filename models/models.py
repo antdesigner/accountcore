@@ -1028,11 +1028,14 @@ class AccountsBalance(models.Model):
         string='所属机构',
         required=True,
         index=True,
-        ondelete='cascade')
-    createDate = fields.Date(
-        string="创建日期", required=True)
+        ondelete='cascade',
+        default=lambda s: s.env.user.currentOrg)
+    createDate = fields.Date(string="创建日期",
+                             required=True,
+                             default=lambda s: s.env.user.current_date)
     # 通过createDate生成,不要直接修改
-    year = fields.Integer(string='年', required=True,
+    year = fields.Integer(string='年',
+                          required=True,
                           index=True)
     # 通过createDate生成,不要直接修改
     month = fields.Integer(string='月', required=True)
@@ -1136,7 +1139,7 @@ class AccountsBalance(models.Model):
             if mySelf.isbegining:
                 mySelf.updateCumulative(-mySelf.beginCumulativeDamount,
                                         -mySelf.beginCumulativeCamount)
-        rl_bool=super(AccountsBalance, self).unlink()
+        rl_bool = super(AccountsBalance, self).unlink()
         return rl_bool
 
     @api.multi
@@ -1175,7 +1178,9 @@ class AccountsBalance(models.Model):
                 oldSelf.update(values)
                 if self._check_repeat(oldSelf):
                     raise exceptions.ValidationError(
-                        '不能修改,因为已经存在一条相同科目的期初余额记录行,请取消,在另一行已存在的记录上修改!若不想保留本行，请进行删除操作')
+                        '''不能修改所属月份,若需改变月份,请删除本条记录,另新增一条记录。
+                        或者已经存在一条相同科目的期初余额记录行,请取消,在另一行已存在的记录上修改!
+                        若不想保留本行，请勾选本行，并在动作中选择删除操作''')
                 self.deleteRelatedAndUpdate()
                 old_beginCumulativeDamount = self.beginCumulativeDamount
                 old_beginCumulativeCamount = self.beginCumulativeCamount
@@ -1546,7 +1551,8 @@ class AccountsBalance(models.Model):
     def _sumFieldOf(cls, field_name, records):
         '''对某字段求和'''
         fieldsValue = cls.getFielValueOf(field_name, records)
-        fieldsValue_= [(Decimal.from_float(v)).quantize(Decimal('0.00')) for v in fieldsValue]
+        fieldsValue_ = [(Decimal.from_float(v)).quantize(
+            Decimal('0.00')) for v in fieldsValue]
         return sum(fieldsValue_)
 # 科目余额用对象
 
@@ -1635,6 +1641,8 @@ class ExtensionUser(models.Model):
     currentOrg = fields.Many2one('accountcore.org', string="当前核算机构")
     voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
                                            string='默认凭证编号策略')
+    current_date = fields.Date(
+        string='当期操作日期', default=fields.Date.today())
 # 继承和扩展model-结束
 # model-结束
 
@@ -1804,6 +1812,7 @@ class AccountcoreUserDefaults(models.TransientModel):
             self._setDefault(modelName, 'real_date',
                              json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
         self.env.user.currentOrg = self.default_org.id
+        self.env.user.current_date = self.default_voucherDate
         return True
 
     # 设置默认值
@@ -2178,7 +2187,8 @@ class BeginBalanceCheck(models.TransientModel):
     _name = 'accountcore.begin_balance_check'
     org_ids = fields.Many2many('accountcore.org',
                                string='待检查机构',
-                               required=True)
+                               required=True,
+                               default=lambda s: s.env.user.currentOrg)
     result = fields.Html(string='检查结果')
 
     @api.multi
