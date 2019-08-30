@@ -2,6 +2,7 @@
 import copy
 import datetime
 import decimal
+from decimal import Decimal
 import json
 import time
 from odoo import http
@@ -89,8 +90,13 @@ class AccountBalanceReport(models.AbstractModel):
                               temp_accountId,
                               temp_itemId)
             # 添加期初借贷方余额等
-            balance.beginingDamount = record['beginingDamount']
-            balance.beginingCamount = record['beginingCamount']
+            # balance.beginingDamount = record['beginingDamount']
+            # balance.beginingCamount = record['beginingCamount']
+            # balance.item_class_name = record['item_class_name']
+            balance.beginingDamount = Decimal.from_float(
+                record['beginingDamount']).quantize(Decimal('0.00'))
+            balance.beginingCamount = Decimal.from_float(
+                record['beginingCamount']).quantize(Decimal('0.00'))
             balance.item_class_name = record['item_class_name']
             balance.item_id = record['item_id']
             balance.item_name = record['item_name']
@@ -105,8 +111,12 @@ class AccountBalanceReport(models.AbstractModel):
                     break
             if balance_DAndCAmount:
                 # 添加查询期间的借贷方发生额
-                balance.damount = balance_DAndCAmount['damount']
-                balance.camount = balance_DAndCAmount['camount']
+                # balance.damount = balance_DAndCAmount['damount']
+                # balance.camount = balance_DAndCAmount['camount']
+                balance.damount = Decimal.from_float(
+                    balance_DAndCAmount['damount']).quantize(Decimal('0.00'))
+                balance.camount = Decimal.from_float(
+                    balance_DAndCAmount['camount']).quantize(Decimal('0.00'))
                 balance.item_class_name = balance_DAndCAmount['item_class_name']
                 balance.item_id = balance_DAndCAmount['item_id']
                 balance.item_name = balance_DAndCAmount['item_name']
@@ -122,8 +132,12 @@ class AccountBalanceReport(models.AbstractModel):
                                           one['item_id'])
                 balance_current.beginingDamount = 0
                 balance_current.beginingCamount = 0
-                balance_current.damount = one['damount']
-                balance_current.camount = one['camount']
+                # balance_current.damount = one['damount']
+                # balance_current.camount = one['camount']
+                balance_current.damount = Decimal.from_float(
+                    one['damount']).quantize(Decimal('0.00'))
+                balance_current.camount = Decimal.from_float(
+                    one['camount']).quantize(Decimal('0.00'))
                 balance_current.item_class_name = one['item_class_name']
                 balance_current.item_id = one['item_id']
                 balance_current.item_name = one['item_name']
@@ -245,10 +259,10 @@ class AccountBalanceReport(models.AbstractModel):
                     t_account.number as account_number,
                     t_account.name as account_name,
                     t_account.direction as direction,
-                    0.00 as "beginingDamount",
-                    0.00 as "beginingCamount",
-                    0.00 as damount,
-                    0.00 as camount
+                    CAST(0 as numeric) as "beginingDamount",
+                    CAST(0 as numeric)  as "beginingCamount",
+                    CAST(0 as numeric)  as damount,
+                    CAST(0 as numeric)  as camount
                 FROM accountcore_account AS t_account
                 LEFT OUTER JOIN accountcore_org as t_org
                 ON t_account.org=t_org.id
@@ -256,7 +270,14 @@ class AccountBalanceReport(models.AbstractModel):
                 ON t_account."accountClass"=t_account_class.id
                 ORDER BY account_number'''
         self.env.cr.execute(query)
-        return self.env.cr.dictfetchall()
+        rl = self.env.cr.dictfetchall()
+
+        for x in rl:
+            x['beginingDamount'] = Decimal(0)
+            x['beginingCamount'] = Decimal(0)
+            x['damount'] = Decimal(0)
+            x['camount'] = Decimal(0)
+        return rl
 
 
 # 一条余额记录
@@ -294,8 +315,7 @@ class Balance(object):
         self.beginingCamount = 0
         self.damount = 0
         self.camount = 0
-        self.org_account_item = \
-            str(org_id)+"." \
+        self.org_account_item = str(org_id)+"." \
             + str(account_id)+"-" \
             + str(item_id)
 
@@ -325,16 +345,14 @@ class Balances(object):
 
     def add(self, balance):
         '''添加一行余额记录'''
-        mark = \
-            str(balance.org_id)+'.' \
+        mark = str(balance.org_id)+'.' \
             + str(balance.account_id) + "-" \
             + str(balance.item_id)
         self.org_account_items.update({mark: balance})
 
     def exit(self, org_id, account_id, item_id):
         '''存在相同科目和和核算项目的余额'''
-        org_account_item = \
-            str(org_id)+"." \
+        org_account_item = str(org_id)+"." \
             + str(account_id)+"-" \
             + str(item_id)
         if org_account_item in self.org_account_items:
@@ -436,6 +454,8 @@ class AccountArch(object):
 
 # 筛选定义-开始
 # 筛选机构
+
+
 class AccountsArch_filter_org(object):
     '''筛选机构'''
 
