@@ -32,9 +32,12 @@ class AccountBalanceReport(models.AbstractModel):
         onlyShowOneLevel = form['onlyShowOneLevel']
         includeAccountItems = form['includeAccountItems']
         order_orgs = form['order_orgs']
+        sum_orgs = form['sum_orgs']
         account_ids = form['account']
         org_id = form['org']
         orgs = self.env['accountcore.org'].sudo().browse(org_id)
+        # 多机构合并显示名称
+        data['sum_orgs_name']="+".join(orgs.mapped('name'))
         startDate = datetime.datetime.strptime(form['startDate'],
                                                '%Y-%m-%d')
         start_year = startDate.year
@@ -90,9 +93,6 @@ class AccountBalanceReport(models.AbstractModel):
                               temp_accountId,
                               temp_itemId)
             # 添加期初借贷方余额等
-            # balance.beginingDamount = record['beginingDamount']
-            # balance.beginingCamount = record['beginingCamount']
-            # balance.item_class_name = record['item_class_name']
             balance.beginingDamount = Decimal.from_float(
                 record['beginingDamount']).quantize(Decimal('0.00'))
             balance.beginingCamount = Decimal.from_float(
@@ -111,8 +111,6 @@ class AccountBalanceReport(models.AbstractModel):
                     break
             if balance_DAndCAmount:
                 # 添加查询期间的借贷方发生额
-                # balance.damount = balance_DAndCAmount['damount']
-                # balance.camount = balance_DAndCAmount['camount']
                 balance.damount = Decimal.from_float(
                     balance_DAndCAmount['damount']).quantize(Decimal('0.00'))
                 balance.camount = Decimal.from_float(
@@ -144,11 +142,15 @@ class AccountBalanceReport(models.AbstractModel):
                 balance_current.org_name = one['org_name']
                 balances.add(balance_current)
         balancesList = balances.getBalancesList()
+        # 从数据库获得科目表的各科目列表
         accountsArch = self._getAccountAcrch()
-        # 余额记录管理器
+        # 科目余额管理器（构建科目余额表）
+        # 一个机构一个科目列表结构，后面用余额记录来更新这个列表结构
         accountsArchManager = AccountsArchManager(accountsArch, orgs)
+        # 用每一条余额记录来更新科目列表结构
         for balance in balancesList:
             accountArch = accountsArchManager.updateBy(balance)
+            # 处理带有核算项目的余额记录
             if balance.item_id:
                 accountsArchManager.appendItem(accountArch, balance)
         # 余额记录管理器根据向导选择的各种过滤条件进行筛选
@@ -160,7 +162,8 @@ class AccountBalanceReport(models.AbstractModel):
             AccountsArch_filter_no_show_no_hanppend(no_show_no_hanppend),
             AccountsArch_filter_onlyShowOneLevel(onlyShowOneLevel),
             AccountsArch_filter_includeAccountItems(includeAccountItems),
-            AccountsArch_filter_order_orgs(order_orgs))
+            AccountsArch_filter_order_orgs(order_orgs),
+            AccountsArch_filter_sum_orgs(sum_orgs))
 
         return {'lines': lines,
                 'docs': accountsArchWithItems,
@@ -371,6 +374,7 @@ class AccountsArchManager(object):
     def __init__(self, accountsArch, orgs):
         self.accountsArch = []
         self.accountsArch_items = []
+        # 一个核算机构一个科目列表
         for org in orgs:
             newAccountsArch = []
             for account in accountsArch:
@@ -382,12 +386,15 @@ class AccountsArchManager(object):
             self.accountsArch.extend(newAccountsArch)
 
     def updateBy(self, balance):
+        # 在科目列表中找出该科目
         accountArch = self._getAccountArchById(balance.account_id,
                                                balance.org_id)
+        # 更新各种金额
         accountArch.addAmount(balance.beginingDamount,
                               balance.beginingCamount,
                               balance.damount,
                               balance.camount)
+        # if有上级科目，下级科目金额合并到上级科目
         if accountArch.father_id:
             fatherAccount = self._getAccountArchById(accountArch.father_id,
                                                      balance.org_id)
@@ -404,12 +411,14 @@ class AccountsArchManager(object):
                 return AccountArch(line)
 
     def appendItem(self, accountArch, balance):
-        accountArch_ = accountArch.copy()
+        '''添加带有核算项目的余额记录'''
+        accountArch_ = accountArch.do_copy()
         accountArch_.update(balance)
         self.accountsArch_items.append(accountArch_.account)
 
     def getAccountArchWihtItems(self, *filters):
         '''返回经过过滤排序后的科目余额记录'''
+        # 追加带有核算项目的余额记录
         self.accountsArch.extend(self.accountsArch_items)
         self.sortBy('account_number')
         for filter in filters:
@@ -444,13 +453,14 @@ class AccountArch(object):
         self.account['camount'] = self.account['camount']+camount
         return self
 
-    def copy(self):
+    def do_copy(self):
         newAccount = self.account.copy()
         newAccountArch = AccountArch(newAccount)
         return newAccountArch
 
     def update(self, balance):
         self.account.update(dict(balance))
+
 
 # 筛选定义-开始
 # 筛选机构
@@ -585,4 +595,48 @@ class AccountsArch_filter_order_orgs(object):
 
         else:
             return accountsArch
+
+
+# 多机构合并显示
+class AccountsArch_filter_sum_orgs(object):
+    '''多机构合并显示'''
+
+    def __init__(self, sum_orgs=False):
+        self.__sum_orgs = sum_orgs
+
+    def __call__(self, accountsArch):
+        if not self.__sum_orgs:
+            return accountsArch
+        else:
+            accountsArch.sort(key=lambda t: (
+                t['account_number'], t.setdefault('item_id', 0)))
+            newAccountsArch = []
+            a_temp = ""
+            for a in accountsArch:
+                add = False
+                if a_temp == "":
+                    add = True
+                elif a_temp['account_id'] != a['account_id']:
+                    add = True
+                elif a_temp['account_id'] == a['account_id']:
+                    # 存在核算项目
+                    if a_temp['item_id'] != 0:
+                        if a['item_id'] != a_temp['item_id']:
+                            add = True
+                    # 不存在核算项目
+                    else:
+                        if a['item_id'] != 0:
+                            add = True
+                if add:
+                    a_temp = a.copy()
+                    a_temp['org_id'] = 0
+                    a_temp['org_name'] = ''
+                    newAccountsArch.append(a_temp)
+                else:
+                    a_temp['beginingDamount'] += a['beginingDamount']
+                    a_temp['beginingCamount'] += a['beginingCamount']
+                    a_temp['damount'] += a['damount']
+                    a_temp['camount'] += a['camount']
+            return newAccountsArch
+
 # 筛选定义-结束

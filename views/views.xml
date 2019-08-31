@@ -848,7 +848,8 @@
             </group>
             <group>
               <field name="org" widget="many2many_checkboxes_floatleft" />
-              <field name="order_orgs" />
+            <field name="order_orgs" />
+            <field name="sum_orgs"/>
             </group>
             <group>
               <field name="account" default_focus='1' domain="['|',('org','in',org),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">

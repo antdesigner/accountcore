@@ -1955,6 +1955,8 @@ class GetAccountsBalance(models.TransientModel):
     noShowZeroBalance = fields.Boolean(string='隐藏余额为零的科目', default=False)
     noShowNoAmount = fields.Boolean(
         string='没有任何金额不显示', default=True)
+    sum_orgs= fields.Boolean(
+        string='多机构合并显示', default=False)
     org = fields.Many2many(
         'accountcore.org',
         string='机构范围',
