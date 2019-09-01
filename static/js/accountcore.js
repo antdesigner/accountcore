@@ -1,3 +1,4 @@
+// 凭证借贷方金额
 odoo.define('accountcore.accountcoreListRenderer', function (require) {
     "use strict";
     var ListRenderer = require('web.ListRenderer');
@@ -298,7 +299,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         },
 
         _onFieldChanged: function (event) {
-            this.lastChangeEvent = event;//test
+            this.lastChangeEvent = event; //test
             var newItem = event.data.changes.items;
             this.ac_newItemName = newItem.display_name;
             this.ac_newItemId = newItem.id;
@@ -510,5 +511,74 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     viewRegistry.add('voucherListView', voucherListView);
     return voucherListView;
 });
-//
+//启用期初列表视图
+odoo.define('accountcore.balanceListView', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var CheckBalance = require('accountcore.begin_balance_check');
+    var balanceListController = ListController.extend({
+        renderButtons: function () {
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+                var btns = this.$buttons;
+                var check_balance_btn = new CheckBalance(this);
+                check_balance_btn.appendTo(btns);
+            };
+        },
 
+    });
+    var balanceListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: balanceListController,
+        }),
+    });
+    viewRegistry.add('balanceListView', balanceListView);
+    return balanceListView;
+});
+//启用期初平衡检查按钮
+odoo.define("accountcore.begin_balance_check", function (require) {
+    "use strict";
+    var Widget = require('web.Widget');
+    var framework = require('web.framework');
+    var CheckBalance = Widget.extend({
+        template: 'accountcore.check_balance',
+        events: {
+            'click': '_do_check',
+        },
+        _do_check: function () {
+            var self = this;
+            this.do_action({
+                name:'启用期初平衡检查',
+                type:'ir.actions.act_window',
+                res_model:'accountcore.begin_balance_check',
+                views:[[false,'form']],
+                target:'new'
+            });
+            // framework.blockUI();
+            // alert('开始试算平衡');
+            // this._rpc({
+            //     model: 'accountcore.account',
+            //     method: 'get_itemClasses',
+            //     args: [176],
+            // }).then(function (items) {
+            //     // _.map(items,function(){
+            //     //     s=s+self.name;
+            //     //   });
+
+            //     console.log('over!');
+            //     setTimeout(function () {
+            //         framework.unblockUI();
+            //         self.do_notify('结果', '该功能还在开发中!');
+            //     }, 5000);
+
+            // }, function () {
+            //     console.log('error!');
+            //     FrameWork.unbolckUI();
+            // });
+        },
+
+    });
+    return CheckBalance;
+});

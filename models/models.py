@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
-import logging
-import time
-import copy
-import decimal
-from odoo import exceptions
-import json
-from odoo import models, fields, api
-import datetime
 import calendar
-import sys
+import datetime
+from decimal import Decimal
+import json
+import logging
 import multiprocessing
-sys.path.append('.\\.\\server')
-_logger = logging.getLogger(__name__)
+from odoo import models, fields, api, SUPERUSER_ID, exceptions
+import sys
+sys.path.append('.\\.\\server\\odoo')
 
+# 日志
+LOGGER = logging.getLogger(__name__)
 # 新增,修改,删除凭证时对科目余额的改变加锁
-vocher_lock = multiprocessing.Lock()
+VOCHER_LOCK = multiprocessing.Lock()
 
 
+# 全局标签模型,用于多重继承方式添加到模型
 class Glob_tag_Model(models.AbstractModel):
     '''全局标签模型,用于多重继承方式添加到模型'''
     _name = "accountcore.glob_tag_model"
@@ -25,6 +24,24 @@ class Glob_tag_Model(models.AbstractModel):
                                 index=True)
 
 
+# 模块全局标签
+class GlobTag(models.Model):
+    '''模块全局标签'''
+    _name = 'accountcore.glob_tag'
+    _description = '模块全局标签'
+    name = fields.Char(string='全局标签名称', required=True)
+    summary = fields.Char(string='使用范围和简介', required=True)
+    js_code = fields.Text(string='js代码')
+    python_code = fields.Text(string='python代码')
+    sql_code = fields.Text(string='sql代码')
+    str_code = fields.Text(string='字符串')
+    application = fields.Html(string='详细使用说明')
+    _sql_constraints = [('accountcore_glob_tag_name_unique', 'unique(name)',
+                         '模块全局标签重复了!')]
+
+
+# model-开始
+# 会计核算机构
 class Org(models.Model, Glob_tag_Model):
     '''会计核算机构'''
     _name = 'accountcore.org'
@@ -41,6 +58,7 @@ class Org(models.Model, Glob_tag_Model):
                          '核算机构名称重复了!')]
 
 
+# 会计科目体系
 class AccountsArch(models.Model, Glob_tag_Model):
     '''会计科目体系'''
     _name = 'accountcore.accounts_arch'
@@ -56,6 +74,7 @@ class AccountsArch(models.Model, Glob_tag_Model):
                          '科目体系名称重复了!')]
 
 
+# 核算项目类别
 class ItemClass(models.Model, Glob_tag_Model):
     '''核算项目类别'''
     _name = 'accountcore.itemclass'
@@ -68,6 +87,7 @@ class ItemClass(models.Model, Glob_tag_Model):
                          '核算项目类别名称重复了!')]
 
 
+# 核算项目
 class Item(models.Model, Glob_tag_Model):
     '''核算项目'''
     _name = 'accountcore.item'
@@ -127,6 +147,7 @@ class Item(models.Model, Glob_tag_Model):
         return rl
 
 
+# 凭证标签
 class RuleBook(models.Model):
     '''凭证标签'''
     _name = 'accountcore.rulebook'
@@ -139,6 +160,7 @@ class RuleBook(models.Model):
                          '标签名称重复了!')]
 
 
+# 科目类别
 class AccountClass(models.Model, Glob_tag_Model):
     '''会计科目类别'''
     _name = 'accountcore.accountclass'
@@ -151,6 +173,7 @@ class AccountClass(models.Model, Glob_tag_Model):
                          '科目类别名称重复了!')]
 
 
+# 会计科目
 class Account(models.Model, Glob_tag_Model):
     '''会计科目'''
     _name = 'accountcore.account'
@@ -313,11 +336,24 @@ class Account(models.Model, Glob_tag_Model):
         # 通过科目编码来判断
         return self.search([('number', 'like', self.number)]).mapped('id')
 
-    # @api.multi
-    # @api.depends('fa')
-    # def _is_end(self):
+
+# 特殊的会计科目
+class SpecialAccounts(models.Model):
+    '''特殊的会计科目'''
+    _name = "accountcore.special_accounts"
+    _description = '特殊的会计科目'
+    name = fields.Char(string='特殊性', required=True)
+    purpos = fields.Html(string='用途说明')
+    accounts = fields.Many2many('accountcore.account',
+                                string='科目',
+                                required=True)
+    children = fields.Boolean(string='包含明细科目')
+    items = fields.Many2many('accountcore.item', string='核算项目')
+    _sql_constraints = [('accountcore_special_accounts_name_unique', 'unique(name)',
+                         '特殊性描述重复了!')]
 
 
+# 现金流量类别
 class CashFlowType(models.Model, Glob_tag_Model):
     '''现金流量类别'''
     _name = 'accountcore.cashflowtype'
@@ -330,6 +366,7 @@ class CashFlowType(models.Model, Glob_tag_Model):
                          '现金流量类别名称重复了!')]
 
 
+# 现金流量
 class CashFlow(models.Model, Glob_tag_Model):
     '''现金流量项目'''
     _name = 'accountcore.cashflow'
@@ -348,12 +385,14 @@ class CashFlow(models.Model, Glob_tag_Model):
                          '现金流量名称重复了!')]
 
 
+# 凭证文件
 class VoucherFile(models.Model):
     _name = 'accountcore.voucherfile'
     _description = "凭证相关文件"
     appedixfileType = fields.Char(string='文件类型', required=True)
 
 
+# 凭证来源
 class Source(models.Model, Glob_tag_Model):
     '''凭证来源'''
     _name = 'accountcore.source'
@@ -366,6 +405,7 @@ class Source(models.Model, Glob_tag_Model):
                          '凭证来源名称重复了!')]
 
 
+# 记账凭证
 class Voucher(models.Model):
     '''会计记账凭证'''
     _name = 'accountcore.voucher'
@@ -377,12 +417,12 @@ class Voucher(models.Model):
     real_date = fields.Date(string='业务日期', placehplder='业务日期')
     # 前端通过voucherDate生成,不要直接修改
     year = fields.Integer(string='年份',
-                          compute='_getYearMonth',
+                          compute='getYearMonth',
                           store=True,
                           index=True)
     # 前端通过voucherDate生成,不要直接修改
     month = fields.Integer(string='月份',
-                           compute='_getYearMonth',
+                           compute='getYearMonth',
                            store=True,
                            index=True)
     soucre = fields.Many2one('accountcore.source',
@@ -404,8 +444,8 @@ class Voucher(models.Model):
                                 ondelete='restrict')
     number = fields.Integer(string='凭证编号',
                             help='该编号更据不同凭证编号策略会不同,一张凭证可以有多个不同编号',
-                            compute='_getVoucherNumber',
-                            search="_searchNumber")
+                            compute='getVoucherNumber',
+                            search="searchNumber")
     appendixCount = fields.Integer(string='附件张数',
                                    default=1,
                                    required=True)
@@ -434,28 +474,30 @@ class Voucher(models.Model):
     numberTasticsContainer_str = fields.Char(string='凭证可用编号策略',
                                              default="{}")
     entrysHtml = fields.Html(string="分录内容",
-                             compute='_createEntrysHtml',
+                             compute='createEntrysHtml',
                              store=True)
     roolbook_html = fields.Html(string="凭证的标签",
-                                compute='_buildRuleBook',
+                                compute='buildRuleBook',
                                 store=True)
-    sum_amount = fields.Monetary(string='借贷方差额', default=0, compute='_balance_check')
+    sum_amount = fields.Monetary(
+        string='借贷方差额', default=0, compute='balance_check')
 
     # Monetory类型字段必须有
     currency_id = fields.Many2one('res.currency',
-                                  compute='_get_company_currency',
+                                  compute='get_company_currency',
                                   readonly=True,
                                   oldname='currency',
                                   string="Currency",
                                   help='Utility field to express amount currency')
 
-    @api.one
-    def _get_company_currency(self):
+    @api.multi
+    def get_company_currency(self):
+        self.ensure_one
         # Monetory类型字段必须有 currency_id
         self.currency_id = self.env.user.company_id.currency_id
 
     @api.onchange('entrys')
-    def _balance_check(self):
+    def balance_check(self):
         '''凭证借方-贷方差额显示'''
         d_amount = 0
         c_amount = 0
@@ -464,10 +506,9 @@ class Voucher(models.Model):
             c_amount = e.camount+c_amount
         self.sum_amount = d_amount-c_amount
 
-
     @api.multi
     @api.depends('voucherdate')
-    def _getYearMonth(self):
+    def getYearMonth(self):
         for v in self:
             v.year = v.voucherdate.year
             v.month = v.voucherdate.month
@@ -487,7 +528,7 @@ class Voucher(models.Model):
     def create(self, values):
         '''新增凭证'''
         # 只允许一条分录更新余额表,进程锁
-        vocher_lock.acquire()
+        VOCHER_LOCK.acquire()
         # 出错了，必须释放锁，要不就会死锁
         try:
             values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
@@ -498,29 +539,29 @@ class Voucher(models.Model):
             if isCopye:
                 pass
             else:
-                rl._checkVoucher(values)
-            rl._updateBalance()
+                rl.checkVoucher(values)
+            rl.updateBalance()
             # 跟新处理并发冲突
             self.env.cr.commit()
         finally:
-            vocher_lock.release()
+            VOCHER_LOCK.release()
         return rl
 
     @api.multi
     def write(self, values):
         '''修改编辑凭证'''
-        vocher_lock.acquire()
+        self.ensure_one
+        VOCHER_LOCK.acquire()
         # 出错了，必须释放锁，要不就会死锁
         try:
-            self.ensure_one
-            self._updateBalance(isAdd=False)  # 先从余额表减去原来的金额
+            self.updateBalance(isAdd=False)  # 先从余额表减去原来的金额
             rl_bool = super(Voucher, self).write(values)
-            self._checkVoucher(values)
-            self._updateBalance()  # 再从余额表加上新的金额
+            self.checkVoucher(values)
+            self.updateBalance()  # 再从余额表加上新的金额
             # 跟新处理并发冲突
             self.env.cr.commit()
         finally:
-            vocher_lock.release()
+            VOCHER_LOCK.release()
         return rl_bool
 
     @api.multi
@@ -533,9 +574,13 @@ class Voucher(models.Model):
                         'appendixCount': 1}
         rl = super(Voucher, self.with_context(
             {'ac_from_copy': True})).copy(updateFields)
-        for entry in self.entrys:
-            entry.copy({'voucher': rl.id})
-        rl._updateBalance()
+        VOCHER_LOCK.acquire()
+        try:
+            for entry in self.entrys:
+                entry.copy({'voucher': rl.id})
+            rl.updateBalance()
+        finally:
+            VOCHER_LOCK.release()
         return rl
 
     @api.multi
@@ -544,13 +589,15 @@ class Voucher(models.Model):
         for voucher in self:
             if voucher.state == "reviewed":
                 raise exceptions.ValidationError('有凭证已审核不能删除，请选择未审核凭证')
-        vocher_lock.acquire()
+        VOCHER_LOCK.acquire()
         for voucher in self:
-            voucher._updateBalance(isAdd=False)
+            voucher.updateBalance(isAdd=False)
         rl_bool = super(Voucher, self).unlink()
         # 跟新处理并发冲突
-        self.env.cr.commit()
-        vocher_lock.release()
+        try:
+            self.env.cr.commit()
+        finally:
+            VOCHER_LOCK.release()
         return rl_bool
 
     @staticmethod
@@ -569,7 +616,7 @@ class Voucher(models.Model):
         return newNumberDict
 
     @api.depends('numberTasticsContainer_str')
-    def _getVoucherNumber(self):
+    def getVoucherNumber(self):
         '''获得凭证编号,依据用户默认的凭证编号策略'''
         # if 用户设置了默认编号策略
         if(self.env.user.voucherNumberTastics):
@@ -584,7 +631,7 @@ class Voucher(models.Model):
         return record.number
 
     @api.model
-    def _checkVoucher(self, voucherDist):
+    def checkVoucher(self, voucherDist):
         '''凭证检查'''
         self._checkEntyCount(voucherDist)
         self._checkCDBalance(voucherDist)
@@ -629,7 +676,7 @@ class Voucher(models.Model):
 
     @api.multi
     @api.depends('entrys', 'entrys.account.name', 'entrys.items.name')
-    def _createEntrysHtml(self):
+    def createEntrysHtml(self):
         '''创建凭证分录展示内容'''
         content = None
         entrys = None
@@ -645,7 +692,7 @@ class Voucher(models.Model):
 
     @api.multi
     @api.depends('ruleBook', 'ruleBook.name')
-    def _buildRuleBook(self):
+    def buildRuleBook(self):
         '''购建凭证标签展示内容'''
         for voucher in self:
             content = '<table class="ac_rulebook">'
@@ -677,7 +724,7 @@ class Voucher(models.Model):
             content = content+"<td class='oe_ac_cashflow'></td></tr>"
         return content
 
-    def _searchNumber(self, operater, value):
+    def searchNumber(self, operater, value):
         '''计算字段凭证编号的查找'''
         comparetag = ('>', '>=', '<', '<=')
         if operater in comparetag:
@@ -706,7 +753,7 @@ class Voucher(models.Model):
         return True
 
     @api.model
-    def _updateBalance(self, isAdd=True):
+    def updateBalance(self, isAdd=True):
         '''更新余额'''
         for entry in self.entrys:
             # isAdd 表示是否依据分录金额减少(false)还是增加余额表金额(TRUE)
@@ -838,6 +885,7 @@ class Voucher(models.Model):
         return record
 
 
+# 分录
 class Enty(models.Model):
     '''一条分录'''
     _name = 'accountcore.entry'
@@ -869,7 +917,7 @@ class Enty(models.Model):
                              ondelete='restrict')
     # Monetory类型字段必须有
     currency_id = fields.Many2one('res.currency',
-                                  compute='_get_company_currency',
+                                  compute='get_company_currency',
                                   readonly=True,
                                   oldname='currency',
                                   string="Currency",
@@ -929,7 +977,7 @@ class Enty(models.Model):
         self.items = None
 
     @api.one
-    def _get_company_currency(self):
+    def get_company_currency(self):
         # Monetory类型字段必须有 currency_id
         self.currency_id = self.env.user.company_id.currency_id
 
@@ -949,154 +997,7 @@ class Enty(models.Model):
         return self.getItemByitemClassId(itemClass.id)
 
 
-class AccountcoreUserDefaults(models.TransientModel):
-    '''用户设置模型字段的默认取值'''
-    _name = 'accountcoure.userdefaults'
-    _description = '用户设置模型字段默认值'
-    default_ruleBook = fields.Many2many('accountcore.rulebook',
-                                        string='默认凭证标签')
-    default_org = fields.Many2one('accountcore.org',
-                                  string='默认机构')
-    default_voucherDate = fields.Date(string='记账日期',
-                                      default=fields.Date.today())
-    default_real_date = fields.Date(string='业务日期')
-
-    # 设置新增凭证,日期,机构和账套字段的默认值
-    def setDefaults(self):
-        modelName = 'accountcore.voucher'
-        self._setDefault(modelName,
-                         'ruleBook',
-                         self.default_ruleBook.ids)
-        self._setDefault(modelName,
-                         'org',
-                         self.default_org.id)
-        self._setDefault(modelName, 'voucherdate',
-                         json.dumps(self.default_voucherDate.strftime('%Y-%m-%d')))
-        if self.default_real_date:
-            self._setDefault(modelName, 'real_date',
-                             json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
-        self.env.user.currentOrg = self.default_org.id
-        return True
-
-    # 设置默认值
-    def _setDefault(self, modelName, fieldName, defaultValue):
-        idOfField = self._getIdOfIdField(fieldName,
-                                         modelName,)
-        rd = self._getDefaultRecord(idOfField)
-        if rd.exists():
-            self._modifyDefault(rd, idOfField, defaultValue)
-        else:
-            self._createDefault(idOfField, defaultValue)
-
-    # 获取要设置默认值的字段在ir.model.fields中的id
-    def _getIdOfIdField(self, fieldName, modelname):
-        domain = [('model', '=', modelname),
-                  ('name', '=', fieldName)]
-        rds = self.env['ir.model.fields'].sudo().search(domain, limit=1)
-        return rds.id
-
-    # 是否已经设置过该字段的默认值
-    def _getDefaultRecord(self, id):
-        domain = [('field_id', '=', id),
-                  ('user_id', '=', self.env.uid)]
-        rds = self.env['ir.default'].sudo().search(domain, limit=1)
-        return rds
-
-    def _modifyDefault(self, rd, idOfField, defaultValue):
-        rd.write({
-            'field_id': idOfField,
-            'json_value': defaultValue,
-            'user_id': self.env.uid
-        })
-
-    def _createDefault(self, idOfField, defaultValue):
-        self.env['ir.default'].sudo().create({
-            'field_id': idOfField,
-            'json_value': defaultValue,
-            'user_id': self.env.uid
-        })
-
-
-class CreateChildAccountWizard(models.TransientModel):
-    '''新增下级科目的向导'''
-    _name = 'accountcore.create_child_account'
-    _description = '新增下级科目向导'
-    fatherAccountId = fields.Many2one('accountcore.account',
-                                      string='上级科目',
-                                      help='新增科目的直接上级科目')
-    fatherAccountNumber = fields.Char(related='fatherAccountId.number',
-                                      string='上级科目编码')
-
-    org = fields.Many2one('accountcore.org',
-                          string='所属机构',
-                          help="科目所属机构",
-                          index=True,
-                          ondelete='restrict')
-
-    accountsArch = fields.Many2one('accountcore.accounts_arch',
-                                   string='所属科目体系',
-                                   help="科目所属体系",
-                                   index=True,
-                                   ondelete='restrict')
-
-    accountClass = fields.Many2one('accountcore.accountclass',
-                                   string='科目类别',
-                                   index=True,
-                                   ondelete='restrict')
-    number = fields.Char(string='科目编码', required=True)
-    name = fields.Char(string='科目名称', required=True)
-    direction = fields.Selection([('1', '借'),
-                                  ('-1', '贷')],
-                                 string='余额方向',
-                                 required=True)
-    cashFlowControl = fields.Boolean(string='分配现金流量')
-    itemClasses = fields.Many2many('accountcore.itemclass',
-                                   string='包含的核算项目类别',
-                                   help="录入凭证时,提示选择该类别下的核算项目",
-                                   ondelete='restrict')
-    accountItemClass = fields.Many2one('accountcore.itemclass',
-                                       string='作为明细科目的类别',
-                                       help="录入凭证分录时必须输入的该类别下的一个核算项目,作用相当于明细科目",
-                                       ondelete='restrict')
-    explain = fields.Html(string='科目说明')
-    @api.model
-    def default_get(self, field_names):
-        default = super().default_get(field_names)
-        fatherAccountId = self.env.context.get('active_id')
-        fatherAccount = self.env['accountcore.account'].sudo().search(
-            [['id', '=', fatherAccountId]])
-        default['accountsArch'] = fatherAccount.accountsArch.id
-        default['fatherAccountId'] = fatherAccountId
-        default['org'] = fatherAccount.org.id
-        default['accountClass'] = fatherAccount.accountClass.id
-        default['direction'] = fatherAccount.direction
-        default['cashFlowControl'] = fatherAccount.cashFlowControl
-        default['number'] = fatherAccount.number + \
-            '.' + str(fatherAccount.currentChildNumber)
-        return default
-
-    @api.model
-    def create(self, values):
-        fatherAccountId = self.env.context.get('active_id')
-        accountTable = self.env['accountcore.account'].sudo()
-        fatherAccount = accountTable.search(
-            [['id', '=', fatherAccountId]])
-        newAccount = {'fatherAccountId': fatherAccountId,
-                      'org': fatherAccount.org.id,
-                      'accountClass': fatherAccount.accountClass.id,
-                      'cashFlowControl': values['cashFlowControl'],
-                      'name': fatherAccount.name+'---'+values['name'],
-                      'number': fatherAccount.number + '.'
-                      + str(fatherAccount.currentChildNumber)}
-        fatherAccount.currentChildNumber = fatherAccount.currentChildNumber+1
-        values.update(newAccount)
-        rl = super(CreateChildAccountWizard, self).create(values)
-        a = accountTable.create(values)
-        # 添加到上级科目的直接下级
-        fatherAccount.write({'childs_ids': [(4, a.id)]})
-        return rl
-
-
+# 凭证编号策略
 class VoucherNumberTastics(models.Model):
     '''凭证编号的生成策略,一张凭证在不同的策略下有不同的凭证编号,自动生成凭证编号时需要指定一个策略'''
     _name = 'accountcore.voucher_number_tastics'
@@ -1117,95 +1018,7 @@ class VoucherNumberTastics(models.Model):
         return number
 
 
-class ExtensionUser(models.Model):
-    '''扩展基础用户属性'''
-    _inherit = 'res.users'
-    currentOrg = fields.Many2one('accountcore.org', string="当前核算机构")
-    voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
-                                           string='默认凭证编号策略')
-
-
-class NumberStaticsWizard(models.TransientModel):
-    '''设置用户默认凭证编码策略向导'''
-    _name = 'accountcore.voucher_number_statics_default'
-    _description = '设置用户默认凭证编码策略向导'
-    voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
-                                           string='用户默认凭证编码策略')
-
-    @api.model
-    def default_get(self, field_names):
-        default = super().default_get(field_names)
-        default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
-        return default
-
-    def setVoucherNumberTastics(self, args):
-        currentUserId = self.env.uid
-        currentUserTable = self.env['res.users'].sudo().browse(currentUserId)
-        currentUserTable.write(
-            {'voucherNumberTastics': self. voucherNumberTastics.id})
-        return True
-
-
-class SetingVoucherNumberWizard(models.TransientModel):
-    '''设置凭证编号向导'''
-    _name = 'accountcore.seting_vouchers_number'
-    _description = '设置凭证编号向导'
-    voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
-                                           '要使用的凭证编码策略',
-                                           required=True)
-    startNumber = fields.Integer(string='从此编号开始', default=1, required=True)
-
-    @api.model
-    def default_get(self, field_names):
-        '''获得用户的默认凭证编号策略'''
-        default = super().default_get(field_names)
-        default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
-        return default
-
-    def setingNumber(self, args):
-        startNumber = self.startNumber
-        numberTasticsId = self.voucherNumberTastics.id
-        vouchers = self.env['accountcore.voucher'].sudo().browse(
-            args['active_ids'])
-        if startNumber <= 0:
-            startNumber = 1
-        for voucher in vouchers:
-            voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
-                voucher.numberTasticsContainer_str,
-                numberTasticsId,
-                startNumber)
-            startNumber += 1
-        return {'name': '已生成凭证编号',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'accountcore.voucher',
-                'view_id': False,
-                'type': 'ir.actions.act_window',
-                'domain': [('id', 'in',  args['active_ids'])]
-                }
-
-
-class SetingVoucherNumberSingleWizard(models.TransientModel):
-    '''设置单张凭证编号向导'''
-    _name = 'accountcore.seting_voucher_number_single'
-    _description = '设置单张凭证编号向导'
-    newNumber = fields.Integer(string='新凭证编号', required=True)
-
-    def setVoucherNumberSingle(self, argsDist):
-        '''设置修改凭证编号'''
-        newNumber = self.newNumber
-        currentUserNumberTastics_id = 0
-        if(self.env.user.voucherNumberTastics):
-            currentUserNumberTastics_id = self.env.user.voucherNumberTastics.id
-        voucher = self.env['accountcore.voucher'].sudo().browse(
-            argsDist['active_id'])
-        voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
-            voucher.numberTasticsContainer_str,
-            currentUserNumberTastics_id,
-            newNumber)
-        return True
-
-
+# 科目余额
 class AccountsBalance(models.Model):
     '''科目余额'''
     _name = 'accountcore.accounts_balance'
@@ -1215,11 +1028,14 @@ class AccountsBalance(models.Model):
         string='所属机构',
         required=True,
         index=True,
-        ondelete='cascade')
-    createDate = fields.Date(
-        string="创建日期", required=True)
+        ondelete='cascade',
+        default=lambda s: s.env.user.currentOrg)
+    createDate = fields.Date(string="创建日期",
+                             required=True,
+                             default=lambda s: s.env.user.current_date)
     # 通过createDate生成,不要直接修改
-    year = fields.Integer(string='年', required=True,
+    year = fields.Integer(string='年',
+                          required=True,
                           index=True)
     # 通过createDate生成,不要直接修改
     month = fields.Integer(string='月', required=True)
@@ -1229,6 +1045,12 @@ class AccountsBalance(models.Model):
                               required=True,
                               index=True,
                               ondelete='cascade')
+    account_number = fields.Char(related='account.number',
+                                 string='科目编码',
+                                 store=True)
+    account_class_id = fields.Many2one(related='account.accountClass',
+                                       string='科目类别',
+                                       store=True)
     accountItemClass = fields.Many2one('accountcore.itemclass',
                                        string='核算项目类别',
                                        related='account.accountItemClass')
@@ -1264,18 +1086,18 @@ class AccountsBalance(models.Model):
         'accountcore.accounts_balance', string='最近后一期记录')
     # Monetory类型字段必须有,要不无法正常显示
     currency_id = fields.Many2one('res.currency',
-                                  compute='_get_company_currency',
+                                  compute='get_company_currency',
                                   readonly=True,
                                   string="Currency",
                                   help='Utility field to express amount currency')
 
     @api.one
-    def _get_company_currency(self):
+    def get_company_currency(self):
         self.currency_id = self.env.user.company_id.currency_id
 
-    # @api.onchange('createDate')
+    @api.onchange('createDate')
     @api.depends('createDate')
-    def chage_period(self):
+    def change_period(self):
         if self.createDate:
             self.year = self.createDate.year
             self.month = self.createDate.month
@@ -1356,7 +1178,9 @@ class AccountsBalance(models.Model):
                 oldSelf.update(values)
                 if self._check_repeat(oldSelf):
                     raise exceptions.ValidationError(
-                        '不能修改,因为已经存在一条相同科目的期初余额记录行,请取消,在另一行已存在的记录上修改!若不想保留本行，请进行删除操作')
+                        '''不能修改所属月份,若需改变月份,请删除本条记录,另新增一条记录。
+                        或者已经存在一条相同科目的期初余额记录行,请取消,在另一行已存在的记录上修改!
+                        若不想保留本行，请勾选本行，并在动作中选择删除操作''')
                 self.deleteRelatedAndUpdate()
                 old_beginCumulativeDamount = self.beginCumulativeDamount
                 old_beginCumulativeCamount = self.beginCumulativeCamount
@@ -1631,7 +1455,7 @@ class AccountsBalance(models.Model):
             self._updateAccountBalance(entry)
 
     # @api.model
-    # def _updateBalance(self, isAdd=True):
+    # def updateBalance(self, isAdd=True):
     #     '''更新余额'''
     #     for entry in self.entrys:
     #         self._updateAccountBalance(entry, isAdd)
@@ -1711,6 +1535,27 @@ class AccountsBalance(models.Model):
                                        ['isbegining', '=', False]])
         return record
 
+    @classmethod
+    def getBeginOfOrg(cls, org):
+        '''获得机构的启用期初记录'''
+        domain = [('org', '=', org.id), ('isbegining', '=', True)]
+        env = org.env['accountcore.accounts_balance']
+        return env.sudo().search(domain)
+
+    @classmethod
+    def getFielValueOf(cls, field_name, records):
+        '''获取记录中某字段值'''
+        return records.mapped(field_name)
+
+    @classmethod
+    def _sumFieldOf(cls, field_name, records):
+        '''对某字段求和'''
+        fieldsValue = cls.getFielValueOf(field_name, records)
+        fieldsValue_ = [(Decimal.from_float(v)).quantize(
+            Decimal('0.00')) for v in fieldsValue]
+        return sum(fieldsValue_)
+# 科目余额用对象
+
 
 class AccountBalanceMark(object):
     def __init__(self, orgId, accountId, itemId, createDate, accountBalanceTable, isbegining):
@@ -1766,21 +1611,334 @@ class AccountBalanceMark(object):
         return next_balanceRecords
 
 
-class SpecialAccounts(models.Model):
-    '''特殊的会计科目'''
-    _name = "accountcore.special_accounts"
-    _description = '特殊的会计科目'
-    name = fields.Char(string='特殊性', required=True)
-    purpos = fields.Html(string='用途说明')
-    accounts = fields.Many2many('accountcore.account',
-                                string='科目',
-                                required=True)
-    children = fields.Boolean(string='包含明细科目')
-    items = fields.Many2many('accountcore.item', string='核算项目')
-    _sql_constraints = [('accountcore_special_accounts_name_unique', 'unique(name)',
-                         '特殊性描述重复了!')]
+# 帮助的类别
+class HelpClass(models.Model):
+    '''帮助类别'''
+    _name = 'accountcore.help_class'
+    _description = '帮助类别'
+    name = fields.Char(string='帮助类别', required=True)
+    _sql_constraints = [('accountcore_help_class_name_unique', 'unique(name)',
+                         '帮助类别名称重复了!')]
 
 
+# 帮助
+class Helpes(models.Model):
+    '''详细帮助'''
+    _name = 'accountcore.helps'
+    _description = '详细帮助'
+    name = fields.Char(string='标题', required=True)
+    help_class = fields.Many2one('accountcore.help_class',
+                                 string='帮助类别',
+                                 required=True)
+    content = fields.Html(string='内容')
+
+
+# 继承和扩展model-开始
+# 扩展基础用户属性
+class ExtensionUser(models.Model):
+    '''扩展基础用户属性'''
+    _inherit = 'res.users'
+    currentOrg = fields.Many2one('accountcore.org', string="当前核算机构")
+    voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
+                                           string='默认凭证编号策略')
+    current_date = fields.Date(
+        string='当期操作日期', default=fields.Date.today())
+# 继承和扩展model-结束
+# model-结束
+
+
+# 自定objct-开始
+# 一个期间
+class Period(object):
+    '''一个期间'''
+
+    def __init__(self, start_date, end_date):
+        if isinstance(start_date, str):
+            self.start_date = datetime.datetime.strptime(
+                start_date, '%Y-%m-%d')
+        else:
+            self.start_date = start_date
+        if isinstance(end_date, str):
+            self.end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+        else:
+            self.end_date = end_date
+        self.start_year = self.start_date.year
+        self.end_year = self.end_date.year
+        self.start_month = self.start_date.month
+        self.end_month = self.end_date.month
+
+    def getPeriodList(self):
+        '''获得日期范围内的会计期间列表'''
+
+        months = (self.end_year - self.start_year) * \
+            12 + self.end_month - self.start_month
+        month_range = ['%s-%s-%s' % (self.start_year + mon//12, mon % 12+1, 1)
+                       for mon in range(self.start_month-1, self.start_month + months)]
+        voucherPeriods = [VoucherPeriod(
+            datetime.datetime.strptime(d, '%Y-%m-%d')) for d in month_range]
+
+        return voucherPeriods
+
+
+# 一个会计期间，月份
+class VoucherPeriod(object):
+    '''一个会计期间,月份'''
+
+    def __init__(self, date):
+        self.date = date
+        self.year = date.year
+        self.month = date.month
+        # 当月第一天
+        self.firstDate = datetime.date(year=self.year,
+                                       month=self.month,
+                                       day=1)
+        # 当月天数
+        self.days = calendar.monthrange(self.year,
+                                        self.month)[1]
+        # 当月最后一天
+        self.endDate = datetime.date(year=self.year,
+                                     month=self.month,
+                                     day=self.days)
+# 自定义object-结束
+
+
+# 向导部分-开始
+# 新增下级科目的向导
+class CreateChildAccountWizard(models.TransientModel):
+    '''新增下级科目的向导'''
+    _name = 'accountcore.create_child_account'
+    _description = '新增下级科目向导'
+    fatherAccountId = fields.Many2one('accountcore.account',
+                                      string='上级科目',
+                                      help='新增科目的直接上级科目')
+    fatherAccountNumber = fields.Char(related='fatherAccountId.number',
+                                      string='上级科目编码')
+
+    org = fields.Many2one('accountcore.org',
+                          string='所属机构',
+                          help="科目所属机构",
+                          index=True,
+                          ondelete='restrict')
+
+    accountsArch = fields.Many2one('accountcore.accounts_arch',
+                                   string='所属科目体系',
+                                   help="科目所属体系",
+                                   index=True,
+                                   ondelete='restrict')
+
+    accountClass = fields.Many2one('accountcore.accountclass',
+                                   string='科目类别',
+                                   index=True,
+                                   ondelete='restrict')
+    number = fields.Char(string='科目编码', required=True)
+    name = fields.Char(string='科目名称', required=True)
+    direction = fields.Selection([('1', '借'),
+                                  ('-1', '贷')],
+                                 string='余额方向',
+                                 required=True)
+    cashFlowControl = fields.Boolean(string='分配现金流量')
+    itemClasses = fields.Many2many('accountcore.itemclass',
+                                   string='包含的核算项目类别',
+                                   help="录入凭证时,提示选择该类别下的核算项目",
+                                   ondelete='restrict')
+    accountItemClass = fields.Many2one('accountcore.itemclass',
+                                       string='作为明细科目的类别',
+                                       help="录入凭证分录时必须输入的该类别下的一个核算项目,作用相当于明细科目",
+                                       ondelete='restrict')
+    explain = fields.Html(string='科目说明')
+    @api.model
+    def default_get(self, field_names):
+        default = super().default_get(field_names)
+        fatherAccountId = self.env.context.get('active_id')
+        fatherAccount = self.env['accountcore.account'].sudo().search(
+            [['id', '=', fatherAccountId]])
+        default['accountsArch'] = fatherAccount.accountsArch.id
+        default['fatherAccountId'] = fatherAccountId
+        default['org'] = fatherAccount.org.id
+        default['accountClass'] = fatherAccount.accountClass.id
+        default['direction'] = fatherAccount.direction
+        default['cashFlowControl'] = fatherAccount.cashFlowControl
+        default['number'] = fatherAccount.number + \
+            '.' + str(fatherAccount.currentChildNumber)
+        return default
+
+    @api.model
+    def create(self, values):
+        fatherAccountId = self.env.context.get('active_id')
+        accountTable = self.env['accountcore.account'].sudo()
+        fatherAccount = accountTable.search(
+            [['id', '=', fatherAccountId]])
+        newAccount = {'fatherAccountId': fatherAccountId,
+                      'org': fatherAccount.org.id,
+                      'accountClass': fatherAccount.accountClass.id,
+                      'cashFlowControl': values['cashFlowControl'],
+                      'name': fatherAccount.name+'---'+values['name'],
+                      'number': fatherAccount.number + '.'
+                      + str(fatherAccount.currentChildNumber)}
+        fatherAccount.currentChildNumber = fatherAccount.currentChildNumber+1
+        values.update(newAccount)
+        rl = super(CreateChildAccountWizard, self).create(values)
+        a = accountTable.create(values)
+        # 添加到上级科目的直接下级
+        fatherAccount.write({'childs_ids': [(4, a.id)]})
+        return rl
+
+
+# 用户设置模型字段的默认取值向导(如，设置凭证默认值)
+class AccountcoreUserDefaults(models.TransientModel):
+    '''用户设置模型字段的默认取值向导'''
+    _name = 'accountcoure.userdefaults'
+    _description = '用户设置模型字段默认值'
+    default_ruleBook = fields.Many2many('accountcore.rulebook',
+                                        string='默认凭证标签')
+    default_org = fields.Many2one('accountcore.org',
+                                  string='默认机构')
+    default_voucherDate = fields.Date(string='记账日期',
+                                      default=fields.Date.today())
+    default_real_date = fields.Date(string='业务日期')
+
+    # 设置新增凭证,日期,机构和账套字段的默认值
+    def setDefaults(self):
+        modelName = 'accountcore.voucher'
+        self._setDefault(modelName,
+                         'ruleBook',
+                         self.default_ruleBook.ids)
+        self._setDefault(modelName,
+                         'org',
+                         self.default_org.id)
+        self._setDefault(modelName, 'voucherdate',
+                         json.dumps(self.default_voucherDate.strftime('%Y-%m-%d')))
+        if self.default_real_date:
+            self._setDefault(modelName, 'real_date',
+                             json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
+        self.env.user.currentOrg = self.default_org.id
+        self.env.user.current_date = self.default_voucherDate
+        return True
+
+    # 设置默认值
+    def _setDefault(self, modelName, fieldName, defaultValue):
+        idOfField = self._getIdOfIdField(fieldName,
+                                         modelName,)
+        rd = self._getDefaultRecord(idOfField)
+        if rd.exists():
+            self._modifyDefault(rd, idOfField, defaultValue)
+        else:
+            self._createDefault(idOfField, defaultValue)
+
+    # 获取要设置默认值的字段在ir.model.fields中的id
+    def _getIdOfIdField(self, fieldName, modelname):
+        domain = [('model', '=', modelname),
+                  ('name', '=', fieldName)]
+        rds = self.env['ir.model.fields'].sudo().search(domain, limit=1)
+        return rds.id
+
+    # 是否已经设置过该字段的默认值
+    def _getDefaultRecord(self, id):
+        domain = [('field_id', '=', id),
+                  ('user_id', '=', self.env.uid)]
+        rds = self.env['ir.default'].sudo().search(domain, limit=1)
+        return rds
+
+    def _modifyDefault(self, rd, idOfField, defaultValue):
+        rd.write({
+            'field_id': idOfField,
+            'json_value': defaultValue,
+            'user_id': self.env.uid
+        })
+
+    def _createDefault(self, idOfField, defaultValue):
+        self.env['ir.default'].sudo().create({
+            'field_id': idOfField,
+            'json_value': defaultValue,
+            'user_id': self.env.uid
+        })
+
+
+# 设置用户默认凭证编码策略向导
+class NumberStaticsWizard(models.TransientModel):
+    '''设置用户默认凭证编码策略向导'''
+    _name = 'accountcore.voucher_number_statics_default'
+    _description = '设置用户默认凭证编码策略向导'
+    voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
+                                           string='用户默认凭证编码策略')
+
+    @api.model
+    def default_get(self, field_names):
+        default = super().default_get(field_names)
+        default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
+        return default
+
+    def setVoucherNumberTastics(self, args):
+        currentUserId = self.env.uid
+        currentUserTable = self.env['res.users'].sudo().browse(currentUserId)
+        currentUserTable.write(
+            {'voucherNumberTastics': self. voucherNumberTastics.id})
+        return True
+
+
+# 设置凭证编号向导
+class SetingVoucherNumberWizard(models.TransientModel):
+    '''设置凭证编号向导'''
+    _name = 'accountcore.seting_vouchers_number'
+    _description = '设置凭证编号向导'
+    voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
+                                           '要使用的凭证编码策略',
+                                           required=True)
+    startNumber = fields.Integer(string='从此编号开始', default=1, required=True)
+
+    @api.model
+    def default_get(self, field_names):
+        '''获得用户的默认凭证编号策略'''
+        default = super().default_get(field_names)
+        default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
+        return default
+
+    def setingNumber(self, args):
+        startNumber = self.startNumber
+        numberTasticsId = self.voucherNumberTastics.id
+        vouchers = self.env['accountcore.voucher'].sudo().browse(
+            args['active_ids'])
+        if startNumber <= 0:
+            startNumber = 1
+        for voucher in vouchers:
+            voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
+                voucher.numberTasticsContainer_str,
+                numberTasticsId,
+                startNumber)
+            startNumber += 1
+        return {'name': '已生成凭证编号',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'accountcore.voucher',
+                'view_id': False,
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in',  args['active_ids'])]
+                }
+
+
+# 设置单张凭证编号向导
+class SetingVoucherNumberSingleWizard(models.TransientModel):
+    '''设置单张凭证编号向导'''
+    _name = 'accountcore.seting_voucher_number_single'
+    _description = '设置单张凭证编号向导'
+    newNumber = fields.Integer(string='新凭证编号', required=True)
+
+    def setVoucherNumberSingle(self, argsDist):
+        '''设置修改凭证编号'''
+        newNumber = self.newNumber
+        currentUserNumberTastics_id = 0
+        if(self.env.user.voucherNumberTastics):
+            currentUserNumberTastics_id = self.env.user.voucherNumberTastics.id
+        voucher = self.env['accountcore.voucher'].sudo().browse(
+            argsDist['active_id'])
+        voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
+            voucher.numberTasticsContainer_str,
+            currentUserNumberTastics_id,
+            newNumber)
+        return True
+
+
+# 科目余额查询向导
 class GetAccountsBalance(models.TransientModel):
     '''科目余额查询向导'''
     _name = 'accountcore.get_account_balance'
@@ -1797,6 +1955,8 @@ class GetAccountsBalance(models.TransientModel):
     noShowZeroBalance = fields.Boolean(string='隐藏余额为零的科目', default=False)
     noShowNoAmount = fields.Boolean(
         string='没有任何金额不显示', default=True)
+    sum_orgs= fields.Boolean(
+        string='多机构合并显示', default=False)
     org = fields.Many2many(
         'accountcore.org',
         string='机构范围',
@@ -1834,6 +1994,7 @@ class GetAccountsBalance(models.TransientModel):
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
 
 
+# 科目明细账查询向导
 class GetSubsidiaryBook(models.TransientModel):
     "科目明细账查询向导"
     _name = 'accountcore.get_subsidiary_book'
@@ -1879,57 +2040,7 @@ class GetSubsidiaryBook(models.TransientModel):
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
 
 
-class Period(object):
-    '''一个期间'''
-
-    def __init__(self, start_date, end_date):
-        if isinstance(start_date, str):
-            self.start_date = datetime.datetime.strptime(
-                start_date, '%Y-%m-%d')
-        else:
-            self.start_date = start_date
-        if isinstance(end_date, str):
-            self.end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
-        else:
-            self.end_date = end_date
-        self.start_year = self.start_date.year
-        self.end_year = self.end_date.year
-        self.start_month = self.start_date.month
-        self.end_month = self.end_date.month
-
-    def getPeriodList(self):
-        '''获得日期范围内的会计期间列表'''
-
-        months = (self.end_year - self.start_year) * \
-            12 + self.end_month - self.start_month
-        month_range = ['%s-%s-%s' % (self.start_year + mon//12, mon % 12+1, 1)
-                       for mon in range(self.start_month-1, self.start_month + months)]
-        voucherPeriods = [VoucherPeriod(
-            datetime.datetime.strptime(d, '%Y-%m-%d')) for d in month_range]
-
-        return voucherPeriods
-
-
-class VoucherPeriod(object):
-    '''一个会计期间,月份'''
-
-    def __init__(self, date):
-        self.date = date
-        self.year = date.year
-        self.month = date.month
-        # 当月第一天
-        self.firstDate = datetime.date(year=self.year,
-                                       month=self.month,
-                                       day=1)
-        # 当月天数
-        self.days = calendar.monthrange(self.year,
-                                        self.month)[1]
-        # 当月最后一天
-        self.endDate = datetime.date(year=self.year,
-                                     month=self.month,
-                                     day=self.days)
-
-
+# 自动结转损益向导
 class currencyDown_sunyi(models.TransientModel):
     "自动结转损益向导"
     _name = 'accountcore.currency_down_sunyi'
@@ -1978,7 +2089,7 @@ class currencyDown_sunyi(models.TransientModel):
                 'res_model': 'accountcore.voucher',
                 'view_id': False,
                 'type': 'ir.actions.act_window',
-                'domain': [('id', 'in',  voucher_ids)]
+                'domain': [('id', 'in', voucher_ids)]
                 }
 
     def _do_currencyDown(self, org, voucher_period):
@@ -2024,23 +2135,27 @@ class currencyDown_sunyi(models.TransientModel):
         entrys_value = []
         # 根据科目余额生成分录
         for b in accountsBalance:
+            b_items_id = []
+            if b.items.id:
+                b_items_id = [b.items.id]
             endAmount = b.endDamount-b.endCamount
             if b.account.direction == '1':
                 if endAmount != 0:
-                    entrys_value.append({"explain": '结转损益',
+
+                    entrys_value.append({"explain": '',
                                          "account": b.account.id,
-                                         "items": [(6, 0, [b.items.id])],
+                                         "items": [(6, 0, b_items_id)],
                                          "camount": endAmount
                                          })
                     sum_d = sum_d+endAmount
             else:
                 if endAmount != 0:
-                    entrys_value.append({"explain": '结转损益',
+                    entrys_value.append({"explain": '',
                                          "account": b.account.id,
-                                         "items": [(6, 0, [b.items.id])],
+                                         "items": [(6, 0, b_items_id)],
                                          "damount": -endAmount
                                          })
-                    sum_c = sum_c+endAmount
+                    sum_c = sum_c-endAmount
         # 本年利润科目分录
 
         # 结转到贷方
@@ -2068,36 +2183,105 @@ class currencyDown_sunyi(models.TransientModel):
         return voucher
 
 
-class HelpClass(models.Model):
-    '''帮助类别'''
-    _name = 'accountcore.help_class'
-    _description = '帮助类别'
-    name = fields.Char(string='帮助类别', required=True)
-    _sql_constraints = [('accountcore_help_class_name_unique', 'unique(name)',
-                         '帮助类别名称重复了!')]
+# 启用期初试算平衡向导
+class BeginBalanceCheck(models.TransientModel):
+    '''启用期初试算平衡向导'''
+    _name = 'accountcore.begin_balance_check'
+    org_ids = fields.Many2many('accountcore.org',
+                               string='待检查机构',
+                               required=True,
+                               default=lambda s: s.env.user.currentOrg)
+    result = fields.Html(string='检查结果')
 
+    @api.multi
+    def do_check(self, *args):
+        '''对选中机构执行平衡检查'''
+        self.ensure_one()
+        check_result = {}
+        result_htmlStr = ''
+        for org in self.org_ids:
+            check_result[org.name] = self._check(org)
+        for (key, value) in check_result.items():
+            result_htmlStr = result_htmlStr+"<h6>" + \
+                key+"</h6>"+"".join([v[1] for v in value])
+        self.result = result_htmlStr
+        return {
+            'name': '启用期初平衡检查',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+            'res_model': 'accountcore.begin_balance_check',
+            'res_id': self.id,
+        }
 
-class GlobTag(models.Model):
-    '''模块全局标签'''
-    _name = 'accountcore.glob_tag'
-    _description = '模块全局标签'
-    name = fields.Char(string='全局标签名称', required=True)
-    summary = fields.Char(string='使用范围和简介', required=True)
-    js_code = fields.Text(string='js代码')
-    python_code = fields.Text(string='python代码')
-    sql_code = fields.Text(string='sql代码')
-    str_code = fields.Text(string='字符串')
-    application = fields.Html(string='详细使用说明')
-    _sql_constraints = [('accountcore_glob_tag_name_unique', 'unique(name)',
-                         '模块全局标签重复了!')]
+    def _check(self, org):
+        '''对一个机构执行平衡检查'''
+        rl = []
+        # 获得机构期初
+        balance_records = AccountsBalance.getBeginOfOrg(org)
+        # 检查月初本年累计发生额借方合计=贷方合计
+        rl.append(self._checkCumulativeAmountBalance(balance_records))
+        # 检查月初余额借方合计=贷方合计
+        rl.append(self._checkBeginingAmountBalance(balance_records))
+        # 检查月已发生额借方合计=贷方合计
+        rl.append(self._checkAmountBalance(balance_records))
+        # 检查资产=负债+所有者权益+收入-理论
+        rl.append(self._checkBalance(balance_records))
+        return rl
 
+    def _checkCumulativeAmountBalance(self, balance_records):
+        '''检查月初本年累计发生额借方合计'''
+        damount = AccountsBalance._sumFieldOf(
+            'cumulativeDamount', balance_records)
+        camount = AccountsBalance._sumFieldOf(
+            'cumulativeCamount', balance_records)
+        imbalanceAmount = damount-camount
+        if imbalanceAmount == 0:
+            rl_html = "<div><span class='text-success fa fa-check'></span>月初本年借方累计发生额=月初本年贷方累计发生额[" + \
+                str(damount) + "="+str(camount)+"]</div>"
+            return (True, rl_html)
+        else:
+            rl_html = "<div><span class='text-danger fa fa-close'></span>月初本年借方累计发生额合计=月初本年贷方累计发生额合计[" + \
+                str(damount)+"-" + str(camount) + \
+                "="+str(imbalanceAmount)+"]</div>"
+            return (False, rl_html)
 
-class Helpes(models.Model):
-    '''详细帮助'''
-    _name = 'accountcore.helps'
-    _description = '详细帮助'
-    name = fields.Char(string='标题', required=True)
-    help_class = fields.Many2one('accountcore.help_class',
-                                 string='帮助类别',
-                                 required=True)
-    content = fields.Html(string='内容')
+    def _checkBeginingAmountBalance(self, balance_records):
+        '''检查月初余额借方合计'''
+        damount = AccountsBalance._sumFieldOf('beginingDamount',
+                                              balance_records)
+        camount = AccountsBalance._sumFieldOf('beginingCamount',
+                                              balance_records)
+        imbalanceAmount = damount-camount
+        if imbalanceAmount == 0:
+            rl_html = "<div><span class='text-success fa fa-check'></span>月初借方余额合计=月初贷方贷方余额合计[" + \
+                str(damount) + "=" + str(camount) + "]</div>"
+            return (True, rl_html)
+        else:
+            rl_html = "<div><span class='text-danger fa fa-close'></span>月初借方余额合计=月初贷方余额合计[" +  \
+                str(damount) + "-" + str(camount) + \
+                "="+str(imbalanceAmount)+"]</div>"
+            return (False, rl_html)
+
+    def _checkAmountBalance(self, balance_records):
+        '''检查月已发生额借方合计'''
+        damount = AccountsBalance._sumFieldOf('damount',
+                                              balance_records)
+        camount = AccountsBalance._sumFieldOf('camount',
+                                              balance_records)
+        imbalanceAmount = damount-camount
+        if imbalanceAmount == 0:
+            rl_html = "<div><span class='text-success fa fa-check'></span>月借方已发生额合计=月贷方已发生额合计[" + \
+                str(damount) + "=" + str(camount) + "]</div>"
+            return (True, rl_html)
+        else:
+            rl_html = "<div><span class='text-danger fa fa-exclamation'></span>月借方已发生额合计=月贷方已发生额合计[" + \
+                str(damount) + "-" + str(camount) + \
+                "="+str(imbalanceAmount)+"]</div>"
+            return (False, rl_html)
+
+    def _checkBalance(self, balance_records):
+        '''检查资产=负债+所有者权益+收入-成本'''
+        return (True, ".....")
+        # 向导部分-结束

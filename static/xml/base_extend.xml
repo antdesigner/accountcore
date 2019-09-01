@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
+<!-- 科目余额表和明细账等查询向导中机构的展现方式 -->
 <t t-name="FieldMany2ManyCheckBoxes_flowToLeft">
     <div aria-atomic="true">
         <div t-foreach="widget.m2mValues" t-as="m2m_value" >
@@ -11,5 +12,4 @@
         </div>
     </div>
 </t>
-
 </templates>
