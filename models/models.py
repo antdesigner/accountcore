@@ -336,8 +336,69 @@ class Account(models.Model, Glob_tag_Model):
         # 通过科目编码来判断
         return self.search([('number', 'like', self.number)]).mapped('id')
 
+    def getBalances(self, org=None, item=None):
+        '''获得科目的余额记录'''
+        domain = [('account', '=', self.id)]
+        if item:
+            domain.append(('items', '=', item.id))
+        if org:
+            domain.append(('org', '=', org.id))
+        account_balances = self.env["accountcore.accounts_balance"].sudo().search(
+            domain)
+        return account_balances
+
+    def getBegins(self, org=None, item=None):
+        '''获得启用期初的记录'''
+        rs = self.getBalances(org, item)
+        rs.filtered(lambda r: r.isbegining)
+        if len(rs) == 0:
+            return None
+        return rs
+
+    def getChain(self, org, item=None):
+        '''获得科目余额链,期间从早到晚'''
+        rs = self.getBalances(org, item)
+        rs_sorted = rs.sorted(key=lambda r: (r.year, r.month, r.isbegining))
+        return rs_sorted
+
+    def getBalance(self, org, item):
+        '''获得当下科目余额记录'''
+        chain = self.getChain(org, item)
+        if len(chain) == 0:
+            return None
+        return chain[-1]
+
+    def getBalanceOfVoucherPeriod(self, voucher_period, org, item):
+        '''获得指定会计期间的科目余额记录'''
+        chain = self.getChain(org, item)
+        compareMark = voucher_period.year*12+voucher_period.month     
+        rs = chain.filtered(lambda r: (r.year*12+r.month) <= compareMark)
+        if len(rs) == 0:
+            balance = None
+        else:
+            balance = rs[-1]
+        return balance
+
+    def getAllItemsInBalances(self):
+        '''获得科目在余额表中使用过的所有核算项目'''
+        if not self.accountItemClass:
+            return None
+        rs = self.getBalances()
+        items = rs.mapped('items')
+        return items
+
+    def getAllItemsInBalancesOf(self, org):
+        '''获得某机构范围内科目在余额表中使用过的所有核算项目'''
+        if not self.accountItemClass:
+            return None
+        rs = self.getBalances()
+        rs_org = rs.filtered(lambda r: r.org.id == org.id)
+        items = rs_org.mapped('items')
+        return items
 
 # 特殊的会计科目
+
+
 class SpecialAccounts(models.Model):
     '''特殊的会计科目'''
     _name = "accountcore.special_accounts"
@@ -1425,7 +1486,7 @@ class AccountsBalance(models.Model):
             self.preRecord.setNextBalance(self.nextRecord)
             self.changeNextBalanceBegining(0, 0)
             self.changePreBalanceBegining(
-                0-self.preRecord.Damount, 0-self.preRecord.Camount)
+                0-self.preRecord.damount, 0-self.preRecord.camount)
         elif all([(not self.nextRecord), self.preRecord]):  # 前期有，后期都没有余额记录
             self.changePreBalanceBegining(
                 0-self.preRecord.beginingDamount, 0-self.preRecord.beginingCamount)
@@ -1444,21 +1505,6 @@ class AccountsBalance(models.Model):
             preBalances[-1].setNextBalance(self)
             self.changePreBalanceBegining(self.beginingDamount,
                                           self.beginingCamount)
-
-    def updata_balance(self):
-        '''根据会计分录定时更新余额表'''
-        # 获得要更新的会计分录
-        entrys = self.env['accountcore.entry'].sudo().search(
-            [('updata_balance', '=', False)])
-
-        for entry in entrys:
-            self._updateAccountBalance(entry)
-
-    # @api.model
-    # def updateBalance(self, isAdd=True):
-    #     '''更新余额'''
-    #     for entry in self.entrys:
-    #         self._updateAccountBalance(entry, isAdd)
 
     @api.model
     def _updateAccountBalance(self, entry, isAdd=True):
@@ -1554,6 +1600,8 @@ class AccountsBalance(models.Model):
         fieldsValue_ = [(Decimal.from_float(v)).quantize(
             Decimal('0.00')) for v in fieldsValue]
         return sum(fieldsValue_)
+
+
 # 科目余额用对象
 
 
@@ -1955,7 +2003,7 @@ class GetAccountsBalance(models.TransientModel):
     noShowZeroBalance = fields.Boolean(string='隐藏余额为零的科目', default=False)
     noShowNoAmount = fields.Boolean(
         string='没有任何金额不显示', default=True)
-    sum_orgs= fields.Boolean(
+    sum_orgs = fields.Boolean(
         string='多机构合并显示', default=False)
     org = fields.Many2many(
         'accountcore.org',
@@ -2051,7 +2099,8 @@ class currencyDown_sunyi(models.TransientModel):
         string='机构范围',
         default=lambda s: s.env.user.currentOrg, required=True)
 
-    def soucre(s): return s.env.ref('rulebook_999')
+    # def soucre(self):
+    #     return self.env.ref('rulebook_999')
 
     @api.multi
     def do(self, *args):
@@ -2114,16 +2163,26 @@ class currencyDown_sunyi(models.TransientModel):
                                                                   ('org', '=', False)])
         return accounts
 
-    def _get_balances(self, org, voucer_period, accounts):
+    def _get_balances(self, org, vouhcer_period, accounts):
         '''获得某一机构在一个会计月份的余额记录'''
-        ids = accounts.mapped('id')
-        balances = self.env['accountcore.accounts_balance'].sudo().search([('org', '=', org.id),
-                                                                           ('year', '=',
-                                                                            voucer_period.year),
-                                                                           ('month', '=',
-                                                                            voucer_period.month),
-                                                                           ('account', 'in', ids)])
-        return balances
+        accountsBalance = []
+        for account in accounts:
+            if not account.accountItemClass:
+                balance = account.getBalanceOfVoucherPeriod(vouhcer_period,
+                                                            org,
+                                                            None)
+                if balance:
+                    accountsBalance.append(balance)
+            else:
+                items = account.getAllItemsInBalancesOf(org)
+                if items:
+                    for item in items:
+                        balance = account.getBalanceOfVoucherPeriod(vouhcer_period,
+                                                                    org,
+                                                                    item)
+                        if balance:
+                            accountsBalance.append(balance)
+        return accountsBalance
 
     def _creat_voucher(self, accountsBalance, org, voucer_period):
         '''新增结转损益凭证'''

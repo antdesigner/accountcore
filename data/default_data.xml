@@ -298,7 +298,7 @@
             <field name="number">92</field>
             <field name="name">收入类</field>
         </record>
-        <record id="account_class_6" model="accountcore.accountclass">
+        <record id="account_class_93" model="accountcore.accountclass">
             <field name="number">93</field>
             <field name="name">支出类</field>
         </record>
