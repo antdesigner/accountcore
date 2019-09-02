@@ -37,7 +37,7 @@ class AccountBalanceReport(models.AbstractModel):
         org_id = form['org']
         orgs = self.env['accountcore.org'].sudo().browse(org_id)
         # 多机构合并显示名称
-        data['sum_orgs_name']="+".join(orgs.mapped('name'))
+        data['sum_orgs_name'] = "+".join(orgs.mapped('name'))
         startDate = datetime.datetime.strptime(form['startDate'],
                                                '%Y-%m-%d')
         start_year = startDate.year
@@ -93,10 +93,17 @@ class AccountBalanceReport(models.AbstractModel):
                               temp_accountId,
                               temp_itemId)
             # 添加期初借贷方余额等
-            balance.beginingDamount = Decimal.from_float(
-                record['beginingDamount']).quantize(Decimal('0.00'))
-            balance.beginingCamount = Decimal.from_float(
-                record['beginingCamount']).quantize(Decimal('0.00'))
+            if record['year'] == start_year and record['month'] == start_month:
+                balance.beginingDamount = Decimal.from_float(
+                    record['beginingDamount']).quantize(Decimal('0.00'))
+                balance.beginingCamount = Decimal.from_float(
+                    record['beginingCamount']).quantize(Decimal('0.00'))
+            else:
+                balance.beginingDamount = Decimal.from_float(
+                    record['endDamount']).quantize(Decimal('0.00'))
+                balance.beginingCamount = Decimal.from_float(
+                    record['endCamount']).quantize(Decimal('0.00'))
+
             balance.item_class_name = record['item_class_name']
             balance.item_id = record['item_id']
             balance.item_name = record['item_name']
@@ -181,7 +188,9 @@ class AccountBalanceReport(models.AbstractModel):
                         item_id,
                         t_item.name as item_name,
                         "beginingDamount",
-                        "beginingCamount"
+                        "beginingCamount",
+                        "endDamount",
+                        "endCamount"
                     FROM
 
                         (SELECT
@@ -192,6 +201,8 @@ class AccountBalanceReport(models.AbstractModel):
                             items as item_id,
                             "beginingDamount",
                             "beginingCamount",
+                            "endDamount",
+                            "endCamount",
                             isbegining
                         FROM
                             accountcore_accounts_balance
