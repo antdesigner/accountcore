@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # editor:huang tiger ###### Sun Jul 14 17:16:10 CST 2019
-import time
 import copy
-import decimal
-from odoo import http
-from odoo import exceptions
-import json
-from odoo import models, fields, api
 import datetime
+import decimal
+import json
+import time
+from odoo import exceptions
+from odoo import models, fields, api
+from odoo import http
+from ..models.ac_period import Period
+from ..models.main_models import VoucherNumberTastics
 import sys
-from ..models.models import VoucherNumberTastics, Period
 sys.path.append('.\\.\\server')
 
 
