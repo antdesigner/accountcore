@@ -1040,13 +1040,13 @@ class Enty(models.Model):
                 entry.account_item = None
                 continue
             id_ = entry.account.accountItemClass.id
-            account_item = entry.account_item
+            # account_item = entry.account_item
             if entry.items:
                 for item in entry.items:
                     if item.itemClass.id == id_:
-                        account_item = item.id
+                        entry.account_item = item.id
                         break
-                    account_item = None
+                    entry.account_item = None
                 continue
 
     @api.onchange('damount')

@@ -126,9 +126,9 @@ class AccountBalanceReport(models.AbstractModel):
                 balance.item_id = balance_DAndCAmount['item_id']
                 balance.item_name = balance_DAndCAmount['item_name']
                 balance.org_name = balance_DAndCAmount['org_name']
-                balances.add(balance)
                 balance_DAndCAmount['havepre'] = True
-                continue
+            balances.add(balance)
+            continue
         # 添加查询期间有发生额，但查询期间之前没有余额记录的相关科目记录,这时期初为0
         for one in DandCAmounts:
             if one['havepre'] == False:

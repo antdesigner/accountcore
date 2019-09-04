@@ -519,22 +519,22 @@ class EntrysAssembler():
                 raise exceptions.ValidationError(
                     e.name+"科目默认余额方向和"+self.main_account.name+"的方向不一致")
 
- 
             # 新的一年开始
             if e.year != tmp_year:
-                if tmp_month==12:
-                            # 添加查询期间最后的本月合计
-                    self.entrys.append(SumMonth(tmp_year,
-                                                tmp_month,
-                                                main_direction,
-                                                sum_month_d,
-                                                sum_month_c))
-                    # 添加本年累计
-                    self.entrys.append(CumulativeYear(tmp_year,
-                                                    tmp_month,
-                                                    main_direction,
-                                                    sum_year_d,
-                                                    sum_year_c))
+                # if tmp_month == 12:
+                # if True:
+                # 添加查询期间最后的本月合计
+                self.entrys.append(SumMonth(tmp_year,
+                                            tmp_month,
+                                            main_direction,
+                                            sum_month_d,
+                                            sum_month_c))
+                # 添加本年累计
+                self.entrys.append(CumulativeYear(tmp_year,
+                                                  tmp_month,
+                                                  main_direction,
+                                                  sum_year_d,
+                                                  sum_year_c))
                 # 添加年初余额
                 tmp_begin_year_d = tmp_begin_year_d+sum_year_d
                 tmp_begin_year_c = tmp_begin_year_c+sum_year_c
