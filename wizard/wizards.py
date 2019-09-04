@@ -210,8 +210,9 @@ class SetingVoucherNumberWizard(models.TransientModel):
         if startNumber <= 0:
             startNumber = 1
         for voucher in vouchers:
+            oldstr = voucher.numberTasticsContainer_str
             voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
-                voucher.numberTasticsContainer_str,
+                oldstr,
                 numberTasticsId,
                 startNumber)
             startNumber += 1
