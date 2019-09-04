@@ -623,7 +623,7 @@
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
-              <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6'>
+              <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
                 <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
                 <field name='org' invisible='1' />
                 <field name='explain' class='oe_ac_explain'></field>
