@@ -62,7 +62,7 @@
         </form>
       </field>
     </record>
-    <!-- list-核算项目类比 -->
+    <!-- list-核算项目类别 -->
     <record model='ir.ui.view' id='accountcore_itemclass_list'>
       <field name='name'>核算项目类别</field>
       <field name='model'>accountcore.itemclass</field>
@@ -103,7 +103,7 @@
           <field name='number' />
           <!-- 必须用dislay_name,因为凭证里选择核算项目字段的自定义tiger_accountItems_m2m（widget） 继承的系统FieldMany2One部件，
           在搜索时，核算项目的搜索视图需要有display_name字段，选择后填入input中，要不然inpunt为空白-->
-          <field name="display_name" />
+          <field name="display_name"  string='核算项目名称'/>
           <field name='uniqueNumber' readonly='1'></field>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
@@ -626,7 +626,7 @@
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
                 <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
                 <field name='org' invisible='1' />
-                <field name='explain' class='oe_ac_explain'></field>
+                <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
                 <field name='account' context="{'search_default_group_by_accountClassClass':1}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                 <field name='damount' sum='ac_dsum' class='amountColor'></field>
                 <field name='camount' sum='ac_csum' class='amountColor'></field>
@@ -655,6 +655,7 @@
          $('#auto_balance').on('click',function(){
            alert('平衡');
          });
+
      });
               </script>
             </div>
