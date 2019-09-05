@@ -62,7 +62,7 @@
     table-layout: fixed;
 }
 
-.oe_ac_explain {
+.oe_ac_explain .FieldChar_voucher_explain{
     /* 凭证说明 */
     width: 250px;
     overflow: auto;

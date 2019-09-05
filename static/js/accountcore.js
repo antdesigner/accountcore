@@ -55,11 +55,12 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
     return ListRenderer;
 });
 //凭证的核算项目字段
-odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.accountcoreVoucher', 'web.field_registry'], function (require) {
+odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields', 'accountcore.accountcoreVoucher', 'web.field_registry'], function (require) {
     "use strict";
     var relational_fields = require('web.relational_fields');
     var fieldMany2ManyTags = relational_fields.FieldMany2ManyTags;
     var accountcoreVoucher = require('accountcore.accountcoreVoucher');
+    var FieldChar = require('web.basic_fields').FieldChar;
     var tiger_accountItems_m2m = fieldMany2ManyTags.extend({
 
         activate: function () {
@@ -128,6 +129,22 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
         },
 
     });
+    var FieldChar_voucher_explain = FieldChar.extend({
+        events: _.extend({}, FieldChar.prototype.events, {
+            'focusin': '_onBlur',
+        }),
+        _onBlur: function (e) {
+            var self = $(e.target)
+            var pr_tr = self.parentsUntil('tr').parent('tr').prev('tr');
+            var pr_explain = pr_tr.find('span.oe_ac_explain');
+            var explain=self.val();
+            if ($.trim(explain)=='') {
+                self.val(pr_explain.text());
+                self.trigger('input');
+            };
+        },
+    });
+
     var FieldMany2ManyCheckBoxes = relational_fields.FieldMany2ManyCheckBoxes;
     var FieldMany2ManyCheckBoxes_flowToLeft = FieldMany2ManyCheckBoxes.extend({
         template: 'FieldMany2ManyCheckBoxes_flowToLeft',
@@ -135,10 +152,13 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
     var fieldRegistry = require('web.field_registry');
     fieldRegistry.add('tiger_accountItems_m2m', tiger_accountItems_m2m);
     // 继承many2many_checkboxes向左浮动
-    fieldRegistry.add('many2many_checkboxes_floatleft', FieldMany2ManyCheckBoxes_flowToLeft);;
+    fieldRegistry.add('many2many_checkboxes_floatleft', FieldMany2ManyCheckBoxes_flowToLeft);
+    fieldRegistry.add('FieldChar_voucher_explain', FieldChar_voucher_explain);
+
     return {
         tiger_accountItems_m2m: tiger_accountItems_m2m,
         fieldMany2ManyCheckBoxes_flowToLeft: FieldMany2ManyCheckBoxes_flowToLeft,
+        FieldChar_voucher_explain: FieldChar_voucher_explain,
     };
 });
 //凭证的核算项目字段选择
@@ -550,11 +570,13 @@ odoo.define("accountcore.begin_balance_check", function (require) {
         _do_check: function () {
             var self = this;
             this.do_action({
-                name:'启用期初平衡检查',
-                type:'ir.actions.act_window',
-                res_model:'accountcore.begin_balance_check',
-                views:[[false,'form']],
-                target:'new'
+                name: '启用期初平衡检查',
+                type: 'ir.actions.act_window',
+                res_model: 'accountcore.begin_balance_check',
+                views: [
+                    [false, 'form']
+                ],
+                target: 'new'
             });
             // framework.blockUI();
             // alert('开始试算平衡');
