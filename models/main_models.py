@@ -358,7 +358,7 @@ class Account(models.Model, Glob_tag_Model):
     def getChain(self, org, item=None):
         '''获得科目余额链,期间从早到晚'''
         rs = self.getBalances(org, item)
-        rs_sorted = rs.sorted(key=lambda r: (r.year, r.month, r.isbegining))
+        rs_sorted = rs.sorted(key=lambda r: (r.year, r.month, not r.isbegining))
         return rs_sorted
 
     def getBalance(self, org, item):
