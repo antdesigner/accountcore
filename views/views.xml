@@ -988,6 +988,13 @@
           <filter string="本年" name="year" domain="[('voucherdate','&lt;=', time.strftime('%Y-12-31 23:59:59')),('voucherdate','&gt;=', time.strftime('%Y-01-01 00:00:00'))]" />
           <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
           <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
+          <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+          <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />
+          <filter name="group_by_reviewer" string="按审核人分组" context = "{'group_by': 'reviewer'}" />
+          <filter name="group_by_soucre" string="按凭证来源分组" context = "{'group_by': 'soucre'}" />
+          <filter name="group_by_state" string="按审核状态分组" context = "{'group_by': 'state'}" />
+          <filter name="group_by_year" string="按年份分组" context = "{'group_by': 'year'}" />
+          <filter name="group_by_month" string="按月份分组" context = "{'group_by': 'month'}" />
         </search>
       </field>
     </record>
