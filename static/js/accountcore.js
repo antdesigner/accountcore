@@ -120,7 +120,8 @@ odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields
                 return;
             };
             //没有选择,或删除了核算项目,以前是A现在删除了A,没有选择其他的
-            this._removeTag(ev.target.ac_itemId);
+            if (ev.target.ac_itemId){
+            this._removeTag(ev.target.ac_itemId);}
             ev.target.ac_itemId = null;
             ev.target.ac_itemName = null;
 
