@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from . import controllers
-from . import models
-from . import report
 import datetime
+from decimal import Decimal
 import random
+from . import controllers
 from odoo import fields, api, SUPERUSER_ID
+from . import models
+from . import wizard
+from . import report
 
 # 核算项目类别ID开始
 # 往来项目
@@ -374,23 +376,23 @@ def getAccounIdByNum(t_account, number):
 def buildOneBalance(org_id, account,  date_str, year, month, item_id=False):
     '''创建一条期初'''
     if account.direction == '1':
-        beginingDamount = int(random.random()*300)*100.01
+        beginingDamount = (Decimal.from_float(int(random.random()*300)*100.01)).quantize(Decimal('0.00'))
         beginingCamount = 0
     else:
         beginingDamount = 0
-        beginingCamount = int(random.random()*300)*100.01
-    damount = int(random.random()*300)*10.00
-    camount = int(random.random()*300)*10.95
+        beginingCamount = (Decimal.from_float(int(random.random()*300)*100.01)).quantize(Decimal('0.00'))
+    damount = (Decimal.from_float(int(random.random()*300)*10.00)).quantize(Decimal('0.00'))
+    camount = (Decimal.from_float(int(random.random()*300)*10.95)).quantize(Decimal('0.00'))
     if month == 1:
         beginCumulativeDamount = 0
         beginCumulativeCamount = 0
     elif account.accountClass.name == '损益类':
         # 损益类借贷方累计发生额一般相等
-        beginCumulativeDamount = int(random.random()*300)*120.30
+        beginCumulativeDamount = (Decimal.from_float(int(random.random()*300)*120.30)).quantize(Decimal('0.00'))
         beginCumulativeCamount = beginCumulativeDamount
     else:
-        beginCumulativeDamount = int(random.random()*300)*120.30
-        beginCumulativeCamount = int(random.random()*300)*130.40
+        beginCumulativeDamount = (Decimal.from_float(int(random.random()*300)*120.30)).quantize(Decimal('0.00'))
+        beginCumulativeCamount = (Decimal.from_float(int(random.random()*300)*130.40)).quantize(Decimal('0.00'))
 
     b = {'org': org_id,
          'createDate': date_str,

@@ -1,8 +1,9 @@
 <odoo>
     <data>
+    <!-- 主菜单 -->
         <menuitem name='会计' id='accountcore_menu' />
         <menuitem name='向导帮助' id='accountcore_guide_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="30" />
-        <menuitem name='第1步:快速了解' id='accountcore_guide_menu_0' parent='accountcore_guide_menu' action='accountcore_org_action_window' sequence="5" /> 
+        <menuitem name='第1步:快速了解' id='accountcore_guide_menu_0' parent='accountcore_guide_menu' action='acccountcore_helps_actions_window' sequence="5" /> 
         <menuitem name='第2步:添加核算机构' id='accountcore_guide_menu_1' parent='accountcore_guide_menu' action='accountcore_org_action_window' sequence="10" />
         <menuitem name='第3步:添加核算项目类别' id='accountcore_guide_menu_2' parent='accountcore_guide_menu' action='accountcore_itemclass_action_window' sequence="20" />
         <menuitem name='第4步:添加核算项目' id='accountcore_guide_menu_3' parent='accountcore_guide_menu' action='accountcore_items_action_window' sequence="30" />
@@ -11,7 +12,7 @@
         <menuitem name='第7步:设置凭证默认值' id='accountcore_guide_menu_6' parent='accountcore_guide_menu' action='accountcore_userdefaults_action' sequence="60" />
         <menuitem name='第8步:设置凭证编号策略' id='accountcore_guide_menu_7' parent='accountcore_guide_menu' action='accountcore_set_number_acionts_window' sequence="70" />
         <menuitem name='第9步:可以开始录入凭证了' id='accountcore_guide_menu_8' parent='accountcore_guide_menu' action='accountcore_vouchers_action_window' sequence="80" />
-        <menuitem name='详细帮助和服务支持' id='accountcore_guide_menu_9' parent='accountcore_guide_menu' action='accountcore_org_action_window' sequence="90" />
+        <menuitem name='详细帮助和服务支持' id='accountcore_guide_menu_9' parent='accountcore_guide_menu' action='acccountcore_helps_actions_window' sequence="90" />
         <menuitem name='核算机构' id='accountcore_org_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="35" />
         <menuitem name="启用期初" id='accountcore_begining_menu' parent='accountcore_menu' sequence='36'/>
         <menuitem name="科目初始余额" id='accountcore_begining_balance_menu' parent='accountcore_begining_menu' action='acccountcore_accounts_balance_actions_window'/>
@@ -36,6 +37,7 @@
         <!-- <menuitem name='现金流量' id='accountcore_cashflow_menu' parent='accountcore_menu' sequence="53" />
         <menuitem name='现金流量项目类别' id='accountcore_cashflowtypw_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowtype_action_window' />
         <menuitem name='现金流量项目列表' id='accountcore_cashflows_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowitems_action_window' /> -->
+        <menuitem name='全局标签' id='accountcore_glob_tag_menu' parent='accountcore_menu' action='acccountcore_glob_tag_actions_window' sequence="50"/>
         <menuitem name='科目余额表' id='accountcore_accountsBalance_menu' parent='accountcore_menu' action='accountcore_get_accounts_balance_actions_window' sequence="60"/>
         <menuitem name='明细账' id='accountcore_subsidiary_book_menu' parent='accountcore_menu' action='accountcore_get_subsidiary_book_window' sequence="70"/>
         <menuitem name='报表' id='accountcore_reports_menu' parent='accountcore_menu' sequence="61" />

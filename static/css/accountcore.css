@@ -13,7 +13,8 @@
     width: 1070px;
 
 }
-.ac_rulebook td{
+
+.ac_rulebook td {
     white-space: normal !important;
     vertical-align: middle !important;
     border: 0px;
@@ -27,10 +28,11 @@
 
 /* 凭证列表表格结束 */
 /* 会计凭证界面(非打印)-开始 */
-.oe_ac_voucher_entrys{
+.oe_ac_voucher_entrys {
     margin: 0px;
     width: 1070px;
 }
+
 .oe_ac_voucher_entrys .o_input {
     width: 100%;
     border: 0px;
@@ -60,7 +62,7 @@
     table-layout: fixed;
 }
 
-.oe_ac_explain {
+.oe_ac_explain .FieldChar_voucher_explain{
     /* 凭证说明 */
     width: 250px;
     overflow: auto;
@@ -71,9 +73,11 @@
     width: 250px;
 
 }
-.oe_ac_accountItemClasses{
-display: none;
+
+.oe_ac_accountItemClasses {
+    display: none;
 }
+
 .oe_accountcore_entrys .o_list_number {
     /* 凭证借贷金额 */
     width: 130px;

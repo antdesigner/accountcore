@@ -1,3 +1,4 @@
+// 凭证借贷方金额
 odoo.define('accountcore.accountcoreListRenderer', function (require) {
     "use strict";
     var ListRenderer = require('web.ListRenderer');
@@ -54,11 +55,12 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
     return ListRenderer;
 });
 //凭证的核算项目字段
-odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.accountcoreVoucher', 'web.field_registry'], function (require) {
+odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields', 'accountcore.accountcoreVoucher', 'web.field_registry'], function (require) {
     "use strict";
     var relational_fields = require('web.relational_fields');
     var fieldMany2ManyTags = relational_fields.FieldMany2ManyTags;
     var accountcoreVoucher = require('accountcore.accountcoreVoucher');
+    var FieldChar = require('web.basic_fields').FieldChar;
     var tiger_accountItems_m2m = fieldMany2ManyTags.extend({
 
         activate: function () {
@@ -110,6 +112,7 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
                 if (id && id > 0 && id != newValue.id) {
                     this._removeTag(id);
                 }
+
                 ev.target.ac_itemId = newValue.id;
                 ev.target.ac_itemName = newValue.display_name;
                 //重要覆写
@@ -117,7 +120,8 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
                 return;
             };
             //没有选择,或删除了核算项目,以前是A现在删除了A,没有选择其他的
-            this._removeTag(ev.target.ac_itemId);
+            if (ev.target.ac_itemId){
+            this._removeTag(ev.target.ac_itemId);}
             ev.target.ac_itemId = null;
             ev.target.ac_itemName = null;
 
@@ -126,17 +130,36 @@ odoo.define('web.accountcoreExtend', ['web.relational_fields', 'accountcore.acco
         },
 
     });
-    var FieldMany2ManyCheckBoxes=relational_fields.FieldMany2ManyCheckBoxes;
-    var FieldMany2ManyCheckBoxes_flowToLeft=FieldMany2ManyCheckBoxes.extend({
+    var FieldChar_voucher_explain = FieldChar.extend({
+        events: _.extend({}, FieldChar.prototype.events, {
+            'focusin': '_onBlur',
+        }),
+        _onBlur: function (e) {
+            var self = $(e.target)
+            var pr_tr = self.parentsUntil('tr').parent('tr').prev('tr');
+            var pr_explain = pr_tr.find('span.oe_ac_explain');
+            var explain=self.val();
+            if ($.trim(explain)=='') {
+                self.val(pr_explain.text());
+                self.trigger('input');
+            };
+        },
+    });
+
+    var FieldMany2ManyCheckBoxes = relational_fields.FieldMany2ManyCheckBoxes;
+    var FieldMany2ManyCheckBoxes_flowToLeft = FieldMany2ManyCheckBoxes.extend({
         template: 'FieldMany2ManyCheckBoxes_flowToLeft',
-    });  
+    });
     var fieldRegistry = require('web.field_registry');
     fieldRegistry.add('tiger_accountItems_m2m', tiger_accountItems_m2m);
     // 继承many2many_checkboxes向左浮动
-    fieldRegistry.add('many2many_checkboxes_floatleft', FieldMany2ManyCheckBoxes_flowToLeft);;
+    fieldRegistry.add('many2many_checkboxes_floatleft', FieldMany2ManyCheckBoxes_flowToLeft);
+    fieldRegistry.add('FieldChar_voucher_explain', FieldChar_voucher_explain);
+
     return {
         tiger_accountItems_m2m: tiger_accountItems_m2m,
-        fieldMany2ManyCheckBoxes_flowToLeft:FieldMany2ManyCheckBoxes_flowToLeft,
+        fieldMany2ManyCheckBoxes_flowToLeft: FieldMany2ManyCheckBoxes_flowToLeft,
+        FieldChar_voucher_explain: FieldChar_voucher_explain,
     };
 });
 //凭证的核算项目字段选择
@@ -297,6 +320,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         },
 
         _onFieldChanged: function (event) {
+            this.lastChangeEvent = event; //test
             var newItem = event.data.changes.items;
             this.ac_newItemName = newItem.display_name;
             this.ac_newItemId = newItem.id;
@@ -465,7 +489,6 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
 
     }
 });
-
 //给凭证列表视图添加按钮
 odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     "use strict";
@@ -509,4 +532,76 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     viewRegistry.add('voucherListView', voucherListView);
     return voucherListView;
 });
-//
+//启用期初列表视图
+odoo.define('accountcore.balanceListView', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var CheckBalance = require('accountcore.begin_balance_check');
+    var balanceListController = ListController.extend({
+        renderButtons: function () {
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+                var btns = this.$buttons;
+                var check_balance_btn = new CheckBalance(this);
+                check_balance_btn.appendTo(btns);
+            };
+        },
+
+    });
+    var balanceListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: balanceListController,
+        }),
+    });
+    viewRegistry.add('balanceListView', balanceListView);
+    return balanceListView;
+});
+//启用期初平衡检查按钮
+odoo.define("accountcore.begin_balance_check", function (require) {
+    "use strict";
+    var Widget = require('web.Widget');
+    var framework = require('web.framework');
+    var CheckBalance = Widget.extend({
+        template: 'accountcore.check_balance',
+        events: {
+            'click': '_do_check',
+        },
+        _do_check: function () {
+            var self = this;
+            this.do_action({
+                name: '启用期初平衡检查',
+                type: 'ir.actions.act_window',
+                res_model: 'accountcore.begin_balance_check',
+                views: [
+                    [false, 'form']
+                ],
+                target: 'new'
+            });
+            // framework.blockUI();
+            // alert('开始试算平衡');
+            // this._rpc({
+            //     model: 'accountcore.account',
+            //     method: 'get_itemClasses',
+            //     args: [176],
+            // }).then(function (items) {
+            //     // _.map(items,function(){
+            //     //     s=s+self.name;
+            //     //   });
+
+            //     console.log('over!');
+            //     setTimeout(function () {
+            //         framework.unblockUI();
+            //         self.do_notify('结果', '该功能还在开发中!');
+            //     }, 5000);
+
+            // }, function () {
+            //     console.log('error!');
+            //     FrameWork.unbolckUI();
+            // });
+        },
+
+    });
+    return CheckBalance;
+});

@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_glob_tag_users_accounters,accountcore.glob_tag,model_accountcore_glob_tag,,1,1,1,1
 access_org_users_accounters,accountcore.org,model_accountcore_org,,1,1,1,1
 access_itemclass_users_accounters,accountcore.itemclass,model_accountcore_itemclass,,1,1,1,1
 access_item_users_accounters,accountcore.item,model_accountcore_item,,1,1,1,1
@@ -15,6 +16,8 @@ access_voucher_number_tastics_users_accounters,accountcore.voucher_number_tastic
 access_accounts_balance_users_accounters,accountcore.accounts_balance,model_accountcore_accounts_balance,,1,1,1,1
 access_accounts_arch_users_accounters,accountcore.accounts_arch,model_accountcore_accounts_arch,,1,1,1,1
 access_special_accounts_users_accounters,accountcore.special_accounts,model_accountcore_special_accounts,,1,1,1,1
+access_help_class_users_accounters,accountcore.help_class,model_accountcore_help_class,,1,1,1,1
+access_helps_users_accounters,accountcore.helps,model_accountcore_helps,,1,1,1,1
 
 
 

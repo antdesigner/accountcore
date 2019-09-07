@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 # editor:huang tiger ###### Sun Jul 14 17:16:10 CST 2019
-import time
 import copy
-import decimal
-from odoo import http
-from odoo import exceptions
-import json
-from odoo import models, fields, api
 import datetime
+import decimal
+import json
+import time
+from odoo import exceptions
+from odoo import models, fields, api
+from odoo import http
+from ..models.ac_period import Period
+from ..models.main_models import VoucherNumberTastics
 import sys
-from ..models.models import VoucherNumberTastics, Period
 sys.path.append('.\\.\\server')
 
 
+# 查询明细账
 class SubsidiaryBook(models.AbstractModel):
-    '''科目余额表'''
+    '''查询明细账'''
     _name = 'report.accountcore.subsidiary_book_report'
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -314,6 +316,7 @@ class SubsidiaryBook(models.AbstractModel):
         return self.env.cr.dictfetchall()
 
 
+# 明细账明细
 class EntryArch(object):
     '''明细账明细'''
     __slots__ = ['voucher_id',
@@ -364,6 +367,7 @@ class EntryArch(object):
         self.is_not_begining = True
 
 
+# 年初余额
 class BeginYear(EntryArch):
     '''年初余额'''
 
@@ -380,6 +384,7 @@ class BeginYear(EntryArch):
             damount-camount) if direction == '1' else (camount-damount)
 
 
+# 启用期初
 class BeginBalance(EntryArch):
     '''启用期初'''
 
@@ -395,6 +400,7 @@ class BeginBalance(EntryArch):
         self.is_not_begining = False
 
 
+# 启用期初以前
 class PrebeginBalance(EntryArch):
     '''启用期初以前'''
 
@@ -410,6 +416,7 @@ class PrebeginBalance(EntryArch):
         self.is_not_begining = False
 
 
+# 本月合计
 class SumMonth(EntryArch):
     '''本月合计'''
 
@@ -424,6 +431,7 @@ class SumMonth(EntryArch):
         self.camount = camount
 
 
+# 本年累计
 class CumulativeYear(EntryArch):
     '''本年累计'''
 
@@ -438,6 +446,7 @@ class CumulativeYear(EntryArch):
         self.camount = camount
 
 
+# 明细账组装器
 class EntrysAssembler():
     '''明细账组装器'''
 
@@ -509,8 +518,23 @@ class EntrysAssembler():
             if main_direction != e.direction:
                 raise exceptions.ValidationError(
                     e.name+"科目默认余额方向和"+self.main_account.name+"的方向不一致")
+
             # 新的一年开始
             if e.year != tmp_year:
+                # if tmp_month == 12:
+                # if True:
+                # 添加查询期间最后的本月合计
+                self.entrys.append(SumMonth(tmp_year,
+                                            tmp_month,
+                                            main_direction,
+                                            sum_month_d,
+                                            sum_month_c))
+                # 添加本年累计
+                self.entrys.append(CumulativeYear(tmp_year,
+                                                  tmp_month,
+                                                  main_direction,
+                                                  sum_year_d,
+                                                  sum_year_c))
                 # 添加年初余额
                 tmp_begin_year_d = tmp_begin_year_d+sum_year_d
                 tmp_begin_year_c = tmp_begin_year_c+sum_year_c
@@ -552,7 +576,7 @@ class EntrysAssembler():
                 sum_year_d = sum_year_d+e.damount
                 sum_year_c = sum_year_c+e.camount
 
-            if e.year == tmp_year and e.month != tmp_month:
+            if (e.year == tmp_year and e.month != tmp_month):
                 # 添加本月合计
                 self.entrys.append(SumMonth(tmp_year,
                                             tmp_month,
