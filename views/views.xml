@@ -2,6 +2,24 @@
   <data>
     <!-- 窗体动作-打开新增下级科目向导 -->
     <act_window id="accountcore_warzidcreatechildaccounts_action" name="添加下级科目" src_model="accountcore.account" res_model="accountcore.create_child_account" view_type="form" view_mode="form" target="new" multi="False" />
+        <!--form-全局标签类别 -->
+    <record id="accountcore_glob_tag_class_form" model="ir.ui.view">
+      <field name="name">全局标签类别</field>
+      <field name="model">accountcore.glob_tag_class</field>
+      <field name="arch" type="xml">
+        <form string="">
+          <sheet>
+            <h1>新增编辑=>全局标签类别</h1>
+            <hr></hr>
+            <group>
+              <field name='number' />
+              <field name="name" />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    
     <!-- list-核算机构 -->
     <record model='ir.ui.view' id='accountcore_org_list'>
       <field name='name'>核算机构</field>
@@ -481,6 +499,17 @@
         </form>
       </field>
     </record>
+    <!-- list-全局标签类别 -->
+    <record model='ir.ui.view' id='accountcore_glob_tag_list'>
+      <field name='name'>全局标签列表</field>
+      <field name='model'>accountcore.glob_tag_class</field>
+      <field name='arch' type='xml'>
+        <tree>
+          <field name='number' ></field>
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
     <!-- list-全局标签 -->
     <record model='ir.ui.view' id='accountcore_glob_tag_list'>
       <field name='name'>全局标签列表</field>
@@ -489,6 +518,7 @@
         <tree>
           <field name='name' ></field>
           <field name="summary" />
+          <field name="glob_tag_class"/>
         </tree>
       </field>
     </record>
@@ -503,6 +533,7 @@
             <hr></hr>
             <group>
               <field name="name"></field>
+              <field name="glob_tag_class"/>
               <field name="summary" />
             </group>
             <notebook>
@@ -1079,6 +1110,12 @@
     <record model="ir.actions.act_window" id="acccountcore_special_accounts_actions_window">
       <field name="name">特殊科目列表</field>
       <field name="res_model">accountcore.special_accounts</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <!-- 窗体动作-打开全局标签类别列表 -->
+    <record model="ir.actions.act_window" id="acccountcore_glob_tag_class_actions_window">
+      <field name="name">全局标签类别列表</field>
+      <field name="res_model">accountcore.glob_tag_class</field>
       <field name='view_mode'>tree,form</field>
     </record>
     <!-- 窗体动作-打开全局标签列表 -->

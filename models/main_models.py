@@ -24,12 +24,29 @@ class Glob_tag_Model(models.AbstractModel):
                                 index=True)
 
 
+# 全局标签类别
+class GlobTagClass(models.Model):
+    '''全局标签类别'''
+    _name = 'accountcore.glob_tag_class'
+    _description = '全局标签类别'
+    number = fields.Char(string='全局标签类别编码')
+    name = fields.Char(string='全局标签类别名称', required=True)
+    _sql_constraints = [('accountcore_itemclass_number_unique', 'unique(number)',
+                         '全局标签类别编码重复了!'),
+                        ('accountcore_itemclass_name_unique', 'unique(name)',
+                         '全局标签类别名称重复了!')]
+
+
 # 模块全局标签
 class GlobTag(models.Model):
     '''模块全局标签'''
     _name = 'accountcore.glob_tag'
     _description = '模块全局标签'
     name = fields.Char(string='全局标签名称', required=True)
+    glob_tag_class = fields.Many2one('accountcore.glob_tag_class',
+                                string='全局标签类别',
+                                index=True,
+                                ondelete='restrict')
     summary = fields.Char(string='使用范围和简介', required=True)
     js_code = fields.Text(string='js代码')
     python_code = fields.Text(string='python代码')
