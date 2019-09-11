@@ -110,3 +110,7 @@
 }
 
 /* 会计凭证界面-结束 */
+[name='fast_period'] button{
+  background-color:white;
+  border: 1px solid grey;
+}

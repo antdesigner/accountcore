@@ -255,6 +255,7 @@ class GetAccountsBalance(models.TransientModel):
     _description = '科目查询向导'
     startDate = fields.Date(string="开始期间")
     endDate = fields.Date(string="结束期间")
+    fast_period = fields.Date(string="选取期间", store=False)
     onlyShowOneLevel = fields.Boolean(string="只显示一级科目", default=False)
     summaryLevelByLevel = fields.Boolean(string='逐级汇总科目',
                                          default=True,
@@ -310,6 +311,7 @@ class GetSubsidiaryBook(models.TransientModel):
     _name = 'accountcore.get_subsidiary_book'
     startDate = fields.Date(string='开始月份')
     endDate = fields.Date(string='结束月份')
+    fast_period = fields.Date(string="选取期间", store=False)
     orgs = fields.Many2many(
         'accountcore.org',
         string='机构范围',
@@ -356,6 +358,7 @@ class currencyDown_sunyi(models.TransientModel):
     _name = 'accountcore.currency_down_sunyi'
     startDate = fields.Date(string='开始月份', required=True)
     endDate = fields.Date(string='结束月份', required=True)
+    fast_period = fields.Date(string="选取期间", store=False)
     orgs = fields.Many2many(
         'accountcore.org',
         string='机构范围',
