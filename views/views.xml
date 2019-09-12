@@ -2,7 +2,8 @@
   <data>
     <!-- 窗体动作-打开新增下级科目向导 -->
     <act_window id="accountcore_warzidcreatechildaccounts_action" name="添加下级科目" src_model="accountcore.account" res_model="accountcore.create_child_account" view_type="form" view_mode="form" target="new" multi="False" />
-        <!--form-全局标签类别 -->
+    <act_window id="accountcore_create_child_cashflow_action" name="添加下级现金流量" src_model="accountcore.cashflow" res_model="accountcore.create_child_cashflow" view_type="form" view_mode="form" target="new" multi="False" />    
+    <!--form-全局标签类别 -->
     <record id="accountcore_glob_tag_class_form" model="ir.ui.view">
       <field name="name">全局标签类别</field>
       <field name="model">accountcore.glob_tag_class</field>
@@ -19,7 +20,7 @@
         </form>
       </field>
     </record>
-    
+
     <!-- list-核算机构 -->
     <record model='ir.ui.view' id='accountcore_org_list'>
       <field name='name'>核算机构</field>
@@ -348,11 +349,14 @@
       <field name='name'>现金流量项目列表</field>
       <field name='model'>accountcore.cashflow</field>
       <field name='arch' type='xml'>
-        <tree>
+        <tree  default_order='cashFlowType,number' >
           <field name='cashFlowType'></field>
           <field name='number'></field>
           <field name='direction' />
           <field name='name'></field>
+          <button string='下级流量' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_create_child_cashflow_action)d'></button>
+          <field name='parent_id' invisible='1'></field>
+           <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -366,11 +370,30 @@
             <h1>新增编辑=>现金流量项目</h1>
             <hr></hr>
             <group>
-              <field name='cashFlowType' />
+              <field name='cashFlowType'/>
+              <field name="parent_id" />
               <field name='number' />
               <field name='direction' widget='radio' />
               <field name='name' />
+               <field name='glob_tag' widget='many2many_tags' />
             </group>
+             <group>
+              <field name="childs_ids">
+                <tree default_order='cashFlowType,number' create='0' limit='80' >
+                  <field name='cashFlowType' ></field>
+                  <field name='number'></field>
+                  <field name='name'></field>
+                  <field name='direction' />
+                  <button string='下级现金流量' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
+                  <field name='glob_tag' widget='many2many_tags' />
+                  <field name='parent_id' invisible='1'></field>
+                  <field name="childs_ids" />
+                </tree>
+              </field>
+            </group>
+            <center>
+              <button string='增加下级现金流量' type='action' class='btn-secondary' name='%(accountcore_create_child_cashflow_action)d'></button>
+            </center>
           </sheet>
         </form>
       </field>
@@ -516,9 +539,9 @@
       <field name='model'>accountcore.glob_tag</field>
       <field name='arch' type='xml'>
         <tree>
+          <field name="glob_tag_class" />
           <field name='name' ></field>
           <field name="summary" />
-          <field name="glob_tag_class"/>
         </tree>
       </field>
     </record>
@@ -533,7 +556,7 @@
             <hr></hr>
             <group>
               <field name="name"></field>
-              <field name="glob_tag_class"/>
+              <field name="glob_tag_class" />
               <field name="summary" />
             </group>
             <notebook>
@@ -718,7 +741,7 @@
     </record>
     <!-- form-新增下级科目向导 -->
     <record id="accountcore_wizardcreatechildaccount_form" model="ir.ui.view">
-      <field name="name">新增下级科目</field>
+      <field name="name">新增编辑下级科目</field>
       <field name="model">accountcore.create_child_account</field>
       <field name="arch" type="xml">
         <form>
@@ -749,6 +772,29 @@
             </group>
             <group>
               <field name="explain" />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    <!-- form-新增下级现金流量项目向导 -->
+    <record id="accountcore_create_child_cash_flow_form" model="ir.ui.view">
+      <field name="name">新增下级现金流量项目</field>
+      <field name="model">accountcore.create_child_cashflow</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name='cash_flow_type' readonly='1'></field>
+              <field name='parent_number' readonly='1'></field>
+              <field name='parent_id' readonly='1'></field>
+              
+            </group>
+            <group>
+              <field name='number' readonly='1'></field>
+              <field name='name' default_focus='1'></field>
+              <field name='direction' widget='radio' readonly='1' />
+             <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>

@@ -44,9 +44,9 @@ class GlobTag(models.Model):
     _description = '模块全局标签'
     name = fields.Char(string='全局标签名称', required=True)
     glob_tag_class = fields.Many2one('accountcore.glob_tag_class',
-                                string='全局标签类别',
-                                index=True,
-                                ondelete='restrict')
+                                     string='全局标签类别',
+                                     index=True,
+                                     ondelete='restrict')
     summary = fields.Char(string='使用范围和简介', required=True)
     js_code = fields.Text(string='js代码')
     python_code = fields.Text(string='python代码')
@@ -551,18 +551,61 @@ class CashFlow(models.Model, Glob_tag_Model):
     '''现金流量项目'''
     _name = 'accountcore.cashflow'
     _description = '现金流量项目'
+    _parent_store = True
     cashFlowType = fields.Many2one('accountcore.cashflowtype',
                                    string='现金流量类别',
                                    required=True,
                                    index=True)
     number = fields.Char(string="现金流量编码", required=True)
+    currentChildNumber = fields.Integer(default=10,
+                                        string='新建下级待用编号')
     name = fields.Char(string='现金流量名称', required=True)
+    parent_id = fields.Many2one('accountcore.cashflow',
+                                string='上级现金流量项目',
+                                ondelete='restrict')
+    parent_path = fields.Char(index=True)
+    childs_ids = fields.One2many('accountcore.cashflow',
+                                 'parent_id',
+                                 string='直接下级流量',
+                                 ondelete='restrict')
     direction = fields.Selection(
         [("-1", "流出"), ("1", "流入")], string='流量方向', required=True)
     _sql_constraints = [('accountcore_cashflow_number_unique', 'unique(number)',
                          '现金流量编码重复了!'),
                         ('accountcore_cashflow_name_unique', 'unique(name)',
                          '现金流量名称重复了!')]
+    
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=20):
+        args = args or []
+        domain = []
+        # 同时根据编号和名称进行搜索
+        if name:
+            domain = ['|', ('number', operator, name),
+                      ('name', operator, name)]
+        # 源代码默认为160,突破其限制   详细见 /web/static/src/js/views/form_common.js
+        if limit == 160:
+            limit = 0
+        pos = self.search(domain+args, limit=limit, order='number')
+        return pos._my_name_get()
+
+    @api.model
+    @api.multi
+    def _my_name_get(self):
+        result = []
+        name = self._rec_name
+        if name in self._fields:
+            convert = self._fields[name].convert_to_display_name
+            for record in self:
+                showStr = (record['number']).ljust(
+                        11, '_') + convert(record[name], record)
+                result.append((record.id, showStr))
+        else:
+            for record in self:
+                showStr = (record['number']).ljust(
+                        11, '_') + convert(record[name], record)
+                result.append((record.id, "%s,%s" % (showStr, record.id)))
+        return result
 
 
 # 凭证文件
