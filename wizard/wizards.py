@@ -617,7 +617,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
     _name = 'accountcore.create_child_cashflow'
     _description = '新增下级现金流量向导'
     parent_id = fields.Many2one('accountcore.cashflow',
-                                string='上级现金流量',
+                                string='上级现金流量名称',
                                 help='新增现金流量的直接上级科目')
     parent_number = fields.Char(related='parent_id.number',
                                 string='上级现金流量编码')
