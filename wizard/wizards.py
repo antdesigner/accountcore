@@ -7,6 +7,7 @@ from odoo import models
 from ..models.main_models import AccountsBalance
 from ..models.main_models import Voucher
 from ..models.ac_period import Period
+from ..models.main_models import Glob_tag_Model
 
 
 # 向导部分-开始
@@ -255,6 +256,7 @@ class GetAccountsBalance(models.TransientModel):
     _description = '科目查询向导'
     startDate = fields.Date(string="开始期间")
     endDate = fields.Date(string="结束期间")
+    fast_period = fields.Date(string="选取期间", store=False)
     onlyShowOneLevel = fields.Boolean(string="只显示一级科目", default=False)
     summaryLevelByLevel = fields.Boolean(string='逐级汇总科目',
                                          default=True,
@@ -310,10 +312,11 @@ class GetSubsidiaryBook(models.TransientModel):
     _name = 'accountcore.get_subsidiary_book'
     startDate = fields.Date(string='开始月份')
     endDate = fields.Date(string='结束月份')
-    orgs = fields.Many2many(
-        'accountcore.org',
-        string='机构范围',
-        default=lambda s: s.env.user.currentOrg, required=True)
+    fast_period = fields.Date(string="选取期间", store=False)
+    orgs = fields.Many2many('accountcore.org',
+                            string='机构范围',
+                            default=lambda s: s.env.user.currentOrg,
+                            required=True)
     account = fields.Many2one(
         'accountcore.account', string='查询的科目', required=True)
     item = fields.Many2one('accountcore.item', string='查询的核算项目')
@@ -356,6 +359,7 @@ class currencyDown_sunyi(models.TransientModel):
     _name = 'accountcore.currency_down_sunyi'
     startDate = fields.Date(string='开始月份', required=True)
     endDate = fields.Date(string='结束月份', required=True)
+    fast_period = fields.Date(string="选取期间", store=False)
     orgs = fields.Many2many(
         'accountcore.org',
         string='机构范围',
@@ -605,4 +609,59 @@ class BeginBalanceCheck(models.TransientModel):
     def _checkBalance(self, balance_records):
         '''检查资产=负债+所有者权益+收入-成本'''
         return (True, ".....")
+
+
+# 新增下级现金流量向导
+class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
+    '''新增下级现金流量的向导'''
+    _name = 'accountcore.create_child_cashflow'
+    _description = '新增下级现金流量向导'
+    parent_id = fields.Many2one('accountcore.cashflow',
+                                string='上级现金流量名称',
+                                help='新增现金流量的直接上级科目')
+    parent_number = fields.Char(related='parent_id.number',
+                                string='上级现金流量编码')
+
+    cash_flow_type = fields.Many2one('accountcore.cashflowtype',
+                                     string='现金流量类别',
+                                     index=True,
+                                     ondelete='restrict')
+    number = fields.Char(string='现金流量编码', required=True)
+    name = fields.Char(string='现金流量名称', required=True)
+    direction = fields.Selection(
+        [("-1", "流出"), ("1", "流入")], string='流量方向', required=True)
+
+    @api.model
+    def default_get(self, field_names):
+        default = super().default_get(field_names)
+        parent_id = self.env.context.get('active_id')
+        parent = self.env['accountcore.cashflow'].sudo().search(
+            [['id', '=', parent_id]])
+        default['parent_id'] = parent_id
+        default['cash_flow_type'] = parent.cashFlowType.id
+        default['direction'] = parent.direction
+        default['number'] = parent.number + \
+            '.' + str(parent.currentChildNumber)
+        return default
+
+    @api.model
+    def create(self, values):
+        parent_id = self.env.context.get('active_id')
+        Table = self.env['accountcore.cashflow'].sudo()
+        parent = Table.search(
+            [['id', '=', parent_id]])
+        newOne = {'parent_id': parent_id,
+                  'cashFlowType': parent.cashFlowType.id,
+                  'name':  parent.name+'---'+values['name'],
+                  'number': parent.number + '.'
+                  + str(parent.currentChildNumber),
+                  'direction': parent.direction}
+        parent.currentChildNumber = parent.currentChildNumber+1
+        values.update(newOne)
+        rl = super(CreateChildCashoFlowWizard, self).create(values)
+        a = Table.create(values)
+        # 添加到上级科目的直接下级
+        parent.write({'childs_ids': [(4, a.id)]})
+        return rl
+
         # 向导部分-结束

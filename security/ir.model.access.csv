@@ -18,6 +18,8 @@ access_accounts_arch_users_accounters,accountcore.accounts_arch,model_accountcor
 access_special_accounts_users_accounters,accountcore.special_accounts,model_accountcore_special_accounts,,1,1,1,1
 access_help_class_users_accounters,accountcore.help_class,model_accountcore_help_class,,1,1,1,1
 access_helps_users_accounters,accountcore.helps,model_accountcore_helps,,1,1,1,1
+access_glob_tag_class_users_accounters,accountcore.glob_tag_class,model_accountcore_glob_tag_class,,1,1,1,1
+
 
 
 
