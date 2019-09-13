@@ -707,10 +707,6 @@
             <div>
               <script>
         $(function () { $('[data-toggle="tooltip"]').tooltip();
-         $('#auto_balance').on('click',function(){
-           alert('平衡');
-         });
-
      });
               </script>
             </div>

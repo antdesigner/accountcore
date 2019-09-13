@@ -54,7 +54,7 @@ odoo.define('accountcore.accountcoreListRenderer', function (require) {
     };
     return ListRenderer;
 });
-//凭证的核算项目字段
+//凭证的核算项目字段,自动继承摘要，借贷自动平衡等
 odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields', 'accountcore.accountcoreVoucher', 'web.field_registry'], function (require) {
     "use strict";
     var relational_fields = require('web.relational_fields');
@@ -135,15 +135,42 @@ odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields
         events: _.extend({}, FieldChar.prototype.events, {
             'focusin': '_onBlur',
         }),
+        // 分录说明获得焦点时触发
         _onBlur: function (e) {
             var self = $(e.target)
-            var pr_tr = self.parentsUntil('tr').parent('tr').prev('tr');
-            var pr_explain = pr_tr.find('span.oe_ac_explain');
+            var self_tr = self.parentsUntil('tr').parent('tr')
+            var pr_tr = self_tr.prev('tr');
             var explain = self.val();
             if ($.trim(explain) == '') {
-                self.val(pr_explain.text());
-                self.trigger('input');
+                this._autoExplain(self, pr_tr);
             };
+            this._autoBalance(self_tr);
+        },
+        // 自动继承上条分录说明
+        _autoExplain: function (self, pr_tr) {
+            var pr_explain = pr_tr.find('span.oe_ac_explain');
+            self.val(pr_explain.text());
+            self.trigger('input');
+        },
+        // 借贷自动平衡
+        _autoBalance: function (self_tr) {
+            var damount_input = self_tr.find("[name='damount']").find("input");
+            var camount_input = self_tr.find("[name='camount']").find("input");
+            // var dsum = $("[title='ac_dsum']");
+            // var csum = $("[title='ac_csum']");
+            var amount = $("[name='sum_amount']span").text().replace(/,/gi, '');
+            // var amount = dsum.text().replace(/,/gi, '') - csum.text().replace(/,/gi, '');
+            var old_amount = damount_input.val().replace(/,/gi, '') - camount_input.val().replace(/,/gi, '');
+            if (old_amount == 0) {
+                if (amount > 0) {
+                    camount_input.val(amount);
+                    camount_input.trigger('input');
+                } else if (amount < 0) {
+                    damount_input.val(-amount);
+                    damount_input.trigger('input');
+                };
+            };
+
         },
     });
 
@@ -723,13 +750,13 @@ odoo.define('accountcore.period_tool', function (require) {
             var year = this.year;
             var firstMonth = 10;
             var endMonth = 12;
-            if (1 <= month && month<= 3) {
+            if (1 <= month && month <= 3) {
                 firstMonth = 1;
                 endMonth = 3;
-            } else if (4 <= month && month< 6) {
+            } else if (4 <= month && month < 6) {
                 firstMonth = 4;
                 endMonth = 6;
-            } else if (7 <= month && month<= 9) {
+            } else if (7 <= month && month <= 9) {
                 firstMonth = 7;
                 endMonth = 9;
             };
@@ -744,12 +771,12 @@ odoo.define('accountcore.period_tool', function (require) {
             var year = this.year;
             var firstMonth = 10;
             var endMonth = 12;
-            if (1 <= month && month<= 3) {
+            if (1 <= month && month <= 3) {
                 year = this.year - 1
-            } else if (4 <= month && month< 6) {
+            } else if (4 <= month && month < 6) {
                 firstMonth = 4;
                 endMonth = 6;
-            } else if (7 <= month && month<= 9) {
+            } else if (7 <= month && month <= 9) {
                 firstMonth = 7;
                 endMonth = 9;
             };
