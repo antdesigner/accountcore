@@ -12,9 +12,7 @@ from ..models.main_models import Glob_tag_Model
 
 # 向导部分-开始
 # 新增下级科目的向导
-
-
-class CreateChildAccountWizard(models.TransientModel):
+class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
     '''新增下级科目的向导'''
     _name = 'accountcore.create_child_account'
     _description = '新增下级科目向导'

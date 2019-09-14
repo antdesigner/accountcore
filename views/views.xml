@@ -262,6 +262,7 @@
               <field name='glob_tag' widget='many2many_tags' />
             </group>
             <group>
+            <field name='glob_tag' widget='many2many_tags' />
               <field name="explain" />
             </group>
             <group>
@@ -768,6 +769,7 @@
               <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
             </group>
             <group>
+            <field name='glob_tag' widget='many2many_tags' />
               <field name="explain" />
             </group>
           </sheet>
@@ -1216,7 +1218,7 @@
       <field name="target">new</field>
     </record>
     <!-- 窗体动作-打开自动生成多张凭证编码向导-->
-    <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
+    <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编号" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
     <!-- 纸张定义-凭证打印 -->
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>
