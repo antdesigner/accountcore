@@ -200,7 +200,8 @@ class SetingVoucherNumberWizard(models.TransientModel):
     def default_get(self, field_names):
         '''获得用户的默认凭证编号策略'''
         default = super().default_get(field_names)
-        default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
+        if self.env.user.voucherNumberTastics:
+            default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
 
     def setingNumber(self, args):
@@ -208,6 +209,7 @@ class SetingVoucherNumberWizard(models.TransientModel):
         numberTasticsId = self.voucherNumberTastics.id
         vouchers = self.env['accountcore.voucher'].sudo().browse(
             args['active_ids'])
+        vouchers.sorted(key=lambda r: r.sequence)
         if startNumber <= 0:
             startNumber = 1
         for voucher in vouchers:

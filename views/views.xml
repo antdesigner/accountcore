@@ -432,7 +432,8 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,number" limit='300'>
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,sequence,voucherdate,number" limit='300'>
+          <field name="sequence" widget="handle"/>
           <field name='org' />
           <field name='voucherdate' />
           <field name='number' class='voucherNumber' />
@@ -1060,9 +1061,9 @@
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
           <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="state" string="Test" domain="[('state','=', self)]" />
-          <filter string="本月" name="month" domain="[('voucherdate','&gt;=', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&lt;',  (context_today() + relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
-          <filter string="上月" name="pre_month" domain="[('voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
-          <filter string="本年" name="year" domain="[('voucherdate','&lt;=', time.strftime('%Y-12-31 23:59:59')),('voucherdate','&gt;=', time.strftime('%Y-01-01 00:00:00'))]" />
+          <filter string="本月" name="month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
+          <filter string="上月" name="pre_month" domain="[('month','=', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
+          <filter string="本年" name="year" domain="[('year','=', time.strftime('%Y'))]" />
           <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
           <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />

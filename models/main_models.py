@@ -684,6 +684,7 @@ class Voucher(models.Model):
                                ondelete='restrict',
                                readonly=True,
                                indext=True)
+    sequence = fields.Integer(string='Sequence')
     entrys = fields.One2many('accountcore.entry',
                              'voucher',
                              string='分录')
