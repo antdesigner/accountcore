@@ -1066,8 +1066,10 @@
           <filter string="本月" name="month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
           <filter string="上月" name="pre_month" domain="[('month','=', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
           <filter string="本年" name="year" domain="[('year','=', time.strftime('%Y'))]" />
+          <filter string="更多期间范围" name="voucherdate" date='voucherdate' default_period="this_week" />
           <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
           <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
+          <filter string="已审核" name="account_number" domain="[('entrys.mapped(','=', 'reviewed')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />
           <filter name="group_by_reviewer" string="按审核人分组" context = "{'group_by': 'reviewer'}" />

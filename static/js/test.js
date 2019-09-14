@@ -1,14 +1,18 @@
-if (!accountcore.web.web_client) {
-    odoo.define('accountcore.web.web_client', function (require) {
-            var Fast_period = require('accountcore.fast_period')
-            var fast_period = new Fast_period();
-
-            $(function () {
-                    fast_period.appendTo($("[name='endDate']"));
-                });
-
+$(function () {
+    $('.choose_all').on('click', function () {
+        var checkboxs = $('[name="org"]').find('[type="checkbox"]');
+        if ($(this).text() == '全选') {
+            checkboxs.each(function () {
+                $(this).prop('checked', true);
+                $(this).trigger('change')
             });
-    }
-    else {
-
-    };
+            $(this).text("取消");
+        } else {
+            checkboxs.each(function () {
+                $(this).prop('checked', false);
+                $(this).trigger('change')
+            });
+            $(this).text("全选");
+        }
+    });
+});
