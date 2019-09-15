@@ -28,6 +28,7 @@
         <menuitem name='凭证标签' id='acctountcore_rulebook_menu' parent='accountcore_voucher_menu' action='accountcore_rulebook_action_window' sequence="49" />
         <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="50" />
         <menuitem name='查询凭证' id='accountcore_vouchers_menu' parent='accountcore_voucher_menu' action='accountcore_vouchers_action_window' sequence="55" />
+        <menuitem name='查询分录' id='accountcore_entrys_menu' parent='accountcore_voucher_menu' action='accountcore_entrys_action_window' sequence="56" />
         <menuitem name='结转损益' id='accountcore_voucher_sunyi_menu' parent='accountcore_voucher_menu' action='accountore_voucher_shunyi_actions_window' sequence='57' />        
         <menuitem name='新增凭证' id='accountcore_voucher_new_menu' parent='accountcore_voucher_menu' action='accountore_voucher_new_actions_window' sequence='60' />
         <menuitem name='凭证编号' id='accountcore_voucher_number_memu' parent='accountcore_voucher_menu' sequence='47' />
