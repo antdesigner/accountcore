@@ -262,6 +262,7 @@
               <field name='glob_tag' widget='many2many_tags' />
             </group>
             <group>
+            <field name='glob_tag' widget='many2many_tags' />
               <field name="explain" />
             </group>
             <group>
@@ -432,7 +433,8 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,number" limit='300'>
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,sequence,voucherdate,number" limit='300'>
+          <field name="sequence" widget="handle"/>
           <field name='org' />
           <field name='voucherdate' />
           <field name='number' class='voucherNumber' />
@@ -767,6 +769,7 @@
               <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
             </group>
             <group>
+            <field name='glob_tag' widget='many2many_tags' />
               <field name="explain" />
             </group>
           </sheet>
@@ -1060,11 +1063,13 @@
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
           <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="state" string="Test" domain="[('state','=', self)]" />
-          <filter string="本月" name="month" domain="[('voucherdate','&gt;=', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&lt;',  (context_today() + relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
-          <filter string="上月" name="pre_month" domain="[('voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
-          <filter string="本年" name="year" domain="[('voucherdate','&lt;=', time.strftime('%Y-12-31 23:59:59')),('voucherdate','&gt;=', time.strftime('%Y-01-01 00:00:00'))]" />
+          <filter string="本月" name="month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
+          <filter string="上月" name="pre_month" domain="[('month','=', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
+          <filter string="本年" name="year" domain="[('year','=', time.strftime('%Y'))]" />
+          <filter string="更多期间范围" name="voucherdate" date='voucherdate' default_period="this_week" />
           <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
           <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
+          <filter string="已审核" name="account_number" domain="[('entrys.mapped(','=', 'reviewed')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />
           <filter name="group_by_reviewer" string="按审核人分组" context = "{'group_by': 'reviewer'}" />
@@ -1215,7 +1220,7 @@
       <field name="target">new</field>
     </record>
     <!-- 窗体动作-打开自动生成多张凭证编码向导-->
-    <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编码" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
+    <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编号" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
     <!-- 纸张定义-凭证打印 -->
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>

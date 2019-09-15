@@ -3,7 +3,7 @@
 <!-- 核算机构开始 -->
     <record id='org_2' model='accountcore.org'>
         <field name='number'>2</field>
-        <field name='name'>法派(北京)有限公司</field>
+        <field name='name'>美味食品(北京)有限公司</field>
     </record>
     <record id='org_3' model='accountcore.org'>
         <field name='number'>3</field>
@@ -27,7 +27,7 @@
     </record>
     <record id='org_8' model='accountcore.org'>
         <field name='number'>8</field>
-        <field name='name'>法派(重庆)有限公司</field>
+        <field name='name'>美味食品(重庆)有限公司</field>
     </record>
     <record id='org_9' model='accountcore.org'>
         <field name='number'>9</field>
@@ -47,7 +47,7 @@
     </record>
      <record id='org_13' model='accountcore.org'>
         <field name='number'>13</field>
-        <field name='name'>法派(重庆)有限公司渝中分公司</field>
+        <field name='name'>美味食品(重庆)有限公司渝中分公司</field>
     </record>
     <!-- 核算机构结束 -->
 </odoo>
