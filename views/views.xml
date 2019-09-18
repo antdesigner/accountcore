@@ -677,6 +677,8 @@
               <field name='real_date' col='2' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='number' col='2' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
+              <field name='uniqueNumber' col='2' readonly='1'></field>
+            
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
@@ -701,7 +703,6 @@
               <span id="auto_balance" style="margin-left:5px">自动平衡</span>
             </div>
             <group col='8' class='oe_grey'>
-              <field name='uniqueNumber' readonly='1'></field>
               <field name='soucre' />
               <field name='createUser' />
               <field name='reviewer' />

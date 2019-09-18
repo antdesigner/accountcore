@@ -638,7 +638,7 @@ class Voucher(models.Model):
     voucherdate = fields.Date(string='记账日期',
                               required=True,
                               placeholder='记账日期')
-    real_date = fields.Date(string='业务日期', placehplder='业务日期')
+    real_date = fields.Date(string='业务日期', help='业务实际发生日期')
     # 前端通过voucherDate生成,不要直接修改
     year = fields.Integer(string='年份',
                           compute='getYearMonth',
@@ -667,7 +667,9 @@ class Voucher(models.Model):
                                 help='可用于标记不同的凭证',
                                 ondelete='restrict')
     number = fields.Integer(string='凭证编号',
-                            help='该编号更据不同凭证编号策略会不同,一张凭证可以有多个不同编号',
+                            help='''该编号更据不同凭证编号策略会不同,
+                            一张凭证可以有多个不同编号.可在查询凭证界面批量自动编号.
+                            和原始凭证对应可另用唯一编号''',
                             compute='getVoucherNumber',
                             search="searchNumber")
     appendixCount = fields.Integer(string='附件张数',

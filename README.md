@@ -27,11 +27,13 @@ AccountCoreForOdoo,in China
 
 长期维护,精益求精
 
-## 在线演示地址
-http://39.98.172.200:8069
 ## 下载演示模块地址
 美味食品(北京)有限公司：
 https://github.com/antdesigner/ac_demo_meiwei
+
+## 在线演示地址
+http://39.98.172.200:8069
+
 用户名:285411957@qq.com
 
 加QQ群领取口令:
