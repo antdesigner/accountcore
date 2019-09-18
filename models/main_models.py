@@ -31,6 +31,7 @@ class GlobTagClass(models.Model):
     _description = '全局标签类别'
     number = fields.Char(string='全局标签类别编码')
     name = fields.Char(string='全局标签类别名称', required=True)
+    summary = fields.Char(string='使用范围和简介')
     _sql_constraints = [('accountcore_itemclass_number_unique', 'unique(number)',
                          '全局标签类别编码重复了!'),
                         ('accountcore_itemclass_name_unique', 'unique(name)',
@@ -449,7 +450,7 @@ class Account(models.Model, Glob_tag_Model):
         if org:
             domain.append(('org', '=', org.id))
         else:
-            domain.append('org', '=', False)
+            domain.append(('org', '=', False))
         account_balances = self.env["accountcore.accounts_balance"].sudo().search(
             domain)
         return account_balances

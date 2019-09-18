@@ -14,7 +14,7 @@
         <script>
 $(function () {
     $('.choose_all').on('click', function () {
-        var checkboxs = $('[name="org"]').find('[type="checkbox"]');
+        var checkboxs = $('[name="orgs"]').find('[type="checkbox"]');
         if ($(this).text() == '全选') {
             checkboxs.each(function () {
                 $(this).prop('checked', true);

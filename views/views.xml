@@ -969,12 +969,12 @@
               <field name="includeAccountItems" />
             </group>
             <group>
-              <field name="org" widget="many2many_checkboxes_floatleft" />
+              <field name="orgs" widget="many2many_checkboxes_floatleft" />
               <field name="order_orgs" />
               <field name="sum_orgs" />
             </group>
             <group>
-              <field name="account" default_focus='1' domain="['|',('org','in',org),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
+              <field name="account" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
                 <tree default_order='accountClass,number,org' >
                   <field name='org' />
                   <field name='accountClass' />
@@ -1057,6 +1057,7 @@
           <field name="number" string="科目编号包含" domain="[('number','ilike', self)]" />
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
+          <filter string="非一级科目" name="leve_2" domain="[('fatherAccountId','!=',False)]"></filter>
           <filter string="分配现金流量的科目" name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
           <filter name="group_by_accountClassClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
           <filter name="group_by_arch" string="按科目体系分组" context = "{'group_by': 'accountsArch'}" />

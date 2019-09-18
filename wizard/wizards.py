@@ -269,7 +269,7 @@ class GetAccountsBalance(models.TransientModel):
         string='没有任何金额不显示', default=True)
     sum_orgs = fields.Boolean(
         string='多机构合并显示', default=False)
-    org = fields.Many2many(
+    orgs = fields.Many2many(
         'accountcore.org',
         string='机构范围',
         default=lambda s: s.env.user.currentOrg,
@@ -284,12 +284,13 @@ class GetAccountsBalance(models.TransientModel):
     def getReport(self, args):
         '''查询科目余额'''
         self.ensure_one()
-        if len(self.org) == 0:
+        if len(self.orgs) == 0:
             raise exceptions.ValidationError('你还没选择机构范围！')
             return False
         if len(self.account) == 0:
-            raise exceptions.ValidationError('你需要选择查询的科目范围！')
-            return False
+            self.account = self.env['accountcore.account'].search([])
+            # raise exceptions.ValidationError('你需要选择查询的科目范围！')
+            # return False
         self._setDefaultDate()
         [data] = self.read()
         datas = {
@@ -467,7 +468,7 @@ class currencyDown_sunyi(models.TransientModel):
             if b.account.direction == '1':
                 if endAmount != 0:
 
-                    entrys_value.append({"explain": '',
+                    entrys_value.append({"explain": '结转损益',
                                          "account": b.account.id,
                                          "items": [(6, 0, b_items_id)],
                                          "camount": endAmount
@@ -475,7 +476,7 @@ class currencyDown_sunyi(models.TransientModel):
                     sum_d = sum_d+endAmount
             else:
                 if endAmount != 0:
-                    entrys_value.append({"explain": '',
+                    entrys_value.append({"explain": '结转损益',
                                          "account": b.account.id,
                                          "items": [(6, 0, b_items_id)],
                                          "damount": -endAmount
@@ -503,7 +504,8 @@ class currencyDown_sunyi(models.TransientModel):
             'org': org.id,
             'soucre': self.env.ref('accountcore.source_2').id,
             'ruleBook': [(6, 0, [self.env.ref('accountcore.rulebook_999').id])],
-            'entrys': [(6, 0, entrys.ids)]
+            'entrys': [(6, 0, entrys.ids)],
+            'createUser': self.env.uid,
         })
         return voucher
 
