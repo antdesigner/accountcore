@@ -1034,7 +1034,7 @@
         <form >
           <sheet>
             <group>
-              <field name="startDate" editable='0' />
+              <field name="startDate" />
               <field name="endDate" />
               <field name="fast_period" widget="ac_fast_period" />
             </group>

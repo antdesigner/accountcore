@@ -1,7 +1,13 @@
 <odoo>
     <data>
-    <!-- 添加自定义js,css资产到 -->
+        <!-- 添加自定义js,css资产到 -->
         <template id="accountcore_assets_css" inherit_id="web.assets_backend" name="accountcore assets">
+            <xpath expr="link[last()]" position="after">
+                <link rel='stylesheet' type='text/css' href="/accountcore/static/css/accountcore.css" />
+            </xpath>
+        </template>
+        <!-- 报表样式 -->
+        <template id="accountcore_report_assets_css" inherit_id="web.report_assets_common" name="accountcore report assets">
             <xpath expr="link[last()]" position="after">
                 <link rel='stylesheet' type='text/css' href="/accountcore/static/css/accountcore.css" />
             </xpath>
@@ -11,5 +17,6 @@
                 <script type="text/javascript" src="/accountcore/static/js/accountcore.js"></script>
             </xpath>
         </template>
+
     </data>
 </odoo>

@@ -1,8 +1,7 @@
 <odoo>
     <data>
-            <!-- 凭证打印 -->
+        <!-- 凭证打印 -->
         <template id='voucher_report'>
-
             <style>
            td
 {
@@ -11,46 +10,59 @@ vertical-align:middle !important;
 .damount,.camount{
 white-space:nowrap !important;
 }
-table tr{
+table, tr, td, th, tbody, thead, tfoot{
 page-break-inside: avoid !important;}
 .explain{
 font-size:0.7em}
+
+
             </style>
             <div class="page container text-center" style="page-break-after:always">
+
                 <div class="row">
-                    <h2 class='col'>记账凭证</h2>
-                </div>
-                <div class="row">
-                    <div class='col'>
-                        <span t-field='doc.voucherdate' />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class='col-8 text-left'>
-                        <span>机构:</span>
-                        <span t-field='doc.org' />
-                    </div>
-                    <div class='col-4 text-right'>
-                        <span>附件张数:</span>
-                        <span t-field='doc.appendixCount' />
-                        <span>凭证编号:</span>
-                        <span t-field='doc.number' />
-                    </div>
-                </div>
-                <div class="row">
-                    <table class='table table-bordered table-sm'>
+                    <table class='table table-bordered table-sm ac-no-border'>
                         <thead style="white-space:nowrap;">
+                            <tr>
+                                <th colspan="4" class='ac-no-border'>
+                                    <center>
+                                        <h4>记账凭证</h4>
+                                    </center>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class='ac-no-border'>
+                                    <center>
+                                        <h6>
+                                            <span t-field='doc.voucherdate' />
+                                        </h6>
+                                    </center>
+                                </th>
+                            </tr>
+                            <tr class='ac-no-border'>
+                                <th colspan="4" class='ac-no-border'>
+                                    <h6>
+                                        <span style='float:left'>机构:</span>
+                                        <span style='float:left;margin-left:1em' t-field='doc.org' />
+                                        <span style='float:right'>
+                                            <span >附件张数:</span>
+                                            <span  t-field='doc.appendixCount' />
+                                            <span style="margin-left:1em">唯一编号:</span>
+                                            <span t-field='doc.uniqueNumber' />
+                                            <span style="margin-left:1em">凭证编号:</span>
+                                            <span  t-field='doc.number' />
+                                        </span>
+                                    </h6>
+                                </th>
+                            </tr>
                             <tr>
                                 <th>说明</th>
                                 <th>科目(核算项目）</th>
                                 <th>借方</th>
                                 <th>贷方</th>
-                                <!-- <th>核算项目</th> -->
-                                <!-- <th>现金流量</th> -->
                             </tr>
                         </thead>
                         <tbody class="text-left">
-                            <tr t-foreach="doc.entrys" t-as="entry" >
+                            <tr t-foreach="doc.entrys" t-as="entry">
                                 <td>
                                     <span t-field='entry.explain' class="explain" />
                                 </td>
@@ -61,7 +73,7 @@ font-size:0.7em}
                                     <span t-if="entry.items">)</span>
                                 </td>
                                 <td class="damount text-right">
-                                    <span t-if="entry.damount!=0" t-field="entry.damount"/>
+                                    <span t-if="entry.damount!=0" t-field="entry.damount" />
                                 </td>
                                 <td class='camount text-right'>
                                     <span t-if="entry.camount!=0" t-field="entry.camount" />
@@ -69,22 +81,18 @@ font-size:0.7em}
                             </tr>
                         </tbody>
                         <tfoot>
+                            <tr>
+                                <td colspan='4' class='ac-no-border'>
+                                    <center>
+                                        <span style='margin-left:0px'>记账:</span>
+                                        <span style='margin-left:1em' t-field='doc.createUser' />
+                                        <span style='margin-left:4em'>审核:</span>
+                                        <span style='margin-left:1em' t-field='doc.reviewer' />
+                                    </center>
+                                </td>
+                            </tr>
                         </tfoot>
                     </table>
-                </div>
-                <div class="row">
-                    <div class='col-4 text-left'>
-                        <span>记账:</span>
-                        <span t-field='doc.createUser' />
-                    </div>
-                    <div class='col-4'>
-                        <span>审核:</span>
-                        <span t-field='doc.reviewer' />
-                    </div>
-                    <div class='col-4 text-right'>
-                        <span>唯一编号:</span>
-                        <span t-field='doc.uniqueNumber' />
-                    </div>
                 </div>
             </div>
         </template>
