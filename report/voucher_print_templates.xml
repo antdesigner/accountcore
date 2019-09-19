@@ -18,7 +18,6 @@ font-size:0.7em}
 
             </style>
             <div class="page container text-center" style="page-break-after:always">
-
                 <div class="row">
                     <table class='table table-bordered table-sm ac-no-border'>
                         <thead style="white-space:nowrap;">
@@ -45,11 +44,11 @@ font-size:0.7em}
                                         <span style='float:left;margin-left:1em' t-field='doc.org' />
                                         <span style='float:right'>
                                             <span >附件张数:</span>
-                                            <span  t-field='doc.appendixCount' />
+                                            <span t-field='doc.appendixCount' />
                                             <span style="margin-left:1em">唯一编号:</span>
                                             <span t-field='doc.uniqueNumber' />
                                             <span style="margin-left:1em">凭证编号:</span>
-                                            <span  t-field='doc.number' />
+                                            <span t-field='doc.number' />
                                         </span>
                                     </h6>
                                 </th>
