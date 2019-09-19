@@ -2,7 +2,7 @@
   <data>
     <!-- 窗体动作-打开新增下级科目向导 -->
     <act_window id="accountcore_warzidcreatechildaccounts_action" name="添加下级科目" src_model="accountcore.account" res_model="accountcore.create_child_account" view_type="form" view_mode="form" target="new" multi="False" />
-    <act_window id="accountcore_create_child_cashflow_action" name="添加下级现金流量" src_model="accountcore.cashflow" res_model="accountcore.create_child_cashflow" view_type="form" view_mode="form" target="new" multi="False" />    
+    <act_window id="accountcore_create_child_cashflow_action" name="添加下级现金流量" src_model="accountcore.cashflow" res_model="accountcore.create_child_cashflow" view_type="form" view_mode="form" target="new" multi="False" />
     <!--form-全局标签类别 -->
     <record id="accountcore_glob_tag_class_form" model="ir.ui.view">
       <field name="name">全局标签类别</field>
@@ -262,7 +262,7 @@
               <field name='glob_tag' widget='many2many_tags' />
             </group>
             <group>
-            <field name='glob_tag' widget='many2many_tags' />
+              <field name='glob_tag' widget='many2many_tags' />
               <field name="explain" />
             </group>
             <group>
@@ -350,14 +350,14 @@
       <field name='name'>现金流量项目列表</field>
       <field name='model'>accountcore.cashflow</field>
       <field name='arch' type='xml'>
-        <tree  default_order='cashFlowType,number' >
+        <tree default_order='cashFlowType,number' >
           <field name='cashFlowType'></field>
           <field name='number'></field>
           <field name='direction' />
           <field name='name'></field>
           <button string='下级流量' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_create_child_cashflow_action)d'></button>
           <field name='parent_id' invisible='1'></field>
-           <field name='glob_tag' widget='many2many_tags' />
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -371,14 +371,14 @@
             <h1>新增编辑=>现金流量项目</h1>
             <hr></hr>
             <group>
-              <field name='cashFlowType'/>
+              <field name='cashFlowType' />
               <field name="parent_id" />
               <field name='number' />
               <field name='direction' widget='radio' />
               <field name='name' />
-               <field name='glob_tag' widget='many2many_tags' />
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
-             <group>
+            <group>
               <field name="childs_ids">
                 <tree default_order='cashFlowType,number' create='0' limit='80' >
                   <field name='cashFlowType' ></field>
@@ -434,7 +434,7 @@
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
         <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,sequence,voucherdate,number" limit='300'>
-          <field name="sequence" widget="handle"/>
+          <field name="sequence" widget="handle" />
           <field name='org' />
           <field name='voucherdate' />
           <field name='number' class='voucherNumber' />
@@ -677,10 +677,12 @@
               <field name='real_date' col='2' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='number' col='2' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
+              <field name='uniqueNumber' col='2' readonly='1'></field>
+            
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
-                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账" />
+                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
                 <field name='org' invisible='1' />
                 <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
                 <!-- org_id,show_balance用于在 -->
@@ -701,7 +703,6 @@
               <span id="auto_balance" style="margin-left:5px">自动平衡</span>
             </div>
             <group col='8' class='oe_grey'>
-              <field name='uniqueNumber' readonly='1'></field>
               <field name='soucre' />
               <field name='createUser' />
               <field name='reviewer' />
@@ -716,12 +717,56 @@
         </form>
       </field>
     </record>
+    <!-- list-会计分录 -->
+    <record model='ir.ui.view' id='accountcore_entrys_list'>
+      <field name='name'>会计分录列表</field>
+      <field name='model'>accountcore.entry</field>
+      <field name='arch' type='xml'>
+        <tree  class='oe_accountcore_table_fix' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
+          <button type='object' class="btn btn-sm fa fa-reply" name='show_voucher'></button>
+          <field name='org' ></field>
+          <field name="v_voucherdate" />
+          <field name="v_year" invisible='1' />
+          <field name="v_month" invisible='1' />
+          <field name="voucher" />
+          <field name="explain" />
+          <field name="account" />
+          <field name="damount" />
+          <field name="camount" />
+          <field name="items" widget='many2many_tags' />
+          <field name="cashFlow" />
+          <field name="v_real_date" />
+        </tree>
+      </field>
+    </record>
+    <!-- pivots 分录透视- -->
+    <record id="accountcore_entry_pivots" model='ir.ui.view'>
+    <field name="name">分录透视</field>
+    <field name='model'>accountcore.entry</field>
+    <field name='arch' type='xml'>
+    <pivot string="" >
+          <field name='org'  type='col'></field>
+          <field name="v_voucherdate" />
+          <field name="v_year" invisible='1' />
+          <field name="v_month" invisible='1' />
+          <field name="voucher" invisible='1'/>
+          <field name="explain"  invisible='1'/>
+          <field name="account" />
+          <field name="damount" type="measure"/>
+          <field name="camount" type="measure"/>
+          <field name="items"  />
+          <field name="cashFlow" type='row'/>
+          <field name="v_real_date" />
+          <field name="updata_balance" invisible='1'/>
+     </pivot>
+    </field>
+    </record>
     <!-- form-会计分录 -->
     <record id="accountcore_entry_form" model="ir.ui.view">
       <field name="name">会计分录</field>
       <field name="model">accountcore.entry</field>
       <field name="arch" type="xml">
-        <form string="">
+        <form string="" create='false' edit='false' delete='false' >
           <sheet>
             <group>
               <field name="explain" />
@@ -731,7 +776,6 @@
               <field name="cashFlow" />
               <field name="items" />
               <!-- Add your fields here -->
-
             </group>
           </sheet>
         </form>
@@ -769,7 +813,7 @@
               <field name='accountItemClass' domain="[('id','in',itemClasses)]" />
             </group>
             <group>
-            <field name='glob_tag' widget='many2many_tags' />
+              <field name='glob_tag' widget='many2many_tags' />
               <field name="explain" />
             </group>
           </sheet>
@@ -787,13 +831,13 @@
               <field name='cash_flow_type' readonly='1'></field>
               <field name='parent_number' readonly='1'></field>
               <field name='parent_id' readonly='1'></field>
-              
+
             </group>
             <group>
               <field name='number' readonly='1'></field>
               <field name='name' default_focus='1'></field>
               <field name='direction' widget='radio' readonly='1' />
-             <field name='glob_tag' widget='many2many_tags' />
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -926,12 +970,12 @@
               <field name="includeAccountItems" />
             </group>
             <group>
-              <field name="org" widget="many2many_checkboxes_floatleft" />
+              <field name="orgs" widget="many2many_checkboxes_floatleft" />
               <field name="order_orgs" />
               <field name="sum_orgs" />
             </group>
             <group>
-              <field name="account" default_focus='1' domain="['|',('org','in',org),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
+              <field name="account" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
                 <tree default_order='accountClass,number,org' >
                   <field name='org' />
                   <field name='accountClass' />
@@ -990,7 +1034,7 @@
         <form >
           <sheet>
             <group>
-              <field name="startDate" editable='0' />
+              <field name="startDate" />
               <field name="endDate" />
               <field name="fast_period" widget="ac_fast_period" />
             </group>
@@ -1014,6 +1058,7 @@
           <field name="number" string="科目编号包含" domain="[('number','ilike', self)]" />
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
+          <filter string="非一级科目" name="leve_2" domain="[('fatherAccountId','!=',False)]"></filter>
           <filter string="分配现金流量的科目" name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
           <filter name="group_by_accountClassClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
           <filter name="group_by_arch" string="按科目体系分组" context = "{'group_by': 'accountsArch'}" />
@@ -1063,13 +1108,12 @@
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
           <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="state" string="Test" domain="[('state','=', self)]" />
-          <filter string="本月" name="month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
-          <filter string="上月" name="pre_month" domain="[('month','=', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
-          <filter string="本年" name="year" domain="[('year','=', time.strftime('%Y'))]" />
+          <filter string="本月" name="this_month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
+          <filter string="上月" name="pre_month" domain="[('voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
+          <filter string="本年" name="this_year" domain="[('year','=', time.strftime('%Y'))]" />
           <filter string="更多期间范围" name="voucherdate" date='voucherdate' default_period="this_week" />
           <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
           <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
-          <filter string="已审核" name="account_number" domain="[('entrys.mapped(','=', 'reviewed')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />
           <filter name="group_by_reviewer" string="按审核人分组" context = "{'group_by': 'reviewer'}" />
@@ -1077,6 +1121,34 @@
           <filter name="group_by_state" string="按审核状态分组" context = "{'group_by': 'state'}" />
           <filter name="group_by_year" string="按年份分组" context = "{'group_by': 'year'}" />
           <filter name="group_by_month" string="按月份分组" context = "{'group_by': 'month'}" />
+        </search>
+      </field>
+    </record>
+    <!-- 搜素视图-分录 -->
+    <record id="accountcore_entry_search" model="ir.ui.view">
+      <field name="name">分录查询</field>
+      <field name="model">accountcore.entry</field>
+      <field name="arch" type="xml">
+        <search string="voucherFilter">
+          <field name="voucher" string="凭证唯一编号等于" domain="[('voucher','=', self)]" />
+          <field name="account" string="科目名称包含" domain="[('account','ilike', self)]" />
+          <field name="explain" string="说明包含" domain="[('explain','ilike', self)]" />
+          <field name="items" string="核算统计项目包含" domain="[('items','ilike', self)]" />
+          <field name="damount" string="借方金额等于" domain="[('damount','=', self)]" />
+          <field name="camount" string="贷方金额等于" domain="[('camount','=', self)]" />
+          <filter string="本月" name="this_month" domain="[('v_month','=', time.strftime('%m')),('v_year','=', time.strftime('%Y'))]" />
+          <filter string="上月" name="pre_month" domain="[('v_voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('v_voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
+          <filter string="本年" name="this_year" domain="[('v_year','=', time.strftime('%Y'))]" />
+          <filter string="更多期间范围" name="v_voucherdate" date='v_voucherdate' default_period="this_week" />
+          <filter string="借方金额为负" name="damount_negative" domain="[('damount','&lt;', 0)]" />
+          <filter string="贷方金额为负" name="camount_negative" domain="[('camount','&lt;', 0)]" />
+          <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+          <filter name="group_by_voucher" string="按所属凭证分组" context = "{'group_by': 'voucher'}" />
+          <filter name="group_by_account" string="按会计科目分组" context = "{'group_by': 'account'}" />
+          <filter name="group_by_account_item" string="按作为明细核算的项目分组" context = "{'group_by': 'account_item'}" />
+          <filter name="group_by_cashflow" string="按现金流量分组" context = "{'group_by': 'cashFlow'}" />
+          <filter name="group_by_v_year" string="按记账年份分组" context = "{'group_by': 'v_year'}" />
+          <filter name="group_by_v_month" string="按记账月份分组" context = "{'group_by': 'v_month'}" />
         </search>
       </field>
     </record>
@@ -1151,7 +1223,14 @@
       <field name='name'>凭证列表</field>
       <field name='res_model'>accountcore.voucher</field>
       <field name='view_mode'>tree,form</field>
-      <field name="context">{'search_default_month': 1}</field>
+      <field name="context">{'search_default_this_month': 1}</field>
+    </record>
+    <!-- 窗体动作-打开分录列表 -->
+    <record model='ir.actions.act_window' id='accountcore_entrys_action_window'>
+      <field name='name'>分录列表</field>
+      <field name='res_model'>accountcore.entry</field>
+      <field name='view_mode'>tree,form,pivot</field>
+      <field name="context">{'search_default_this_month': 1}</field>
     </record>
     <!-- 窗体动作-打开特殊科目列表 -->
     <record model="ir.actions.act_window" id="acccountcore_special_accounts_actions_window">

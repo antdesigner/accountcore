@@ -31,6 +31,7 @@ class GlobTagClass(models.Model):
     _description = '全局标签类别'
     number = fields.Char(string='全局标签类别编码')
     name = fields.Char(string='全局标签类别名称', required=True)
+    summary = fields.Char(string='使用范围和简介')
     _sql_constraints = [('accountcore_itemclass_number_unique', 'unique(number)',
                          '全局标签类别编码重复了!'),
                         ('accountcore_itemclass_name_unique', 'unique(name)',
@@ -449,7 +450,7 @@ class Account(models.Model, Glob_tag_Model):
         if org:
             domain.append(('org', '=', org.id))
         else:
-            domain.append('org', '=', False)
+            domain.append(('org', '=', False))
         account_balances = self.env["accountcore.accounts_balance"].sudo().search(
             domain)
         return account_balances
@@ -574,7 +575,7 @@ class CashFlow(models.Model, Glob_tag_Model):
                          '现金流量编码重复了!'),
                         ('accountcore_cashflow_name_unique', 'unique(name)',
                          '现金流量名称重复了!')]
-    
+
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=20):
         args = args or []
@@ -598,12 +599,12 @@ class CashFlow(models.Model, Glob_tag_Model):
             convert = self._fields[name].convert_to_display_name
             for record in self:
                 showStr = (record['number']).ljust(
-                        11, '_') + convert(record[name], record)
+                    11, '_') + convert(record[name], record)
                 result.append((record.id, showStr))
         else:
             for record in self:
                 showStr = (record['number']).ljust(
-                        11, '_') + convert(record[name], record)
+                    11, '_') + convert(record[name], record)
                 result.append((record.id, "%s,%s" % (showStr, record.id)))
         return result
 
@@ -633,11 +634,11 @@ class Voucher(models.Model):
     '''会计记账凭证'''
     _name = 'accountcore.voucher'
     _description = '会计记账凭证'
-    name = fields.Char(default='凭证')
+    name = fields.Char(related='uniqueNumber', string="唯一号", store=True)
     voucherdate = fields.Date(string='记账日期',
                               required=True,
                               placeholder='记账日期')
-    real_date = fields.Date(string='业务日期', placehplder='业务日期')
+    real_date = fields.Date(string='业务日期', help='业务实际发生日期')
     # 前端通过voucherDate生成,不要直接修改
     year = fields.Integer(string='年份',
                           compute='getYearMonth',
@@ -666,7 +667,9 @@ class Voucher(models.Model):
                                 help='可用于标记不同的凭证',
                                 ondelete='restrict')
     number = fields.Integer(string='凭证编号',
-                            help='该编号更据不同凭证编号策略会不同,一张凭证可以有多个不同编号',
+                            help='''该编号更据不同凭证编号策略会不同,
+                            一张凭证可以有多个不同编号.可在查询凭证界面批量自动编号.
+                            和原始凭证对应可另用唯一编号''',
                             compute='getVoucherNumber',
                             search="searchNumber")
     appendixCount = fields.Integer(string='附件张数',
@@ -1145,6 +1148,7 @@ class Enty(models.Model):
     '''一条分录'''
     _name = 'accountcore.entry'
     _description = "会计分录"
+    voucher_id = fields.Integer(related="voucher.id")
     voucher = fields.Many2one('accountcore.voucher',
                               string='所属凭证',
                               index=True,
@@ -1152,6 +1156,14 @@ class Enty(models.Model):
     org = fields.Many2one(related="voucher.org",
                           store=True,
                           string="核算机构")
+    v_voucherdate = fields.Date(related="voucher.voucherdate",
+                              store=True,
+                              string="记账日期",
+                              index=True)
+    v_real_date = fields.Date(related="voucher.real_date",
+                              store=True,
+                              string="业务日期",
+                              index=True)
     v_year = fields.Integer(related="voucher.year",
                             store=True,
                             string="年",
@@ -1169,7 +1181,7 @@ class Enty(models.Model):
                               index=True,
                               ondelete='restrict')
     items = fields.Many2many('accountcore.item',
-                             string='核算项目',
+                             string='核算统计项目',
                              index=True,
                              ondelete='restrict')
     # Monetory类型字段必须有
@@ -1188,7 +1200,7 @@ class Enty(models.Model):
                                index=True,
                                ondelete='restrict')
     # 必录的核算项目
-    account_item = fields.Many2one(string='*核算项目',
+    account_item = fields.Many2one('accountcore.item',string='*核算项目',
                                    compute="_getAccountItem",
                                    store=True,
                                    index=True)
@@ -1263,6 +1275,17 @@ class Enty(models.Model):
         return self.getItemByitemClassId(itemClass.id)
 
 
+    def show_voucher(self):
+        '''分录列表关联查看凭证'''
+        return {
+            'name':"",
+            'type': 'ir.actions.act_window',
+            'res_model': 'accountcore.voucher',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': self.voucher_id,
+            'target': 'new',
+        }
 # 凭证编号策略
 class VoucherNumberTastics(models.Model):
     '''凭证编号的生成策略,一张凭证在不同的策略下有不同的凭证编号,自动生成凭证编号时需要指定一个策略'''

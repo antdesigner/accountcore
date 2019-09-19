@@ -62,7 +62,7 @@
     table-layout: fixed;
 }
 
-.oe_ac_explain .FieldChar_voucher_explain{
+.oe_ac_explain .FieldChar_voucher_explain {
     /* 凭证说明 */
     width: 250px;
     overflow: auto;
@@ -110,7 +110,13 @@
 }
 
 /* 会计凭证界面-结束 */
-[name='fast_period'] button{
-  background-color:white;
-  border: 1px solid grey;
+[name='fast_period'] button {
+    background-color: white;
+    border: 1px solid grey;
+}
+
+/* 无边框 ,凭证打印等*/
+.ac-no-border {
+    border-width: 0px !important;
+    border-color: white !important;
 }

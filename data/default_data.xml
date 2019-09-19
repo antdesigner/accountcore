@@ -4,10 +4,13 @@
     <record id='base.CNY' model="res.currency">
     <field name="active">1</field>
     </record>
+        <!-- 全局标签类别-开始 -->
+        <record id='glob_tag_class_1' model='accountcore.glob_tag_class'><field name='name' >测试标签</field></record>
+        <record id='glob_tag_class_2' model='accountcore.glob_tag_class'><field name='name' >演示数据</field></record>
+        <!-- 全局标签类别-结束 -->
         <!-- 全局标签-开始 -->
-        <record id='glob_tag_1' model='accountcore.glob_tag'><field name='name' >glob_tag_1</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field></record>
-        <record id='glob_tag_2' model='accountcore.glob_tag'><field name='name' >glob_tag_2</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field></record>
-        <record id='glob_tag_3' model='accountcore.glob_tag'><field name='name' >glob_tag_3</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field></record>
+      <record id='glob_tag_1' model='accountcore.glob_tag'><field name='name' >glob_tag_1</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field><field name='glob_tag_class' eval='glob_tag_class_2' /></record>
+      <record id='glob_tag_2' model='accountcore.glob_tag'><field name='name' >演示</field><field name='application' >标记演示数据，卸载演示模块时作为删除依据</field><field name='summary' >用于标记演示数据</field><field name='glob_tag_class' eval='glob_tag_class_1' /></record>
         <!-- 全局标签-结束 -->
         <!-- 机构 -->
         <record id="org_1" model="accountcore.org">
@@ -53,7 +56,7 @@
         </record>
         <record id="voucher_number_tastics_1" model="accountcore.voucher_number_tastics">
             <field name="number">1</field>
-            <field name="name">内账</field>
+            <field name="name">记</field>
         </record>
         <!-- 核算项目类别开始 -->
         <record id="item_class_1" model="accountcore.itemclass">
