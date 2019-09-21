@@ -19,6 +19,10 @@ access_special_accounts_users_accounters,accountcore.special_accounts,model_acco
 access_help_class_users_accounters,accountcore.help_class,model_accountcore_help_class,,1,1,1,1
 access_helps_users_accounters,accountcore.helps,model_accountcore_helps,,1,1,1,1
 access_glob_tag_class_users_accounters,accountcore.glob_tag_class,model_accountcore_glob_tag_class,,1,1,1,1
+access_receiver_users_accounters,accountcore.receiver,model_accountcore_receiver,,1,1,1,1
+access_report_type_users_accounters,accountcore.report_type,model_accountcore_report_type,,1,1,1,1
+access_storage_report_users_accounters,accountcore.storage_report,model_accountcore_storage_report,,1,1,1,1
+access_report_model_users_accounters,accountcore.report_model,model_accountcore_report_model,,1,1,1,1
 
 
 

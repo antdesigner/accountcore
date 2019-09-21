@@ -20,6 +20,8 @@
         'report/voucher_print_templates.xml',
         'report/account_balance_report_template.xml',
         'report/account_subsidiary_book_template.xml',
+        'views/reports.xml',
+        'views/autoNumber.xml',
         'views/menu.xml',
         'data/default_data.xml',
         'data/help_data.xml',

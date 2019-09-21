@@ -30,34 +30,50 @@
             <field name='name'>某方案专用明细科目</field>
         </record>
         <!-- 账簿类别 -->
-        <record id="rulebook_999" model="accountcore.rulebook">
-            <field name="number">999</field>
-            <field name="name">自动结转损益</field>
+        <record id="rulebook_1" model="accountcore.rulebook">
+            <field name="number">1</field>
+            <field name="name">结转损益</field>
         </record>
-           <record id="rulebook_998" model="accountcore.rulebook">
-            <field name="number">998</field>
-            <field name="name">自动转账</field>
+           <record id="rulebook_2" model="accountcore.rulebook">
+            <field name="number">2</field>
+            <field name="name">批量转账</field>
         </record>
-           <record id="rulebook_997" model="accountcore.rulebook">
-            <field name="number">997</field>
-            <field name="name">自动计提折旧</field>
+           <record id="rulebook_3" model="accountcore.rulebook">
+            <field name="number">3</field>
+            <field name="name">计提折旧</field>
         </record>
-           <record id="rulebook_996" model="accountcore.rulebook">
-            <field name="number">996</field>
-            <field name="name">自动摊销</field>
+           <record id="rulebook_4" model="accountcore.rulebook">
+            <field name="number">4</field>
+            <field name="name">无形摊销</field>
         </record>
-           <record id="rulebook_995" model="accountcore.rulebook">
-            <field name="number">995</field>
-            <field name="name">自动计提坏账</field>
+           <record id="rulebook_5" model="accountcore.rulebook">
+            <field name="number">5</field>
+            <field name="name">摊销</field>
         </record>
-           <record id="rulebook_994" model="accountcore.rulebook">
-            <field name="number">994</field>
-            <field name="name">自动计息</field>
+           <record id="rulebook_6" model="accountcore.rulebook">
+            <field name="number">6</field>
+            <field name="name">计息</field>
+        </record>
+         <record id="rulebook_7" model="accountcore.rulebook">
+            <field name="number">7</field>
+            <field name="name">计提坏账</field>
         </record>
         <record id="voucher_number_tastics_1" model="accountcore.voucher_number_tastics">
             <field name="number">1</field>
             <field name="name">记</field>
         </record>
+        <!-- 报表类型 -开始-->
+        <record id='report_type_1' model='accountcore.report_type'><field name='name' >资产负债表类</field></record>
+        <record id='report_type_2' model='accountcore.report_type'><field name='name' >利润表类</field></record>
+        <record id='report_type_3' model='accountcore.report_type'><field name='name' >现金流量表类</field></record>
+        <!-- 报表类型-结束 -->
+        <!-- 接收者-开始 -->
+        <record id='receiver_1' model='accountcore.receiver'><field name='name' >税务</field></record>
+        <record id='receiver_2' model='accountcore.receiver'><field name='name' >工商</field></record>
+        <record id='receiver_3' model='accountcore.receiver'><field name='name' >统计局</field></record>
+        <record id='receiver_4' model='accountcore.receiver'><field name='name' >海关</field></record>
+        <record id='receiver_5' model='accountcore.receiver'><field name='name' >人民银行</field></record>
+        <!-- 接收者-结束 -->
         <!-- 核算项目类别开始 -->
         <record id="item_class_1" model="accountcore.itemclass">
             <field name="number">1</field>
