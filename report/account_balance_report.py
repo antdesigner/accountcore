@@ -35,6 +35,7 @@ class AccountBalanceReport(models.AbstractModel):
         sum_orgs = form['sum_orgs']
         account_ids = form['account']
         org_id = form['orgs']
+        data['orgs_count'] = len(org_id)
         orgs = self.env['accountcore.org'].sudo().browse(org_id)
         # 多机构合并显示名称
         data['sum_orgs_name'] = "+".join(orgs.mapped('name'))

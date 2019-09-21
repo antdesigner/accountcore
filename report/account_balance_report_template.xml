@@ -81,6 +81,7 @@ page-break-inside: avoid !important;}
                 <t t-set="start" t-value="data['form']['startDate']">
                 </t>
                 <t t-set="sum_orgs" t-value="data['form']['sum_orgs']"></t>
+                <t t-set="orgs_count" t-value="data['orgs_count']"></t>
                 <t t-set="end" t-value="data['form']['endDate']">
                 </t>
                 <div class="row">
@@ -97,13 +98,13 @@ page-break-inside: avoid !important;}
                         <span t-if="end=='9999-12-31'">9999年12月</span>
                     </h6>
                 </div> 
-                <div class="row text-left small" t-if="sum_orgs"><span>合并机构：</span><span t-esc="data['sum_orgs_name']"></span></div>            
+                <div class="row text-left small" t-if="sum_orgs or orgs_count ==1"><span>合并机构：</span><span t-esc="data['sum_orgs_name']"></span></div>            
                 <div class="row">
                     <div class="">
                         <table class='table  table-bordered table-sm table-striped table-hover'>
                             <thead>
                                 <tr>
-                                    <th t-if='not sum_orgs' rowspan='2' colspan="3">机构名称</th>
+                                    <th t-if='not (sum_orgs or orgs_count==1)' rowspan='2' colspan="3">机构名称</th>
                                      <th rowspan='2' colspan="6">科目和项目</th> 
                                     <th colspan="4">期初余额</th>
                                     <th colspan="4">发生金额</th>
@@ -121,7 +122,7 @@ page-break-inside: avoid !important;}
                             <tbody class='text-left'>
                                 <t t-foreach="docs" t-as="account">
                                     <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'], 'account_father_id':account['account_father_id']}">
-                                        <td t-if='not sum_orgs' class='org_name' colspan="3" data-toggle="tooltip" t-att-title="account['org_name']">
+                                        <td t-if='not (sum_orgs or orgs_count==1)' class='org_name' colspan="3" data-toggle="tooltip" t-att-title="account['org_name']">
                                             <span t-esc="account['org_name']"></span>
                                         </td>
                                         <td class='account_name' colspan="6">
