@@ -110,6 +110,7 @@
                 <tree>
                     <field name="guid" />
                     <field name='name' />
+                    <field name="version" />
                     <field name="summary" />
                     <field name="explain" />
                     <field name='glob_tag' widget='many2many_tags' />
@@ -128,6 +129,7 @@
                         <group>
                             <field name="guid" />
                             <field name='name' />
+                            <field name="version" />
                             <field name="summary" />
                             <field name="explain" />
                             <field name='glob_tag' widget='many2many_tags' />
