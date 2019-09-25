@@ -838,3 +838,29 @@ odoo.define('accountcore.period_tool', function (require) {
         'Period': Period,
     };
 });
+odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites'], function (require) {
+    "use strict";
+    var AbstractField = require('web.AbstractField');
+    var jexcel = require('accountcore.jexcel');
+    var ac_jexcel = AbstractField.extend({
+        events: _.extend({}, AbstractField.prototype.events, {}),
+        supportedFieldTypes: ['text'],
+        template: 'ac_jexcel',
+        _render: function () {
+            this.ddom = document.createElement('div');
+            this.$el.append(this.ddom);
+            var options = {
+                data: [
+                    []
+                ],
+                minDimensions: [10, 10],
+            };
+            jexcel(this.ddom, options);
+        },
+    });
+    var fieldRegistry = require('web.field_registry');
+    fieldRegistry.add('ac_jexcel', ac_jexcel);
+    return {
+        ac_jexcel: ac_jexcel,
+    };
+});

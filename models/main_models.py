@@ -288,6 +288,7 @@ class Account(models.Model, Glob_tag_Model):
                                   ('-1', '贷')],
                                  string='余额方向',
                                  required=True)
+    is_show = fields.Boolean(string='凭证中显示',default=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many('accountcore.itemclass',
                                    string='科目要统计的核算项目类别',
@@ -306,7 +307,6 @@ class Account(models.Model, Glob_tag_Model):
                                  'fatherAccountId',
                                  string='直接下级科目',
                                  ondelete='restrict')
-    # is_end = fields.Boolean(string='是否最明细级科目')
     currentChildNumber = fields.Integer(default=10,
                                         string='新建下级科目待用编号')
     explain = fields.Html(string='科目说明')
@@ -524,6 +524,16 @@ class Account(models.Model, Glob_tag_Model):
         items = rs_org.mapped('items')
         return items
 
+
+    @api.multi
+    def showInVoucher(self):
+        '''在凭证中显示'''
+        self.write({'is_show':True})
+
+    @api.multi
+    def cancelShowInVoucher(self):
+        '''取消凭证中显示'''
+        self.write({'is_show':False})
 
 # 特殊的会计科目
 class SpecialAccounts(models.Model):

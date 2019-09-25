@@ -46,8 +46,9 @@
         <menuitem name='报表' id='accountcore_reports_menu' parent='accountcore_menu' sequence="75" />
         <menuitem name='接收者' id='accountcore_receiver_menu' parent='accountcore_reports_menu' action='accountcore_receivers_actions_window' sequence="" />
         <menuitem name='报表类型' id='accountcore_report_type_menu' parent='accountcore_reports_menu' action='accountcore_report_type_actions_window' sequence="" />
-        <menuitem name='已归档报表' id='accountcore_storage_report_menu' parent='accountcore_reports_menu' action='accountcore_storage_report_actions_window' sequence="" />
+        <menuitem name='★已归档报表' id='accountcore_storage_report_menu' parent='accountcore_reports_menu' action='accountcore_storage_report_actions_window' sequence="" />
         <menuitem name='报表模板' id='accountcore_report_model_menu' parent='accountcore_reports_menu' action='accountcore_report_model_actions_window' sequence="" />
-
+        <menuitem name='★生成新报表' id='accountcore_get_report_menu' parent='accountcore_reports_menu' action='accountcore_get_report_actions_window' sequence="" />
+        
     </data>
 </odoo>

@@ -29,9 +29,12 @@
     ],
     'qweb': [
         'views/btn_templates.xml',
+        'static/xml/jexcel.xml',
         'static/xml/base_extend.xml',
     ],
     'css': [
         'static/css/accountcore.css',
+        'static/css/jexcel.css',
+        'static/css/jsuites.css',
     ],
 }

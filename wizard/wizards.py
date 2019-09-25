@@ -44,6 +44,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
                                   ('-1', '贷')],
                                  string='余额方向',
                                  required=True)
+    is_show = fields.Boolean(string='凭证中显示', default=True)    
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many('accountcore.itemclass',
                                    string='包含的核算项目类别',
@@ -667,3 +668,25 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
         return rl
 
         # 向导部分-结束
+
+
+# 报表生成向导
+class GetReport(models.TransientModel):
+    "报表生成向导"
+    _name = 'accountcore.get_report'
+    report_model = fields.Many2one('accountcore.report_model',
+                                   string='报表模板',
+                                   required=True)
+    guid = fields.Char(related='report_model.guid')
+    summary = fields.Text(related='report_model.summary')
+    startDate = fields.Date(string='开始月份')
+    endDate = fields.Date(string='结束月份')
+    fast_period = fields.Date(string="选取期间", store=False)
+    orgs = fields.Many2many('accountcore.org',
+                            string='机构范围',
+                            default=lambda s: s.env.user.currentOrg,
+                            required=True)
+
+    def do(self):
+        '''根据模板生成报表'''
+        pass

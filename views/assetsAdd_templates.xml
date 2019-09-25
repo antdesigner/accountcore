@@ -12,11 +12,32 @@
                 <link rel='stylesheet' type='text/css' href="/accountcore/static/css/accountcore.css" />
             </xpath>
         </template>
+        <!-- jexcel插件-开始-->
+        <template id="accountcore_jsuites_js" inherit_id="web.assets_backend" name="accountcore jsuites">
+            <xpath expr="script[last()]" position="after">
+                <script type="text/javascript" src="/accountcore/static/js/jsuites.js"></script>
+            </xpath>
+        </template>
+        <template id="accountcore_jexcel_js" inherit_id="web.assets_backend" name="accountcore jexcel">
+            <xpath expr="script[last()]" position="after">
+                <script type="text/javascript" src="/accountcore/static/js/jexcel.js"></script>
+            </xpath>
+        </template>
+        <template id="accountcore_jexcel_css" inherit_id="web.assets_backend" name="accountcore jexcel css">
+            <xpath expr="link[last()]" position="after">
+                <link rel='stylesheet' type='text/css' href="/accountcore/static/css/jexcel.css" />
+            </xpath>
+        </template>
+        <template id="accountcore_jsuites_css" inherit_id="web.assets_backend" name="accountcore jsuites css">
+            <xpath expr="link[last()]" position="after">
+                <link rel='stylesheet' type='text/css' href="/accountcore/static/css/jsuites.css" />
+            </xpath>
+        </template>
+        <!-- excel插件-结束-->
         <template id="accountcore_assets_js" inherit_id="web.assets_backend" name="accountcore jsassets">
             <xpath expr="script[last()]" position="after">
                 <script type="text/javascript" src="/accountcore/static/js/accountcore.js"></script>
             </xpath>
         </template>
-
     </data>
 </odoo>
