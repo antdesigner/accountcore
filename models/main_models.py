@@ -288,7 +288,7 @@ class Account(models.Model, Glob_tag_Model):
                                   ('-1', '贷')],
                                  string='余额方向',
                                  required=True)
-    is_show = fields.Boolean(string='凭证中显示',default=True)
+    is_show = fields.Boolean(string='凭证中可选', default=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many('accountcore.itemclass',
                                    string='科目要统计的核算项目类别',
@@ -524,18 +524,19 @@ class Account(models.Model, Glob_tag_Model):
         items = rs_org.mapped('items')
         return items
 
-
     @api.multi
     def showInVoucher(self):
         '''在凭证中显示'''
-        self.write({'is_show':True})
+        self.write({'is_show': True})
 
     @api.multi
     def cancelShowInVoucher(self):
         '''取消凭证中显示'''
-        self.write({'is_show':False})
+        self.write({'is_show': False})
 
 # 特殊的会计科目
+
+
 class SpecialAccounts(models.Model):
     '''特殊的会计科目'''
     _name = "accountcore.special_accounts"
@@ -772,15 +773,18 @@ class Voucher(models.Model):
             v.month = v.voucherdate.month
 
     @api.multi
-    def reviewing(self, ids):
+    def reviewing(self):
         '''审核凭证'''
-        self.write({'state': 'reviewed', 'reviewer': self.env.uid})
-        return False
+        vouchers = self.filtered(lambda v: not v.reviewer)
+        for v in vouchers:
+            v.write({'state': 'reviewed', 'reviewer': self.env.uid})
 
     @api.multi
-    def cancelReview(self, ids):
+    def cancelReview(self):
         '''取消凭证审核'''
-        self.write({'state': 'creating', 'reviewer': None})
+        vouchers = self.filtered(lambda v: v.reviewer.id == self.env.uid)
+        for v in vouchers:
+            v.write({'state': 'creating', 'reviewer': None})
 
     @api.model
     def create(self, values):
@@ -1951,5 +1955,3 @@ class AccountBalanceMark(object):
             or (r.year == self.year
                 and r.month > self.month)))).sorted(key=lambda a: (a.year, a.month, not a.isbegining))
         return next_balanceRecords
-
-

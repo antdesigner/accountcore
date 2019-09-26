@@ -441,10 +441,10 @@
           <field name='voucherdate' />
           <field name='number' class='voucherNumber' />
           <field name='uniqueNumber' />
+          <field name='reviewer' />
           <field name='roolbook_html' />
           <field name='entrysHtml' />
           <field name='createUser' />
-          <field name='reviewer' />
           <field name='appendixCount' />
           <field name='soucre' />
           <field name='state' invisible='1'></field>
@@ -1320,6 +1320,26 @@
       <field name="state">code</field>
       <field name="code">
     records.cancelShowInVoucher()
+      </field>
+    </record>
+    <!-- 服务器动作-批量审核凭证-->
+    <record model="ir.actions.server" id="accountcore_voucher_review_actions_server">
+      <field name="name">批量审核凭证</field>
+      <field name="model_id" ref="model_accountcore_voucher" />
+      <field name="binding_model_id" ref="model_accountcore_voucher" />
+      <field name="state">code</field>
+      <field name="code">
+    records.reviewing()
+      </field>
+    </record>
+    <!-- 服务器动作-批量取消审核凭证-->
+    <record model="ir.actions.server" id="accountcore_voucher_cancelreview_actions_server">
+      <field name="name">批量取消审核</field>
+      <field name="model_id" ref="model_accountcore_voucher" />
+      <field name="binding_model_id" ref="model_accountcore_voucher" />
+      <field name="state">code</field>
+      <field name="code">
+    records.cancelReview()
       </field>
     </record>
 
