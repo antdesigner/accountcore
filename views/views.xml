@@ -1062,8 +1062,10 @@
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
           <filter string="非一级科目" name="leve_2" domain="[('fatherAccountId','!=',False)]"></filter>
           <filter string="分配现金流量的科目" name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
+        
           <filter name="group_by_accountClassClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
           <filter name="group_by_arch" string="按科目体系分组" context = "{'group_by': 'accountsArch'}" />
+          <filter name="group_by_id_show" string="按在凭证中是否可选分组" context = "{'group_by': 'is_show'}" />
         </search>
       </field>
     </record>
@@ -1324,7 +1326,7 @@
     </record>
     <!-- 服务器动作-批量审核凭证-->
     <record model="ir.actions.server" id="accountcore_voucher_review_actions_server">
-      <field name="name">批量审核凭证</field>
+      <field name="name">审核凭证</field>
       <field name="model_id" ref="model_accountcore_voucher" />
       <field name="binding_model_id" ref="model_accountcore_voucher" />
       <field name="state">code</field>
@@ -1334,7 +1336,7 @@
     </record>
     <!-- 服务器动作-批量取消审核凭证-->
     <record model="ir.actions.server" id="accountcore_voucher_cancelreview_actions_server">
-      <field name="name">批量取消审核</field>
+      <field name="name">取消审核</field>
       <field name="model_id" ref="model_accountcore_voucher" />
       <field name="binding_model_id" ref="model_accountcore_voucher" />
       <field name="state">code</field>

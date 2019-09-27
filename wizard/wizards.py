@@ -82,6 +82,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
                       'accountClass': fatherAccount.accountClass.id,
                       'cashFlowControl': values['cashFlowControl'],
                       'name': fatherAccount.name+'---'+values['name'],
+                      'direction': fatherAccount.direction,
                       'number': fatherAccount.number + '.'
                       + str(fatherAccount.currentChildNumber)}
         fatherAccount.currentChildNumber = fatherAccount.currentChildNumber+1
