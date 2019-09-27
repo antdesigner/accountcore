@@ -369,7 +369,7 @@ class currencyDown_sunyi(models.TransientModel):
         default=lambda s: s.env.user.currentOrg, required=True)
 
     # def soucre(self):
-    #     return self.env.ref('rulebook_999')
+    #     return self.env.ref('rulebook_1')
 
     @api.multi
     def do(self, *args):
@@ -505,7 +505,7 @@ class currencyDown_sunyi(models.TransientModel):
             'voucherdate': voucer_period.endDate,
             'org': org.id,
             'soucre': self.env.ref('accountcore.source_2').id,
-            'ruleBook': [(6, 0, [self.env.ref('accountcore.rulebook_999').id])],
+            'ruleBook': [(6, 0, [self.env.ref('accountcore.rulebook_1').id])],
             'entrys': [(6, 0, entrys.ids)],
             'createUser': self.env.uid,
         })

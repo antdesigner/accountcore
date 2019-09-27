@@ -120,3 +120,7 @@
     border-width: 0px !important;
     border-color: white !important;
 }
+/* jexel 在弹出窗口下面*/
+.jexcel > thead > tr > td{
+    z-index:80 !important;
+}
