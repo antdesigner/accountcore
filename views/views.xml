@@ -157,6 +157,7 @@
         <tree default_order="number">
           <field name='number'></field>
           <field name='name'></field>
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -172,6 +173,7 @@
             <group>
               <field name="number" />
               <field name="name" />
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -221,6 +223,7 @@
           <field name='itemClassesHtml'></field>
           <field name='direction' />
           <field name="is_show" />
+          <field name="is_last"/>
           <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='glob_tag' widget='many2many_tags' />
           <field name='fatherAccountId' invisible='1'></field>
@@ -460,6 +463,7 @@
           <field name='name' />
           <field name='children' />
           <field name='purpos' />
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -482,6 +486,7 @@
             </group>
             <group>
               <field name='items' />
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -853,6 +858,7 @@
         <tree>
           <field name='number' required='1' />
           <field name='name' required='1' />
+          <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -868,6 +874,7 @@
             <group>
               <field name="number" />
               <field name="name" />
+              <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -1061,11 +1068,13 @@
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
           <filter string="非一级科目" name="leve_2" domain="[('fatherAccountId','!=',False)]"></filter>
+          <filter string="末级科目" name="is_last" domain="[('childs_ids','=',False)]"></filter>
+          <filter string="非末级科目" name="is_not_last" domain="[('childs_ids','!=',False)]"></filter>
           <filter string="分配现金流量的科目" name="chash_flow_y" domain="[('cashFlowControl','=',True)]"></filter>
-        
           <filter name="group_by_accountClassClass" string="按科目类别分组" context = "{'group_by': 'accountClass'}" />
           <filter name="group_by_arch" string="按科目体系分组" context = "{'group_by': 'accountsArch'}" />
-          <filter name="group_by_id_show" string="按在凭证中是否可选分组" context = "{'group_by': 'is_show'}" />
+          <filter name="group_by_is_last" string="按是否末级科目分组" context = "{'group_by': 'is_last'}" />
+          <filter name="group_by_is_show" string="按在凭证中是否可选分组" context = "{'group_by': 'is_show'}" />
         </search>
       </field>
     </record>

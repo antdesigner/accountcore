@@ -18,6 +18,7 @@ sys.path.append('.\\.\\server')
 class SubsidiaryBook(models.AbstractModel):
     '''查询明细账'''
     _name = 'report.accountcore.subsidiary_book_report'
+    _description = '明细账查询报表'
     @api.model
     def _get_report_values(self, docids, data=None):
         form = data['form']

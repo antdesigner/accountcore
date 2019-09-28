@@ -19,6 +19,7 @@ VOCHER_LOCK = multiprocessing.Lock()
 class Glob_tag_Model(models.AbstractModel):
     '''全局标签模型,用于多重继承方式添加到模型'''
     _name = "accountcore.glob_tag_model"
+    _description = '全局标签模型'
     glob_tag = fields.Many2many('accountcore.glob_tag',
                                 string='全局标签',
                                 index=True)
@@ -236,7 +237,8 @@ class Item(models.Model, Glob_tag_Model):
 
 
 # 凭证标签
-class RuleBook(models.Model):
+class RuleBook(models.Model, Glob_tag_Model):
+    '''特殊的会计科目'''
     '''凭证标签'''
     _name = 'accountcore.rulebook'
     _description = '凭证标签'
@@ -289,6 +291,7 @@ class Account(models.Model, Glob_tag_Model):
                                  string='余额方向',
                                  required=True)
     is_show = fields.Boolean(string='凭证中可选', default=True)
+    is_last = fields.Boolean(string='末级科目', compute="_is_last")
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many('accountcore.itemclass',
                                    string='科目要统计的核算项目类别',
@@ -344,6 +347,16 @@ class Account(models.Model, Glob_tag_Model):
         if self.accountItemClass and self.accountItemClass.id not in item_ids:
             raise exceptions.ValidationError(
                 '['+self.accountItemClass.name+"]已经作为明细科目的类别,不能删除.如果要删除,请你在'作为明细的类别'中先取消它")
+
+    @api.multi
+    @api.onchange('childs_ids')
+    def _is_last(self):
+        '''是否末级科目'''
+        for a in self:
+            if a.childs_ids:
+                a.is_last = False
+            else:
+                a.is_last = True
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=0):
@@ -537,7 +550,7 @@ class Account(models.Model, Glob_tag_Model):
 # 特殊的会计科目
 
 
-class SpecialAccounts(models.Model):
+class SpecialAccounts(models.Model, Glob_tag_Model):
     '''特殊的会计科目'''
     _name = "accountcore.special_accounts"
     _description = '特殊的会计科目'
@@ -1309,7 +1322,7 @@ class Enty(models.Model):
 # 凭证编号策略
 
 
-class VoucherNumberTastics(models.Model):
+class VoucherNumberTastics(models.Model, Glob_tag_Model):
     '''凭证编号的生成策略,一张凭证在不同的策略下有不同的凭证编号,自动生成凭证编号时需要指定一个策略'''
     _name = 'accountcore.voucher_number_tastics'
     _description = '凭证编号生成策略'

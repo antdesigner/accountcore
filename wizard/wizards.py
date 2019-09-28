@@ -44,7 +44,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
                                   ('-1', '贷')],
                                  string='余额方向',
                                  required=True)
-    is_show = fields.Boolean(string='凭证中显示', default=True)    
+    is_show = fields.Boolean(string='凭证中显示', default=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many('accountcore.itemclass',
                                    string='包含的核算项目类别',
@@ -388,9 +388,19 @@ class currencyDown_sunyi(models.TransientModel):
         # 本年利润科目
         self.ben_nian_li_run_account = self.env['accountcore.special_accounts'].sudo().search([
             ('name', '=', '本年利润科目')]).accounts
+        if self.ben_nian_li_run_account:
+            self.ben_nian_li_run_account_id = self.ben_nian_li_run_account.id
+        else:
+            self.ben_nian_li_run_account_id = self.env.ref(
+                'special_accounts_1')
         # 损益调整科目
         self.sun_yi_tiao_zhen_account = self.env['accountcore.special_accounts'].sudo().search([
             ('name', '=', '以前年度损益调整科目')]).accounts
+        if self.sun_yi_tiao_zhen_account:
+            self.sun_yi_tiao_zhen_account_id = self.sun_yi_tiao_zhen_account.id
+        else:
+            self.sun_yi_tiao_zhen_account_id = self.env.ref(
+                'special_accounts_3')
         # 依次处理选种机构
         # 生成的凭证列表
         voucher_ids = []
@@ -426,7 +436,8 @@ class currencyDown_sunyi(models.TransientModel):
         # 属于损益类别的科目,但不包括"以前年度损益调整"
         accounts = self.env['accountcore.account'].sudo().search([('accountClass.name', '=', '损益类'),
                                                                   ('id', '!=',
-                                                                   self.sun_yi_tiao_zhen_account.id),
+                                                                   #    self.sun_yi_tiao_zhen_account.id),
+                                                                   self.sun_yi_tiao_zhen_account_id),
                                                                   '|', ('org',
                                                                         '=', org.id),
                                                                   ('org', '=', False)])
@@ -489,13 +500,15 @@ class currencyDown_sunyi(models.TransientModel):
         # 结转到贷方
         if sum_d != 0:
             entrys_value.append({"explain": '结转损益',
-                                 "account": self.ben_nian_li_run_account.id,
+                                 #  "account": self.ben_nian_li_run_account.id,
+                                 "account": self.ben_nian_li_run_account_id,
                                  "damount": sum_d
                                  })
         # 结转到借方
         if sum_c != 0:
             entrys_value.append({"explain": '结转损益',
-                                 "account": self.ben_nian_li_run_account.id,
+                                 #  "account": self.ben_nian_li_run_account.id,
+                                 "account": self.ben_nian_li_run_account_id,
                                  "camount": sum_c
                                  })
         if len(entrys_value) < 2:
