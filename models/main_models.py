@@ -1435,6 +1435,16 @@ class AccountsBalance(models.Model):
                                   string="Currency",
                                   help='Utility field to express amount currency')
 
+    @api.onchange('beginingDamount')
+    def _damountChange(self):
+        if self.beginingDamount != 0:
+            self.beginingCamount = 0
+
+    @api.onchange('beginingCamount')
+    def _CamountChange(self):
+        if self.beginingCamount != 0:
+            self.beginingDamount = 0
+
     @api.onchange('account')
     # 改变科目时删除核算项目关联
     def _deleteItemsOnchange(self):
