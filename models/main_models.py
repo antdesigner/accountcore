@@ -322,6 +322,26 @@ class Account(models.Model, Glob_tag_Model):
                         ('accountcore_account_name_unique', 'unique(name)',
                          '科目名称重复了!')]
 
+    @api.model
+    def create(self, values):
+        '''新增科目'''
+        self._check_name(values['name'])
+        rl = super(Account, self).create(values)
+        return rl
+
+    @api.multi
+    def write(self, values):
+        '''修改科目'''
+        if 'name' in values:
+            self._check_name(values['name'])
+        rl = super(Account, self).write(values)
+        return rl
+
+    def _check_name(self, name):
+        '''检查科目名称'''
+        if ' ' in name:
+            raise exceptions.ValidationError("科目名称中不能含有空格")
+
     @api.onchange('accountItemClass')
     def _checkAccountItem(self):
         '''改变作为明细科目的核算项目类别'''

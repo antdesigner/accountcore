@@ -73,6 +73,11 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
 
     @api.model
     def create(self, values):
+        if 'name' in values:
+            if '-' in values['name']:
+                raise exceptions.ValidationError("科目名称中不能含有'-'字符")
+            if ' ' in values['name']:
+                raise exceptions.ValidationError("科目名称中不能含有空格")
         fatherAccountId = self.env.context.get('active_id')
         accountTable = self.env['accountcore.account'].sudo()
         fatherAccount = accountTable.search(
