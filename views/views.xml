@@ -307,7 +307,7 @@
           <field name='isbegining' invisible='1'></field>
           <field name='account_number' invisible='1'></field>
           <field name="account_class_id" string="类别" />
-          <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+          <field name='account' domain="[('is_show','=',True)]"  options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='accountItemClass' string="项目类别" class="oe_grey" />
           <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}" />
           <field name="beginingDamount" string='月初余额(借方)' sum="合计" />
@@ -928,7 +928,7 @@
               <field name="year" invisible='1'></field>
               <field name="month" invisible='1'></field>
               <field name="isbegining" invisible='1'></field>
-              <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+              <field name="account" domain="[('is_show','=',True)]"  options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
               <field name='accountItemClass' string="核算项目类别" class="oe_grey" />
               <field name="items" domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}"></field>
               <field name="beginingDamount" string='月初余额(借方)'></field>

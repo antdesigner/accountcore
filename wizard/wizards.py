@@ -95,7 +95,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
         rl = super(CreateChildAccountWizard, self).create(values)
         a = accountTable.create(values)
         # 添加到上级科目的直接下级
-        fatherAccount.write({'childs_ids': [(4, a.id)]})
+        fatherAccount.write({'childs_ids': [(4, a.id)], 'is_show': False})
         return rl
 
 
@@ -318,6 +318,7 @@ class GetAccountsBalance(models.TransientModel):
 class GetSubsidiaryBook(models.TransientModel):
     "科目明细账查询向导"
     _name = 'accountcore.get_subsidiary_book'
+    _description = '科目明细账查询向导'
     startDate = fields.Date(string='开始月份')
     endDate = fields.Date(string='结束月份')
     fast_period = fields.Date(string="选取期间", store=False)
@@ -365,6 +366,7 @@ class GetSubsidiaryBook(models.TransientModel):
 class currencyDown_sunyi(models.TransientModel):
     "自动结转损益向导"
     _name = 'accountcore.currency_down_sunyi'
+    _description = '自动结转损益向导'
     startDate = fields.Date(string='开始月份', required=True)
     endDate = fields.Date(string='结束月份', required=True)
     fast_period = fields.Date(string="选取期间", store=False)
@@ -534,6 +536,7 @@ class currencyDown_sunyi(models.TransientModel):
 class BeginBalanceCheck(models.TransientModel):
     '''启用期初试算平衡向导'''
     _name = 'accountcore.begin_balance_check'
+    _description = '启用期初试算平衡向导'
     org_ids = fields.Many2many('accountcore.org',
                                string='待检查机构',
                                required=True,
@@ -693,6 +696,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
 class GetReport(models.TransientModel):
     "报表生成向导"
     _name = 'accountcore.get_report'
+    _description='报表生成向导'
     report_model = fields.Many2one('accountcore.report_model',
                                    string='报表模板',
                                    required=True)
