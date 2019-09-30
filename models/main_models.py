@@ -1434,6 +1434,21 @@ class AccountsBalance(models.Model):
                                   readonly=True,
                                   string="Currency",
                                   help='Utility field to express amount currency')
+    begin_year_amount = fields.Monetary(string="年初余额", compute='_getYearBeginAmount')
+    
+    @api.multi
+    @api.onchange('beginingDamount', 'beginingCamount', 'beginCumulativeDamount', 'beginCumulativeCamount')
+    def _getYearBeginAmount(self):
+        '''计算启用期的年初余额'''
+        for b in self:
+            begin_d = b.beginingDamount-b.beginCumulativeDamount
+            begin_c = b.beginingCamount-b.beginCumulativeCamount
+            if b.account.direction == '1':
+                b.begin_year_amount = begin_d-begin_c
+            else:
+                b.begin_year_amount = begin_d-begin_c
+
+
 
     @api.onchange('beginingDamount')
     def _damountChange(self):

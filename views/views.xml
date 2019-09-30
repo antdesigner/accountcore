@@ -223,7 +223,7 @@
           <field name='itemClassesHtml'></field>
           <field name='direction' />
           <field name="is_show" />
-          <field name="is_last"/>
+          <field name="is_last" />
           <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='glob_tag' widget='many2many_tags' />
           <field name='fatherAccountId' invisible='1'></field>
@@ -299,7 +299,7 @@
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree js_class='balanceListView' default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
+        <tree js_class='balanceListView' class='oe_accountcore_table_fix' default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>
@@ -316,7 +316,7 @@
           <field name="camount" string='月已发生额(贷方)' sum="合计" />
           <field name="beginCumulativeDamount" string='月初本年借方累计发生额' sum="合计" />
           <field name="beginCumulativeCamount" string='月初本年贷方累计发生额' sum="合计" />
-
+          <field name="begin_year_amount" readonly='1' string='年初余额' sum="合计" />
         </tree>
       </field>
     </record>
@@ -937,6 +937,7 @@
               <field name="camount" string='月已发生额(贷方)'></field>
               <field name="beginCumulativeDamount" string='月初本年借方累计发生额'></field>
               <field name="beginCumulativeCamount" string='月初本年贷方累计发生额'></field>
+              <field name="begin_year_amount" readonly='1' string='年初余额' />
             </group>
           </sheet>
         </form>
