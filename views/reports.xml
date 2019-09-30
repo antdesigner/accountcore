@@ -68,12 +68,12 @@
                 <tree>
                     <field name='number' />
                     <field name='name' />
+                    <field name="receivers" widget='many2many_tags' />
                     <field name="start_date" />
                     <field name="end_date" />
-                    <field name="orgs" />
-                    <field name="receivers" />
-                    <field name="summary" />
                     <field name="create_user" />
+                    <field name="orgs" widget='many2many_tags' />
+                    <field name="summary" />
                     <field name='glob_tag' widget='many2many_tags' />
                 </tree>
             </field>
@@ -90,17 +90,24 @@
                         <group>
                             <field name='number' />
                             <field name='name' />
+                            <field name="receivers" widget='many2many_tags' />
                             <field name="start_date" />
                             <field name="end_date" />
-                            <field name="orgs" />
-                            <field name="receivers" />
-                            <field name="summary" />
                             <field name="create_user" />
+                            <field name="orgs" widget='many2many_tags' />
+                            <field name="summary" />
                             <field name='glob_tag' widget='many2many_tags' />
                         </group>
                     </sheet>
                 </form>
             </field>
+        </record>
+        <!-- 窗体动作-打开报表模板生成报表向导 -->
+        <record model="ir.actions.act_window" id="accountcore_get_report_actions_window">
+            <field name="name">根据报表模板生成报表</field>
+            <field name="res_model">accountcore.get_report</field>
+            <field name='view_mode'>form</field>
+            <field name='target'>new</field>
         </record>
         <!-- list-报表模板-->
         <record model='ir.ui.view' id='accountcore_report_model_list'>
@@ -108,11 +115,12 @@
             <field name='model'>accountcore.report_model</field>
             <field name='arch' type='xml'>
                 <tree>
+                    <field name="id" invisible='1' />
+                    <button  type='action' class="btn-sm fa fa-caret-square-o-right oe_right" name='%(accountcore_get_report_actions_window)d' context="{'default_report_model':id}"></button>
                     <field name="guid" />
                     <field name='name' />
                     <field name="version" />
                     <field name="summary" />
-                    <field name="explain" />
                     <field name='glob_tag' widget='many2many_tags' />
                 </tree>
             </field>
@@ -131,6 +139,11 @@
                             <field name='name' />
                             <field name="version" />
                             <field name="summary" />
+                        </group>
+                        <center>
+                            <field name="data" widget='ac_jexcel' />
+                        </center>
+                        <group>
                             <field name="explain" />
                             <field name='glob_tag' widget='many2many_tags' />
                         </group>
@@ -138,7 +151,34 @@
                 </form>
             </field>
         </record>
-
+        <!--form-用报表模板生成报表向导-->
+        <record id="accountcore_get_report_action_window_form" model="ir.ui.view">
+            <field name='name'>报表模板生成报表</field>
+            <field name="model">accountcore.get_report</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+                            <field name="guid" />
+                            <field name="summary" />
+                        </group>
+                        <group>
+                            <field name='startDate' />
+                            <field name="endDate" />
+                            <field name="fast_period" widget="ac_fast_period" />
+                        </group>
+                        <group>
+                            <field name="orgs" widget="many2many_checkboxes_floatleft" />
+                        </group>
+                        <div id="spreadsheet"></div>
+                    </sheet>
+                    <footer>
+                        <button name="do" type="object" string="确定" class='btn-primary' />
+                    </footer>
+                </form>
+            </field>
+        </record>
         <!-- 窗体动作-打开接收者列表 -->
         <record model="ir.actions.act_window" id="accountcore_receivers_actions_window">
             <field name="name">接受者列表</field>
@@ -163,5 +203,6 @@
             <field name="res_model">accountcore.report_model</field>
             <field name='view_mode'>tree,form</field>
         </record>
+
     </data>
 </odoo>

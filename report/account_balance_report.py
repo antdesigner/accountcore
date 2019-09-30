@@ -16,6 +16,7 @@ sys.path.append('.\\.\\server')
 class AccountBalanceReport(models.AbstractModel):
     '''科目余额表'''
     _name = 'report.accountcore.account_balance_report'
+    _description = '科目余额表查询报表'
     @api.model
     def _get_report_values(self, docids, data=None):
         # if 是在月列表选择（例如启用期初）
