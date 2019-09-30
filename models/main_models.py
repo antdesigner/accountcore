@@ -1930,7 +1930,7 @@ class AccountsBalance(models.Model):
         '''检查以前期间是否存在凭证'''
         domain = [('org', '=', value['org']),
                   ('account', '=', value['account']),
-                  ('items', '=', value.setdefault('item', False)),
+                  ('items', '=', value.setdefault('items', False)),
                   '|', ('v_year', '<', value['year']),
                   '&', ('v_year', '=', value['year']),
                   ('v_month', '<', value['month'])]
