@@ -306,13 +306,13 @@
         <record id="cashflow_23" model="accountcore.cashflow">
             <field name="cashFlowType" eval="cashflow_class_4" />
             <field name="number">23</field>
-            <field name="name">汇率变动流入</field>
+            <field name="name">+汇率变动流入</field>
             <field name="direction">1</field>
         <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' /></record>
         <record id="cashflow_24" model="accountcore.cashflow">
             <field name="cashFlowType" eval="cashflow_class_4" />
             <field name="number">24</field>
-            <field name="name">汇率变动流出</field>
+            <field name="name">-汇率变动流出</field>
             <field name="direction">-1</field>
         <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' /></record>
         <!-- 现金流量类别结束 -->

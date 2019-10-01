@@ -681,7 +681,7 @@ class Source(models.Model, Glob_tag_Model):
 
 
 # 记账凭证
-class Voucher(models.Model):
+class Voucher(models.Model, Glob_tag_Model):
     '''会计记账凭证'''
     _name = 'accountcore.voucher'
     _description = '会计记账凭证'
@@ -1198,7 +1198,7 @@ class Voucher(models.Model):
 
 
 # 分录
-class Enty(models.Model):
+class Enty(models.Model, Glob_tag_Model):
     '''一条分录'''
     _name = 'accountcore.entry'
     _description = "会计分录"
@@ -1261,7 +1261,7 @@ class Enty(models.Model):
     items_html = fields.Html(string="分录内容",
                              compute='_createItemsHtml',
                              store=True)
-
+    business = fields.Text(string='业务数据')
     @api.multi
     @api.depends('items.name', 'account_item', 'items.item_class_name')
     def _createItemsHtml(self):
