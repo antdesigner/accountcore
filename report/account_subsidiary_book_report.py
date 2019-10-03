@@ -36,7 +36,9 @@ class SubsidiaryBook(models.AbstractModel):
         tasticsTypes = self.env['accountcore.voucher_number_tastics'].sudo(
         ).search([('id', '!=', 0)])
         # 获得查询科目及其全部明细科目的ID列表,通过科目编号查找
-        accountMeChild = main_account.getMeAndChild_ids()
+        searchAccount = [account_id]
+        if not form['only_this_level']:
+            searchAccount = main_account.getMeAndChild_ids()
         # 依据是否在查询向导中选择了核算项目,构建不同的查询参数,从数据库取出明细
         # if选择了核算项目
         if item:
@@ -47,13 +49,13 @@ class SubsidiaryBook(models.AbstractModel):
                       period.end_year,
                       period.end_month,
                       tuple(org_ids),
-                      tuple(accountMeChild),
+                      tuple(searchAccount),
                       item_id)
             # 从数据库获得需要的分录明细
             # 用于查询期初余额
             params2 = (period.start_year,
                        tuple(org_ids),
-                       tuple(accountMeChild),
+                       tuple(searchAccount),
                        item_id)
         # 没有选择核算项目
         else:
@@ -62,10 +64,10 @@ class SubsidiaryBook(models.AbstractModel):
                       period.end_year,
                       period.end_month,
                       tuple(org_ids),
-                      tuple(accountMeChild))
+                      tuple(searchAccount))
             params2 = (period.start_year,
                        tuple(org_ids),
-                       tuple(accountMeChild))
+                       tuple(searchAccount))
         # 从获得查询期间的分录明细
         entrys = self._getEntrys(params)
         # 科目在查询期间的全部分录明细,从开始日期的年初开始

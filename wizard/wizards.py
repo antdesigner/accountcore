@@ -328,6 +328,7 @@ class GetSubsidiaryBook(models.TransientModel):
                             required=True)
     account = fields.Many2one(
         'accountcore.account', string='查询的科目', required=True)
+    only_this_level = fields.Boolean(string='只包含本级科目', default=False)
     item = fields.Many2one('accountcore.item', string='查询的核算项目')
     voucher_number_tastics = fields.Many2one('accountcore.voucher_number_tastics',
                                              string='凭证号策略',

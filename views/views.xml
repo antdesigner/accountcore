@@ -707,8 +707,8 @@
                   </tree>
                 </field>
               </page>
-               <page string='全局标签'>
-                 <field name='glob_tag' widget='many2many_tags' />
+              <page string='全局标签'>
+                <field name='glob_tag' widget='many2many_tags' />
               </page>
             </notebook>
             <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
@@ -750,8 +750,8 @@
           <field name="items" widget='many2many_tags' />
           <field name="cashFlow" />
           <field name="v_real_date" />
-          <field name="business"/>
-          <field name='glob_tag'  string='全局标签' widget='many2many_tags' />
+          <field name="business" />
+          <field name='glob_tag' string='全局标签' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -778,7 +778,7 @@
       </field>
     </record>
     <!-- form-会计分录 -->
-    <record id="accountcore_entry_form" model="ir.ui.view">
+    <record id="accountcore_efntry_form" model="ir.ui.view">
       <field name="name">会计分录</field>
       <field name="model">accountcore.entry</field>
       <field name="arch" type="xml">
@@ -791,7 +791,8 @@
               <field name="camount" />
               <field name="cashFlow" />
               <field name="items" />
-              <!-- Add your fields here -->
+              <field name="business" />
+              <field name='glob_tag' string='全局标签' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -1033,6 +1034,7 @@
             <group>
               <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
               </field>
+              <field name="only_this_level"/>
               <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <group>
