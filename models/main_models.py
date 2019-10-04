@@ -291,7 +291,7 @@ class Account(models.Model, Glob_tag_Model):
                                  string='余额方向',
                                  required=True)
     is_show = fields.Boolean(string='凭证中可选', default=True)
-    is_last = fields.Boolean(string='末级科目', compute="_is_last")
+    is_last = fields.Boolean(string='末级科目', compute="_is_last", store=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many('accountcore.itemclass',
                                    string='科目要统计的核算项目类别',
@@ -369,7 +369,7 @@ class Account(models.Model, Glob_tag_Model):
                 '['+self.accountItemClass.name+"]已经作为明细科目的类别,不能删除.如果要删除,请你在'作为明细的类别'中先取消它")
 
     @api.multi
-    @api.onchange('childs_ids')
+    @api.depends('childs_ids')
     def _is_last(self):
         '''是否末级科目'''
         for a in self:
