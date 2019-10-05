@@ -66,6 +66,7 @@
             <field name='model'>accountcore.storage_report</field>
             <field name='arch' type='xml'>
                 <tree>
+                    <field name="report_type" />
                     <field name='number' />
                     <field name='name' />
                     <field name="receivers" widget='many2many_tags' />
@@ -88,6 +89,7 @@
                         <h1>新增编辑=>已归档报表</h1>
                         <hr></hr>
                         <group>
+                            <field name="report_type" />
                             <field name='number' />
                             <field name='name' />
                             <field name="receivers" widget='many2many_tags' />
@@ -116,7 +118,8 @@
             <field name='arch' type='xml'>
                 <tree>
                     <field name="id" invisible='1' />
-                    <button  type='action' class="btn-sm fa fa-caret-square-o-right oe_right" name='%(accountcore_get_report_actions_window)d' context="{'default_report_model':id}"></button>
+                    <button type='action' class="btn-sm fa fa-caret-square-o-right oe_right" name='%(accountcore_get_report_actions_window)d' context="{'default_report_model':id}"></button>
+                    <field name="report_type" />
                     <field name="guid" />
                     <field name='name' />
                     <field name="version" />
@@ -135,6 +138,7 @@
                         <h1>新增编辑=>报表模板</h1>
                         <hr></hr>
                         <group>
+                            <field name="report_type" />
                             <field name="guid" />
                             <field name='name' />
                             <field name="version" />

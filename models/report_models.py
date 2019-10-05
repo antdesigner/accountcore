@@ -30,7 +30,7 @@ class StorageReport(models.Model, Glob_tag_Model):
     '''归档的报表'''
     _name = 'accountcore.storage_report'
     _description = '归档的报表'
-    report_type = fields.Many2one('accountcore.report_type')
+    report_type = fields.Many2one('accountcore.report_type', string='报表类型')
     number = fields.Char(string='归档报表编号')
     name = fields.Char(string='归档报表名称', required=True)
     create_user = fields.Many2one('res.users',
@@ -54,6 +54,7 @@ class ReportModel(models.Model, Glob_tag_Model):
     '''报表模板'''
     _name = 'accountcore.report_model'
     _description = '报表模板，用于生成报表'
+    report_type = fields.Many2one('accountcore.report_type', string='报表类型')
     guid = fields.Char(string='模板唯一码', required=True)
     name = fields.Char(string='报表模板名称', required=True)
     version = fields.Char(string='报表模板版本', required=True)
