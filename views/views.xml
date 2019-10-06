@@ -737,7 +737,7 @@
       <field name='model'>accountcore.entry</field>
       <field name='arch' type='xml'>
         <tree class='oe_accountcore_table_fix' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
-          <button type='object' class="btn btn-sm fa fa-reply" name='show_voucher'></button>
+          <button type='object' class="btn btn-sm fa fa-reply" aria-label="show_voucher" title="show_voucher" name='show_voucher'></button>
           <field name='org'></field>
           <field name="v_voucherdate" />
           <field name="v_year" invisible='1' />
