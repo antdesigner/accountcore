@@ -45,7 +45,7 @@ class StorageReport(models.Model, Glob_tag_Model):
     orgs = fields.Many2many('accountcore.org', string='机构范围', required=True)
     receivers = fields.Many2many('accountcore.receiver', string='接收者')
     summary = fields.Text(string='归档报表说明')
-    data = fields.Text(string='数据内容',default='[[]]')
+    data = fields.Text(string='数据内容', default='[[]]')
     htmlstr = fields.Html(string='html内容')
 
 
@@ -60,7 +60,8 @@ class ReportModel(models.Model, Glob_tag_Model):
     version = fields.Char(string='报表模板版本', required=True)
     summary = fields.Text(string='报表模板简介')
     explain = fields.Html(string='报表模板详细介绍')
-    data = fields.Text(string='模板内容', default='[[]]')
+    data = fields.Text(string='模板数据', default='[[]]')
+    data_style = fields.Text(string='模板样式')
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
                          '报表模板唯一码重复了!')]
 

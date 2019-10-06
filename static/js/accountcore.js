@@ -838,54 +838,47 @@ odoo.define('accountcore.period_tool', function (require) {
         'Period': Period,
     };
 });
-odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites'], function (require) {
+odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites', 'web.core'], function (require) {
     "use strict";
     var AbstractField = require('web.AbstractField');
     var jexcel = require('accountcore.jexcel');
+    var core = require('web.core');
+    // 表格设计器表格的数据字段小部件
     var ac_jexcel = AbstractField.extend({
         events: _.extend({}, AbstractField.prototype.events, {}),
         supportedFieldTypes: ['text'],
         template: 'ac_jexcel',
-        _renderEdit:function(){
-
+        destroy: function () {
+            // if (this.jexcel_obj) {
+            //     core.bus.trigger('ac_jexcel_style_change', this.jexcel_obj.getStyle());
+            // };
+        },
+        _changeStyleAndData: function () {
+            this._setValue(JSON.stringify(this.jexcel_obj.getData()));
+            core.bus.trigger('ac_jexcel_style_change', instance.jexcel.getStyle());
+        },
+        _renderEdit: function () {
             self = this;
-            if(this.ddom){
+            //避免重复加载
+            if (this.ddom) {
                 return;
             };
             this.ddom = document.createElement('div');
             this.$el.append(this.ddom);
-            var d=self.value;
+            var d = self.value;
             var options = {
                 defaultColWidth: 120,
-                minDimensions: [10, 10],
+                minDimensions: [4, 2],
                 rowResize: true,
-                onchange: function(instance, cell, x, y, value){
-                    self._setValue(JSON.stringify(self.jexcel_obj.getData()));
-                },
-                
-                data:  $.parseJSON(self.value),
-                // columns: [{
-                //         type: 'text',
-                //         width: 300
-                //     },
-                //     {
-                //         type: 'text',
-                //         width: 100
-                //     },
-                //     {
-                //         type: 'text',
-                //         width: 100
-                //     },
-                //     {
-                //         type: 'calendar',
-                //         width: 100
-                //     },
-                // ],
+
+                data: $.parseJSON(self.value),
+
                 toolbar: [{
                         type: 'i',
                         content: 'undo',
                         onclick: function () {
                             self.jexcel_obj.undo();
+                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
                         }
                     },
                     {
@@ -893,6 +886,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         content: 'redo',
                         onclick: function () {
                             self.jexcel_obj.redo();
+                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
                         }
                     },
                     {
@@ -943,14 +937,14 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         type: 'i',
                         content: 'get_app',
                         onclick: function () {
-                            self.jexcel_obj.download();
+                            self.jexcel_obj.download();                          
                         }
                     },
                     {
                         type: 'i',
                         content: 'save',
                         onclick: function () {
-                            
+                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
                         }
                     },
                 ],
@@ -985,28 +979,68 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     cellAlreadyMerged: '单元格已经被合并',
                     noCellsSelected: '没有选中任何单元格',
                 },
+                onload: function (instance) {
+                    instance.jexcel.setStyle($.parseJSON(self.record.data['data_style']));
+                },
+                onchange: function (instance, cell, x, y, value) {
+                    self._setValue(JSON.stringify(self.jexcel_obj.getData()));
+                    self._changeStyleAndData(instance);
+                },
+                oninsertrow: function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                ondeleterow: function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                oninsertcolumn: function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                ondeletecolumn:function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                onmoverow: function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                onmovecolumn: function(instance, from, to){
+                    self._changeStyleAndData(instance);
+                },
+                onmerge: function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                onresizerow: function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                onresizecolumn:function(instance){
+                    self._changeStyleAndData(instance);
+                },
+                onsort:function(instance){
+                    self._changeStyleAndData(instance);
+                },
                 updateTable: function (instance, cell, col, row, val, label, cellName) {
-                    if (cell.innerHTML == 'Total') {
-                        cell.parentNode.style.backgroundColor = '#fffaa3';
-                    }
 
-                    if (col == 2) {
-                        if (parseFloat(label) > 10) {
-                            cell.style.color = 'red';
-                        } else {
-                            cell.style.color = 'green';
-                        }
-                    }
                 },
             };
             self.jexcel_obj = jexcel(this.ddom, options);
         },
-        _renderReadonly: function () {
+        _renderReadonly: function () {},
+    });
+    // 表格设计器表格的样式字段小部件
+    var ac_jexcel_style = AbstractField.extend({
+        events: _.extend({}, AbstractField.prototype.events, {}),
+        supportedFieldTypes: ['text'],
+        start: function () {
+            this._super.apply(this, arguments);
+            core.bus.on('ac_jexcel_style_change', this, this._onStyleChange);
+        },
+        _onStyleChange: function (style) {
+            this._setValue(JSON.stringify(style));
         },
     });
     var fieldRegistry = require('web.field_registry');
     fieldRegistry.add('ac_jexcel', ac_jexcel);
+    fieldRegistry.add('ac_jexcel_style', ac_jexcel_style);
     return {
         ac_jexcel: ac_jexcel,
+        ac_jexcel_style: ac_jexcel_style,
     };
 });

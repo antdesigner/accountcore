@@ -146,6 +146,7 @@
                         </group>
                         <center>
                             <field name="data" widget='ac_jexcel' />
+                            <field name="data_style" invisible='1' widget='ac_jexcel_style'/>
                         </center>
                         <group>
                             <field name="explain" />
