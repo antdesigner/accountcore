@@ -699,8 +699,7 @@ class GetReport(models.TransientModel):
     _name = 'accountcore.get_report'
     _description='报表生成向导'
     report_model = fields.Many2one('accountcore.report_model',
-                                   string='报表模板',
-                                   required=True)
+                                   string='报表模板')
     guid = fields.Char(related='report_model.guid')
     summary = fields.Text(related='report_model.summary')
     startDate = fields.Date(string='开始月份')

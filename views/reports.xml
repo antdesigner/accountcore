@@ -163,7 +163,7 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}"  required='1'/>
                             <field name="guid" />
                             <field name="summary" />
                         </group>
