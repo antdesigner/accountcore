@@ -853,7 +853,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             //     core.bus.trigger('ac_jexcel_style_change', this.jexcel_obj.getStyle());
             // };
         },
-        _changeStyleAndData: function () {
+        _changeStyleAndData: function (instance) {
             this._setValue(JSON.stringify(this.jexcel_obj.getData()));
             core.bus.trigger('ac_jexcel_style_change', instance.jexcel.getStyle());
         },
@@ -870,9 +870,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 defaultColWidth: 120,
                 minDimensions: [4, 2],
                 rowResize: true,
-
+                // 排序和odoo可能有冲突，所以禁用
+                // columnSorting: false,
+                // 没有多大意义
+                // allowRenameColumn: false,
                 data: $.parseJSON(self.value),
-
                 toolbar: [{
                         type: 'i',
                         content: 'undo',
@@ -937,7 +939,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         type: 'i',
                         content: 'get_app',
                         onclick: function () {
-                            self.jexcel_obj.download();                          
+                            self.jexcel_obj.download();
                         }
                     },
                     {
@@ -986,35 +988,36 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     self._setValue(JSON.stringify(self.jexcel_obj.getData()));
                     self._changeStyleAndData(instance);
                 },
-                oninsertrow: function(instance){
+                oninsertrow: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                ondeleterow: function(instance){
+                ondeleterow: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                oninsertcolumn: function(instance){
+                oninsertcolumn: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                ondeletecolumn:function(instance){
+                ondeletecolumn: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                onmoverow: function(instance){
+                onmoverow: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                onmovecolumn: function(instance, from, to){
+                onmovecolumn: function (instance, from, to) {
                     self._changeStyleAndData(instance);
                 },
-                onmerge: function(instance){
+                onmerge: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                onresizerow: function(instance){
+                onresizerow: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                onresizecolumn:function(instance){
+                onresizecolumn: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                onsort:function(instance){
+                onsort: function (instance, cellNum, order) {
                     self._changeStyleAndData(instance);
+
                 },
                 updateTable: function (instance, cell, col, row, val, label, cellName) {
 
@@ -1028,6 +1031,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
     var ac_jexcel_style = AbstractField.extend({
         events: _.extend({}, AbstractField.prototype.events, {}),
         supportedFieldTypes: ['text'],
+        template: 'ac_jexcel',
         start: function () {
             this._super.apply(this, arguments);
             core.bus.on('ac_jexcel_style_change', this, this._onStyleChange);
