@@ -846,17 +846,41 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         events: _.extend({}, AbstractField.prototype.events, {}),
         supportedFieldTypes: ['text'],
         template: 'ac_jexcel',
-        _render: function () {
+        _renderEdit:function(){
+
             self = this;
+            if(this.ddom){
+                return;
+            };
             this.ddom = document.createElement('div');
             this.$el.append(this.ddom);
+            var d=self.value;
             var options = {
-                data: [
-                    []
-                ],
                 defaultColWidth: 120,
                 minDimensions: [10, 10],
                 rowResize: true,
+                onchange: function(instance, cell, x, y, value){
+                    self._setValue(JSON.stringify(self.jexcel_obj.getData()));
+                },
+                
+                data:  $.parseJSON(self.value),
+                // columns: [{
+                //         type: 'text',
+                //         width: 300
+                //     },
+                //     {
+                //         type: 'text',
+                //         width: 100
+                //     },
+                //     {
+                //         type: 'text',
+                //         width: 100
+                //     },
+                //     {
+                //         type: 'calendar',
+                //         width: 100
+                //     },
+                // ],
                 toolbar: [{
                         type: 'i',
                         content: 'undo',
@@ -922,6 +946,13 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             self.jexcel_obj.download();
                         }
                     },
+                    {
+                        type: 'i',
+                        content: 'save',
+                        onclick: function () {
+                            
+                        }
+                    },
                 ],
                 text: {
                     noRecordsFound: '没有记录',
@@ -944,7 +975,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     copy: '复制',
                     paste: '粘贴',
                     saveAs: '下载保存',
-                    // about: ​ '关于',
+                    // about: ​ '关于', 修改后将无法使用
                     areYouSureToDeleteTheSelectedRows: '你确定要删除选中行?',
                     areYouSureToDeleteTheSelectedColumns: '你确定要删除选中列?',
                     thisActionWillDestroyAnyExistingMergedCellsAreYouSure: '你是否确定要取消合并单元格?',
@@ -953,9 +984,24 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     invalidMergeProperties: '无效的合并属性',
                     cellAlreadyMerged: '单元格已经被合并',
                     noCellsSelected: '没有选中任何单元格',
-                }
+                },
+                updateTable: function (instance, cell, col, row, val, label, cellName) {
+                    if (cell.innerHTML == 'Total') {
+                        cell.parentNode.style.backgroundColor = '#fffaa3';
+                    }
+
+                    if (col == 2) {
+                        if (parseFloat(label) > 10) {
+                            cell.style.color = 'red';
+                        } else {
+                            cell.style.color = 'green';
+                        }
+                    }
+                },
             };
             self.jexcel_obj = jexcel(this.ddom, options);
+        },
+        _renderReadonly: function () {
         },
     });
     var fieldRegistry = require('web.field_registry');
