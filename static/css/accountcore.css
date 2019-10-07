@@ -149,6 +149,9 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
 }
+.jexcel_toolbar{
+    z-index: 85 !important;
+}
 /* jexel 工具下拉框宽度 */
 select.jexcel_toolbar_item {
     width: 100px

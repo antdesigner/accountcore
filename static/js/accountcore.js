@@ -848,11 +848,6 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         events: _.extend({}, AbstractField.prototype.events, {}),
         supportedFieldTypes: ['text'],
         template: 'ac_jexcel',
-        destroy: function () {
-            // if (this.jexcel_obj) {
-            //     core.bus.trigger('ac_jexcel_style_change', this.jexcel_obj.getStyle());
-            // };
-        },
         _changeStyleAndData: function (instance) {
             this._setValue(JSON.stringify(this.jexcel_obj.getData()));
             core.bus.trigger('ac_jexcel_style_change', instance.jexcel.getStyle());
@@ -937,18 +932,19 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     },
                     {
                         type: 'i',
-                        content: 'get_app',
-                        onclick: function () {
-                            self.jexcel_obj.download();
-                        }
-                    },
-                    {
-                        type: 'i',
                         content: 'save',
                         onclick: function () {
                             core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
                         }
                     },
+                    {
+                        type: 'i',
+                        content: 'get_app',
+                        onclick: function () {
+                            self.jexcel_obj.download();
+                        }
+                    },
+
                 ],
                 text: {
                     noRecordsFound: '没有记录',
