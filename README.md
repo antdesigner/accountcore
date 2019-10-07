@@ -1,4 +1,4 @@
-# accountcore中国会计的最佳实践
+#  accountcore中国会计的最佳实践
 AccountCoreForOdoo,in China
 基于odoo社区版的一独立的中国会计模块。
 和odoo自带的会计模块完全无关。以简单、直接、易用、灵活、智能为设计原则。没有繁琐的初始化和配置，不用结账和反结账、过账等冗余操作，是中国会计的最佳实践。
@@ -24,9 +24,10 @@ AccountCoreForOdoo,in China
 .....
 
 开发目标是实现会计核算自动化和智能化,以完全取代会计核算的手工操作.
+
 ![accountcore界面](https://github.com/antdesigner/imageForAccountcore/blob/master/accountcore%E7%95%8C%E9%9D%A2.png?raw=true)
+
 长期维护,精益求精
-https://share.weiyun.com/5JocspW
 ## 下载演示模块地址
 美味食品(北京)有限公司：
 https://github.com/antdesigner/ac_demo_meiwei
@@ -39,3 +40,6 @@ http://39.98.172.200:8069
 加QQ群领取口令:
 161455531 
 
+## 参与该项目
+我的AccountCore For Odoo(github悬赏任务）
+https://docs.qq.com/doc/DUWJCY2JlWWd4d3BX
