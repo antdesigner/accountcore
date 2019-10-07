@@ -838,29 +838,213 @@ odoo.define('accountcore.period_tool', function (require) {
         'Period': Period,
     };
 });
-odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites'], function (require) {
+odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites', 'web.core'], function (require) {
     "use strict";
     var AbstractField = require('web.AbstractField');
     var jexcel = require('accountcore.jexcel');
+    var core = require('web.core');
+    // 表格设计器表格的数据字段小部件
     var ac_jexcel = AbstractField.extend({
         events: _.extend({}, AbstractField.prototype.events, {}),
         supportedFieldTypes: ['text'],
         template: 'ac_jexcel',
-        _render: function () {
+        destroy: function () {
+            // if (this.jexcel_obj) {
+            //     core.bus.trigger('ac_jexcel_style_change', this.jexcel_obj.getStyle());
+            // };
+        },
+        _changeStyleAndData: function (instance) {
+            this._setValue(JSON.stringify(this.jexcel_obj.getData()));
+            core.bus.trigger('ac_jexcel_style_change', instance.jexcel.getStyle());
+        },
+        _renderEdit: function () {
+            self = this;
+            //避免重复加载
+            if (this.ddom) {
+                return;
+            };
             this.ddom = document.createElement('div');
             this.$el.append(this.ddom);
+            var d = self.value;
             var options = {
-                data: [
-                    []
+                defaultColWidth: 120,
+                minDimensions: [4, 2],
+                rowResize: true,
+                // 排序和odoo可能有冲突，所以禁用
+                // columnSorting: false,
+                // 没有多大意义
+                // allowRenameColumn: false,
+                data: $.parseJSON(self.value),
+                toolbar: [{
+                        type: 'i',
+                        content: 'undo',
+                        onclick: function () {
+                            self.jexcel_obj.undo();
+                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
+                        }
+                    },
+                    {
+                        type: 'i',
+                        content: 'redo',
+                        onclick: function () {
+                            self.jexcel_obj.redo();
+                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
+                        }
+                    },
+                    {
+                        type: 'select',
+                        k: 'font-family',
+                        v: ['Arial', 'Verdana']
+                    },
+                    {
+                        type: 'select',
+                        k: 'font-size',
+                        v: ['9px', '10px', '11px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '40px', '48px', '64px', '80px', ]
+                    },
+                    {
+                        type: 'i',
+                        content: 'format_align_left',
+                        k: 'text-align',
+                        v: 'left'
+                    },
+                    {
+                        type: 'i',
+                        content: 'format_align_center',
+                        k: 'text-align',
+                        v: 'center'
+                    },
+                    {
+                        type: 'i',
+                        content: 'format_align_right',
+                        k: 'text-align',
+                        v: 'right'
+                    },
+                    {
+                        type: 'i',
+                        content: 'format_bold',
+                        k: 'font-weight',
+                        v: 'bold'
+                    },
+                    {
+                        type: 'color',
+                        content: 'format_color_text',
+                        k: 'color'
+                    },
+                    {
+                        type: 'color',
+                        content: 'format_color_fill',
+                        k: 'background-color'
+                    },
+                    {
+                        type: 'i',
+                        content: 'get_app',
+                        onclick: function () {
+                            self.jexcel_obj.download();
+                        }
+                    },
+                    {
+                        type: 'i',
+                        content: 'save',
+                        onclick: function () {
+                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
+                        }
+                    },
                 ],
-                minDimensions: [10, 10],
+                text: {
+                    noRecordsFound: '没有记录',
+                    showingPage: '显示页',
+                    show: '显示',
+                    entries: '明细',
+                    insertANewColumnBefore: '在前面插入一列',
+                    insertANewColumnAfter: '在后面插入一列',
+                    deleteSelectedColumns: '删除选中列',
+                    renameThisColumn: '重命名该列',
+                    orderAscending: '按升序排列',
+                    orderDescending: '按降序排列',
+                    insertANewRowBefore: '在前面插入一行',
+                    insertANewRowAfter: '在后面插入一行',
+                    deleteSelectedRows: '删除选中行',
+                    editComments: '编辑批批注',
+                    addComments: '添加批注',
+                    comments: '批注',
+                    clearComments: '清除批注',
+                    copy: '复制',
+                    paste: '粘贴',
+                    saveAs: '下载保存',
+                    // about: ​ '关于', 修改后将无法使用
+                    areYouSureToDeleteTheSelectedRows: '你确定要删除选中行?',
+                    areYouSureToDeleteTheSelectedColumns: '你确定要删除选中列?',
+                    thisActionWillDestroyAnyExistingMergedCellsAreYouSure: '你是否确定要取消合并单元格?',
+                    thisActionWillClearYourSearchResultsAreYouSure: '该操作会清除你的搜索结果，你是否确定?',
+                    thereIsAConflictWithAnotherMergedCell: '与另一个合并的单元格有冲突!',
+                    invalidMergeProperties: '无效的合并属性',
+                    cellAlreadyMerged: '单元格已经被合并',
+                    noCellsSelected: '没有选中任何单元格',
+                },
+                onload: function (instance) {
+                    instance.jexcel.setStyle($.parseJSON(self.record.data['data_style']));
+                },
+                onchange: function (instance, cell, x, y, value) {
+                    self._setValue(JSON.stringify(self.jexcel_obj.getData()));
+                    self._changeStyleAndData(instance);
+                },
+                oninsertrow: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                ondeleterow: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                oninsertcolumn: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                ondeletecolumn: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                onmoverow: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                onmovecolumn: function (instance, from, to) {
+                    self._changeStyleAndData(instance);
+                },
+                onmerge: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                onresizerow: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                onresizecolumn: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
+                onsort: function (instance, cellNum, order) {
+                    self._changeStyleAndData(instance);
+
+                },
+                updateTable: function (instance, cell, col, row, val, label, cellName) {
+
+                },
             };
-            jexcel(this.ddom, options);
+            self.jexcel_obj = jexcel(this.ddom, options);
+        },
+        _renderReadonly: function () {},
+    });
+    // 表格设计器表格的样式字段小部件
+    var ac_jexcel_style = AbstractField.extend({
+        events: _.extend({}, AbstractField.prototype.events, {}),
+        supportedFieldTypes: ['text'],
+        template: 'ac_jexcel',
+        start: function () {
+            this._super.apply(this, arguments);
+            core.bus.on('ac_jexcel_style_change', this, this._onStyleChange);
+        },
+        _onStyleChange: function (style) {
+            this._setValue(JSON.stringify(style));
         },
     });
     var fieldRegistry = require('web.field_registry');
     fieldRegistry.add('ac_jexcel', ac_jexcel);
+    fieldRegistry.add('ac_jexcel_style', ac_jexcel_style);
     return {
         ac_jexcel: ac_jexcel,
+        ac_jexcel_style: ac_jexcel_style,
     };
 });

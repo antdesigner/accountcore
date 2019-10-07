@@ -223,7 +223,7 @@
           <field name='itemClassesHtml'></field>
           <field name='direction' />
           <field name="is_show" />
-          <field name="is_last"/>
+          <field name="is_last" />
           <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='glob_tag' widget='many2many_tags' />
           <field name='fatherAccountId' invisible='1'></field>
@@ -299,7 +299,7 @@
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree js_class='balanceListView' default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
+        <tree js_class='balanceListView' class='oe_accountcore_table_fix' default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>
@@ -307,7 +307,7 @@
           <field name='isbegining' invisible='1'></field>
           <field name='account_number' invisible='1'></field>
           <field name="account_class_id" string="类别" />
-          <field name='account' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+          <field name='account' domain="[('is_show','=',True)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='accountItemClass' string="项目类别" class="oe_grey" />
           <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}" />
           <field name="beginingDamount" string='月初余额(借方)' sum="合计" />
@@ -316,7 +316,7 @@
           <field name="camount" string='月已发生额(贷方)' sum="合计" />
           <field name="beginCumulativeDamount" string='月初本年借方累计发生额' sum="合计" />
           <field name="beginCumulativeCamount" string='月初本年贷方累计发生额' sum="合计" />
-
+          <field name="begin_year_amount" readonly='1' string='年初余额' sum="合计" />
         </tree>
       </field>
     </record>
@@ -447,6 +447,7 @@
           <field name='reviewer' />
           <field name='roolbook_html' />
           <field name='entrysHtml' />
+          <field name='glob_tag' widget='many2many_tags' />
           <field name='createUser' />
           <field name='appendixCount' />
           <field name='soucre' />
@@ -685,25 +686,31 @@
               <field name='number' col='2' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
               <field name='uniqueNumber' col='2' readonly='1'></field>
-
             </group>
-            <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
-              <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
-                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
-                <field name='org' invisible='1' />
-                <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
-                <!-- org_id,show_balance用于在 -->
-                <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,',org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
-                <field name='damount' sum='ac_dsum' class='amountColor'></field>
-                <field name='camount' sum='ac_csum' class='amountColor'></field>
-                <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True}" />
-                <field name='account_item' invisible='1' />
-                <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-                <control>
-                  <create string="添加一行分录" />
-                </control>
-              </tree>
-            </field>
+            <notebook>
+              <page string='会计'>
+                <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}">
+                  <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
+                    <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
+                    <field name='org' invisible='1' />
+                    <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
+                    <!-- org_id,show_balance用于在 -->
+                    <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,',org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
+                    <field name='damount' sum='ac_dsum' class='amountColor'></field>
+                    <field name='camount' sum='ac_csum' class='amountColor'></field>
+                    <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True}" />
+                    <field name='account_item' invisible='1' />
+                    <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+                    <control>
+                      <create string="添加一行分录" />
+                    </control>
+                  </tree>
+                </field>
+              </page>
+              <page string='全局标签'>
+                <field name='glob_tag' widget='many2many_tags' />
+              </page>
+            </notebook>
             <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
               <span>借贷方差额：</span>
               <field name="sum_amount" />
@@ -730,7 +737,7 @@
       <field name='model'>accountcore.entry</field>
       <field name='arch' type='xml'>
         <tree class='oe_accountcore_table_fix' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
-          <button type='object' class="btn btn-sm fa fa-reply" name='show_voucher'></button>
+          <button type='object' class="btn btn-sm fa fa-reply" aria-label="show_voucher" title="show_voucher" name='show_voucher'></button>
           <field name='org'></field>
           <field name="v_voucherdate" />
           <field name="v_year" invisible='1' />
@@ -743,6 +750,8 @@
           <field name="items" widget='many2many_tags' />
           <field name="cashFlow" />
           <field name="v_real_date" />
+          <field name="business" />
+          <field name='glob_tag' string='全局标签' widget='many2many_tags' />
         </tree>
       </field>
     </record>
@@ -769,7 +778,7 @@
       </field>
     </record>
     <!-- form-会计分录 -->
-    <record id="accountcore_entry_form" model="ir.ui.view">
+    <record id="accountcore_efntry_form" model="ir.ui.view">
       <field name="name">会计分录</field>
       <field name="model">accountcore.entry</field>
       <field name="arch" type="xml">
@@ -782,7 +791,8 @@
               <field name="camount" />
               <field name="cashFlow" />
               <field name="items" />
-              <!-- Add your fields here -->
+              <field name="business" />
+              <field name='glob_tag' string='全局标签' widget='many2many_tags' />
             </group>
           </sheet>
         </form>
@@ -928,7 +938,7 @@
               <field name="year" invisible='1'></field>
               <field name="month" invisible='1'></field>
               <field name="isbegining" invisible='1'></field>
-              <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+              <field name="account" domain="[('is_show','=',True)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
               <field name='accountItemClass' string="核算项目类别" class="oe_grey" />
               <field name="items" domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}"></field>
               <field name="beginingDamount" string='月初余额(借方)'></field>
@@ -937,6 +947,7 @@
               <field name="camount" string='月已发生额(贷方)'></field>
               <field name="beginCumulativeDamount" string='月初本年借方累计发生额'></field>
               <field name="beginCumulativeCamount" string='月初本年贷方累计发生额'></field>
+              <field name="begin_year_amount" readonly='1' string='年初余额' />
             </group>
           </sheet>
         </form>
@@ -1023,6 +1034,7 @@
             <group>
               <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
               </field>
+              <field name="only_this_level"/>
               <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <group>

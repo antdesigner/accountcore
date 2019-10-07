@@ -66,6 +66,7 @@
             <field name='model'>accountcore.storage_report</field>
             <field name='arch' type='xml'>
                 <tree>
+                    <field name="report_type" />
                     <field name='number' />
                     <field name='name' />
                     <field name="receivers" widget='many2many_tags' />
@@ -88,6 +89,7 @@
                         <h1>新增编辑=>已归档报表</h1>
                         <hr></hr>
                         <group>
+                            <field name="report_type" />
                             <field name='number' />
                             <field name='name' />
                             <field name="receivers" widget='many2many_tags' />
@@ -116,7 +118,8 @@
             <field name='arch' type='xml'>
                 <tree>
                     <field name="id" invisible='1' />
-                    <button  type='action' class="btn-sm fa fa-caret-square-o-right oe_right" name='%(accountcore_get_report_actions_window)d' context="{'default_report_model':id}"></button>
+                    <button type='action' class="btn-sm fa fa-caret-square-o-right oe_right" aria-label="get_report" title="get_report" name='%(accountcore_get_report_actions_window)d' context="{'default_report_model':id}"></button>
+                    <field name="report_type" />
                     <field name="guid" />
                     <field name='name' />
                     <field name="version" />
@@ -135,6 +138,7 @@
                         <h1>新增编辑=>报表模板</h1>
                         <hr></hr>
                         <group>
+                            <field name="report_type" />
                             <field name="guid" />
                             <field name='name' />
                             <field name="version" />
@@ -142,6 +146,7 @@
                         </group>
                         <center>
                             <field name="data" widget='ac_jexcel' />
+                            <field name="data_style" invisible='1' widget='ac_jexcel_style'/>
                         </center>
                         <group>
                             <field name="explain" />
@@ -159,7 +164,7 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}"  required='1'/>
                             <field name="guid" />
                             <field name="summary" />
                         </group>

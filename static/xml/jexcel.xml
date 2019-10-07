@@ -2,7 +2,7 @@
 <templates>
 <!-- jexcel表格-->
 <t t-name="ac_jexcel">
-<div>
+<div style="width:100%;overflow:auto">
 </div>
 </t>
 </templates>

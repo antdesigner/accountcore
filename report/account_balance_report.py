@@ -275,6 +275,8 @@ class AccountBalanceReport(models.AbstractModel):
                     t_account.number as account_number,
                     t_account.name as account_name,
                     t_account.direction as direction,
+                    t_account.is_last as is_last,
+                    null as is_virtual,
                     CAST(0 as numeric) as "beginingDamount",
                     CAST(0 as numeric)  as "beginingCamount",
                     CAST(0 as numeric)  as damount,
@@ -287,13 +289,21 @@ class AccountBalanceReport(models.AbstractModel):
                 ORDER BY account_number'''
         self.env.cr.execute(query)
         rl = self.env.cr.dictfetchall()
-
+        virtual_accounts = []
         for x in rl:
             x['beginingDamount'] = Decimal(0)
             x['beginingCamount'] = Decimal(0)
             x['damount'] = Decimal(0)
             x['camount'] = Decimal(0)
-        return rl
+            if not x['is_last']:
+                virtualAccount = x.copy()
+                virtualAccount['account_father_id'] = x['account_id']
+                virtualAccount['is_virtual'] = True
+                virtualAccount['is_last'] = True
+                virtualAccount['account_name'] = x['account_name']+"*"
+                virtual_accounts.append(virtualAccount)
+
+        return rl+virtual_accounts
 
 
 # 一条余额记录
@@ -409,8 +419,8 @@ class AccountsArchManager(object):
                               balance.camount)
         # if有上级科目，下级科目金额合并到上级科目
         if accountArch.father_id:
-            fatherAccount = self._getAccountArchById(accountArch.father_id,
-                                                     balance.org_id)
+            fatherAccount = self._getFatherAccountById(accountArch.father_id,
+                                                       balance.org_id)
             fatherAccount.addAmount(balance.beginingDamount,
                                     balance.beginingCamount,
                                     balance.damount,
@@ -420,7 +430,13 @@ class AccountsArchManager(object):
     def _getAccountArchById(self, account_id, org_id):
         for line in self.accountsArch:
             if (line['account_id'] == account_id
-                    and line['org_id'] == org_id):
+                    and line['org_id'] == org_id and line['is_last'] == True):
+                return AccountArch(line)
+
+    def _getFatherAccountById(self, account_id, org_id):
+        for line in self.accountsArch:
+            if (line['account_id'] == account_id
+                    and line['org_id'] == org_id and line['is_last'] == False):
                 return AccountArch(line)
 
     def appendItem(self, accountArch, balance):
@@ -622,16 +638,19 @@ class AccountsArch_filter_sum_orgs(object):
             return accountsArch
         else:
             accountsArch.sort(key=lambda t: (
-                t['account_number'], t.setdefault('item_id', 0)))
+                t['account_number'],t['account_name'], t.setdefault('item_id', 0)))
             newAccountsArch = []
             a_temp = ""
             for a in accountsArch:
                 add = False
                 if a_temp == "":
                     add = True
-                elif a_temp['account_id'] != a['account_id']:
-                    add = True
-                elif a_temp['account_id'] == a['account_id']:
+                # elif a_temp['account_id'] != a['account_id']:
+                #     add = True
+                # elif a_temp['account_id'] == a['account_id']:
+                elif a_temp['account_name'] != a['account_name']:
+                        add = True
+                elif a_temp['account_name'] == a['account_name']:
                     # 存在核算项目
                     if a_temp['item_id'] != 0:
                         if a['item_id'] != a_temp['item_id']:

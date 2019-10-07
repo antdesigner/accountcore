@@ -30,7 +30,7 @@ class StorageReport(models.Model, Glob_tag_Model):
     '''归档的报表'''
     _name = 'accountcore.storage_report'
     _description = '归档的报表'
-    report_type = fields.Many2one('accountcore.report_type')
+    report_type = fields.Many2one('accountcore.report_type', string='报表类型')
     number = fields.Char(string='归档报表编号')
     name = fields.Char(string='归档报表名称', required=True)
     create_user = fields.Many2one('res.users',
@@ -45,7 +45,7 @@ class StorageReport(models.Model, Glob_tag_Model):
     orgs = fields.Many2many('accountcore.org', string='机构范围', required=True)
     receivers = fields.Many2many('accountcore.receiver', string='接收者')
     summary = fields.Text(string='归档报表说明')
-    data = fields.Text(string='数据内容')
+    data = fields.Text(string='数据内容', default='[[]]')
     htmlstr = fields.Html(string='html内容')
 
 
@@ -54,12 +54,14 @@ class ReportModel(models.Model, Glob_tag_Model):
     '''报表模板'''
     _name = 'accountcore.report_model'
     _description = '报表模板，用于生成报表'
+    report_type = fields.Many2one('accountcore.report_type', string='报表类型')
     guid = fields.Char(string='模板唯一码', required=True)
     name = fields.Char(string='报表模板名称', required=True)
     version = fields.Char(string='报表模板版本', required=True)
     summary = fields.Text(string='报表模板简介')
     explain = fields.Html(string='报表模板详细介绍')
-    data = fields.Text(string='模板内容')
+    data = fields.Text(string='模板数据', default='[[]]')
+    data_style = fields.Text(string='模板样式')
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
                          '报表模板唯一码重复了!')]
 

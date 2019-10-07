@@ -8,11 +8,14 @@
         <record id='glob_tag_class_1' model='accountcore.glob_tag_class'><field name='name' >测试标签</field></record>
         <record id='glob_tag_class_2' model='accountcore.glob_tag_class'><field name='name' >演示数据</field></record>
         <record id='glob_tag_class_3' model='accountcore.glob_tag_class'><field name='name' >系统内置</field></record>
+        <record id='glob_tag_class_4' model='accountcore.glob_tag_class'><field name='name' >关联交易</field></record>        
         <!-- 全局标签类别-结束 -->
         <!-- 全局标签-开始 -->
       <record id='glob_tag_1' model='accountcore.glob_tag'><field name='name' >glob_tag_1</field><field name='application' >用于二次开发测试</field><field name='summary' >用于测试</field><field name='glob_tag_class' eval='glob_tag_class_1' /></record>
       <record id='glob_tag_2' model='accountcore.glob_tag'><field name='name' >演示</field><field name='application' >标记演示数据，卸载演示模块时作为删除依据</field><field name='summary' >用于标记演示数据</field><field name='glob_tag_class' eval='glob_tag_class_1' /></record>
       <record id='glob_tag_3' model='accountcore.glob_tag'><field name='name' >系统</field><field name='application' >标记系统内置数据，不得修改或删除</field><field name='summary' >标记系统内置数据</field><field name='glob_tag_class' eval='glob_tag_class_3' /></record>
+      <record id='glob_tag_4' model='accountcore.glob_tag'><field name='name' >关联交易</field><field name='application' >标记关联交易，核算机构是关联方的业务</field><field name='summary' >标记关联交易标签</field><field name='glob_tag_class' eval='glob_tag_class_4' /></record>
+      
         <!-- 全局标签-结束 -->
         <!-- 机构 -->
         <record id="org_1" model="accountcore.org">
@@ -306,13 +309,13 @@
         <record id="cashflow_23" model="accountcore.cashflow">
             <field name="cashFlowType" eval="cashflow_class_4" />
             <field name="number">23</field>
-            <field name="name">汇率变动流入</field>
+            <field name="name">+汇率变动流入</field>
             <field name="direction">1</field>
         <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' /></record>
         <record id="cashflow_24" model="accountcore.cashflow">
             <field name="cashFlowType" eval="cashflow_class_4" />
             <field name="number">24</field>
-            <field name="name">汇率变动流出</field>
+            <field name="name">-汇率变动流出</field>
             <field name="direction">-1</field>
         <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' /></record>
         <!-- 现金流量类别结束 -->

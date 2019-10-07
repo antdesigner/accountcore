@@ -291,7 +291,7 @@ class Account(models.Model, Glob_tag_Model):
                                  string='余额方向',
                                  required=True)
     is_show = fields.Boolean(string='凭证中可选', default=True)
-    is_last = fields.Boolean(string='末级科目', compute="_is_last")
+    is_last = fields.Boolean(string='末级科目', compute="_is_last", store=True)
     cashFlowControl = fields.Boolean(string='分配现金流量')
     itemClasses = fields.Many2many('accountcore.itemclass',
                                    string='科目要统计的核算项目类别',
@@ -369,7 +369,7 @@ class Account(models.Model, Glob_tag_Model):
                 '['+self.accountItemClass.name+"]已经作为明细科目的类别,不能删除.如果要删除,请你在'作为明细的类别'中先取消它")
 
     @api.multi
-    @api.onchange('childs_ids')
+    @api.depends('childs_ids')
     def _is_last(self):
         '''是否末级科目'''
         for a in self:
@@ -681,7 +681,7 @@ class Source(models.Model, Glob_tag_Model):
 
 
 # 记账凭证
-class Voucher(models.Model):
+class Voucher(models.Model, Glob_tag_Model):
     '''会计记账凭证'''
     _name = 'accountcore.voucher'
     _description = '会计记账凭证'
@@ -1198,7 +1198,7 @@ class Voucher(models.Model):
 
 
 # 分录
-class Enty(models.Model):
+class Enty(models.Model, Glob_tag_Model):
     '''一条分录'''
     _name = 'accountcore.entry'
     _description = "会计分录"
@@ -1261,7 +1261,7 @@ class Enty(models.Model):
     items_html = fields.Html(string="分录内容",
                              compute='_createItemsHtml',
                              store=True)
-
+    business = fields.Text(string='业务数据')
     @api.multi
     @api.depends('items.name', 'account_item', 'items.item_class_name')
     def _createItemsHtml(self):
@@ -1434,6 +1434,21 @@ class AccountsBalance(models.Model):
                                   readonly=True,
                                   string="Currency",
                                   help='Utility field to express amount currency')
+    begin_year_amount = fields.Monetary(string="年初余额", compute='_getYearBeginAmount')
+    
+    @api.multi
+    @api.onchange('beginingDamount', 'beginingCamount', 'beginCumulativeDamount', 'beginCumulativeCamount')
+    def _getYearBeginAmount(self):
+        '''计算启用期的年初余额'''
+        for b in self:
+            begin_d = b.beginingDamount-b.beginCumulativeDamount
+            begin_c = b.beginingCamount-b.beginCumulativeCamount
+            if b.account.direction == '1':
+                b.begin_year_amount = begin_d-begin_c
+            else:
+                b.begin_year_amount = begin_d-begin_c
+
+
 
     @api.onchange('beginingDamount')
     def _damountChange(self):
@@ -1915,7 +1930,7 @@ class AccountsBalance(models.Model):
         '''检查以前期间是否存在凭证'''
         domain = [('org', '=', value['org']),
                   ('account', '=', value['account']),
-                  ('items', '=', value.setdefault('item', False)),
+                  ('items', '=', value.setdefault('items', False)),
                   '|', ('v_year', '<', value['year']),
                   '&', ('v_year', '=', value['year']),
                   ('v_month', '<', value['month'])]
