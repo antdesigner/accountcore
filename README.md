@@ -24,7 +24,7 @@ AccountCoreForOdoo,in China
 .....
 
 开发目标是实现会计核算自动化和智能化,以完全取代会计核算的手工操作.
-![accountcore界面](https://share.weiyun.com/5JocspW)
+![accountcore界面](https://github.com/antdesigner/imageForAccountcore/blob/master/accountcore%E7%95%8C%E9%9D%A2.png?raw=true)
 长期维护,精益求精
 https://share.weiyun.com/5JocspW
 ## 下载演示模块地址
