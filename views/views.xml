@@ -1369,10 +1369,26 @@
     <!-- 纸张定义-凭证打印 -->
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>
-      <field name="default" eval="True" />
+      <field name="default" eval="False" />
       <field name="format">custom</field>
       <field name="page_height">148</field>
       <field name="page_width">210</field>
+      <field name="orientation">Portrait</field>
+      <field name="margin_top">10</field>
+      <field name="margin_bottom">10</field>
+      <field name="margin_left">20</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False" />
+      <field name="header_spacing">35</field>
+      <field name="dpi">90</field>
+    </record>
+	    <!-- 凭证24cmX14cm -->
+    <record id="paperformat_a5half" model="report.paperformat">
+      <field name="name">会计凭证</field>
+      <field name="default" eval="True" />
+      <field name="format">custom</field>
+      <field name="page_height">140</field>
+      <field name="page_width">240</field>
       <field name="orientation">Portrait</field>
       <field name="margin_top">10</field>
       <field name="margin_bottom">10</field>
@@ -1393,6 +1409,8 @@
     </record>
     <!-- 报表动作-凭证打印 -->
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
+    <!-- 打印凭证24cmX14cm -->
+    <report id='accounctore_voucher_report_a5haft' model='accountcore.voucher' string='凭证24cmX14cm' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a5half'  />	
     <!--form-平衡检查向导 -->
     <record id="accountcore_check_begin_balance_form" model="ir.ui.view">
       <field name="name">平衡检查</field>
