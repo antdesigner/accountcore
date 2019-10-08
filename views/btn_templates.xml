@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
     <!-- 凭证的核算项目容器 -->
-    <t t-name='accountcore_voucher_choice_items'>
+    <t t-name="accountcore_voucher_choice_items">
         <div class="container ac-items-choice">
         </div>
     </t>
@@ -10,29 +10,28 @@
         <t t-jquery='div.o_list_buttons' t-operation="append">
             <t t-if="widget.displayName=='凭证列表'">
                 <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
-                <!-- <button class='btn btn-secondary ac_voucher_filter' type="button">查询testme</button> -->
             </t>
             <t t-elif="widget.displayName=='已生成凭证编号'">
-                <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
+                <button class="btn btn-secondary ac_voucher_number_sort" type="button">凭证编号排序</button>
             </t>
         </t>
     </t>
     <!-- 科目期初平衡检查按钮 -->
-    <t t-name='accountcore.check_balance'>
-        <button class='btn btn-secondary ac_balance_check' type="button">平衡检查</button>
+    <t t-name="accountcore.check_balance">
+        <button class="btn btn-secondary ac_balance_check" type="button">平衡检查</button>
     </t>
     <!-- 快速选取期间 \addons\accountcore\static\js\accountcore.js\server\addons\accountcore\static\js\accountcore.js-->
-    <t t-name='accountcore.fast_period'>
+    <t t-name="accountcore.fast_period">
         <center>
-            <button type='button' class="btn btn-sm" >上月</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">本月</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">本年</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">去年</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">本季</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">上季</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">去年上半年</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">去年下半年</button>
-            <button type='button' class="btn btn-sm" style="margin-left:1.5em">今年上半年</button>
+            <button type="button" class="btn btn-sm" >上月</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">本月</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">本年</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">去年</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">本季</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">上季</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">去年上半年</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">去年下半年</button>
+            <button type="button" class="btn btn-sm" style="margin-left:1.5em">今年上半年</button>
         </center>
     </t>
 </templates>
