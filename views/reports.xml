@@ -146,7 +146,13 @@
                         </group>
                         <center>
                             <field name="data" widget='ac_jexcel' />
-                            <field name="data_style" invisible='1' widget='ac_jexcel_style'/>
+                            <field name="data_style" invisible='1' widget='ac_jexcel_style' />
+                            <field name="width_info" invisible='1' widget='ac_jexcel_width_info'/>
+                            <field name="height_info" invisible='1' widget='ac_jexcel_height_info'/>
+                            <field name="header_info" invisible='1' widget='ac_jexcel_header_info'/> -->
+                            <field name="comments_info" invisible='1' widget='ac_jexcel_comments_info'/>
+                            <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info'/>
+                            <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info'/>
                         </center>
                         <group>
                             <field name="explain" />
@@ -164,7 +170,7 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}"  required='1'/>
+                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}" required='1' />
                             <field name="guid" />
                             <field name="summary" />
                         </group>
@@ -208,6 +214,5 @@
             <field name="res_model">accountcore.report_model</field>
             <field name='view_mode'>tree,form</field>
         </record>
-
     </data>
 </odoo>
