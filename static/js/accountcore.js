@@ -882,7 +882,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             var d = self.value;
             var options = {
                 defaultColWidth: 120,
-                minDimensions: [4, 2],
+                minDimensions: [4, 5],
                 rowResize: true,
                 allowComments: true,
                 // 排序和odoo可能有冲突，所以禁用

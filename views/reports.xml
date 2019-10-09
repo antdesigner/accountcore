@@ -149,7 +149,7 @@
                             <field name="data_style" invisible='1' widget='ac_jexcel_style' />
                             <field name="width_info" invisible='1' widget='ac_jexcel_width_info'/>
                             <field name="height_info" invisible='1' widget='ac_jexcel_height_info'/>
-                            <field name="header_info" invisible='1' widget='ac_jexcel_header_info'/> -->
+                            <field name="header_info" invisible='1' widget='ac_jexcel_header_info'/>
                             <field name="comments_info" invisible='1' widget='ac_jexcel_comments_info'/>
                             <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info'/>
                             <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info'/>
