@@ -14,7 +14,7 @@ class Jexcel_fields(models.AbstractModel):
     height_info = fields.Text(string='行高的定义')
     header_info = fields.Text(string='表头定义')
     comments_info = fields.Text(string='批注定义')
-    merge_info = fields.Text(string='合并单元格定义')
+    merge_info = fields.Text(string='合并单元格定义', default='{}')
     meta_info = fields.Text(string='隐藏的信息定义')
 
 
