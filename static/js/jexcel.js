@@ -17900,7 +17900,8 @@ var jexcel = (function(el, options) {
             data += obj.copy(false, obj.options.csvDelimiter, true);
             // Download element
             var pom = document.createElement('a');
-            var blob = new Blob([data], {type: 'text/csv;charset=utf-8;'});
+            // huangtiger 修改以处理导出乱码 var blob = new Blob([data], {type: 'text/csv;charset=utf-8;'});
+            var blob = new Blob(["\ufeff"+data], {type: 'text/csv;charset=utf-8;'});
             var url = URL.createObjectURL(blob);
             pom.href = url;
             pom.setAttribute('download', obj.options.csvFileName + '.csv');
