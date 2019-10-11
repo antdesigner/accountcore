@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import uuid
 from odoo import models, fields, api
 from .main_models import Glob_tag_Model
 
@@ -73,7 +74,7 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     _name = 'accountcore.report_model'
     _description = '报表模板，用于生成报表'
     report_type = fields.Many2one('accountcore.report_type', string='报表类型')
-    guid = fields.Char(string='模板唯一码', required=True)
+    guid = fields.Char(string='模板唯一码', required=True, default=lambda s: uuid.uuid4())
     name = fields.Char(string='报表模板名称', required=True)
     version = fields.Char(string='报表模板版本', required=True)
     summary = fields.Text(string='报表模板简介')
@@ -84,6 +85,12 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     # height_info = fields.Text(string='行高的定义')
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
                          '报表模板唯一码重复了!')]
+
+    # @api.model
+    # def create(self, values):
+    #     if 'name':
+    #         values['guid'] = str(uuid.uuid4())
+    #     return super(ReportModel, self).create(values)
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=0):
