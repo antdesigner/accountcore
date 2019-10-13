@@ -919,7 +919,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         content: 'undo',
                         onclick: function () {
                             self.jexcel_obj.undo();
-                            if (this.mode != 'edit') {
+                            if (self.mode != 'edit') {
                                 return;
                             }
                             core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
@@ -930,7 +930,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         content: 'redo',
                         onclick: function () {
                             self.jexcel_obj.redo();
-                            if (this.mode != 'edit') {
+                            if (self.mode != 'edit') {
                                 return;
                             }
                             core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
@@ -985,7 +985,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         type: 'i',
                         content: 'view_stream',
                         onclick: function () {
-                            if (this.mode != 'edit') {
+                            if (self.mode != 'edit') {
                                 return;
                             }
                             // var cell = jexcel.getColumnNameFromId([self.selection_x1, self.selection_y1])
@@ -1000,7 +1000,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         type: 'i',
                         content: 'view_module',
                         onclick: function () {
-                            if (this.mode != 'edit') {
+                            if (self.mode != 'edit') {
                                 return;
                             }
                             var cell = jexcel.getColumnNameFromId([self.selection_x1, self.selection_y1]);
