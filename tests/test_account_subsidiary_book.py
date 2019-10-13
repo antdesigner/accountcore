@@ -1,5 +1,5 @@
 from odoo.tests.common import TransactionCase, tagged
-from ..models.models import VoucherNumberTastics
+from ..models.main_models import VoucherNumberTastics
 
 
 @tagged('accountcore')

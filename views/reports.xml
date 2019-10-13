@@ -135,20 +135,25 @@
             <field name="arch" type="xml">
                 <form string="">
                     <sheet>
-                        <h1>新增编辑=>报表模板</h1>
-                        <hr></hr>
-                        <group>
+                        <group col='8'>
+                            <h5>新增编辑=>报表模板</h5>
                             <field name="report_type" />
-                            <field name="guid" />
-                            <field name='name' />
-                            <field name="version" />
-                            <field name="summary" />
+                            <field name='name'  string="模板名称"/>
+                            <field name="version"  string="版本"/>
                         </group>
                         <center>
                             <field name="data" widget='ac_jexcel' />
-                            <field name="data_style" invisible='1' widget='ac_jexcel_style'/>
+                            <field name="data_style" invisible='1' widget='ac_jexcel_style' />
+                            <field name="width_info" invisible='1' widget='ac_jexcel_width_info' />
+                            <field name="height_info" invisible='1' widget='ac_jexcel_height_info' />
+                            <field name="header_info" invisible='1' widget='ac_jexcel_header_info' />
+                            <field name="comments_info" invisible='1' widget='ac_jexcel_comments_info' />
+                            <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info' />
+                            <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
                         </center>
                         <group>
+                            <field name="guid" readonly='1'/>
+                            <field name="summary" />
                             <field name="explain" />
                             <field name='glob_tag' widget='many2many_tags' />
                         </group>
@@ -164,7 +169,7 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}"  required='1'/>
+                            <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}" required='1' />
                             <field name="guid" />
                             <field name="summary" />
                         </group>
@@ -207,7 +212,7 @@
             <field name="name">报表模板列表</field>
             <field name="res_model">accountcore.report_model</field>
             <field name='view_mode'>tree,form</field>
+            <field name="target">current</field>
         </record>
-
     </data>
 </odoo>
