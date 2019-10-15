@@ -697,7 +697,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
 class GetReport(models.TransientModel):
     "报表生成向导"
     _name = 'accountcore.get_report'
-    _description='报表生成向导'
+    _description = '报表生成向导'
     report_model = fields.Many2one('accountcore.report_model',
                                    string='报表模板')
     guid = fields.Char(related='report_model.guid')
@@ -713,3 +713,51 @@ class GetReport(models.TransientModel):
     def do(self):
         '''根据模板生成报表'''
         pass
+
+
+# 设置报表模板公式向导
+class ReportModelFormula(models.TransientModel):
+    '''设置报表公式向导'''
+    _name = 'accountcore.reportmodel_formula'
+    _description = '设置报表公式向导'
+    account_id = fields.Many2one('accountcore.account', string='会计科目')
+    has_child = fields.Boolean(string='是否包含明细科目', default=True)
+    item_ids = fields.Many2many('accountcore.item', string='作为明细科目的核算项目')
+    account_amount_type = fields.Many2one('accountcore.account_amount_type',
+                                          string='金额类型',
+                                          required=True)
+    formula = fields.Text(string='公式内容', default='')
+    btn_check = fields.Char(string='校验公式')
+    btn_join = fields.Char(string='添加进公式项')
+
+    def do(self):
+        '''公式填入单元格'''
+        return {
+            'type': 'ir.actions.client',
+            'name': '',
+            'tag': 'update_formula',
+            'target': 'new',
+            'context': {'accountName': self.formula}
+        }
+
+    @api.onchange('btn_check')
+    def check(self):
+        '''校验公式'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_check:
+            return
+        return {
+            'warning': {
+                'title': "公式校验结构",
+                'message': "校验没通过",
+            },
+        }
+
+    @api.onchange('btn_join')
+    def join(self):
+        '''添加进公式项'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_join:
+            return
+        r = 'join'
+        self.formula = self.formula+r

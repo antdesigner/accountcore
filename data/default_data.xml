@@ -540,5 +540,20 @@
 <field name='children' >0</field>
 <field name='accounts' eval="[(6,0,[account_162])]" />
 <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' /></record>
+<!-- 特殊会计科目结束 -->
+<!-- 科目取数金额类型开始 -->
+<record id='account_amount_type_1' model='accountcore.account_amount_type'><field name='name' >期初余额</field></record>
+<record id='account_amount_type_2' model='accountcore.account_amount_type'><field name='name' >期初借方余额</field></record>
+<record id='account_amount_type_3' model='accountcore.account_amount_type'><field name='name' >期初贷方余额</field></record>
+<record id='account_amount_type_4' model='accountcore.account_amount_type'><field name='name' >借方发生额</field></record>
+<record id='account_amount_type_5' model='accountcore.account_amount_type'><field name='name' >贷方发生额</field></record>
+<record id='account_amount_type_6' model='accountcore.account_amount_type'><field name='name' >期末余额</field></record>
+<record id='account_amount_type_7' model='accountcore.account_amount_type'><field name='name' >期末借方余额</field></record>
+<record id='account_amount_type_8' model='accountcore.account_amount_type'><field name='name' >期末贷方余额</field></record>
+<record id='account_amount_type_9' model='accountcore.account_amount_type'><field name='name' >本年借方累计发生额</field></record>
+<record id='account_amount_type_10' model='accountcore.account_amount_type'><field name='name' >本年贷方累计发生额</field></record>
+<record id='account_amount_type_11' model='accountcore.account_amount_type'><field name='name' >损益表本期实际发生额</field></record>
+<record id='account_amount_type_12' model='accountcore.account_amount_type'><field name='name' >损益表本年实际发生额</field></record>
+<!-- 科目取数金额类型结束 -->
     </data>
 </odoo>

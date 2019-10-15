@@ -74,7 +74,8 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     _name = 'accountcore.report_model'
     _description = '报表模板，用于生成报表'
     report_type = fields.Many2one('accountcore.report_type', string='报表类型')
-    guid = fields.Char(string='模板唯一码', required=True, default=lambda s: uuid.uuid4())
+    guid = fields.Char(string='模板唯一码', required=True,
+                       default=lambda s: uuid.uuid4())
     name = fields.Char(string='报表模板名称', required=True)
     version = fields.Char(string='报表模板版本', required=True)
     summary = fields.Text(string='报表模板简介')
@@ -117,3 +118,14 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
                 result.append((record.id, "%s,%s" % (
                     record._name, record.guid)))
         return result
+
+
+# 科目取数金额类型
+class AccountAmountType(models.Model, Glob_tag_Model):
+    '''科目取数的金额类型'''
+    _name = 'accountcore.account_amount_type'
+    _description = '科目取数的金额类型'
+    number = fields.Char(string='金额类型编码')
+    name = fields.Char(string='金额类型', required=True)
+    _sql_constraints = [('accountcore_accountamounttype_name_unique', 'unique(name)',
+                         '科目取数的金额类型重复了!')]

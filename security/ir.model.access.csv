@@ -23,6 +23,8 @@ access_receiver_users_accounters,accountcore.receiver,model_accountcore_receiver
 access_report_type_users_accounters,accountcore.report_type,model_accountcore_report_type,,1,1,1,1
 access_storage_report_users_accounters,accountcore.storage_report,model_accountcore_storage_report,,1,1,1,1
 access_report_model_users_accounters,accountcore.report_model,model_accountcore_report_model,,1,1,1,1
+access_account_amount_type_users_accounters,accountcore.account_amount_type,model_accountcore_account_amount_type,,1,1,1,1
+
 
 
 

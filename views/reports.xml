@@ -138,8 +138,8 @@
                         <group col='8'>
                             <h5>新增编辑=>报表模板</h5>
                             <field name="report_type" />
-                            <field name='name'  string="模板名称"/>
-                            <field name="version"  string="版本"/>
+                            <field name='name' string="模板名称" />
+                            <field name="version" string="版本" />
                         </group>
                         <center>
                             <field name="data" widget='ac_jexcel' />
@@ -152,7 +152,7 @@
                             <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
                         </center>
                         <group>
-                            <field name="guid" readonly='1'/>
+                            <field name="guid" readonly='1' />
                             <field name="summary" />
                             <field name="explain" />
                             <field name='glob_tag' widget='many2many_tags' />
@@ -189,6 +189,31 @@
                 </form>
             </field>
         </record>
+        <!--form-报表模板科目取数公式设置向导-->
+        <record id="accountcore_reportmodel_formula_form" model="ir.ui.view">
+            <field name='name'>报表模板科目取数公式设置向导</field>
+            <field name="model">accountcore.reportmodel_formula</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="account_id" options="{'no_create_edit':1,'no_create':1,'no_open':1}" required='1' />
+                            <field name="has_child" />
+                            <field name="item_ids" />
+                            <field name="account_amount_type" widget='selection' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="do" type="object" string="把公式填入单元格" class='btn-primary' />
+                        <field name="btn_check" widget='ac_btn_trigger_onchange'/>
+                        <field name="btn_join" widget='ac_btn_trigger_onchange'/>
+                        <field name="formula" placeholder='公式内容' />
+
+                    </footer>
+                </form>
+            </field>
+        </record>
         <!-- 窗体动作-打开接收者列表 -->
         <record model="ir.actions.act_window" id="accountcore_receivers_actions_window">
             <field name="name">接受者列表</field>
@@ -213,6 +238,17 @@
             <field name="res_model">accountcore.report_model</field>
             <field name='view_mode'>tree,form</field>
             <field name="target">current</field>
+        </record>
+        <!-- 窗体动作-打开报表模板科目取数公式设置向导 -->
+        <record id='accountcore_reportmodel_formula_actions_window' model='ir.actions.act_window' >
+            <field name="name">报表模板科目取数公式设置向导</field>
+            <field name='res_model'>accountcore.reportmodel_formula</field>
+            <field name='view_mode'>form</field>
+        </record>
+        <record id="accountcore_reportmodel_update_formula_client_action" model="ir.actions.client">
+            <field name="name"></field>
+            <field name="res_model"></field>
+            <field name="tag">update_formula</field>
         </record>
     </data>
 </odoo>

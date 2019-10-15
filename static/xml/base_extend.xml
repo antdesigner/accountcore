@@ -34,4 +34,8 @@ $(function () {
         
     </div>  
 </t>
+<!-- 自定义按钮，用于ac_btn_trigger_onchange等小部件 -->
+<t t-name="accountcor.ac_btn">
+<button class='btn btn-secondary'><span>自定义按钮</span></button>
+</t>
 </templates>
