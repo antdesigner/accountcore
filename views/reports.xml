@@ -197,7 +197,7 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="account_id" options="{'no_create_edit':1,'no_create':1,'no_open':1}" required='1' />
+                            <field name="account_id" options="{'no_create_edit':1,'no_create':1,'no_open':1}"/>
                             <field name="has_child" />
                             <field name="item_ids" />
                             <field name="account_amount_type" widget='selection' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />

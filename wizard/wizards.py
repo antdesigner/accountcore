@@ -724,8 +724,7 @@ class ReportModelFormula(models.TransientModel):
     has_child = fields.Boolean(string='是否包含明细科目', default=True)
     item_ids = fields.Many2many('accountcore.item', string='作为明细科目的核算项目')
     account_amount_type = fields.Many2one('accountcore.account_amount_type',
-                                          string='金额类型',
-                                          required=True)
+                                          string='金额类型')
     formula = fields.Text(string='公式内容', default='')
     btn_check = fields.Char(string='校验公式')
     btn_join = fields.Char(string='添加进公式项')
