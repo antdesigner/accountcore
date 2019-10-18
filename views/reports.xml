@@ -142,7 +142,7 @@
                             <field name="version" string="版本" />
                         </group>
                         <center>
-                            <field name="data" widget='ac_jexcel' />
+                            <field name="data" widget='ac_jexcel' default_focus='1'/>
                             <field name="data_style" invisible='1' widget='ac_jexcel_style' />
                             <field name="width_info" invisible='1' widget='ac_jexcel_width_info' />
                             <field name="height_info" invisible='1' widget='ac_jexcel_height_info' />
@@ -205,11 +205,11 @@
                         </group>
                     </sheet>
                     <footer>
-                        <button name="do" type="object" string="把公式填入单元格" class='btn-primary' />
-                        <field name="btn_check" widget='ac_btn_trigger_onchange'/>
-                        <field name="btn_join" widget='ac_btn_trigger_onchange'/>
-                        <field name="formula" placeholder='公式内容' />
-
+                        <button name="do" type="object" string="把公式填回单元格" class='btn-primary' />
+                        <field name="btn_clear" string=" " class='fa fa-eraser' widget='ac_btn_trigger_onchange'/>                        
+                        <field name="btn_join_reduce" string=" " class='fa fa-minus-square' widget='ac_btn_trigger_onchange'/>
+                        <field name="btn_join_add" string=" " class='fa fa-plus-square' widget='ac_btn_trigger_onchange'/>
+                        <field name="formula" class='formula font-weight-bold' placeholder='公式内容' />
                     </footer>
                 </form>
             </field>

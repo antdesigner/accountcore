@@ -725,9 +725,16 @@ class ReportModelFormula(models.TransientModel):
     item_ids = fields.Many2many('accountcore.item', string='作为明细科目的核算项目')
     account_amount_type = fields.Many2one('accountcore.account_amount_type',
                                           string='金额类型')
-    formula = fields.Text(string='公式内容', default='')
-    btn_check = fields.Char(string='校验公式')
-    btn_join = fields.Char(string='添加进公式项')
+    formula = fields.Text(string='公式内容')
+    btn_join_reduce = fields.Char()
+    btn_join_add = fields.Char()
+    btn_clear = fields.Char()
+    @api.model
+    def default_get(self, field_names):
+        default = super().default_get(field_names)
+        if self.env.context.get('ac'):
+            default['formula'] = self.env.context.get('ac')
+        return default
 
     def do(self):
         '''公式填入单元格'''
@@ -739,24 +746,74 @@ class ReportModelFormula(models.TransientModel):
             'context': {'accountName': self.formula}
         }
 
-    @api.onchange('btn_check')
-    def check(self):
-        '''校验公式'''
+    @api.onchange('btn_join_reduce')
+    def join_reduce(self):
+        '''减进公式'''
         # 窗口弹出时不执行，直接返回
-        if not self.btn_check:
+        if not self.btn_join_reduce:
             return
-        return {
-            'warning': {
-                'title': "公式校验结构",
-                'message': "校验没通过",
-            },
-        }
+        if not self.account_id.name:
+            return {
+                'warning': {
+                    'message': "请选择会计科目",
+                },
+            }
+        if not self.account_amount_type:
+            return {
+                'warning': {
+                    'message': "请选择金额类型",
+                },
+            }
+        items = ''
+        for i in self.item_ids:
+            items = items+i.name+'/'
+        mark = "-"
+        if not self.formula:
+            self.formula = ""
+        self.formula = (self.formula+mark+"account('"
+                        + self.account_id.name
+                        + "','"+str(self.has_child)
+                        + "','"+self.account_amount_type.name
+                        + "','"+items
+                        + "')")
 
-    @api.onchange('btn_join')
-    def join(self):
-        '''添加进公式项'''
+    @api.onchange('btn_join_add')
+    def join_add(self):
+        '''加进公式'''
         # 窗口弹出时不执行，直接返回
-        if not self.btn_join:
+        if not self.btn_join_add:
             return
-        r = 'join'
-        self.formula = self.formula+r
+        if not self.account_id.name:
+            return {
+                'warning': {
+                    'message': "请选择会计科目",
+                },
+            }
+        if not self.account_amount_type:
+            return {
+                'warning': {
+                    'message': "请选择金额类型",
+                },
+            }
+        items = ''
+        for i in self.item_ids:
+            items = items+i.name+'/'
+        mark = ""
+        if self.formula:
+            mark = "+"
+        else:
+            self.formula = ""
+        self.formula = (self.formula+mark+"account('"
+                        + self.account_id.name
+                        + "','"+str(self.has_child)
+                        + "','"+self.account_amount_type.name
+                        + "','"+items
+                        + "')")
+
+    @api.onchange('btn_clear')
+    def join_clear(self):
+        '''清除公式'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_clear:
+            return
+        self.formula = ""

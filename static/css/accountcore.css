@@ -150,13 +150,18 @@
     -webkit-font-smoothing: antialiased;
 }
 
+/* 报表设计器工具栏 */
 .jexcel_toolbar {
     z-index: 85 !important;
 }
 
+.jexcel_content td {
+    overflow: hidden !important;
+}
+
 /* jexel 工具下拉框宽度 */
 select.jexcel_toolbar_item {
-    width: 100px
+    width: 100px;
 }
 
 /* 右键查单靠左对齐 */
@@ -168,4 +173,9 @@ select.jexcel_toolbar_item {
 .jcontextmenu>li:last-child {
     font-size: 0px;
     color: white;
+}
+/* 报表设计器公式向导公式内容高度 */
+textarea.formula {
+max-height: 20rem;
+overflow-y:scroll !important;
 }
