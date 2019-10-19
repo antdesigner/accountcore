@@ -85,7 +85,7 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     # width_info = fields.Text(string='列宽的定义')
     # height_info = fields.Text(string='行高的定义')
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
-                         '报表模板唯一码重复了!')]
+                         '报表模版名称码重复了!')]
 
     # @api.model
     # def create(self, values):
