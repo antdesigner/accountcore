@@ -1350,7 +1350,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         // for(var k in meta){
                         //     instance.jexcel.setMeta(cellName,k,null);
                         // }
+                        if(instance.jexcel.options.meta && instance.jexcel.options.meta[cellName]){
                         delete instance.jexcel.options.meta[cellName];
+                        }
                     }
                 },
                 oninsertrow: function (instance) {
