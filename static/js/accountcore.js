@@ -882,6 +882,42 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
     var core = require('web.core');
     var AbstractAction = require('web.AbstractAction');
     // var Session = require('web.session');
+    // 公式类
+    class ACFormula {
+        constructor(cellstr) {
+            if (!cellstr) {
+                throw Error("公式错误,没有内容");
+            }
+            if (cellstr.charAt(0) != '=') {
+                throw Error("公式错误，没有以=开头");
+            }
+            if (cellstr.slice(-2) != '")') {
+                throw Error("公式错误，没有以\")结尾");
+            }
+            this.str = cellstr;
+            this.index1 = this.str.indexOf('("');
+            if (this.index1 == -1) {
+                throw Error("公式错误，没有'(\"'");
+            }
+            this.index2 = this.str.lastIndexOf('")');
+        }
+        /**
+         * 公式名称
+         */
+        name() {
+            var name = this.str.slice(1, this.index1);
+            if (name.length == 0) {
+                throw Error("公式错误，在'=' 和'(\"='之间没有公式名称");
+            }
+            return name;
+        }
+        /**
+         * 公式内容
+         */
+        value() {
+            return this.str.slice(this.index1 + 2, -2);
+        }
+    }
     // 表格设计器表格的数据字段小部件
     var ac_jexcel = AbstractField.extend({
         events: _.extend({
@@ -903,7 +939,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             alert('check');
             var cellName = jexcel.getColumnNameFromId([this.selection_x1, this.selection_y1]);
             alert(JSON.stringify(this.jexcel_obj.getMeta(cellName)));
-            alert(JSON.stringify(this.jexcel_obj.getMeta()));
+            alert(JSON.stringify(this.jexcel_obj.getMeta(cellName, "ac")));
         },
         start: function () {
             core.bus.on('ac_jexcel_set_formula', this, this._onSet_formula);
@@ -917,10 +953,18 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             };
             var cellName = jexcel.getColumnNameFromId([this.selection_x1, this.selection_y1]);
             this.jexcel_obj.setMeta(cellName, 'ac', formula);
-            this.jexcel_obj.setMeta([this.selection_x1, this.selection_y1], 'ac', formula)
-            // core.bus.trigger('ac_jexcel_meta_change', this.jexcel_obj.getMeta());
             this.jexcel_obj.setValueFromCoords(this.selection_x1, this.selection_y1, formula);
             this.jexcel_obj.updateSelectionFromCoords(this.selection_x1, this.selection_y1, this.selection_x1, this.selection_y1);
+        },
+        //判断是不是公式，"="开头
+        _isACFormula: function (str) {
+            if (!str) {
+                return false;
+            }
+            if (str.slice(0, 3) == '=ac') {
+                return true;
+            }
+
         },
         // 触发更新表格单元格数据，样式和批注
         _changeStyleAndData: function (instance) {
@@ -932,16 +976,21 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             core.bus.trigger('ac_jexcel_merge_change', instance.jexcel.getMerge());
             core.bus.trigger('ac_jexcel_width_change', self._getWidths(instance));
             core.bus.trigger('ac_jexcel_height_change', self._getHeights(instance));
-            core.bus.trigger('ac_jexcel_comments_change', this._getComments(instance.jexcel));
-            // core.bus.trigger('ac_jexcel_meta_change', instance.jexcel.getMeta());
+            core.bus.trigger('ac_jexcel_comments_change', this._getComments(instance));
+            core.bus.trigger('ac_jexcel_meta_change', self._getMetas(instance));
         },
         // 获得表格批注信息
-        _getComments: function (jexcel) {
-            return self._getAllCellsInfo(jexcel, 'getComments')
+        _getComments: function (instance) {
+            return self._getAllCellsInfo(instance.jexcel, 'getComments')
         },
         _getFomulas: function (jexcel) {
 
         },
+
+        /**
+         * @description 获得表格各列宽
+         * @param  {} instance
+         */
         _getWidths: function (instance) {
             var values = {};
             var je = instance.jexcel
@@ -952,6 +1001,10 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             };
             return values;
         },
+        /**
+         * @description 获得表格各行高
+         * @param  {} instance
+         */
         _getHeights: function (instance) {
             var values = {};
             var je = instance.jexcel
@@ -963,6 +1016,26 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 } else {
                     values[l] = je.options.defaultRowsHeight;
                 };
+            };
+            return values;
+        },
+        /**
+         * @description 获得表格单元格的meta数据，公式等
+         * @param  {} instance
+         */
+        _getMetas: function (instance) {
+            var values = {};
+            var je = instance.jexcel
+            var rowsCount = je.rows.length;
+            var colsCount = je.colgroup.length;
+            var callName;
+            for (var y = 0; y < rowsCount; y++) {
+                for (var x = 0; x < colsCount; x++) {
+                    callName = jexcel.getColumnNameFromId([x, y]);
+                    if (je.getMeta(callName)) {
+                        values[callName] = je.getMeta(callName);
+                    }
+                }
             };
             return values;
         },
@@ -1002,12 +1075,22 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             self.cellName_ul = jexcel.getColumnNameFromId([x1, y1]);
             self.cellName_lr = jexcel.getColumnNameFromId([x2, y2]);
         },
-        _saveRowHight: function(){
-
+        _isAutoComputing: function () {
+            return false;
         },
-        // _saveColWidth:function(instance){
-        //     core.bus.trigger('ac_jexcel_width_change', self._getWidths(instance));
-        // },
+        _compute: function () {
+            var x = self.jexcel_obj.rows.length;
+            var y = self.jexcel_obj.colgroup.length;
+            var v;
+            for (var j = 0; j < y; j++) {
+                for (var i = 0; i < x; i++) {
+                    v = self.jexcel_obj.getValueFromCoords(j, i);
+                    if (v && v.charAt(0) == '=') {
+                        self.jexcel_obj.setValueFromCoords(j, i, v, false)
+                    }
+                }
+            }
+        },
         _renderEdit: function () {
             self = this;
             //避免重复加载
@@ -1040,7 +1123,10 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 columnSorting: false,
                 data: $.parseJSON(self.value),
                 mergeCells: $.parseJSON(self.record.data['merge_info']),
-
+                // 自定义扩展option
+                computing: this._isAutoComputing(),
+                // 远程调用
+                widget:this,
                 // mergeCells:{},
                 // 工具栏
                 toolbar: [{
@@ -1051,7 +1137,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             if (self.mode != 'edit') {
                                 return;
                             }
-                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
+
                         }
                     },
                     {
@@ -1062,7 +1148,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             if (self.mode != 'edit') {
                                 return;
                             }
-                            core.bus.trigger('ac_jexcel_style_change', self.jexcel_obj.getStyle());
+
                         }
                     },
                     {
@@ -1151,13 +1237,23 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     // 下载表格为csv
                     {
                         type: 'i',
-                        content: 'save_alt',
+                        content:  'save_alt',
                         onclick: function () {
-                            self._do_check();
-                            // self.jexcel_obj.download();
+                            // self._do_check();
+                            self.jexcel_obj.download();
+                            // jexcel.current.options.computing=false;
+
                         }
                     },
-
+                    // 计算
+                    {
+                        type: 'i',
+                        content:'exposure',
+                        onclick: function () {
+                            jexcel.current.options.computing = !jexcel.current.options.computing;
+                            self._compute();
+                        }
+                    },
                 ],
                 // 
                 text: {
@@ -1211,7 +1307,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             instance.jexcel.setHeight(row, height_info[row])
                         } else {
                             // 默认行高
-                            instance.jexcel.setHeight(row,instance.jexcel.opetions.defaultRowsHeight);
+                            instance.jexcel.setHeight(row, instance.jexcel.opetions.defaultRowsHeight);
                         }
                     };
                     // 初始化表格表头名称
@@ -1228,13 +1324,34 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         instance.jexcel.setComments(cellName, comments[cellName]);
                     };
                     // 初始化公式
+                    var metas = JSON.parse(self.record.data['meta_info']);
+                    for (var cellName in metas) {
+                        for (var k in metas[cellName]) {
+                            instance.jexcel.setMeta(cellName, k, metas[cellName][k]);
+                        }
+                    }
                     // instance.jexcel.setMeta(JSON.parse(self.record.data['meta_info']));
                     // 选中第一个单元格，以在点击保存时触发onblur事件
-                    instance.jexcel.updateSelectionFromCoords(0,0,0,0);
+                    instance.jexcel.updateSelectionFromCoords(0, 0, 0, 0);
                 },
                 onchange: function (instance, cell, x, y, value) {
                     self._setValue(JSON.stringify(instance.jexcel.getData()));
-
+                    var cellName = jexcel.getColumnNameFromId([x, y]);
+                    var data = instance.jexcel.getData()[y][x];
+                    if (self._isACFormula(data)) {
+                        try {
+                            var cellformula = new ACFormula(data);
+                            instance.jexcel.setMeta(cellName, cellformula.name(), cellformula.value());
+                        } catch (error) {
+                            self.do_warn(error);
+                        }
+                    } else {
+                        // var meta=instance.jexcel.getMeta(cellName);
+                        // for(var k in meta){
+                        //     instance.jexcel.setMeta(cellName,k,null);
+                        // }
+                        delete instance.jexcel.options.meta[cellName];
+                    }
                 },
                 oninsertrow: function (instance) {
 
@@ -1312,9 +1429,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             // 设置右键科目取数公式菜单在编辑状态下可见
             self.jexcel_obj.options.allowOpenAccountFormula = (this.mode === 'edit');
             // 设置默认行高             
-            self.jexcel_obj.options.defaultRowsHeight = 25;                      
+            self.jexcel_obj.options.defaultRowsHeight = 25;
             // 注册打开设置公式向导方法                                                                     
-            self.jexcel_obj.openAccountFormula = function () {                        
+            self.jexcel_obj.openAccountFormula = function () {
                 self._openAccountFormulaWizard();
             };
 

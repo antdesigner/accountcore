@@ -1,4 +1,3 @@
-
 /**
  * (c) jExcel v3.5.0
  * 
@@ -155,6 +154,10 @@ odoo.define('accountcore.jexcel', function (require) {
             onchangemeta: null,
             // Customize any cell behavior
             updateTable: null,
+            // tiger 修改-开始
+            computing: false,
+            widget: null,
+            // tiger 修改-结束
             // Texts
             text: {
                 noRecordsFound: 'No records found',
@@ -855,7 +858,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 }
             } else {
                 if (('' + value).substr(0, 1) == '=' && obj.options.parseFormulas == true) {
-                    value = obj.executeFormula(value, i, j)
+                    value = obj.executeFormula(value, i, j)               
                 }
                 if (obj.options.columns[i].mask) {
                     var decimal = obj.options.columns[i].decimal || '.';
@@ -2606,9 +2609,9 @@ odoo.define('accountcore.jexcel', function (require) {
                     var h = obj.rows[j].style.height;
                     if (h) {
                         data[j] = h;
-                    }else{
+                    } else {
                         // tiger 修改-开始  获得全部行高数据，以便保存       
-                        data[j]=obj.rows[j].getAttribute('height');
+                        data[j] = obj.rows[j].getAttribute('height');
                         // tiger 修改-结束
                     }
                 }
@@ -2622,8 +2625,8 @@ odoo.define('accountcore.jexcel', function (require) {
                 // var data = obj.rows[row].style.height; 原来
                 // tiger 修改-开始 获得行高数据
                 var data = obj.rows[row].style.height;
-                if(!data){
-                var data = obj.rows[row].getAttribute('height');
+                if (!data) {
+                    var data = obj.rows[row].getAttribute('height');
                 };
                 // tiger 修改-结束
             }
@@ -2701,7 +2704,17 @@ odoo.define('accountcore.jexcel', function (require) {
             if (!cell) {
                 return obj.options.meta;
             } else {
-                return key ? obj.options.meta[cell][key] : obj.options.meta[cell];
+                // return key ? obj.options.meta[cell][key] : obj.options.meta[cell];
+                //   tiger 修改——开始
+                if (!obj.options.meta) {
+                    return null
+                };
+                //  tiger 修改-结束
+                if (key) {
+                    return obj.options.meta[cell] && obj.options.meta[cell][key] ? obj.options.meta[cell][key] : null;
+                } else {
+                    return obj.options.meta[cell] ? obj.options.meta[cell] : null;
+                }
             }
         }
 
@@ -3994,7 +4007,7 @@ odoo.define('accountcore.jexcel', function (require) {
             }
 
             // Update formulas
-            obj.updateFormulas(affectedTokens);
+            obj.updateFormulas([affectedTokens]);
 
             // Update meta data
             obj.updateMeta(affectedTokens);
@@ -5145,8 +5158,8 @@ odoo.define('accountcore.jexcel', function (require) {
                     data += obj.getHeaders();
                     data += "\r\n";
                 }
-                // Get data
-                data += obj.copy(false, obj.options.csvDelimiter, true);
+                // highlighted, delimiter, returnData
+                data += obj.copy(false, obj.options.csvDelimiter, false);
                 // Download element
                 var pom = document.createElement('a');
                 // huangtiger 修改以处理导出乱码 var blob = new Blob([data], {type: 'text/csv;charset=utf-8;'});
@@ -5836,7 +5849,7 @@ odoo.define('accountcore.jexcel', function (require) {
                     items.push({
                         title: obj.options.text.openAccountFormula,
                         onclick: function () {
-                             obj.openAccountFormula();
+                            obj.openAccountFormula();
                         }
                     });
                 }
@@ -12806,12 +12819,31 @@ odoo.define('accountcore.jexcel', function (require) {
         return exports;
     })();
     // tiger 自定义函数-报表设计器科目取数公式
-    jexcel.methods.ac = (function () {
+    jexcel.methods.ac = (function (formula) {
         var exports = {};
-        exports.ac=function(){
-            return "<span class='fa fa-pencil o_right'>公式</span>";
+        exports.ac = function () {
+            var s = arguments;
+            var result="";
+            if (jexcel.current.options.computing) {
+                var widget = jexcel.current.options.widget;
+                var url='/ac/compute';
+                $.ajax({
+                    url:url,
+                    type:"POST",
+                    dataType: 'json',
+                    data:JSON.stringify({"formula":formula}),
+                    async:false,
+                    global:false,
+                    contentType: 'application/json',
+                    success:function(data){
+                    result=data.result;
+                    },
+                });
+                return result;  
+            } else {
+                return "<span class='fa fa-pencil o_right'>公式</span>";
+            }
         }
-
         return exports;
     })();
     for (var i = 0; i < Object.keys(jexcel.methods).length; i++) {

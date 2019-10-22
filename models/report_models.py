@@ -80,18 +80,8 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     version = fields.Char(string='报表模板版本', required=True)
     summary = fields.Text(string='报表模板简介')
     explain = fields.Html(string='报表模板详细介绍')
-    # data = fields.Text(string='模板数据', default='[[]]')
-    # data_style = fields.Text(string='模板样式')
-    # width_info = fields.Text(string='列宽的定义')
-    # height_info = fields.Text(string='行高的定义')
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
                          '报表模版名称码重复了!')]
-
-    # @api.model
-    # def create(self, values):
-    #     if 'name':
-    #         values['guid'] = str(uuid.uuid4())
-    #     return super(ReportModel, self).create(values)
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=0):
@@ -118,6 +108,13 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
                 result.append((record.id, "%s,%s" % (
                     record._name, record.guid)))
         return result
+    @api.model
+    def comput(self,*args,**kwargs):
+        pass
+        return 99.99
+
+    def account(self):
+        return 100.01
 
 
 # 科目取数金额类型
