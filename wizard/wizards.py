@@ -712,10 +712,25 @@ class GetReport(models.TransientModel):
 
     def do(self):
         '''根据模板生成报表'''
-        pass
-
+        return {
+            'name': "生成报表",
+            'type': 'ir.actions.act_window',
+            'res_model': 'accountcore.report_model',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'current',
+            'res_id': self.report_model.id,
+            'context': {
+                'form_view_initial_mode': 'edit',
+                'start_data': self.startDate,
+                'end_data': self.endDate,
+                'orgs': self.orgs.ids,
+            }
+        }
 
 # 设置报表模板公式向导
+
+
 class ReportModelFormula(models.TransientModel):
     '''设置报表公式向导'''
     _name = 'accountcore.reportmodel_formula'

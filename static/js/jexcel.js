@@ -12819,25 +12819,26 @@ odoo.define('accountcore.jexcel', function (require) {
         return exports;
     })();
     // tiger 自定义函数-报表设计器科目取数公式
-    jexcel.methods.ac = (function (formula) {
+    jexcel.methods.ac = (function () {
         var exports = {};
-        exports.ac = function () {
-            var s = arguments;
+        exports.ac = function (formula) {
             var result="";
             if (jexcel.current.options.computing) {
                 var widget = jexcel.current.options.widget;
+                var c=widget.additionalContext;
                 var url='/ac/compute';
                 $.ajax({
                     url:url,
                     type:"POST",
-                    dataType: 'json',
-                    data:JSON.stringify({"formula":formula}),
-                    async:false,
-                    global:false,
-                    contentType: 'application/json',
+                    dataType: 'text',
+                    data: {formula:formula},
+                    async: false,
                     success:function(data){
-                    result=data.result;
+                    result=data;
                     },
+                    error: function(data){
+                        console.log("ERROR ", data);
+                    }
                 });
                 return result;  
             } else {

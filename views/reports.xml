@@ -135,28 +135,45 @@
             <field name="arch" type="xml">
                 <form string="">
                     <sheet>
-                        <group col='8'>
-                            <h5>新增编辑=>报表模板</h5>
-                            <field name="report_type" />
-                            <field name='name' string="模板名称" />
-                            <field name="version" string="版本" />
-                        </group>
-                        <center>
-                            <field name="data" widget='ac_jexcel' default_focus='1'/>
-                            <field name="data_style" invisible='1' widget='ac_jexcel_style' />
-                            <field name="width_info" invisible='1' widget='ac_jexcel_width_info' />
-                            <field name="height_info" invisible='1' widget='ac_jexcel_height_info' />
-                            <field name="header_info" invisible='1' widget='ac_jexcel_header_info' />
-                            <field name="comments_info" invisible='1' widget='ac_jexcel_comments_info' />
-                            <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info' />
-                            <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
-                        </center>
-                        <group>
-                            <field name="guid" readonly='1' />
-                            <field name="summary" />
-                            <field name="explain" />
-                            <field name='glob_tag' widget='many2many_tags' />
-                        </group>
+                        <notebook>
+                            <page string='模板'>
+                                <center>
+                                    <span>期间从</span>
+                                    <field name='startDate'  />
+                                    <span class='fa fa-calendar-minus-o'>到</span>
+                                    <field name="endDate" />
+                                    <br />
+                                    <field colspan='6' name="fast_period" widget="ac_fast_period" />
+                                </center>
+                                <center>
+                                    <field name="data" widget='ac_jexcel' default_focus='1' />
+                                    <field name="data_style" invisible='1' widget='ac_jexcel_style' />
+                                    <field name="width_info" invisible='1' widget='ac_jexcel_width_info' />
+                                    <field name="height_info" invisible='1' widget='ac_jexcel_height_info' />
+                                    <field name="header_info" invisible='1' widget='ac_jexcel_header_info' />
+                                    <field name="comments_info" invisible='1' widget='ac_jexcel_comments_info' />
+                                    <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info' />
+                                    <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
+                                </center>
+                            </page>
+
+                            <page string='机构范围'>
+                                <group>
+                                    <field name="orgs" widget="many2many_checkboxes_floatleft" />
+                                </group>
+                            </page>
+                            <page string='模板名称和说明'>
+                                <group>
+                                    <field name="report_type" />
+                                    <field name='name' string="模板名称" />
+                                    <field name="version" string="模板版本" />
+                                    <field name="guid" readonly='1' />
+                                    <field name="summary" />
+                                    <field name="explain" />
+                                    <field name='glob_tag' widget='many2many_tags' />
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -197,7 +214,7 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="account_id" options="{'no_create_edit':1,'no_create':1,'no_open':1}"/>
+                            <field name="account_id" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
                             <field name="has_child" />
                             <field name="item_ids" />
                             <field name="account_amount_type" widget='selection' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
@@ -206,9 +223,9 @@
                     </sheet>
                     <footer>
                         <button name="do" type="object" string="把公式填回单元格" class='btn-primary' />
-                        <field name="btn_clear" string=" " class='fa fa-eraser' widget='ac_btn_trigger_onchange'/>                        
-                        <field name="btn_join_reduce" string=" " class='fa fa-minus-square' widget='ac_btn_trigger_onchange'/>
-                        <field name="btn_join_add" string=" " class='fa fa-plus-square' widget='ac_btn_trigger_onchange'/>
+                        <field name="btn_clear" string=" " class='fa fa-eraser' widget='ac_btn_trigger_onchange' />
+                        <field name="btn_join_reduce" string=" " class='fa fa-minus-square' widget='ac_btn_trigger_onchange' />
+                        <field name="btn_join_add" string=" " class='fa fa-plus-square' widget='ac_btn_trigger_onchange' />
                         <field name="formula" class='formula font-weight-bold' placeholder='公式内容' />
                     </footer>
                 </form>

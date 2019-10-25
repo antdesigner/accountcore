@@ -80,6 +80,13 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     version = fields.Char(string='报表模板版本', required=True)
     summary = fields.Text(string='报表模板简介')
     explain = fields.Html(string='报表模板详细介绍')
+    startDate = fields.Date(string='开始月份')
+    endDate = fields.Date(string='结束月份')
+    fast_period = fields.Date(string="选取期间", store=False)
+    orgs = fields.Many2many('accountcore.org',
+                            string='机构范围',
+                            default=lambda s: s.env.user.currentOrg,
+                            required=True)
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
                          '报表模版名称码重复了!')]
 
