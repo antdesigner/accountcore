@@ -176,6 +176,8 @@ odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields
 
     var FieldMany2ManyCheckBoxes = relational_fields.FieldMany2ManyCheckBoxes;
     var FieldMany2ManyCheckBoxes_flowToLeft = FieldMany2ManyCheckBoxes.extend({
+
+
         template: 'FieldMany2ManyCheckBoxes_flowToLeft',
     });
     var fieldRegistry = require('web.field_registry');
@@ -935,6 +937,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         // 左上角单元格
         cellName_ul: "A1",
         cellName_lr: "A1",
+        startDate:'',
+        endDate:'',
+        orgIds:'',
         _do_check: function () {
             alert('check');
             var cellName = jexcel.getColumnNameFromId([this.selection_x1, this.selection_y1]);
@@ -944,6 +949,35 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         start: function () {
             core.bus.on('ac_jexcel_set_formula', this, this._onSet_formula);
             return this._super.apply(this, arguments);
+        },
+        /**
+         * 获得供报表的公式计算的开始期间参数
+         */
+        _getStartDate: function () {
+            var startDate = $("[name='startDate'] input").val() 
+            if (!startDate){
+                startDate =$("[name='startDate']").text()
+            }
+            return this._changeDateStr(startDate);
+        },
+        /**
+         * 获得供报表的公式计算的结束期间参数
+         */
+        _getEndDate: function () {
+            var endDate = $("[name='endDate'] input").val() 
+            if(!endDate ){
+                endDate= $("[name='endDate']").text()
+                }
+            return this._changeDateStr(endDate);
+        },
+        /**
+         * 获得供报表公式计算的机构范围参数
+         */
+        _getOrgIds: function () {
+            var ids = _.map($(".ac_choice_orgs").find('input:checked'), function (input) {
+                return $(input).data("record-id");
+            });
+            return ids.join('/');
         },
         // 设置公式
         _onSet_formula: function (v) {
@@ -1091,6 +1125,10 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 }
             }
         },
+        _changeDateStr: function (dateStr) {
+            return dateStr.replace('年', '-').replace('月', '-').replace('日', '')
+
+        },
         _renderEdit: function () {
             self = this;
             //避免重复加载
@@ -1103,9 +1141,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             var options = {
                 editable: (this.mode === 'edit'),
                 fullscreen: false,
-                defaultColWidth: 120,
+                defaultColWidth: 150,
                 wordWrap: true,
-                minDimensions: [5, 5],
+                minDimensions: [4, 5],
                 rowResize: true,
                 columnResize: true,
                 allowComments: (this.mode === 'edit'),
@@ -1126,7 +1164,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 // 自定义扩展option
                 computing: this._isAutoComputing(),
                 // 远程调用
-                widget:this,
+                widget: this,
                 // mergeCells:{},
                 // 工具栏
                 toolbar: [{
@@ -1237,7 +1275,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     // 下载表格为csv
                     {
                         type: 'i',
-                        content:  'save_alt',
+                        content: 'save_alt',
                         onclick: function () {
                             // self._do_check();
                             self.jexcel_obj.download();
@@ -1248,9 +1286,12 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     // 计算
                     {
                         type: 'i',
-                        content:'exposure',
+                        content: 'exposure',
                         onclick: function () {
                             jexcel.current.options.computing = !jexcel.current.options.computing;
+                            self.startDate=self._getStartDate();
+                            self.endDate=self._getEndDate();
+                            self.orgIds=self._getOrgIds();
                             self._compute();
                         }
                     },
@@ -1350,8 +1391,8 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         // for(var k in meta){
                         //     instance.jexcel.setMeta(cellName,k,null);
                         // }
-                        if(instance.jexcel.options.meta && instance.jexcel.options.meta[cellName]){
-                        delete instance.jexcel.options.meta[cellName];
+                        if (instance.jexcel.options.meta && instance.jexcel.options.meta[cellName]) {
+                            delete instance.jexcel.options.meta[cellName];
                         }
                     }
                 },
