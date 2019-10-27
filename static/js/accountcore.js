@@ -955,6 +955,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
          */
         _getStartDate: function () {
             var startDate = $("[name='startDate'] input").val() 
+            // 非编辑状态下取数
             if (!startDate){
                 startDate =$("[name='startDate']").text()
             }

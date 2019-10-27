@@ -468,11 +468,18 @@ class Account(models.Model, Glob_tag_Model):
 
     @api.multi
     def getMeAndChild_ids(self):
-        '''获得科目下的全部明细科目和自生'''
+        '''获得科目下的全部明细科目和自生的ID'''
         self.ensure_one()
         # 通过科目编码来判断
         return self.search([('number', 'like', self.number)]).mapped('id')
-
+    
+    @api.multi
+    def getMeAndChilds(self):
+        '''获得科目下的全部明细科目和自生'''
+        self.ensure_one()
+        # 通过科目编码来判断
+        return self.search([('number', 'like', self.number)])
+    
     def getBalances(self, org=None, item=None):
         '''获得科目的余额记录'''
         domain = [('account', '=', self.id)]
@@ -518,6 +525,7 @@ class Account(models.Model, Glob_tag_Model):
             return None
         return chain[-1]
 
+    # 获得当下科目余额
     def getEndAmount(self, org, item):
         '''获得当下的科目余额金额'''
         amount = 0

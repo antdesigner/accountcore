@@ -159,7 +159,7 @@
 
                             <page string='机构范围'>
                                 <group>
-                                    <field name="orgs" widget="many2many_checkboxes_floatleft" class="ac_choice_orgs"/>
+                                    <field name="orgs" widget="many2many_checkboxes_floatleft" class="ac_choice_orgs" required='True'/>
                                 </group>
                             </page>
                             <page string='模板名称和说明'>

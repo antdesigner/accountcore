@@ -12936,9 +12936,9 @@ odoo.define('accountcore.jexcel', function (require) {
                 var result="";
                 if (jexcel.current.options.computing) {
                     var widget = jexcel.current.options.widget;
-                    var startDate=widget.startDate;
-                    var endDate=widget.endDate;
-                    var orgIds=widget.orgIds;
+                    var startDate="'"+widget.startDate+"'";
+                    var endDate="'"+widget.endDate+"'";
+                    var orgIds="'"+widget.orgIds+"'";
                     var url='/ac/compute';
                     $.ajax({
                         url:url,
