@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from decimal import Decimal
 # 快速构造简单的对象
 
 
@@ -19,4 +19,13 @@ class Structure:
                 'invalid arguments (s): {}'.format(','.join(kwargs)))
 
 
+class ACTools():
+    @staticmethod
+    def TranslateToDecimal(amount):
+        '''金额的float类型转换为保留两位小数的Decimal类型，用于准确计算'''
+        return Decimal.from_float(amount).quantize(Decimal('0.00'))
 
+    @staticmethod
+    def ZeroAmount():
+        '''0的Decimal表示'''
+        return Decimal.from_float(0).quantize(Decimal('0.00'))

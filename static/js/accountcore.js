@@ -937,9 +937,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         // 左上角单元格
         cellName_ul: "A1",
         cellName_lr: "A1",
-        startDate:'',
-        endDate:'',
-        orgIds:'',
+        startDate: '',
+        endDate: '',
+        orgIds: '',
         _do_check: function () {
             alert('check');
             var cellName = jexcel.getColumnNameFromId([this.selection_x1, this.selection_y1]);
@@ -954,10 +954,10 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
          * 获得供报表的公式计算的开始期间参数
          */
         _getStartDate: function () {
-            var startDate = $("[name='startDate'] input").val() 
+            var startDate = $("[name='startDate'] input").val()
             // 非编辑状态下取数
-            if (!startDate){
-                startDate =$("[name='startDate']").text()
+            if (!startDate) {
+                startDate = $("[name='startDate']").text()
             }
             return this._changeDateStr(startDate);
         },
@@ -965,10 +965,10 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
          * 获得供报表的公式计算的结束期间参数
          */
         _getEndDate: function () {
-            var endDate = $("[name='endDate'] input").val() 
-            if(!endDate ){
-                endDate= $("[name='endDate']").text()
-                }
+            var endDate = $("[name='endDate'] input").val()
+            if (!endDate) {
+                endDate = $("[name='endDate']").text()
+            }
             return this._changeDateStr(endDate);
         },
         /**
@@ -1289,11 +1289,22 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         type: 'i',
                         content: 'exposure',
                         onclick: function () {
-                            jexcel.current.options.computing = !jexcel.current.options.computing;
-                            self.startDate=self._getStartDate();
-                            self.endDate=self._getEndDate();
-                            self.orgIds=self._getOrgIds();
-                            self._compute();
+                            var startDate = self._getStartDate()
+                            var endDate = self._getEndDate()
+                            if (isNaN(startDate) && !isNaN(Date.parse(startDate)) &&
+                                isNaN(endDate) && !isNaN(Date.parse(endDate))) {
+                                    if(Date.parse(startDate)>Date.parse(endDate)){
+                                        self.do_warn("开始日期不能晚于结束日期!")
+                                        return
+                                    }
+                                jexcel.current.options.computing = !jexcel.current.options.computing;
+                                self.startDate = startDate;
+                                self.endDate = endDate;
+                                self.orgIds = self._getOrgIds();
+                                self._compute();
+                            }else{
+                                self.do_warn("期间不正确")
+                            }
                         }
                     },
                 ],

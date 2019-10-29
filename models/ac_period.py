@@ -21,21 +21,30 @@ class Period(object):
         self.end_year = self.end_date.year
         self.start_month = self.start_date.month
         self.end_month = self.end_date.month
+        self.voucherPeriods = self.getPeriodList()
 
     def getPeriodList(self):
         '''获得日期范围内的会计期间列表'''
-
         months = (self.end_year - self.start_year) * \
             12 + self.end_month - self.start_month
         month_range = ['%s-%s-%s' % (self.start_year + mon//12, mon % 12+1, 1)
                        for mon in range(self.start_month-1, self.start_month + months)]
         voucherPeriods = [VoucherPeriod(
             datetime.datetime.strptime(d, '%Y-%m-%d')) for d in month_range]
-
         return voucherPeriods
 
+    @property
+    def startP(self):
+        '''最早的会计期间'''
+        return self.voucherPeriods[0]
 
+    @property
+    def endP(self):
+        '''最晚的会计期间'''
+        return self.voucherPeriods[-1]
 # 一个会计期间，月份
+
+
 class VoucherPeriod(object):
     '''一个会计期间,月份'''
 
@@ -54,3 +63,14 @@ class VoucherPeriod(object):
         self.endDate = datetime.date(year=self.year,
                                      month=self.month,
                                      day=self.days)
+
+    def getPreP(self):
+        '''上一个会计期间（月份）'''
+        year = self.year
+        month = self.month
+        if self.month == 1:
+            year -= 1
+            month = 13
+        date = datetime.date(year, month-1, 1)
+
+        return VoucherPeriod(date)

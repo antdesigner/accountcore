@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import uuid
-from odoo import models, fields, api
+from odoo import models, fields, api, exceptions
 from .main_models import Glob_tag_Model
 
 
@@ -115,15 +115,19 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
                 result.append((record.id, "%s,%s" % (
                     record._name, record.guid)))
         return result
-    @api.model
-    def comput(self,*args,**kwargs):
-        pass
-        return 99.99
+    # @api.model
+    # def comput(self,*args,**kwargs):
+    #     pass
+    #     return 99.99
 
-    def account(self):
-        return 100.01
+    # def account(self):
+    #     return 100.01
+    @api.onchange('startDate', 'endDate')
+    def _onchange_starDate_endDate(self):
+        if self.startDate and self.endDate and self.startDate > self.endDate:
+            raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
 
-
+        
 # 科目取数金额类型
 class AccountAmountType(models.Model, Glob_tag_Model):
     '''科目取数的金额类型'''

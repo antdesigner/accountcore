@@ -555,6 +555,8 @@
 <record id='account_amount_type_11' model='accountcore.account_amount_type'><field name='name' >损益表本期实际发生额</field></record>
 <record id='account_amount_type_12' model='accountcore.account_amount_type'><field name='name' >损益表本年实际发生额</field></record>
 <record id='account_amount_type_13' model='accountcore.account_amount_type'><field name='name' >即时余额</field></record>
+<record id='account_amount_type_14' model='accountcore.account_amount_type'><field name='name' >即时本年借方累计</field></record>
+<record id='account_amount_type_15' model='accountcore.account_amount_type'><field name='name' >即时本年贷方累计</field></record>
 
 <!-- 科目取数金额类型结束 -->
     </data>

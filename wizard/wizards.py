@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
 import json
 from odoo import api
 from odoo import exceptions
@@ -475,9 +476,10 @@ class currencyDown_sunyi(models.TransientModel):
     def _creat_voucher(self, accountsBalance, org, voucer_period):
         '''新增结转损益凭证'''
         # 结转到本年利润的借方合计
-        sum_d = 0
+        zero = Decimal.from_float(0).quantize(Decimal('0.00'))
+        sum_d = Decimal.from_float(0).quantize(Decimal('0.00'))
         # 结转到本年利润的贷方合计
-        sum_c = 0
+        sum_c = Decimal.from_float(0).quantize(Decimal('0.00'))
 
         entrys_value = []
         # 根据科目余额生成分录
@@ -485,35 +487,36 @@ class currencyDown_sunyi(models.TransientModel):
             b_items_id = []
             if b.items.id:
                 b_items_id = [b.items.id]
-            endAmount = b.endDamount-b.endCamount
+            endAmount = Decimal.from_float(b.endDamount).quantize(
+                Decimal('0.00'))-Decimal.from_float(b.endCamount).quantize(Decimal('0.00'))
             if b.account.direction == '1':
-                if endAmount != 0:
+                if endAmount != zero:
 
                     entrys_value.append({"explain": '结转损益',
                                          "account": b.account.id,
                                          "items": [(6, 0, b_items_id)],
                                          "camount": endAmount
                                          })
-                    sum_d = sum_d+endAmount
+                    sum_d = sum_d + endAmount
             else:
-                if endAmount != 0:
+                if endAmount != zero:
                     entrys_value.append({"explain": '结转损益',
                                          "account": b.account.id,
                                          "items": [(6, 0, b_items_id)],
                                          "damount": -endAmount
                                          })
-                    sum_c = sum_c-endAmount
+                    sum_c = sum_c - endAmount
         # 本年利润科目分录
 
         # 结转到贷方
-        if sum_d != 0:
+        if sum_d != zero:
             entrys_value.append({"explain": '结转损益',
                                  #  "account": self.ben_nian_li_run_account.id,
                                  "account": self.ben_nian_li_run_account_id,
                                  "damount": sum_d
                                  })
         # 结转到借方
-        if sum_c != 0:
+        if sum_c != zero:
             entrys_value.append({"explain": '结转损益',
                                  #  "account": self.ben_nian_li_run_account.id,
                                  "account": self.ben_nian_li_run_account_id,
