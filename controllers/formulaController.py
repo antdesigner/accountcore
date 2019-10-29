@@ -224,7 +224,7 @@ class FormulaController(http.Controller):
     def getAmountOfType(self, account, org, item, amountType, period):
         '''根据不同的金额类型取数'''
         method = ACMethosContainer.getMethod(amountType)
-        amount = ACTools.ZeroAmount
+        amount = ACTools.ZeroAmount()
         # 带有核算项目的科目，取全部核算项目
 
         if not item and account.accountItemClass:
