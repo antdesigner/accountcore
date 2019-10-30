@@ -705,8 +705,12 @@ class GetReport(models.TransientModel):
                                    string='报表模板')
     guid = fields.Char(related='report_model.guid')
     summary = fields.Text(related='report_model.summary')
-    startDate = fields.Date(string='开始月份')
-    endDate = fields.Date(string='结束月份')
+    startDate = fields.Date(string='开始月份',
+                            required=True,
+                            default=lambda s: s.env.user.current_date)
+    endDate = fields.Date(string='结束月份',
+                          required=True,
+                          default=lambda s: s.env.user.current_date)
     fast_period = fields.Date(string="选取期间", store=False)
     orgs = fields.Many2many('accountcore.org',
                             string='机构范围',
@@ -715,6 +719,11 @@ class GetReport(models.TransientModel):
 
     def do(self):
         '''根据模板生成报表'''
+        report = self.env['accountcore.report_model'].sudo().browse(
+            self.report_model.id)
+        report[0].startDate = self.startDate
+        report[0].endDate = self.endDate
+        report[0].orgs = self.orgs
         return {
             'name': "生成报表",
             'type': 'ir.actions.act_window',
@@ -725,9 +734,6 @@ class GetReport(models.TransientModel):
             'res_id': self.report_model.id,
             'context': {
                 'form_view_initial_mode': 'edit',
-                'start_data': self.startDate,
-                'end_data': self.endDate,
-                'orgs': self.orgs.ids,
             }
         }
 

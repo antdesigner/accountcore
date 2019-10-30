@@ -883,7 +883,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
     var jexcel = require('accountcore.jexcel');
     var core = require('web.core');
     var AbstractAction = require('web.AbstractAction');
-    // var Session = require('web.session');
+    var Session = require('web.session');
     // 公式类
     class ACFormula {
         constructor(cellstr) {
@@ -1131,6 +1131,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
 
         },
         _renderEdit: function () {
+            var s=Session;
             self = this;
             //避免重复加载
             if (this.ddom) {

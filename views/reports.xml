@@ -155,11 +155,13 @@
                                     <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info' />
                                     <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
                                 </center>
+                                <field name="explain" />
+                                <field name='glob_tag' widget='many2many_tags' />
                             </page>
 
                             <page string='机构范围'>
                                 <group>
-                                    <field name="orgs" widget="many2many_checkboxes_floatleft" class="ac_choice_orgs" required='True'/>
+                                    <field name="orgs" widget="many2many_checkboxes_floatleft" class="ac_choice_orgs" required='True' />
                                 </group>
                             </page>
                             <page string='模板名称和说明'>
@@ -169,8 +171,7 @@
                                     <field name="version" string="模板版本" />
                                     <field name="guid" readonly='1' />
                                     <field name="summary" />
-                                    <field name="explain" />
-                                    <field name='glob_tag' widget='many2many_tags' />
+
                                 </group>
                             </page>
                         </notebook>
