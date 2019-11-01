@@ -1756,7 +1756,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 records.push(obj.updateCell(x, y, value, force));
 
                 // Update all formulas in the chain
-                obj.updateFormulaChain(x, y, records);
+                    obj.updateFormulaChain(x, y, records);
             } else {
                 var x = null;
                 var y = null;
@@ -1770,7 +1770,7 @@ odoo.define('accountcore.jexcel', function (require) {
                     records.push(obj.updateCell(x, y, value, force));
 
                     // Update all formulas in the chain
-                    obj.updateFormulaChain(x, y, records);
+                        obj.updateFormulaChain(x, y, records);
                 } else {
                     var keys = Object.keys(cell);
                     if (keys.length > 0) {
@@ -1789,7 +1789,7 @@ odoo.define('accountcore.jexcel', function (require) {
                                 records.push(obj.updateCell(x, y, value, force));
 
                                 // Update all formulas in the chain
-                                obj.updateFormulaChain(x, y, records);
+                                    obj.updateFormulaChain(x, y, records);
                             }
                         }
                     }
@@ -1823,8 +1823,12 @@ odoo.define('accountcore.jexcel', function (require) {
             records.push(obj.updateCell(x, y, value, force));
 
             // Update all formulas in the chain
-            obj.updateFormulaChain(x, y, records);
-
+            // obj.updateFormulaChain(x, y, records);原代码
+            // tiget 修改-开始，优化公式计算方式，自定义ac公式不参与公式链自动计算
+            if (value.substr(0, 3) != '=ac') {
+                obj.updateFormulaChain(x, y, records);
+            }
+            // tiger 修改-结束
             // Update history
             obj.setHistory({
                 action: 'setValue',
@@ -1836,7 +1840,12 @@ odoo.define('accountcore.jexcel', function (require) {
             obj.updateTable();
 
             // On after changes
-            obj.onafterchanges(el, records);
+            // obj.onafterchanges(el, records);原代码
+            // tiget 修改-开始，优化公式计算方式，自定义ac公式不参与公式链自动计算
+            if (value.substr(0, 3) != '=ac') {
+                obj.updateFormulaChain(x, y, records);
+            }
+            // tiger 修改-结束
         }
 
         /**
@@ -2087,7 +2096,7 @@ odoo.define('accountcore.jexcel', function (require) {
                         records.push(obj.updateCell(i, j, value));
 
                         // Update all formulas in the chain
-                     obj.updateFormulaChain(i, j, records);
+                        obj.updateFormulaChain(i, j, records);
                     }
                     posx++;
                 }
@@ -5436,7 +5445,7 @@ odoo.define('accountcore.jexcel', function (require) {
                         // Keep history
                         records.push(record);
                         // Update all formulas in the chain
-                     obj.updateFormulaChain(colIndex, rowIndex, records);
+                        obj.updateFormulaChain(colIndex, rowIndex, records);
                         // Style
                         if (style) {
                             var columnName = jexcel.getColumnNameFromId([colIndex, rowIndex]);
@@ -11864,7 +11873,10 @@ odoo.define('accountcore.jexcel', function (require) {
                     result += exports.SUM.apply(null, elt);
                 }
             }
-            return result;
+              // tiger -修改开始,保留两位小数
+            // return result;原来
+            return result.toFixed(2)
+            // 修改结束
         };
 
         exports.SUMIF = function (range, criteria) {
@@ -11905,6 +11917,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 }
             }
             return result;
+ 
         };
 
         exports.SUMPRODUCT = null;
