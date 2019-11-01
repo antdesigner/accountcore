@@ -59,6 +59,7 @@ class StorageReport(models.Model, Glob_tag_Model, Jexcel_fields):
     start_date = fields.Date(string='数据开始月份')
     end_date = fields.Date(string='数据结束月份')
     orgs = fields.Many2many('accountcore.org', string='机构范围', required=True)
+    fast_period = fields.Date(string="选取期间", store=False)
     receivers = fields.Many2many('accountcore.receiver', string='接收者')
     summary = fields.Text(string='归档报表说明')
     # data = fields.Text(string='数据内容', default='[[]]')
@@ -66,6 +67,11 @@ class StorageReport(models.Model, Glob_tag_Model, Jexcel_fields):
     # width_info = fields.Text(string='列宽的定义')
     # height_info = fields.Text(string='行高的定义')
     htmlstr = fields.Html(string='html内容')
+
+    @api.onchange('startDate', 'endDate')
+    def _onchange_starDate_endDate(self):
+        if self.startDate and self.endDate and self.startDate > self.endDate:
+            raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
 
 
 # 报表模板
@@ -88,7 +94,7 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
                             default=lambda s: s.env.user.currentOrg,
                             required=True)
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
-                         '报表模版名称码重复了!')]
+                         '报表模版名称重复了!')]
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=0):

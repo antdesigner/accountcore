@@ -592,7 +592,7 @@ odoo.define('accountcore.balanceListView', function (require) {
 odoo.define("accountcore.begin_balance_check", function (require) {
     "use strict";
     var Widget = require('web.Widget');
-    var framework = require('web.framework');
+    // var framework = require('web.framework');
     var CheckBalance = Widget.extend({
         template: 'accountcore.check_balance',
         events: {
@@ -877,13 +877,13 @@ odoo.define('accountcore.btn', ['web.AbstractField', 'web.field_registry'], func
     };
 });
 // 报表设计器相关
-odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites', 'web.core', 'web.AbstractAction', 'web.session'], function (require) {
+odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites', 'web.core', 'web.AbstractAction', 'web.session','web.framework'], function (require) {
     "use strict";
     var AbstractField = require('web.AbstractField');
     var jexcel = require('accountcore.jexcel');
     var core = require('web.core');
     var AbstractAction = require('web.AbstractAction');
-    var Session = require('web.session');
+    var framework = require('web.framework');
     // 公式类
     class ACFormula {
         constructor(cellstr) {
@@ -940,6 +940,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         startDate: '',
         endDate: '',
         orgIds: '',
+        computingStep:0,
         _do_check: function () {
             alert('check');
             var cellName = jexcel.getColumnNameFromId([this.selection_x1, this.selection_y1]);
@@ -1125,13 +1126,13 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     }
                 }
             }
+            
         },
         _changeDateStr: function (dateStr) {
             return dateStr.replace('年', '-').replace('月', '-').replace('日', '')
 
         },
         _renderEdit: function () {
-            var s=Session;
             self = this;
             //避免重复加载
             if (this.ddom) {
@@ -1477,7 +1478,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     self._setSelectionCells(x1, y1, x2, y2);
                 },
                 updateTable: function (instance, cell, col, row, val, label, cellName) {
-
+                          
                 },
 
             };

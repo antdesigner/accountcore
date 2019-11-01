@@ -88,18 +88,46 @@
                     <sheet>
                         <h1>新增编辑=>已归档报表</h1>
                         <hr></hr>
-                        <group>
-                            <field name="report_type" />
-                            <field name='number' />
-                            <field name='name' />
-                            <field name="receivers" widget='many2many_tags' />
-                            <field name="start_date" />
-                            <field name="end_date" />
-                            <field name="create_user" />
-                            <field name="orgs" widget='many2many_tags' />
-                            <field name="summary" />
-                            <field name='glob_tag' widget='many2many_tags' />
-                        </group>
+                        <notebook>
+                            <page string='内容'>
+                                <center>
+                                    <span>期间从</span>
+                                    <field name='start_date'  />
+                                    <span class='fa fa-calendar-minus-o'>到</span>
+                                    <field name="end_date" />
+                                    <br />
+                                    <field colspan='6' name="fast_period" widget="ac_fast_period" />
+                                </center>
+                                <center>
+                                    <field name="data" widget='ac_jexcel' default_focus='1' />
+                                    <field name="data_style" invisible='1' widget='ac_jexcel_style' />
+                                    <field name="width_info" invisible='1' widget='ac_jexcel_width_info' />
+                                    <field name="height_info" invisible='1' widget='ac_jexcel_height_info' />
+                                    <field name="header_info" invisible='1' widget='ac_jexcel_header_info' />
+                                    <field name="comments_info" invisible='1' widget='ac_jexcel_comments_info' />
+                                    <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info' />
+                                    <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
+                                </center>
+                                <group>
+                                    <field name='glob_tag' widget='many2many_tags' />
+                                </group>
+                            </page>
+                            <page string='机构范围'>
+                                <group>
+                                    <field name="orgs" widget="many2many_checkboxes_floatleft" class="ac_choice_orgs" required='True' />
+                                </group>
+                            </page>
+                            <page string='归档信息'>
+                                <group>
+                                    <field name="report_type" />
+                                    <field name='number' />
+                                    <field name='name' />
+                                    <field name="receivers" widget='many2many_tags' />
+                                    <field name="create_user" />
+                                    <field name="summary" />
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -155,8 +183,10 @@
                                     <field name="merge_info" invisible='1' widget='ac_jexcel_merge_info' />
                                     <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
                                 </center>
-                                <field name="explain" />
-                                <field name='glob_tag' widget='many2many_tags' />
+                                <group>
+                                    <field name="explain" />
+                                    <field name='glob_tag' widget='many2many_tags' />
+                                </group>
                             </page>
 
                             <page string='机构范围'>
@@ -171,7 +201,6 @@
                                     <field name="version" string="模板版本" />
                                     <field name="guid" readonly='1' />
                                     <field name="summary" />
-
                                 </group>
                             </page>
                         </notebook>
