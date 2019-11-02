@@ -862,11 +862,6 @@ odoo.define('accountcore.btn', ['web.AbstractField', 'web.field_registry'], func
         },
         _btn_click: function () {
 
-            // 确保每次点击值都改变以触发onchange
-            // if(this.lastSetValue=='1'){
-            //     this._setValue('0');
-            //     return;
-            // }
             this._setValue('1', opetions);
         },
     });
@@ -877,7 +872,7 @@ odoo.define('accountcore.btn', ['web.AbstractField', 'web.field_registry'], func
     };
 });
 // 报表设计器相关
-odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites', 'web.core', 'web.AbstractAction', 'web.session','web.framework'], function (require) {
+odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 'accountcore.jexcel', 'accountcore.jsuites', 'web.core', 'web.AbstractAction', 'web.session', 'web.framework'], function (require) {
     "use strict";
     var AbstractField = require('web.AbstractField');
     var jexcel = require('accountcore.jexcel');
@@ -940,7 +935,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         startDate: '',
         endDate: '',
         orgIds: '',
-        computingStep:0,
+        computingStep: 0,
         _do_check: function () {
             alert('check');
             var cellName = jexcel.getColumnNameFromId([this.selection_x1, this.selection_y1]);
@@ -1126,7 +1121,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     }
                 }
             }
-            
+
         },
         _changeDateStr: function (dateStr) {
             return dateStr.replace('年', '-').replace('月', '-').replace('日', '')
@@ -1286,6 +1281,26 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
 
                         }
                     },
+                    // 归档
+                    {
+                        type: 'i',
+                        content: 'save',
+                        onclick: function () {
+                            self.do_action({
+                                name: '报表归档向导',
+                                type: 'ir.actions.act_window',
+                                res_model: 'accountcore.store_report',
+                                context: {
+                                    default_name:self.record.data['name'],
+                                    model_id:self.res_id,
+                                },
+                                views: [
+                                    [false, 'form']
+                                ],
+                                target: 'new'
+                            })
+                        }
+                    },
                     // 计算
                     {
                         type: 'i',
@@ -1295,16 +1310,16 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             var endDate = self._getEndDate()
                             if (isNaN(startDate) && !isNaN(Date.parse(startDate)) &&
                                 isNaN(endDate) && !isNaN(Date.parse(endDate))) {
-                                    if(Date.parse(startDate)>Date.parse(endDate)){
-                                        self.do_warn("开始日期不能晚于结束日期!")
-                                        return
-                                    }
+                                if (Date.parse(startDate) > Date.parse(endDate)) {
+                                    self.do_warn("开始日期不能晚于结束日期!")
+                                    return
+                                }
                                 jexcel.current.options.computing = !jexcel.current.options.computing;
                                 self.startDate = startDate;
                                 self.endDate = endDate;
                                 self.orgIds = self._getOrgIds();
                                 self._compute();
-                            }else{
+                            } else {
                                 self.do_warn("期间不正确")
                             }
                         }
@@ -1478,7 +1493,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     self._setSelectionCells(x1, y1, x2, y2);
                 },
                 updateTable: function (instance, cell, col, row, val, label, cellName) {
-                          
+
                 },
 
             };

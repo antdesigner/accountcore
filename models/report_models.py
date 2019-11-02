@@ -56,16 +56,12 @@ class StorageReport(models.Model, Glob_tag_Model, Jexcel_fields):
                                   required=True,
                                   ondelete='restrict',
                                   index=True)
-    start_date = fields.Date(string='数据开始月份')
-    end_date = fields.Date(string='数据结束月份')
+    startDate = fields.Date(string='取数开始月份')
+    endDate = fields.Date(string='取数结束月份')
     orgs = fields.Many2many('accountcore.org', string='机构范围', required=True)
     fast_period = fields.Date(string="选取期间", store=False)
     receivers = fields.Many2many('accountcore.receiver', string='接收者')
     summary = fields.Text(string='归档报表说明')
-    # data = fields.Text(string='数据内容', default='[[]]')
-    # data_style = fields.Text(string='模板样式')
-    # width_info = fields.Text(string='列宽的定义')
-    # height_info = fields.Text(string='行高的定义')
     htmlstr = fields.Html(string='html内容')
 
     @api.onchange('startDate', 'endDate')
@@ -121,13 +117,7 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
                 result.append((record.id, "%s,%s" % (
                     record._name, record.guid)))
         return result
-    # @api.model
-    # def comput(self,*args,**kwargs):
-    #     pass
-    #     return 99.99
 
-    # def account(self):
-    #     return 100.01
     @api.onchange('startDate', 'endDate')
     def _onchange_starDate_endDate(self):
         if self.startDate and self.endDate and self.startDate > self.endDate:

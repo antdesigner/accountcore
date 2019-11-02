@@ -841,3 +841,51 @@ class ReportModelFormula(models.TransientModel):
         if not self.btn_clear:
             return
         self.formula = ""
+
+
+class StoreReport(models.TransientModel):
+    '''报表归档向导'''
+    _name = 'accountcore.store_report'
+    _description = '报表归档向导'
+    number = fields.Char(string='归档报表编号')
+    name = fields.Char(string='归档报表名称', required=True)
+    create_user = fields.Many2one('res.users',
+                                  string='归档人',
+                                  default=lambda s: s.env.uid,
+                                  readonly=True,
+                                  required=True,
+                                  ondelete='restrict',
+                                  index=True)
+    start_date = fields.Date(string='数据开始月份')
+    end_date = fields.Date(string='数据结束月份')
+    orgs = fields.Many2many('accountcore.org', string='机构范围', required=True)
+    receivers = fields.Many2many('accountcore.receiver', string='接收者(报送对象)')
+    summary = fields.Text(string='归档报表说明')
+    htmlstr = fields.Html(string='html内容')
+
+    def do(self):
+        reportModelId = self._context["model_id"]
+        reportModel = self.env['accountcore.report_model'].sudo().browse([
+            reportModelId])[0]
+        orgIds = [org.id for org in reportModel.orgs]
+        receiversIds = [r.id for r in self.receivers]
+        self.env['accountcore.storage_report'].sudo().create([{
+            "report_type": reportModel.report_type.id,
+            "receivers":  [(6, 0, receiversIds)],
+            "endDate": reportModel.endDate,
+            "startDate": reportModel.startDate,
+            "summary": self.summary,
+            "data": reportModel.data,
+            "data_style":reportModel.data_style,
+            "width_info":reportModel.width_info,
+            "height_info":reportModel.height_info,
+            "header_info":reportModel.header_info,
+            "comments_info":reportModel.comments_info,
+            "merge_info":reportModel.merge_info,
+            "meta_info":reportModel.meta_info,
+            "number": self.number,
+            "name": self.name,
+            "create_user": self.env.uid,
+            "orgs":  [(6, 0, orgIds)],
+        }
+        ])
