@@ -5,6 +5,7 @@ from decimal import Decimal
 import json
 import logging
 import multiprocessing
+from ..models.ac_obj import ACTools
 from odoo import models, fields, api, SUPERUSER_ID, exceptions
 import sys
 sys.path.append('.\\.\\server\\odoo')
@@ -1170,10 +1171,10 @@ class Voucher(models.Model, Glob_tag_Model):
     @api.model
     def _checkCDBalance(self, voucherDist):
         '''检查借贷平衡'''
-        camount = 0
-        damount = 0
-        camount = sum(entry.camount for entry in self.entrys)
-        damount = sum(entry.damount for entry in self.entrys)
+        camount = ACTools.ZeroAmount()
+        damount = ACTools.ZeroAmount()
+        camount = sum(ACTools.TranslateToDecimal(entry.camount) for entry in self.entrys)
+        damount = sum(ACTools.TranslateToDecimal(entry.damount) for entry in self.entrys)
         # if camount == damount and camount != 0:
         if camount == damount:
             return True

@@ -6124,7 +6124,7 @@ odoo.define('accountcore.jexcel', function (require) {
 
                 // Paste
                 if (navigator && navigator.clipboard) {
-                    items.push({
+                items.push({
                         title: obj.options.text.paste,
                         shortcut: 'Ctrl + V',
                         onclick: function () {
