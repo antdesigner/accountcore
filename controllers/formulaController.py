@@ -21,6 +21,8 @@ class ACMethosContainer():
 
 
 class ACMethodBace():
+    ruleBookName_shunyi = "结转损益"
+
     def __init__(self, amountTypeName):
         self.name = amountTypeName
 
@@ -116,16 +118,114 @@ class ACMethod_cumulativeCamount(ACMethodBace):
 
 # 损益表本期实际发生额
 class ACMethod_realHappend(ACMethodBace):
+
     def getAmount(self, account, org, item, period):
         '''损益表本期实际发生额'''
-        return 1111
-
+        # 科目在结转损益凭证中的发生额合计'''
+        amount_j = ACTools.ZeroAmount()
+        # 科目在余额相反方向的发生额
+        amount = ACTools.ZeroAmount()
+        amount_ = ACTools.ZeroAmount()
+        #  启用期初的发生额
+        amount_begin = ACTools.ZeroAmount()
+        ruleBook = account.env['accountcore.rulebook'].sudo().search(
+            [('name', '=', self.ruleBookName_shunyi)])
+        vouchers = ruleBook.getVouchersOfOrg(org, period)
+        if item:
+            entrys = [e for e in vouchers.entrys if (e.account.id == account.id
+                                                     and e.account_item.id == item.id)]
+            balance = account.getBegins(org, item)
+        else:
+            entrys = [e for e in vouchers.entrys if e.account.id == account.id]
+            balance = account.getBegins(org)
+        if account.direction == '1':
+            amount_j = sum([ACTools.TranslateToDecimal(e.camount)
+                            for e in entrys])
+            amount = ACTools.TranslateToDecimal(account.getCamountBetween(period.startP,
+                                                                          period.endP,
+                                                                          org,
+                                                                          item))
+            amount_ = ACTools.TranslateToDecimal(account.getDamountBetween(period.startP,
+                                                                           period.endP,
+                                                                           org,
+                                                                           item))
+            if balance and period.includeDateTime(balance[0].createDate):
+                amount_begin = ACTools.TranslateToDecimal(
+                    balance[0].beginCumulativeDamount)
+        else:
+            amount_j = sum([ACTools.TranslateToDecimal(e.damount)
+                            for e in entrys])
+            amount = ACTools.TranslateToDecimal(account.getDamountBetween(period.startP,
+                                                                          period.endP,
+                                                                          org,
+                                                                          item))
+            amount_ = ACTools.TranslateToDecimal(account.getCamountBetween(period.startP,
+                                                                           period.endP,
+                                                                           org,
+                                                                           item))
+            if balance and period.includeDateTime(balance[0].createDate):
+                amount_begin = ACTools.TranslateToDecimal(
+                    balance[0].beginCumulativeDamount)
+        return amount_-(amount-amount_j)+amount_begin
 
 # 损益表本年实际发生额
+
+
 class ACMethod_realHappendYear(ACMethodBace):
+    __ruleBookName = "结转损益"
+
     def getAmount(self, account, org, item, period):
         '''损益表本年实际发生额'''
-        return 1111
+        newP = period.getBeginYearToThisEnd()
+        # 科目在结转损益凭证中的发生额合计'''
+        amount_j = ACTools.ZeroAmount()
+        # 科目在余额相反方向的发生额'''
+        amount = ACTools.ZeroAmount()
+        # 查询期间发生额（不包含启用期初）
+        amount_ = ACTools.ZeroAmount()
+        #  启用期初的发生额
+        amount_begin = ACTools.ZeroAmount()
+        ruleBook = account.env['accountcore.rulebook'].sudo().search(
+            [('name', '=', self.ruleBookName_shunyi)])
+        vouchers = ruleBook.getVouchersOfOrg(org, newP)
+        if item:
+            entrys = [e for e in vouchers.entrys if (e.account.id == account.id
+                                                     and e.account_item.id == item.id)]
+            balance = account.getBegins(org, item)
+        else:
+            entrys = [e for e in vouchers.entrys if e.account.id == account.id]
+            balance = account.getBegins(org)
+
+        if account.direction == '1':
+            amount_j = sum([ACTools.TranslateToDecimal(e.camount)
+                            for e in entrys])
+            amount = ACTools.TranslateToDecimal(account.getCamountBetween(newP.startP,
+                                                                          newP.endP,
+                                                                          org,
+                                                                          item))
+            amount_ = ACTools.TranslateToDecimal(account.getDamountBetween(newP.startP,
+                                                                           newP.endP,
+                                                                           org,
+                                                                           item))
+            if balance and period.includeDateTime(balance[0].createDate):
+                amount_begin = ACTools.TranslateToDecimal(
+                    balance[0].beginCumulativeDamount)
+        else:
+            amount_j = sum([ACTools.TranslateToDecimal(e.damount)
+                            for e in entrys])
+            amount = ACTools.TranslateToDecimal(account.getDamountBetween(newP.startP,
+                                                                          newP.endP,
+                                                                          org,
+                                                                          item))
+            amount_ = ACTools.TranslateToDecimal(account.getCamountBetween(newP.startP,
+                                                                           newP.endP,
+                                                                           org,
+                                                                           item))
+            if balance and newP.includeDateTime(balance[0].createDate):
+                amount_begin = ACTools.TranslateToDecimal(
+                    balance[0].beginCumulativeDamount)
+
+        return amount_-(amount-amount_j)+amount_begin
 
 
 # 即时余额
@@ -232,15 +332,15 @@ class FormulaController(http.Controller):
                 [('itemClass', '=', account.accountItemClass.id)])
             for itm in items:
                 amount += ACTools.TranslateToDecimal(method.getAmount(account,
-                                                                org,
-                                                                itm,
-                                                                period))
+                                                                      org,
+                                                                      itm,
+                                                                      period))
 
         else:
             amount = ACTools.TranslateToDecimal(method.getAmount(account,
-                                                            org,
-                                                            item,
-                                                            period))
+                                                                 org,
+                                                                 item,
+                                                                 period))
         return amount
 
     # 替换公式为内部名称，并插入更多参数

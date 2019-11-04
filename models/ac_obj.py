@@ -23,7 +23,11 @@ class ACTools():
     @staticmethod
     def TranslateToDecimal(amount):
         '''金额的float类型转换为保留两位小数的Decimal类型，用于准确计算'''
-        return Decimal.from_float(amount).quantize(Decimal('0.00'))
+        try:
+            return Decimal.from_float(amount).quantize(Decimal('0.00'))
+        except TypeError:
+            if isinstance(amount, Decimal):
+                return amount
 
     @staticmethod
     def ZeroAmount():

@@ -249,6 +249,24 @@ class RuleBook(models.Model, Glob_tag_Model):
                          '标签编码重复了!'),
                         ('accountcore_rulebook_name_unique', 'unique(name)',
                          '标签名称重复了!')]
+    # 获得所有标记的凭证
+
+    def getVouchers(self):
+        '''获得所有标记的凭证'''
+        vouchers = self.env['accountcore.voucher'].sudo().search(
+            [('ruleBook', '=', self.id)])
+        return vouchers
+
+    # 获得机构下所有标记的凭证
+    def getVouchersOfOrg(self, org, periods=None):
+        '''获得机构下所有标记的凭证'''
+        vouchers = self.getVouchers().filtered(lambda v: v.org.id == org.id)
+        if (periods):
+            records = vouchers.filtered(
+                lambda v: periods.includeDateTime(v.voucherdate))
+            return records
+        else:
+            return vouchers
 
 
 # 科目类别
@@ -511,19 +529,19 @@ class Account(models.Model, Glob_tag_Model):
     def getBegins(self, org=None, item=None):
         '''获得启用期初的记录'''
         rs = self.getBalances(org, item)
-        rs.filtered(lambda r: r.isbegining)
-        if len(rs) == 0:
+        rl = rs.filtered(lambda r: r.isbegining)
+        if len(rl) == 0:
             return None
-        return rs
+        return rl
     # 获得指定月份的余额记录
 
     def getBlanceOf(self, year, month, org=None, item=None):
         '''获得指定月份的余额记录'''
         rs = self.getBalances(org, item)
-        rs.filtered(lambda r: r.year == year and r.month == month)
-        if len(rs) == 0:
+        rl = rs.filtered(lambda r: r.year == year and r.month == month)
+        if len(rl) == 0:
             return None
-        return rs
+        return rl
     # 获得科目余额链(按期间排序，包含期初)
 
     def getChain(self, org, item=None):
@@ -720,7 +738,7 @@ class Account(models.Model, Glob_tag_Model):
             else:
                 amount = balance.endCamount-balance.endDamount
         return amount
-    
+
      # 获得即时本年借方累计
 
     def getCurrentCumulativeDamount(self, org, item):
@@ -740,8 +758,6 @@ class Account(models.Model, Glob_tag_Model):
         if balance:
             amount = balance.cumulativeCamount
         return amount
-    
-
 
     # 获得科目在余额表中使用过的所有核算项目
 
@@ -1173,8 +1189,10 @@ class Voucher(models.Model, Glob_tag_Model):
         '''检查借贷平衡'''
         camount = ACTools.ZeroAmount()
         damount = ACTools.ZeroAmount()
-        camount = sum(ACTools.TranslateToDecimal(entry.camount) for entry in self.entrys)
-        damount = sum(ACTools.TranslateToDecimal(entry.damount) for entry in self.entrys)
+        camount = sum(ACTools.TranslateToDecimal(entry.camount)
+                      for entry in self.entrys)
+        damount = sum(ACTools.TranslateToDecimal(entry.damount)
+                      for entry in self.entrys)
         # if camount == damount and camount != 0:
         if camount == damount:
             return True
