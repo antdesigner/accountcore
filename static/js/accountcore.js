@@ -1,3 +1,60 @@
+// 猴子补丁，改变基类，
+odoo.define('accountcore.basechange', ['web.AbstractField'], function (require) {
+    var basic_fields = require('web.AbstractField');
+    // 交换默认的回车和tab键
+    basic_fields.include({
+        _onKeydown: function (ev) {
+            switch (ev.which) {
+                case $.ui.keyCode.ENTER:
+                    var event = this.trigger_up('navigation_move', {
+                        direction: ev.shiftKey ? 'previous' : 'next',
+                    });
+                    if (event.is_stopped()) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    }
+                    break;
+                case $.ui.keyCode.TAB:
+                    ev.stopPropagation();
+                    this.trigger_up('navigation_move', {
+                        direction: 'next_line'
+                    });
+                    break;
+                case $.ui.keyCode.ESCAPE:
+                    this.trigger_up('navigation_move', {
+                        direction: 'cancel',
+                        originalEvent: ev
+                    });
+                    break;
+                case $.ui.keyCode.UP:
+                    ev.stopPropagation();
+                    this.trigger_up('navigation_move', {
+                        direction: 'up'
+                    });
+                    break;
+                case $.ui.keyCode.RIGHT:
+                    ev.stopPropagation();
+                    this.trigger_up('navigation_move', {
+                        direction: 'right'
+                    });
+                    break;
+                case $.ui.keyCode.DOWN:
+                    ev.stopPropagation();
+                    this.trigger_up('navigation_move', {
+                        direction: 'down'
+                    });
+                    break;
+                case $.ui.keyCode.LEFT:
+                    ev.stopPropagation();
+                    this.trigger_up('navigation_move', {
+                        direction: 'left'
+                    });
+                    break;
+            }
+        },
+
+    });
+});
 // 凭证借贷方金额
 odoo.define('accountcore.accountcoreListRenderer', function (require) {
     "use strict";
@@ -217,8 +274,15 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             self = this;
             e.stopImmediatePropagation();
             switch (e.which) {
-                case $.ui.keyCode.TAB:
-                    $('.itemChoice').nextUntil('.o_input').first().focus();
+                case $.ui.keyCode.ENTER:
+                    var d = $(e.target).parent().parent().parent().parent()
+                    var d2 = d.next().find('.o_input')
+                    if (d2.length >0) {
+                        d2.focus();
+                    } else {
+                        self._super.apply(self, arguments);
+                    };
+                    // $('.itemChoice').nextUntil('.o_input').first().focus();
                     break;
                 default:
                     self._super.apply(self, arguments);
@@ -376,8 +440,25 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             this.ac_items = []; //分录已有的核算项目
             this.ac_accountId = accountId;
             this.ac_choiceItemsMany2ones = [];
+            this.ac_focus_n=0;
         },
-
+        activate: function (options) {
+            if (this.isFocusable()) {
+                var $focusable = this.$el.find(".o_input:eq("+this.ac_focus_n+")");
+                if(this.ac_focus_n==0){
+                    $focusable.focus();
+                    this.ac_focus_n+=1;
+                };
+                // if ($focusable.is('input[type="text"], textarea')) {
+                //     $focusable[0].selectionStart = $focusable[0].selectionEnd = $focusable[0].value.length;
+                //     if (options && !options.noselect) {
+                //         $focusable.select();
+                //     }
+                // }
+                return true;
+            }
+            return false;
+        },
 
         /**
          * 加载和设置分录核算项目
@@ -1291,8 +1372,8 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                                 type: 'ir.actions.act_window',
                                 res_model: 'accountcore.store_report',
                                 context: {
-                                    default_name:self.record.data['name'],
-                                    model_id:self.res_id,
+                                    default_name: self.record.data['name'],
+                                    model_id: self.res_id,
                                 },
                                 views: [
                                     [false, 'form']

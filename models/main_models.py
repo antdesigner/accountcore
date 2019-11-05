@@ -442,15 +442,20 @@ class Account(models.Model, Glob_tag_Model):
             if show_balance:
                 for record in self:
                     endAmount = record.getEndAmount(org, None)
-                    showStr = (record['number']).ljust(
-                        11, '_') + convert(record[name], record)
+                    # showStr = (record['number']).ljust(
+                    #     11, '_') + convert(record[name], record)
+                    showStr = (record['number'])+"【" + \
+                        convert(record[name], record)+"】"
                     if endAmount != 0:
-                        showStr = showStr+"__"+'{:,.2f}'.format(endAmount)
+                        # showStr = showStr+"__"+'{:,.2f}'.format(endAmount)
+                        showStr = showStr+'{:,.2f}'.format(endAmount)
                     result.append((record.id, showStr))
             else:
                 for record in self:
-                    result.append((record.id,  (record['number']).ljust(
-                        11, '_') + convert(record[name], record)))
+                    # result.append((record.id,  (record['number']).ljust(
+                    #     11, '_') + convert(record[name], record)))
+                    result.append(
+                        (record.id,  (record['number'])+"【"+convert(record[name], record)+"】"))
 
         else:
             for record in self:
@@ -871,13 +876,17 @@ class CashFlow(models.Model, Glob_tag_Model):
         if name in self._fields:
             convert = self._fields[name].convert_to_display_name
             for record in self:
-                showStr = (record['number']).ljust(
-                    11, '_') + convert(record[name], record)
+                # showStr = (record['number']).ljust(
+                #     11, '_') + convert(record[name], record)
+                showStr = ("【" +record['number'])+"】"+ \
+                    convert(record[name], record)
                 result.append((record.id, showStr))
         else:
             for record in self:
-                showStr = (record['number']).ljust(
-                    11, '_') + convert(record[name], record)
+                # showStr = (record['number']).ljust(
+                #     11, '_') + convert(record[name], record)
+                showStr = ("【" + record['number'])+"】"+\
+                    convert(record[name], record)
                 result.append((record.id, "%s,%s" % (showStr, record.id)))
         return result
 
