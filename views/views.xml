@@ -265,9 +265,6 @@
             </group>
             <group>
               <field name='glob_tag' widget='many2many_tags' />
-            </group>
-            <group>
-              <field name='glob_tag' widget='many2many_tags' />
               <field name="explain" />
             </group>
             <group>
