@@ -64,10 +64,10 @@ class StorageReport(models.Model, Glob_tag_Model, Jexcel_fields):
     summary = fields.Text(string='归档报表说明')
     htmlstr = fields.Html(string='html内容')
 
-    @api.onchange('startDate', 'endDate')
-    def _onchange_starDate_endDate(self):
-        if self.startDate and self.endDate and self.startDate > self.endDate:
-            raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
+    # @api.onchange('startDate', 'endDate')
+    # def _onchange_starDate_endDate(self):
+    #     if self.startDate and self.endDate and self.startDate > self.endDate:
+    #         raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
 
 
 # 报表模板
@@ -118,10 +118,10 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
                     record._name, record.guid)))
         return result
 
-    @api.onchange('startDate', 'endDate')
-    def _onchange_starDate_endDate(self):
-        if self.startDate and self.endDate and self.startDate > self.endDate:
-            raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
+    # @api.onchange('startDate', 'endDate')
+    # def _onchange_starDate_endDate(self):
+    #     if self.startDate and self.endDate and self.startDate > self.endDate:
+    #         raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
 
         
 # 科目取数金额类型

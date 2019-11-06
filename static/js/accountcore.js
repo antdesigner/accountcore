@@ -277,7 +277,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
                 case $.ui.keyCode.ENTER:
                     var d = $(e.target).parent().parent().parent().parent()
                     var d2 = d.next().find('.o_input')
-                    if (d2.length >0) {
+                    if (d2.length > 0) {
                         d2.focus();
                     } else {
                         self._super.apply(self, arguments);
@@ -440,14 +440,14 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             this.ac_items = []; //分录已有的核算项目
             this.ac_accountId = accountId;
             this.ac_choiceItemsMany2ones = [];
-            this.ac_focus_n=0;
+            this.ac_focus_n = 0;
         },
         activate: function (options) {
             if (this.isFocusable()) {
-                var $focusable = this.$el.find(".o_input:eq("+this.ac_focus_n+")");
-                if(this.ac_focus_n==0){
+                var $focusable = this.$el.find(".o_input:eq(" + this.ac_focus_n + ")");
+                if (this.ac_focus_n == 0) {
                     $focusable.focus();
-                    this.ac_focus_n+=1;
+                    this.ac_focus_n += 1;
                 };
                 // if ($focusable.is('input[type="text"], textarea')) {
                 //     $focusable[0].selectionStart = $focusable[0].selectionEnd = $focusable[0].value.length;
@@ -1351,15 +1351,20 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             self._openAccountFormulaWizard();
                         }
                     },
-                    // 下载表格为csv
+                    // 下载表格为csv,保留公式
+                    {
+                        type: 'i',
+                        content: 'move_to_inbox',
+                        onclick: function () {
+                            self.jexcel_obj.ACDownloadFomular();
+                        }
+                    },
+                    // 下载表格为csv,数据，不带公式
                     {
                         type: 'i',
                         content: 'save_alt',
                         onclick: function () {
-                            // self._do_check();
-                            self.jexcel_obj.download();
-                            // jexcel.current.options.computing=false;
-
+                            self.jexcel_obj.ACDownloadOnlyDate();
                         }
                     },
                     // 归档

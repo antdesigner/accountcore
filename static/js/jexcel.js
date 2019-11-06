@@ -771,7 +771,11 @@ odoo.define('accountcore.jexcel', function (require) {
                         if (!dataset[py]) {
                             dataset[py] = [];
                         }
-                        dataset[py][px] = obj.options.data[j][i];
+                        if (obj.options.copyCompatibility == true) {
+                            dataset[py][px] = obj.records[j][i].innerHTML;
+                        } else {
+                            dataset[py][px] = obj.options.data[j][i];
+                        }
                         px++;
                     }
                 }
@@ -1034,7 +1038,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 var column = [];
                 // Header classes for this cell
                 for (var x = 0; x < numberOfColumns; x++) {
-                    if (obj.options.columns[headerIndex].type == 'hidden') {
+                    if (obj.options.columns[headerIndex] && obj.options.columns[headerIndex].type == 'hidden') {
                         numberOfColumns++;
                     }
                     column.push(headerIndex);
@@ -1488,6 +1492,7 @@ odoo.define('accountcore.jexcel', function (require) {
                             obj.options.columns[x].options.position = true;
                         }
                         obj.options.columns[x].options.value = obj.options.data[y][x];
+                        obj.options.columns[x].options.opened = true;
                         obj.options.columns[x].options.onclose = function (el, value) {
                             obj.closeEditor(cell, true);
                         }
@@ -1589,34 +1594,14 @@ odoo.define('accountcore.jexcel', function (require) {
                     }
                 }
 
-                // On edition end
-                if (!obj.ignoreEvents) {
-                    if (typeof (obj.options.oneditionend) == 'function') {
-                        obj.options.oneditionend(el, cell, x, y, value, save);
-                    }
-                }
-
-                // Update values
-                var ignoreEvents = obj.ignoreEvents ? true : false;
-                var ignoreHistory = obj.ignoreHistory ? true : false;
 
                 // Ignore changes if the value is the same
                 if (obj.options.data[y][x] == value) {
-                    // Disabled events and history
-                    obj.ignoreEvents = true;
-                    obj.ignoreHistory = true;
-                }
-
-                // Save value does not affect the table
-                if (obj.edition[1] == value) {
                     cell.innerHTML = obj.edition[1];
                 } else {
                     obj.setValue(cell, value);
                 }
 
-                // Restore events and history flag
-                obj.ignoreEvents = ignoreEvents;
-                obj.ignoreHistory = ignoreHistory;
             } else {
                 if (obj.options.columns[x].editor) {
                     // Custom editor
@@ -1634,15 +1619,16 @@ odoo.define('accountcore.jexcel', function (require) {
                 }
 
                 // Restore value
-                if (obj.editor && obj.editor[1]) {
-                    cell.innerHTML = obj.edition[1];
-                }
+                cell.innerHTML = obj.edition && obj.edition[1] ? obj.edition[1] : '';
+            }
+            if (obj.editor && obj.editor[1]) {
+                cell.innerHTML = obj.edition[1];
+            }
 
-                // On edition end
-                if (!obj.ignoreEvents) {
-                    if (typeof (obj.options.oneditionend) == 'function') {
-                        obj.options.oneditionend(el, cell, x, y, value, save);
-                    }
+            // On edition end
+            if (!obj.ignoreEvents) {
+                if (typeof (obj.options.oneditionend) == 'function') {
+                    obj.options.oneditionend(el, cell, x, y, value, save);
                 }
             }
 
@@ -1756,7 +1742,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 records.push(obj.updateCell(x, y, value, force));
 
                 // Update all formulas in the chain
-                    obj.updateFormulaChain(x, y, records);
+                obj.updateFormulaChain(x, y, records);
             } else {
                 var x = null;
                 var y = null;
@@ -1770,7 +1756,7 @@ odoo.define('accountcore.jexcel', function (require) {
                     records.push(obj.updateCell(x, y, value, force));
 
                     // Update all formulas in the chain
-                        obj.updateFormulaChain(x, y, records);
+                    obj.updateFormulaChain(x, y, records);
                 } else {
                     var keys = Object.keys(cell);
                     if (keys.length > 0) {
@@ -1789,7 +1775,7 @@ odoo.define('accountcore.jexcel', function (require) {
                                 records.push(obj.updateCell(x, y, value, force));
 
                                 // Update all formulas in the chain
-                                    obj.updateFormulaChain(x, y, records);
+                                obj.updateFormulaChain(x, y, records);
                             }
                         }
                     }
@@ -1924,7 +1910,7 @@ odoo.define('accountcore.jexcel', function (require) {
                         }
 
                         // Update data and cell
-                        obj.records[y][x].children[0].checked = (value == 1 || value == true || value == 'true') ? true : false;
+                        obj.records[y][x].children[0].checked = (value == 1 || value == true || value == 'true' || value == 'TRUE') ? true : false;
                         obj.options.data[y][x] = obj.records[y][x].children[0].checked;
                     } else if (obj.options.columns[x].type == 'dropdown' || obj.options.columns[x].type == 'autocomplete') {
                         // Update data and cell
@@ -5291,7 +5277,123 @@ odoo.define('accountcore.jexcel', function (require) {
                 pom.parentNode.removeChild(pom);
             }
         }
+        // tiger 添加-开始 自下载数据
+        // 原来obj.copy
+        obj.ACCopy = function (highlighted, delimiter, returnData) {
+            if (!delimiter) {
+                delimiter = "\t";
+            }
 
+            // Controls
+            var col = [];
+            var colLabel = [];
+            var row = [];
+            var rowLabel = [];
+            var x = obj.options.data[0].length
+            var y = obj.options.data.length
+            var tmp = '';
+
+            // Reset container
+            obj.style = [];
+
+            // Go through the columns to get the data
+            for (var j = 0; j < y; j++) {
+                col = [];
+                colLabel = [];
+
+                for (var i = 0; i < x; i++) {
+                    // If cell is highlighted
+                    if (!highlighted || obj.records[j][i].classList.contains('highlight')) {
+                        // Values
+                        var value = obj.options.data[j][i];
+                        if (value.match && (value.match(/,/g) || value.match(/\n/) || value.match(/\"/))) {
+                            value = value.replace(new RegExp('"', 'g'), '""');
+                            value = '"' + value + '"';
+                        }
+                        col.push(value);
+
+                        // Labels
+                        var label = obj.records[j][i].innerHTML;
+                        if (label.match && (label.match(/,/g) || label.match(/\n/) || label.match(/\"/))) {
+                            // Scape double quotes
+                            label = label.replace(new RegExp('"', 'g'), '""');
+                            label = '"' + label + '"';
+                        }
+                        colLabel.push(label);
+
+                        // Get style
+                        tmp = obj.records[j][i].getAttribute('style');
+                        obj.style.push(tmp ? tmp : '');
+                    }
+                }
+
+                if (col.length) {
+                    row.push(col.join(delimiter));
+                }
+                if (colLabel.length) {
+                    rowLabel.push(colLabel.join(delimiter));
+                }
+            }
+
+            // Final string
+            var str = row.join("\n");
+            var strLabel = rowLabel.join("\n");
+
+            // Create a hidden textarea to copy the values
+            if (!returnData) {
+                if (obj.options.copyCompatibility == true) {
+                    obj.textarea.value = strLabel;                    
+                } else {
+                    obj.textarea.value = str;
+                }
+                obj.textarea.select();
+                document.execCommand("copy");
+            }
+
+            // Keep data
+            obj.data = str;
+            // Keep non visible information
+            obj.hashString = obj.hash(obj.textarea.value);
+
+            return strLabel;
+        }
+        // 参考原来obj.dowload
+        // 下载公式
+        obj.ACDownloadFomular = function (includeHeaders) {
+            obj.options.copyCompatibility = false;
+            return obj.download(includeHeaders)
+        }
+        // 只下载数据
+        obj.ACDownloadOnlyDate = function (includeHeaders) {
+            // 
+            obj.options.copyCompatibility = true;
+            if (obj.options.allowExport == false) {
+                console.error('Export not allowed');
+            } else {
+                // Data
+                var data = '';
+                if (includeHeaders == true) {
+                    data += obj.getHeaders();
+                    data += "\r\n";
+                }
+                // Get data
+                // data += obj.copy(false, obj.options.csvDelimiter, true);原代码为true,只能下载公式           
+                data += obj.ACCopy(false, obj.options.csvDelimiter, false);
+                // Download element
+                var pom = document.createElement('a');
+                // huang tiger 修改以处理导出乱码 var blob = new Blob([data], {type: 'text/csv;charset=utf-8;'});
+                var blob = new Blob(["\ufeff" + data], {
+                    type: 'text/csv;charset=utf-8;'
+                });
+                var url = URL.createObjectURL(blob);
+                pom.href = url;
+                pom.setAttribute('download', obj.options.csvFileName + '.csv');
+                document.body.appendChild(pom);
+                pom.click();
+                pom.parentNode.removeChild(pom);
+            }
+        }
+        // tiger 添加-结束
         /**
          * Initializes a new history record for undo/redo
          * 
@@ -5380,7 +5482,7 @@ odoo.define('accountcore.jexcel', function (require) {
             // Create a hidden textarea to copy the values
             if (!returnData) {
                 if (obj.options.copyCompatibility == true) {
-                    obj.textarea.value = strLabel;
+                    obj.textarea.value = strLabel;                    
                 } else {
                     obj.textarea.value = str;
                 }
@@ -6124,7 +6226,7 @@ odoo.define('accountcore.jexcel', function (require) {
 
                 // Paste
                 if (navigator && navigator.clipboard) {
-                items.push({
+                    items.push({
                         title: obj.options.text.paste,
                         shortcut: 'Ctrl + V',
                         onclick: function () {
@@ -6556,6 +6658,7 @@ odoo.define('accountcore.jexcel', function (require) {
                                         jexcel.current.openEditor(jexcel.current.records[rowId][columnId], false);
                                     } else if ((e.keyCode == 8) ||
                                         (e.keyCode >= 48 && e.keyCode <= 57) ||
+                                        (e.keyCode >= 97 && e.keyCode <= 111) ||
                                         (e.keyCode == 187) ||
                                         // (jexcel.validLetter(String.fromCharCode(e.keyCode)))) {
                                         ((String.fromCharCode(e.keyCode) == e.key || String.fromCharCode(e.keyCode).toLowerCase() == e.key.toLowerCase()) && jexcel.validLetter(String.fromCharCode(e.keyCode)))) {
@@ -6948,24 +7051,29 @@ odoo.define('accountcore.jexcel', function (require) {
                 var y = e.target.getAttribute('data-y');
                 var rect = e.target.getBoundingClientRect();
 
-                if (e.target.style.cursor) {
-                    e.target.style.cursor = '';
+                if (jexcel.current.cursor) {
+                    jexcel.current.cursor.style.cursor = '';
+                    jexcel.current.cursor = null;
                 }
 
                 if (e.target.parentNode.parentNode && e.target.parentNode.parentNode.className) {
                     if (e.target.parentNode.parentNode.classList.contains('resizable')) {
                         if (e.target && x && !y && (rect.width - (e.clientX - rect.left) < 6)) {
-                            e.target.style.cursor = 'col-resize';
+                            jexcel.current.cursor = e.target;
+                            jexcel.current.cursor.style.cursor = 'col-resize';
                         } else if (e.target && !x && y && (rect.height - (e.clientY - rect.top) < 6)) {
-                            e.target.style.cursor = 'row-resize';
+                            jexcel.current.cursor = e.target;
+                            jexcel.current.cursor.style.cursor = 'row-resize';
                         }
                     }
 
                     if (e.target.parentNode.parentNode.classList.contains('draggable')) {
                         if (e.target && !x && y && (rect.width - (e.clientX - rect.left) < 6)) {
-                            e.target.style.cursor = 'move';
+                            jexcel.current.cursor = e.target;
+                            jexcel.current.cursor.style.cursor = 'move';
                         } else if (e.target && x && !y && (rect.height - (e.clientY - rect.top) < 6)) {
-                            e.target.style.cursor = 'move';
+                            jexcel.current.cursor = e.target;
+                            jexcel.current.cursor.style.cursor = 'move';
                         }
                     }
                 }
@@ -7259,19 +7367,12 @@ odoo.define('accountcore.jexcel', function (require) {
 
     if (typeof (jQuery) != 'undefined') {
         (function ($) {
-            var methods = {
-                init: function (init) {
-                    methods = jexcel($(this).get(0), init)
-                }
-            };
-
             $.fn.jexcel = function (method) {
-                if (methods[method]) {
-                    return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-                } else if (typeof method === 'object' || !method) {
-                    return methods.init.apply(this, arguments);
+                var spreadsheetContainer = $(this).get(0);
+                if (!spreadsheetContainer.jexcel) {
+                    jexcel($(this).get(0), arguments[0]);
                 } else {
-                    $.error('Method ' + method + ' does not exist on jQuery.tooltip');
+                    spreadsheetContainer.jexcel[method].apply(this, Array.prototype.slice.call(arguments, 1));
                 }
             };
 
@@ -11873,7 +11974,7 @@ odoo.define('accountcore.jexcel', function (require) {
                     result += exports.SUM.apply(null, elt);
                 }
             }
-              // tiger -修改开始,保留两位小数
+            // tiger -修改开始,保留两位小数
             // return result;原来
             return result.toFixed(2)
             // 修改结束
@@ -11917,7 +12018,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 }
             }
             return result;
- 
+
         };
 
         exports.SUMPRODUCT = null;
