@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
+from odoo.tools import pycompat
 # 快速构造简单的对象
 
 
@@ -33,3 +34,14 @@ class ACTools():
     def ZeroAmount():
         '''0的Decimal表示'''
         return Decimal.from_float(0).quantize(Decimal('0.00'))
+
+    @staticmethod
+    def readCsvFile(f, head):
+        '''读取csv文件,返回列表'''
+        lines = []
+        reader = pycompat.csv_reader(f)
+        if head:
+            reader.__next__()
+        for row in reader:
+            lines.append(row)
+        return lines

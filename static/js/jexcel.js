@@ -382,9 +382,6 @@ odoo.define('accountcore.jexcel', function (require) {
         }
 
         obj.createTable = function () {
-            // Data
-            obj.prepareData();
-
             // Elements
             obj.table = document.createElement('table');
             obj.thead = document.createElement('thead');
@@ -606,28 +603,6 @@ odoo.define('accountcore.jexcel', function (require) {
         }
 
         /**
-         * Make sure the data is in the correct format (json/array)
-         * 
-         * @param data
-         * @return void
-         */
-        obj.prepareData = function () {
-            var data = [];
-
-            if (obj.options.data) {
-                for (var j = 0; j < obj.options.data.length; j++) {
-                    var row = [];
-                    for (var i = 0; i < obj.options.columns.length; i++) {
-                        row[i] = obj.options.data[j][obj.options.columns[i].name];
-                    }
-                    data.push(row);
-                }
-
-                obj.options.data = data;
-            }
-        }
-
-        /**
          * Set data
          * 
          * @param array data In case no data is sent, default is reloaded
@@ -646,6 +621,19 @@ odoo.define('accountcore.jexcel', function (require) {
             // Data
             if (!obj.options.data) {
                 obj.options.data = [];
+            }
+            // Prepare data
+            if (obj.options.data) {
+                var data = [];
+                for (var j = 0; j < obj.options.data.length; j++) {
+                    var row = [];
+                    for (var i = 0; i < obj.options.columns.length; i++) {
+                        row[i] = obj.options.data[j][obj.options.columns[i].name];
+                    }
+                    data.push(row);
+                }
+
+                obj.options.data = data;
             }
 
             // Adjust minimal dimensions
@@ -836,7 +824,9 @@ odoo.define('accountcore.jexcel', function (require) {
                 // Update cell
                 var columnName = jexcel.getColumnNameFromId([i, rowNumber]);
                 // Set value
-                obj.setValue(columnName, data[i]);
+                if (data[i] != null) {
+                    obj.setValue(columnName, data[i]);
+                }
             }
         }
 
@@ -850,6 +840,19 @@ odoo.define('accountcore.jexcel', function (require) {
                 dataset.push(obj.options.data[j][columnNumber]);
             }
             return dataset;
+        }
+        /**
+         * Set a column data by colNumber
+         */
+        obj.setColumnData = function (colNumber, data) {
+            for (var j = 0; j < obj.rows.length; j++) {
+                // Update cell
+                var columnName = jexcel.getColumnNameFromId([colNumber, j]);
+                // Set value
+                if (data[j] != null) {
+                    obj.setValue(columnName, data[j]);
+                }
+            }
         }
 
         /**
@@ -2636,7 +2639,7 @@ odoo.define('accountcore.jexcel', function (require) {
             if (height > 0) {
                 // In case the column is an object
                 if (typeof (row) == 'object') {
-                    column = $(row).getAttribute('data-y');
+                    row = $(row).getAttribute('data-y');
                 }
 
                 // Oldwidth
@@ -3763,7 +3766,7 @@ odoo.define('accountcore.jexcel', function (require) {
                     columnNumber: columnNumber,
                     numOfColumns: numOfColumns,
                     insertBefore: insertBefore,
-                    columns: properties.columns,
+                    columns:properties,
                     headers: historyHeaders,
                     colgroup: historyColgroup,
                     records: historyRecords,
@@ -5342,7 +5345,7 @@ odoo.define('accountcore.jexcel', function (require) {
             // Create a hidden textarea to copy the values
             if (!returnData) {
                 if (obj.options.copyCompatibility == true) {
-                    obj.textarea.value = strLabel;                    
+                    obj.textarea.value = strLabel;
                 } else {
                     obj.textarea.value = str;
                 }
@@ -5482,7 +5485,7 @@ odoo.define('accountcore.jexcel', function (require) {
             // Create a hidden textarea to copy the values
             if (!returnData) {
                 if (obj.options.copyCompatibility == true) {
-                    obj.textarea.value = strLabel;                    
+                    obj.textarea.value = strLabel;
                 } else {
                     obj.textarea.value = str;
                 }
@@ -7370,9 +7373,9 @@ odoo.define('accountcore.jexcel', function (require) {
             $.fn.jexcel = function (method) {
                 var spreadsheetContainer = $(this).get(0);
                 if (!spreadsheetContainer.jexcel) {
-                    jexcel($(this).get(0), arguments[0]);
+                    return jexcel($(this).get(0), arguments[0]);
                 } else {
-                    spreadsheetContainer.jexcel[method].apply(this, Array.prototype.slice.call(arguments, 1));
+                    return spreadsheetContainer.jexcel[method].apply(this, Array.prototype.slice.call( arguments, 1 ));
                 }
             };
 

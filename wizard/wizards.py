@@ -592,13 +592,13 @@ class BeginBalanceCheck(models.TransientModel):
             'cumulativeCamount', balance_records)
         imbalanceAmount = damount-camount
         if imbalanceAmount == 0:
-            rl_html = "<div><span class='text-success fa fa-check'></span>月初本年借方累计发生额=月初本年贷方累计发生额[" + \
-                str(damount) + "="+str(camount)+"]</div>"
+            rl_html = "<div><span class='text-success fa fa-check'></span>月初本年借方累计发生额=月初本年贷方累计发生额【" + \
+                str(damount) + "="+str(camount)+"】</div>"
             return (True, rl_html)
         else:
-            rl_html = "<div><span class='text-danger fa fa-close'></span>月初本年借方累计发生额合计=月初本年贷方累计发生额合计[" + \
+            rl_html = "<div><span class='text-danger fa fa-close'></span>月初本年借方累计发生额合计=月初本年贷方累计发生额合计【" + \
                 str(damount)+"-" + str(camount) + \
-                "="+str(imbalanceAmount)+"]</div>"
+                "="+str(imbalanceAmount)+"】</div>"
             return (False, rl_html)
 
     def _checkBeginingAmountBalance(self, balance_records):
@@ -609,13 +609,13 @@ class BeginBalanceCheck(models.TransientModel):
                                               balance_records)
         imbalanceAmount = damount-camount
         if imbalanceAmount == 0:
-            rl_html = "<div><span class='text-success fa fa-check'></span>月初借方余额合计=月初贷方贷方余额合计[" + \
-                str(damount) + "=" + str(camount) + "]</div>"
+            rl_html = "<div><span class='text-success fa fa-check'></span>月初借方余额合计=月初贷方贷方余额合计【" + \
+                str(damount) + "=" + str(camount) + "】</div>"
             return (True, rl_html)
         else:
-            rl_html = "<div><span class='text-danger fa fa-close'></span>月初借方余额合计=月初贷方余额合计[" +  \
+            rl_html = "<div><span class='text-danger fa fa-close'></span>月初借方余额合计=月初贷方余额合计【" +  \
                 str(damount) + "-" + str(camount) + \
-                "="+str(imbalanceAmount)+"]</div>"
+                "="+str(imbalanceAmount)+"】</div>"
             return (False, rl_html)
 
     def _checkAmountBalance(self, balance_records):
@@ -626,13 +626,13 @@ class BeginBalanceCheck(models.TransientModel):
                                               balance_records)
         imbalanceAmount = damount-camount
         if imbalanceAmount == 0:
-            rl_html = "<div><span class='text-success fa fa-check'></span>月借方已发生额合计=月贷方已发生额合计[" + \
-                str(damount) + "=" + str(camount) + "]</div>"
+            rl_html = "<div><span class='text-success fa fa-check'></span>月借方已发生额合计=月贷方已发生额合计【" + \
+                str(damount) + "=" + str(camount) + "】</div>"
             return (True, rl_html)
         else:
-            rl_html = "<div><span class='text-danger fa fa-exclamation'></span>月借方已发生额合计=月贷方已发生额合计[" + \
+            rl_html = "<div><span class='text-danger fa fa-exclamation'></span>月借方已发生额合计=月贷方已发生额合计【" + \
                 str(damount) + "-" + str(camount) + \
-                "="+str(imbalanceAmount)+"]</div>"
+                "="+str(imbalanceAmount)+"】</div>"
             return (False, rl_html)
 
     def _checkBalance(self, balance_records):

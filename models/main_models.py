@@ -504,7 +504,16 @@ class Account(models.Model, Glob_tag_Model):
         # 通过科目编码来判断
         return self.search([('number', 'like', self.number)])
 
-      # 获得科目的余额记录，未排序，相同科目下的不同机构和核算项目视为同一科目
+    # 科目在余额表里是否有记录(只比较科目))
+
+    def isUsedInBalance(self):
+        '''科目在余额表里是否有记录(只比较科目))'''
+        if len(self.getAllBalances()) > 0:
+            return True
+        else:
+            return False
+
+    # 获得科目的余额记录，未排序，相同科目下的不同机构和核算项目视为同一科目
 
     def getAllBalances(self):
         '''获得科目的余额记录,相同科目下的不同机构和核算项目视为同一科目'''
@@ -878,14 +887,14 @@ class CashFlow(models.Model, Glob_tag_Model):
             for record in self:
                 # showStr = (record['number']).ljust(
                 #     11, '_') + convert(record[name], record)
-                showStr = ("【" +record['number'])+"】"+ \
+                showStr = ("【" + record['number'])+"】" + \
                     convert(record[name], record)
                 result.append((record.id, showStr))
         else:
             for record in self:
                 # showStr = (record['number']).ljust(
                 #     11, '_') + convert(record[name], record)
-                showStr = ("【" + record['number'])+"】"+\
+                showStr = ("【" + record['number'])+"】" +\
                     convert(record[name], record)
                 result.append((record.id, "%s,%s" % (showStr, record.id)))
         return result

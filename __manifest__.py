@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "AccountCore",
+    'name': "AccountCore(会计)",
     'summary': """
        一个独立的中国会计模块""",
     'description': """

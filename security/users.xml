@@ -11,12 +11,32 @@
             <field name="login">285411957@qq.com</field>
             <field name="password">666666</field>
         </record>
+        <record id='accounter_2' model='res.users'>
+            <field name='name' >user2</field>
+            <field name='login' >user2</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_3' model='res.users'>
+            <field name='name' >user3</field>
+            <field name='login' >user3</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_4' model='res.users'>
+            <field name='name' >user4</field>
+            <field name='login' >user4</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_5' model='res.users'>
+            <field name='name' >user5</field>
+            <field name='login' >user5</field>
+            <field name='password' >666666</field>
+        </record>
         <!-- 用户组 -->
         <record id="users_accounters" model="res.groups">
             <field name="name">会计组</field>
             <field name="category_id" ref="accountcore" />
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
-            <field name="users" eval="[(4, ref('accounter_1'))]"/>
+            <field name="users" eval="[(4, ref('accounter_1'))]" />
         </record>
         <record id="users_admins" model="res.groups">
             <field name="name">设置组</field>
