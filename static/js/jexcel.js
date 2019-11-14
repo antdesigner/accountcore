@@ -187,7 +187,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 noCellsSelected: 'No cells selected',
             },
             // About message
-            about: "jExcel CE Spreadsheet\nVersion 3.6.0\nAuthor: Paul Hodel <paul.hodel@gmail.com>\nWebsite: https://bossanova.uk/jexcel/v3",
+            about: "jExcel CE Spreadsheet\nVersion 3.6.1\nAuthor: Paul Hodel <paul.hodel@gmail.com>\nWebsite: https://bossanova.uk/jexcel/v3",
         };
 
         // Loading initial configuration from user
@@ -1656,7 +1656,15 @@ odoo.define('accountcore.jexcel', function (require) {
 
             return obj.records[y][x];
         }
-
+/**
+      * Get the cell object from coords
+      * 
+      * @param object cell
+      * @return string value
+      */
+     obj.getCellFromCoords = function(x, y) {
+         return obj.records[y][x].element;
+     }
         /**
          * Get label
          * 
@@ -1671,6 +1679,15 @@ odoo.define('accountcore.jexcel', function (require) {
 
             return obj.records[y][x].innerHTML;
         }
+    /**
+      * Get labelfrom coords
+      * 
+      * @param object cell
+      * @return string value
+      */
+     obj.getLabelFromCoords = function(x, y) {
+        return obj.records[y][x].element.innerHTML;
+    }
 
         /**
          * Get the value from a cell
@@ -4423,7 +4440,7 @@ odoo.define('accountcore.jexcel', function (require) {
 
                     // Convert formula to javascript
                     try {
-                        evalstring += "function COLUMN() { return parseInt(x) + 1; }; function ROW() { return parseInt(y) + 1; };";
+                        evalstring += "function COLUMN() { return parseInt(x) + 1; }; function ROW() { return parseInt(y) + 1; }; function CELL() { return parentId; };";
                         var res = eval(evalstring + expression.substr(1));
                     } catch (e) {
                         var res = '#ERROR';
@@ -5494,11 +5511,15 @@ odoo.define('accountcore.jexcel', function (require) {
             }
 
             // Keep data
+            if (obj.options.copyCompatibility == true) {
+                obj.data = strLabel;
+            } else {
             obj.data = str;
+            }
             // Keep non visible information
-            obj.hashString = obj.hash(obj.textarea.value);
+            obj.hashString = obj.hash(obj.data);
 
-            return str;
+            return obj.data;
         }
 
         /**
