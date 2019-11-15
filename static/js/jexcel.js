@@ -115,6 +115,7 @@ odoo.define('accountcore.jexcel', function (require) {
             // Execute formulas
             parseFormulas: true,
             autoIncrement: true,
+            autoCasting: true,
             // Event handles
             onundo: null,
             onredo: null,
@@ -4419,13 +4420,13 @@ odoo.define('accountcore.jexcel', function (require) {
                                     // Null
                                     evalstring += "var " + tokens[i] + " = null;";
                                 } else {
-                                    if (value == Number(value)) {
+                                    if (value == Number(value) && obj.options.autoCasting == true) {
                                         // Number
-                                        evalstring += "var " + tokens[i] + " = " + value + ";";
+                                        evalstring += "var " + tokens[i] + " = " + Number(value) + ";";
                                     } else {
                                         // Trying any formatted number
-                                        var number = null;
-                                        if (number = obj.parseNumber(value, position[0])) {
+                                        var number = obj.parseNumber(value, position[0])
+                                     if (obj.options.autoCasting == true && number) {
                                             // Render as number
                                             evalstring += "var " + tokens[i] + " = " + number + ";";
                                         } else {
@@ -6682,7 +6683,7 @@ odoo.define('accountcore.jexcel', function (require) {
                                         jexcel.current.openEditor(jexcel.current.records[rowId][columnId], false);
                                     } else if ((e.keyCode == 8) ||
                                         (e.keyCode >= 48 && e.keyCode <= 57) ||
-                                        (e.keyCode >= 97 && e.keyCode <= 111) ||
+                                        (e.keyCode >= 96 && e.keyCode <= 111) ||
                                         (e.keyCode == 187) ||
                                         // (jexcel.validLetter(String.fromCharCode(e.keyCode)))) {
                                         ((String.fromCharCode(e.keyCode) == e.key || String.fromCharCode(e.keyCode).toLowerCase() == e.key.toLowerCase()) && jexcel.validLetter(String.fromCharCode(e.keyCode)))) {
