@@ -1,0 +1,181 @@
+/* 凭证列表表格-开始 */
+.oe_accountcore_table_fix th {
+    white-space: nowrap;
+
+}
+
+.oe_accountcore_table_fix td {
+    white-space: nowrap;
+}
+
+.oe_accountcore_entrys {
+    margin: 0px;
+    width: 1070px;
+
+}
+
+.ac_rulebook td {
+    white-space: normal !important;
+    vertical-align: middle !important;
+    border: 0px;
+}
+
+.oe_accountcore_entrys td {
+    white-space: normal !important;
+    vertical-align: middle !important;
+    border: 0px;
+}
+
+/* 凭证列表表格结束 */
+/* 会计凭证界面(非打印)-开始 */
+.oe_ac_voucher_entrys {
+    margin: 0px;
+    width: 1070px;
+}
+
+.oe_ac_voucher_entrys .o_input {
+    width: 100%;
+    border: 0px;
+}
+
+.oe_ac_voucher_entrys th {
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+}
+
+.oe_ac_voucher_entrys td {
+    vertical-align: middle !important;
+}
+
+.amount-zero {
+    /* 凭证分录借贷金额为零显示颜色 */
+    color: white !important;
+}
+
+.amount-negative {
+    /* 凭证分录借贷金额小于零显示颜色 */
+    color: red !important;
+}
+
+.oe_ac_voucher_entrys {
+    /* 凭证分录 */
+    table-layout: fixed;
+}
+
+.oe_ac_explain .FieldChar_voucher_explain {
+    /* 凭证说明 */
+    width: 250px;
+    overflow: auto;
+}
+
+.oe_ac_account {
+    /* 凭证会计科目 */
+    width: 250px;
+
+}
+
+.oe_ac_accountItemClasses {
+    display: none;
+}
+
+.oe_accountcore_entrys .o_list_number {
+    /* 凭证借贷金额 */
+    width: 130px;
+
+}
+
+.oe_ac_items {
+    /* 凭证核算项目 */
+    width: 250px !important;
+}
+
+.oe_ac_cashflow {
+    /* 凭证现金流量 */
+    width: 230px;
+}
+
+.ac-items-choice {
+    /* 凭证编辑状态核算项目选择容器 */
+
+}
+
+.ac-item-type-name {
+    /* 凭证编辑状态核算项目类别名称 */
+
+}
+
+.ac-item-selection {
+    /* 凭证编辑状态核算项目下拉选择 */
+
+}
+
+/* 会计凭证界面-结束 */
+[name='fast_period'] button {
+    background-color: white;
+    border: 1px solid grey;
+}
+
+/* 无边框 ,凭证打印等*/
+.ac-no-border {
+    border-width: 0px !important;
+    border-color: white !important;
+}
+
+/* jexel 在弹出窗口下面*/
+.jexcel>thead>tr>td {
+    z-index: 80 !important;
+}
+
+/* jexel 工具栏 */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/accountcore/static/css/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 报表设计器工具栏 */
+.jexcel_toolbar {
+    z-index: 85 !important;
+}
+
+.jexcel_content td {
+    overflow: hidden !important;
+}
+
+/* jexel 工具下拉框宽度 */
+select.jexcel_toolbar_item {
+    width: 100px;
+}
+
+/* 右键查单靠左对齐 */
+.jcontextmenu {
+    text-align: left;
+}
+
+/* 隐藏about */
+.jcontextmenu>li:last-child {
+    font-size: 0px;
+    color: white;
+}
+/* 报表设计器公式向导公式内容高度 */
+textarea.formula {
+max-height: 20rem;
+overflow-y:scroll !important;
+}
