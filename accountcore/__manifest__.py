@@ -12,7 +12,17 @@
     'version': '0.1',
     'depends': ['base', 'web'],
     'application': True,
-    'images': ['static/description/icon.png'],
+    'license': 'AGPL-3',
+    'images': [
+        'static/description/icon.png',
+        'static/images/main_screenshot.png',
+        'static/description/accountbalance.png',
+        'static/description/begining.png',
+        'static/description/cashflow.png',
+        'static/description/report.png',
+        'static/description/searchentry.png',
+        'static/description/subsidiarybook.png',
+        'static/description/voucher.png', ],
     'data': [
         'views/assetsAdd_templates.xml',
         'security/users.xml',
