@@ -7,12 +7,12 @@
         和odoo自带的会计模块完全无关。以简单、直接、易用、智能为设计原则。没有繁琐的初始化和配置，不用结账和反结账、过账等冗余操作是中国会计的最佳实践。
     """,
     'author': "黄虎",
-    'website': "http://www.baidu.com",
+    'website': "",
     'category': 'accountcore',
     'version': '0.1',
     'depends': ['base', 'web'],
     'application': True,
-    'license': 'AGPL-3',
+    'license': 'LGPL-3',
     'images': [
         'static/images/main_screenshot.png',
         'static/description/icon.png',
