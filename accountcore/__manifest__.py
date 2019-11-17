@@ -14,8 +14,8 @@
     'application': True,
     'license': 'AGPL-3',
     'images': [
-        'static/description/icon.png',
         'static/images/main_screenshot.png',
+        'static/description/icon.png',
         'static/description/accountbalance.png',
         'static/description/begining.png',
         'static/description/cashflow.png',
