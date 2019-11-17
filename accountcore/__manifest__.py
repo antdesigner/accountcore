@@ -12,7 +12,7 @@
     'version': '0.1',
     'depends': ['base', 'web'],
     'application': True,
-    'license': 'AGPL-3',
+    'license': 'LGPL-3',
     'images': [
         'static/images/main_screenshot.png',
         'static/description/icon.png',
