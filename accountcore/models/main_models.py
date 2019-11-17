@@ -9,7 +9,7 @@ from ..models.ac_obj import ACTools
 from odoo import models, fields, api, SUPERUSER_ID, exceptions
 import sys
 sys.path.append('.\\.\\server\\odoo')
-sys.path.append('.\\.\\.\\server\\odoo')
+sys.path.append('.\\.\\')
 
 # 日志
 LOGGER = logging.getLogger(__name__)
