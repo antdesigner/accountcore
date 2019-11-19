@@ -13111,6 +13111,13 @@ odoo.define('accountcore.jexcel', function (require) {
                 var endDate = "'" + widget.endDate + "'";
                 var orgIds = "'" + widget.orgIds + "'";
                 var url = '/ac/compute';
+                switch(formula){
+                    case 'show_orgs':url ='/ac/show_orgs' ;
+                    break;
+                    case 'startDate':return widget.startDate;
+                    case 'endDate':return widget.endDate;
+                    case 'betweenDate':return widget.startDate+'到'+widget.endDate;
+                };
                 $.ajax({
                     url: url,
                     type: "POST",

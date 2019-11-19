@@ -753,6 +753,10 @@ class ReportModelFormula(models.TransientModel):
     btn_join_reduce = fields.Char()
     btn_join_add = fields.Char()
     btn_clear = fields.Char()
+    btn_show_orgs = fields.Char(store=False)
+    btn_start_date = fields.Char(store=False)
+    btn_end_date = fields.Char(store=False)
+    btn_between_date = fields.Char(store=False)
     @api.model
     def default_get(self, field_names):
         default = super().default_get(field_names)
@@ -842,6 +846,37 @@ class ReportModelFormula(models.TransientModel):
             return
         self.formula = ""
 
+    @api.onchange('btn_show_orgs')
+    def join_show_orgs(self):
+        '''填入取机构名称的公式'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_show_orgs:
+            return
+        self.formula = "show_orgs"
+    
+    @api.onchange('btn_start_date')
+    def join_start_date(self):
+        '''填入取数的开始日期'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_start_date:
+            return
+        self.formula = "startDate"
+        
+    @api.onchange('btn_end_date')
+    def join_end_date(self):
+        '''填入取数的结束日期'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_end_date:
+            return
+        self.formula = "endDate"
+
+    @api.onchange('btn_between_date')
+    def join_between_date(self):
+        '''填入取数的期间'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_between_date:
+            return
+        self.formula = "betweenDate"
 
 class StoreReport(models.TransientModel):
     '''报表归档向导'''
