@@ -254,6 +254,10 @@
                     <footer>
                         <button name="do" type="object" string="把公式填回单元格" class='btn-primary' />
                         <field name="btn_clear" string=" " class='fa fa-eraser' widget='ac_btn_trigger_onchange' />
+                        <field name="btn_show_orgs" string="取数机构"  widget='ac_btn_trigger_onchange' />
+                        <field name="btn_start_date" string="开始日期"  widget='ac_btn_trigger_onchange' />
+                        <field name="btn_end_date" string="结束日期"  widget='ac_btn_trigger_onchange' />
+                        <field name="btn_between_date" string="取数期间"  widget='ac_btn_trigger_onchange' />
                         <field name="btn_join_reduce" string=" " class='fa fa-minus-square' widget='ac_btn_trigger_onchange' />
                         <field name="btn_join_add" string=" " class='fa fa-plus-square' widget='ac_btn_trigger_onchange' />
                         <field name="formula" class='formula font-weight-bold' placeholder='公式内容' />
@@ -271,7 +275,7 @@
                         <group>
                             <field name="number" />
                             <field name="name" />
-                            <field name="receivers"  widget='many2many_tags'/>
+                            <field name="receivers" widget='many2many_tags' />
                             <field name="summary" />
                         </group>
                     </sheet>
@@ -319,7 +323,7 @@
             <field name="res_model"></field>
             <field name="tag">update_formula</field>
         </record> -->
-              <!-- 窗体动作-打开报表归档向导 -->
+        <!-- 窗体动作-打开报表归档向导 -->
         <record id='accountcore_store_report_actions_window' model='ir.actions.act_window' >
             <field name="name">报表模板科目取数公式设置向导</field>
             <field name='res_model'>accountcore.store_report</field>

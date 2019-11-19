@@ -282,12 +282,21 @@ class FormulaController(http.Controller):
 
         return str(result)
 
+    @http.route('/ac/show_orgs', type='http', auth='user', csrf=False)
+    def getOrgs(self, formula, startDate, endDate, orgIds):
+        '''获取机构名称'''
+        orgs = (eval(orgIds)).split("/")
+        org_ids = list(map(int, orgs))
+        orgsName =  request.env['accountcore.org'].sudo().browse(
+            org_ids).mapped('name')
+        return '+'.join(orgsName)
+
     def accountAmount(self, org_ids, start_date, end_data, accountName, hasChild, amountType, itemsName):
         orgIds = org_ids.split("/")
         org_ids = list(map(int, orgIds))
         orgs = self.env['accountcore.org'].sudo().browse(org_ids)
 
-        account = self.env['accountcore.account'].sudo().search(
+        account = request.env['accountcore.account'].sudo().search(
             [('name', '=', accountName)])
         accounts = [account]
         if hasChild.lower() == "true":
