@@ -969,15 +969,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             if (cellstr.charAt(0) != '=') {
                 throw Error("公式错误，没有以=开头");
             }
-            if (cellstr.slice(-2) != '")') {
-                throw Error("公式错误，没有以\")结尾");
-            }
             this.str = cellstr;
-            this.index1 = this.str.indexOf('("');
+            this.index1 = this.str.indexOf('(');
             if (this.index1 == -1) {
-                throw Error("公式错误，没有'(\"'");
+                throw Error("公式错误，没有'('");
             }
-            this.index2 = this.str.lastIndexOf('")');
         }
         /**
          * 公式名称
@@ -985,7 +981,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         name() {
             var name = this.str.slice(1, this.index1);
             if (name.length == 0) {
-                throw Error("公式错误，在'=' 和'(\"='之间没有公式名称");
+                throw Error("公式错误，在'=' 和'('之间没有公式名称");
             }
             return name;
         }
@@ -993,7 +989,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
          * 公式内容
          */
         value() {
-            return this.str.slice(this.index1 + 2, -2);
+            return this.str
         }
     }
     // 表格设计器表格的数据字段小部件
@@ -1061,7 +1057,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         _onSet_formula: function (v) {
             var formula = "";
             if (v) {
-                var formula = '=ac("' + v + '")';
+                var formula = '=' + v;
             };
             var cellName = jexcel.getColumnNameFromId([this.selection_x1, this.selection_y1]);
             this.jexcel_obj.setMeta(cellName, 'ac', formula);
@@ -1073,7 +1069,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             if (!str) {
                 return false;
             }
-            if (str.slice(0, 3) == '=ac') {
+            if (str.slice(0, 1) == '=') {
                 return true;
             }
 
@@ -1190,19 +1186,30 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         _isAutoComputing: function () {
             return false;
         },
-        _compute: function () {
+        _compute: function () {         
             var x = self.jexcel_obj.rows.length;
             var y = self.jexcel_obj.colgroup.length;
             var v;
+            var cellName='';
             for (var j = 0; j < y; j++) {
                 for (var i = 0; i < x; i++) {
                     v = self.jexcel_obj.getValueFromCoords(j, i);
-                    if (v && v.charAt(0) == '=') {
-                        self.jexcel_obj.setValueFromCoords(j, i, v, false)
+                    if (v && v.slice(0, 1) == '=') {
+                        cellName = jexcel.getColumnNameFromId([j, i]);
+                        // 计算缓存标记
+                        self.jexcel_obj.setMeta(cellName, 'isComputed','n' );
+                        self.jexcel_obj.setMeta(cellName, 'formulaResult','0');                       
+                        self.jexcel_obj.updateCell(j, i, v, false);
+                        // 计算完成添加缓存标记          
+                        if (!jexcel.current.options.computing){
+                        self.jexcel_obj.setMeta(cellName, 'isComputed', 'n');
+                        }
                     }
+
                 }
             }
-
+            // 计算完毕,关闭遮罩
+            framework.unblockUI();
         },
         _changeDateStr: function (dateStr) {
             return dateStr.replace('年', '-').replace('月', '-').replace('日', '')
@@ -1249,6 +1256,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 toolbar: [{
                         type: 'i',
                         content: 'undo',
+                        tooltip: '撤销',
                         onclick: function () {
                             self.jexcel_obj.undo();
                             if (self.mode != 'edit') {
@@ -1260,6 +1268,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     {
                         type: 'i',
                         content: 'redo',
+                        tooltip: '重做',
                         onclick: function () {
                             self.jexcel_obj.redo();
                             if (self.mode != 'edit') {
@@ -1270,52 +1279,61 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     },
                     {
                         type: 'select',
+                        tooltip: '切换字体',
                         k: 'font-family',
                         v: ['Arial', 'Verdana']
                     },
                     {
                         type: 'select',
+                        tooltip: '字体大小',
                         k: 'font-size',
                         v: ['9px', '10px', '11px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '40px', '48px', '64px', '80px', ]
                     },
                     {
                         type: 'i',
                         content: 'format_align_left',
+                        tooltip: '左对齐',
                         k: 'text-align',
                         v: 'left'
                     },
                     {
                         type: 'i',
                         content: 'format_align_center',
+                        tooltip: '居中对齐',
                         k: 'text-align',
                         v: 'center'
                     },
                     {
                         type: 'i',
                         content: 'format_align_right',
+                        tooltip: '右对齐',
                         k: 'text-align',
                         v: 'right'
                     },
                     {
                         type: 'i',
                         content: 'format_bold',
+                        tooltip: '加粗字体',
                         k: 'font-weight',
                         v: 'bold'
                     },
                     {
                         type: 'color',
                         content: 'format_color_text',
+                        tooltip: '设置字体颜色',
                         k: 'color'
                     },
                     {
                         type: 'color',
                         content: 'format_color_fill',
+                        tooltip: '设置背景颜色',
                         k: 'background-color'
                     },
                     // 合并单元格
                     {
                         type: 'i',
                         content: 'view_stream',
+                        tooltip: '合并选中的单元格',
                         onclick: function () {
                             if (self.mode != 'edit') {
                                 return;
@@ -1331,6 +1349,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     {
                         type: 'i',
                         content: 'view_module',
+                        tooltip: '对选中的单元格取消合并',
                         onclick: function () {
                             if (self.mode != 'edit') {
                                 return;
@@ -1344,6 +1363,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     {
                         type: 'i',
                         content: 'open_with',
+                        tooltip: '设置选中单元格的公式',
                         onclick: function () {
                             if (self.mode != 'edit') {
                                 return;
@@ -1355,6 +1375,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     {
                         type: 'i',
                         content: 'move_to_inbox',
+                        tooltip: '下载报表(保留公式)',
                         onclick: function () {
                             self.jexcel_obj.ACDownloadFomular();
                         }
@@ -1363,6 +1384,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     {
                         type: 'i',
                         content: 'save_alt',
+                        tooltip: '下载报表(数据)',
                         onclick: function () {
                             self.jexcel_obj.ACDownloadOnlyDate();
                         }
@@ -1370,6 +1392,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     // 归档
                     {
                         type: 'i',
+                        tooltip: '把报表归档',
                         content: 'save',
                         onclick: function () {
                             self.do_action({
@@ -1391,6 +1414,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     {
                         type: 'i',
                         content: 'exposure',
+                        tooltip: '重新计算报表',
                         onclick: function () {
                             var startDate = self._getStartDate()
                             var endDate = self._getEndDate()
@@ -1404,7 +1428,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                                 self.startDate = startDate;
                                 self.endDate = endDate;
                                 self.orgIds = self._getOrgIds();
-                                self._compute();
+                                setTimeout(function () {
+                                    　　　　self._compute();
+                                    　　}, 100);
+                                //开始计算,打开遮罩
+                                framework.blockUI();
                             } else {
                                 self.do_warn("期间不正确")
                             }
@@ -1492,24 +1520,24 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 },
                 onchange: function (instance, cell, x, y, value) {
                     self._setValue(JSON.stringify(instance.jexcel.getData()));
-                    var cellName = jexcel.getColumnNameFromId([x, y]);
-                    var data = instance.jexcel.getData()[y][x];
-                    if (self._isACFormula(data)) {
-                        try {
-                            var cellformula = new ACFormula(data);
-                            instance.jexcel.setMeta(cellName, cellformula.name(), cellformula.value());
-                        } catch (error) {
-                            self.do_warn(error);
-                        }
-                    } else {
-                        // var meta=instance.jexcel.getMeta(cellName);
-                        // for(var k in meta){
-                        //     instance.jexcel.setMeta(cellName,k,null);
-                        // }
-                        if (instance.jexcel.options.meta && instance.jexcel.options.meta[cellName]) {
-                            delete instance.jexcel.options.meta[cellName];
-                        }
-                    }
+                    // var cellName = jexcel.getColumnNameFromId([x, y]);
+                    // var data = instance.jexcel.getData()[y][x];
+                    // if (self._isACFormula(data)) {
+                    //     try {
+                    //         var cellformula = new ACFormula(data);
+                    //         instance.jexcel.setMeta(cellName, cellformula.name(), cellformula.value());
+                    //     } catch (error) {
+                    //         self.do_warn(error);
+                    //     }
+                    // } else {
+                    // var meta=instance.jexcel.getMeta(cellName);
+                    // for(var k in meta){
+                    //     instance.jexcel.setMeta(cellName,k,null);
+                    // }
+                    // if (instance.jexcel.options.meta && instance.jexcel.options.meta[cellName]) {
+                    //     delete instance.jexcel.options.meta[cellName];
+                    // }
+                    // }
                 },
                 oninsertrow: function (instance) {
 
@@ -1601,12 +1629,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         _openAccountFormulaWizard: function () {
             var formula = self.jexcel_obj.getValueFromCoords(self.selection_x1, self.selection_y1) || '';
             if (formula) {
-                var pre = formula.slice(0, 5);
-                var last = formula.slice(-2);
-                if (pre == '=ac("' && last == '")') {
+                var pre = formula.slice(0, 1);
+                if (pre == '=') {
                     // if 单元格定义了ac公式
                     var context = {
-                        ac: (formula.slice(0, -2)).slice(5)
+                        ac: formula.slice(1)
                     }
                     this.do_action({
                         name: '报表科目取数公式设置向导',
