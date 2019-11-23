@@ -852,7 +852,7 @@ class ReportModelFormula(models.TransientModel):
         # 窗口弹出时不执行，直接返回
         if not self.btn_show_orgs:
             return
-        self.formula = "show_orgs"
+        self.formula = "show_orgs()"
     
     @api.onchange('btn_start_date')
     def join_start_date(self):
@@ -860,7 +860,7 @@ class ReportModelFormula(models.TransientModel):
         # 窗口弹出时不执行，直接返回
         if not self.btn_start_date:
             return
-        self.formula = "startDate"
+        self.formula = "startDate()"
         
     @api.onchange('btn_end_date')
     def join_end_date(self):
@@ -868,7 +868,7 @@ class ReportModelFormula(models.TransientModel):
         # 窗口弹出时不执行，直接返回
         if not self.btn_end_date:
             return
-        self.formula = "endDate"
+        self.formula = "endDate()"
 
     @api.onchange('btn_between_date')
     def join_between_date(self):
@@ -876,7 +876,7 @@ class ReportModelFormula(models.TransientModel):
         # 窗口弹出时不执行，直接返回
         if not self.btn_between_date:
             return
-        self.formula = "betweenDate"
+        self.formula = "betweenDate()"
 
 class StoreReport(models.TransientModel):
     '''报表归档向导'''

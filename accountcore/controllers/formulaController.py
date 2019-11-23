@@ -269,8 +269,8 @@ ACMethosContainer.addMethod(ACMethod_currentCumulativeCamount('即时本年贷�
 
 
 class FormulaController(http.Controller):
-    @http.route('/ac/compute', type='http', auth='user', csrf=False)
-    def compute(self, formula, startDate, endDate, orgIds):
+    @http.route('/ac/account', type='http', auth='user', csrf=False)
+    def account(self, formula, startDate, endDate, orgIds):
 
         accountAmount = 'self.accountAmount(' + \
             orgIds+","+startDate+","+endDate+","
@@ -279,15 +279,14 @@ class FormulaController(http.Controller):
 
         self.env = request.env
         result = eval(newFormula)
-
         return str(result)
 
     @http.route('/ac/show_orgs', type='http', auth='user', csrf=False)
-    def getOrgs(self, formula, startDate, endDate, orgIds):
+    def getOrgs(self, orgIds):
         '''获取机构名称'''
         orgs = (eval(orgIds)).split("/")
         org_ids = list(map(int, orgs))
-        orgsName =  request.env['accountcore.org'].sudo().browse(
+        orgsName = request.env['accountcore.org'].sudo().browse(
             org_ids).mapped('name')
         return '+'.join(orgsName)
 

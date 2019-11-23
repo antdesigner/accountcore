@@ -11,9 +11,8 @@
  * Frozen columns
  * Meta information
  */
-odoo.define('accountcore.jexcel', function (require) {
+odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
     'use strict';
-
     var jSuites = require('accountcore.jsuites');
     var jexcel = (function (el, options) {
         // Create jexcel object
@@ -1657,15 +1656,15 @@ odoo.define('accountcore.jexcel', function (require) {
 
             return obj.records[y][x];
         }
-/**
-      * Get the cell object from coords
-      * 
-      * @param object cell
-      * @return string value
-      */
-     obj.getCellFromCoords = function(x, y) {
-         return obj.records[y][x].element;
-     }
+        /**
+         * Get the cell object from coords
+         * 
+         * @param object cell
+         * @return string value
+         */
+        obj.getCellFromCoords = function (x, y) {
+            return obj.records[y][x].element;
+        }
         /**
          * Get label
          * 
@@ -1680,15 +1679,15 @@ odoo.define('accountcore.jexcel', function (require) {
 
             return obj.records[y][x].innerHTML;
         }
-    /**
-      * Get labelfrom coords
-      * 
-      * @param object cell
-      * @return string value
-      */
-     obj.getLabelFromCoords = function(x, y) {
-        return obj.records[y][x].element.innerHTML;
-    }
+        /**
+         * Get labelfrom coords
+         * 
+         * @param object cell
+         * @return string value
+         */
+        obj.getLabelFromCoords = function (x, y) {
+            return obj.records[y][x].element.innerHTML;
+        }
 
         /**
          * Get the value from a cell
@@ -1827,14 +1826,16 @@ odoo.define('accountcore.jexcel', function (require) {
          */
         obj.setValueFromCoords = function (x, y, value, force) {
             var records = [];
+            // if (value.substr(0, 3) != '=ac') {
+            //     records.push(obj.updateCell(x, y, value, force));
+            // }
             records.push(obj.updateCell(x, y, value, force));
-
             // Update all formulas in the chain
-            // obj.updateFormulaChain(x, y, records);原代码
+            obj.updateFormulaChain(x, y, records);
             // tiget 修改-开始，优化公式计算方式，自定义ac公式不参与公式链自动计算
-            if (value.substr(0, 3) != '=ac') {
-                obj.updateFormulaChain(x, y, records);
-            }
+            // if (value.substr(0, 3) != '=ac') {
+            //     obj.updateFormulaChain(x, y, records);
+            // }
             // tiger 修改-结束
             // Update history
             obj.setHistory({
@@ -1847,11 +1848,11 @@ odoo.define('accountcore.jexcel', function (require) {
             obj.updateTable();
 
             // On after changes
-            // obj.onafterchanges(el, records);原代码
+            obj.onafterchanges(el, records);
             // tiget 修改-开始，优化公式计算方式，自定义ac公式不参与公式链自动计算
-            if (value.substr(0, 3) != '=ac') {
-                obj.updateFormulaChain(x, y, records);
-            }
+            // if (value.substr(0, 3) != '=ac') {
+            //     obj.updateFormulaChain(x, y, records);
+            // }
             // tiger 修改-结束
         }
 
@@ -3784,7 +3785,7 @@ odoo.define('accountcore.jexcel', function (require) {
                     columnNumber: columnNumber,
                     numOfColumns: numOfColumns,
                     insertBefore: insertBefore,
-                    columns:properties,
+                    columns: properties,
                     headers: historyHeaders,
                     colgroup: historyColgroup,
                     records: historyRecords,
@@ -4215,7 +4216,9 @@ odoo.define('accountcore.jexcel', function (require) {
                         var cell = jexcel.getIdFromColumnName(obj.formula[cellId][i], true);
                         // Update cell
                         var value = '' + obj.options.data[cell[1]][cell[0]];
-                        if (value.substr(0, 1) == '=') {
+                      
+                        if (value.substr(0, 1) == '=') { 
+
                             records.push(obj.updateCell(cell[0], cell[1], value, true));
                         } else {
                             // No longer a formula, remove from the chain
@@ -4426,7 +4429,7 @@ odoo.define('accountcore.jexcel', function (require) {
                                     } else {
                                         // Trying any formatted number
                                         var number = obj.parseNumber(value, position[0])
-                                     if (obj.options.autoCasting == true && number) {
+                                        if (obj.options.autoCasting == true && number) {
                                             // Render as number
                                             evalstring += "var " + tokens[i] + " = " + number + ";";
                                         } else {
@@ -4442,7 +4445,26 @@ odoo.define('accountcore.jexcel', function (require) {
                     // Convert formula to javascript
                     try {
                         evalstring += "function COLUMN() { return parseInt(x) + 1; }; function ROW() { return parseInt(y) + 1; }; function CELL() { return parentId; };";
-                        var res = eval(evalstring + expression.substr(1));
+                    //    tiger-修改开始,
+                    // 是否已经计算过
+                        var isComputed= obj.getMeta(parentId,'isComputed');
+                        if(isComputed && isComputed=='y'){
+                            // 获得计算的缓存值
+                            var res =  obj.getMeta(parentId,'formulaResult');                   
+                        }else{
+                            var res = eval(evalstring + expression.substr(1));
+                            // tiger-修改开始
+                            //缓存计算结果
+                            if (tokens) {                           
+
+                            }else if (jexcel.current.options.computing){
+                                obj.setMeta(parentId, 'isComputed', 'y');              
+                                obj.setMeta(parentId, 'formulaResult', res);
+                            }
+                            // tiger-修改结束
+                        }
+                        // tiger-修改结束
+                        // var res = eval(evalstring + expression.substr(1));//原代码
                     } catch (e) {
                         var res = '#ERROR';
                     }
@@ -5515,7 +5537,7 @@ odoo.define('accountcore.jexcel', function (require) {
             if (obj.options.copyCompatibility == true) {
                 obj.data = strLabel;
             } else {
-            obj.data = str;
+                obj.data = str;
             }
             // Keep non visible information
             obj.hashString = obj.hash(obj.data);
@@ -7397,7 +7419,7 @@ odoo.define('accountcore.jexcel', function (require) {
                 if (!spreadsheetContainer.jexcel) {
                     return jexcel($(this).get(0), arguments[0]);
                 } else {
-                    return spreadsheetContainer.jexcel[method].apply(this, Array.prototype.slice.call( arguments, 1 ));
+                    return spreadsheetContainer.jexcel[method].apply(this, Array.prototype.slice.call(arguments, 1));
                 }
             };
 
@@ -13103,21 +13125,17 @@ odoo.define('accountcore.jexcel', function (require) {
     // tiger 自定义函数-报表设计器科目取数公式
     jexcel.methods.ac = (function () {
         var exports = {};
-        exports.ac = function (formula) {
+        // 科目取数公式
+        exports.account = function (accountName, hasChilds, amountType, itemsName) {
             var result = "";
             if (jexcel.current.options.computing) {
                 var widget = jexcel.current.options.widget;
                 var startDate = "'" + widget.startDate + "'";
                 var endDate = "'" + widget.endDate + "'";
                 var orgIds = "'" + widget.orgIds + "'";
-                var url = '/ac/compute';
-                switch(formula){
-                    case 'show_orgs':url ='/ac/show_orgs' ;
-                    break;
-                    case 'startDate':return widget.startDate;
-                    case 'endDate':return widget.endDate;
-                    case 'betweenDate':return widget.startDate+'到'+widget.endDate;
-                };
+                var url = '/ac/account';
+                var argslist = new Array("'" + accountName + "'", "'" + hasChilds + "'", "'" + amountType + "'", "'" + itemsName + "'");
+                var formula = "account(" + argslist.join(',') + ")";
                 $.ajax({
                     url: url,
                     type: "POST",
@@ -13136,13 +13154,74 @@ odoo.define('accountcore.jexcel', function (require) {
                         console.log("ERROR ", data);
                     }
                 });
-                return result;
+                return jexcel.methods.math.ROUND(Number(result),2)
             } else {
-                return "<span class='fa fa-pencil o_right'>公式</span>";
+                return jexcel.methods.math.ROUND(0,2);
             }
-        }
+        };
+        // 取数机构
+        exports.show_orgs = function (preStr) {
+            var result = "";
+            if (jexcel.current.options.computing) {
+                var widget = jexcel.current.options.widget;
+                var orgIds = "'" + widget.orgIds + "'";
+                var url = '/ac/show_orgs';
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    dataType: 'text',
+                    data: {
+                        orgIds: orgIds
+                    },
+                    async: false,
+                    success: function (data) {
+                        result = data;
+                    },
+                    error: function (data) {
+                        console.log("ERROR ", data);
+                    }
+                });
+                var pre = "机构:";
+                if (preStr) {
+                    pre = preStr;
+                }
+                return pre + result;
+            } else {
+                return "<span class='fa fa-institution'>机构名称</span>";
+            }
+        };
+        // 取数开始日期
+        exports.startDate = function () {
+            if (jexcel.current.options.computing) {
+                var widget = jexcel.current.options.widget;
+                return widget.startDate;
+            }else {
+                return "<span class='fa fa-calendar-check-o'>开始日期</span>";
+            }
+        };
+        // 取数结束日期
+        exports.endDate = function () {
+            if (jexcel.current.options.computing) {
+                var widget = jexcel.current.options.widget;
+                return widget.endDate;
+            } else {
+                return "<span class='fa fa-calendar-minus-o'>结束日期</span>";
+            }
+
+        };
+        // 取数开始到结束日期
+        exports.betweenDate = function () {
+            if (jexcel.current.options.computing) {
+                var widget = jexcel.current.options.widget;
+                return widget.startDate + '到' + widget.endDate;
+            }else {
+                return "<span class='fa fa-calendar-minus-o'>取数期间</span>";
+            }
+        };
         return exports;
     })();
+
+    // tiger 自定义函数-报表设计器科目取数公式-结束
     for (var i = 0; i < Object.keys(jexcel.methods).length; i++) {
         var methods = jexcel.methods[Object.keys(jexcel.methods)[i]];
         for (var j = 0; j < Object.keys(methods).length; j++) {
