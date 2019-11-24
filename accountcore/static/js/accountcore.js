@@ -1186,23 +1186,23 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         _isAutoComputing: function () {
             return false;
         },
-        _compute: function () {         
+        _compute: function () {
             var x = self.jexcel_obj.rows.length;
             var y = self.jexcel_obj.colgroup.length;
             var v;
-            var cellName='';
+            var cellName = '';
             for (var j = 0; j < y; j++) {
                 for (var i = 0; i < x; i++) {
                     v = self.jexcel_obj.getValueFromCoords(j, i);
                     if (v && v.slice(0, 1) == '=') {
                         cellName = jexcel.getColumnNameFromId([j, i]);
                         // 计算缓存标记
-                        self.jexcel_obj.setMeta(cellName, 'isComputed','n' );
-                        self.jexcel_obj.setMeta(cellName, 'formulaResult','0');                       
+                        self.jexcel_obj.setMeta(cellName, 'isComputed', 'n');
+                        self.jexcel_obj.setMeta(cellName, 'formulaResult', '0');
                         self.jexcel_obj.updateCell(j, i, v, false);
                         // 计算完成添加缓存标记          
-                        if (!jexcel.current.options.computing){
-                        self.jexcel_obj.setMeta(cellName, 'isComputed', 'n');
+                        if (!jexcel.current.options.computing) {
+                            self.jexcel_obj.setMeta(cellName, 'isComputed', 'n');
                         }
                     }
 
@@ -1226,6 +1226,8 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             // var d = self.value;
             var options = {
                 editable: (this.mode === 'edit'),
+                tableOverflow: true,
+                tableHeight: 600,
                 fullscreen: false,
                 defaultColWidth: 150,
                 wordWrap: true,
@@ -1410,6 +1412,26 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             })
                         }
                     },
+                    // 全屏
+                    {
+                        type: 'i',
+                        tooltip: '切换全屏',
+                        content: 'airplay',
+                        onclick: function () {
+                            self.jexcel_obj.fullscreen();
+
+                        }
+                    },
+                    // 移动工具栏
+                    {
+                        type: 'i',
+                        tooltip: '移动工具栏',
+                        content: 'swap_vertical',
+                        onclick: function () {
+                            self.$el.find('.jexcel_toolbar').toggleClass('jexecl_toolbar_width');
+
+                        }
+                    },
                     // 计算
                     {
                         type: 'i',
@@ -1429,8 +1451,8 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                                 self.endDate = endDate;
                                 self.orgIds = self._getOrgIds();
                                 setTimeout(function () {
-                                    　　　　self._compute();
-                                    　　}, 100);
+                                    self._compute();
+                                }, 100);
                                 //开始计算,打开遮罩
                                 framework.blockUI();
                             } else {
@@ -1438,6 +1460,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             }
                         }
                     },
+
                 ],
                 // 
                 text: {

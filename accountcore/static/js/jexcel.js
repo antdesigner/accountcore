@@ -550,7 +550,10 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
             el.appendChild(obj.pagination);
             el.appendChild(obj.contextMenu);
             el.appendChild(obj.ads);
+
             el.classList.add('jexcel_container');
+
+
 
             // Create toolbar
             if (obj.options.toolbar && obj.options.toolbar.length) {
