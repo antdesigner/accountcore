@@ -8,7 +8,7 @@
  * This software is distribute under MIT License
  */
  :root {
-    --jexcel-border-color:#000;
+    --jexcel-border-color:rgb(0, 0, 0);
 }
 
 .jexcel_container {
@@ -576,6 +576,7 @@
     position:sticky;
     top:0px;
     z-index:8001;
+
 }
 
 .jexcel_toolbar:empty

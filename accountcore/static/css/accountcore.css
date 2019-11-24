@@ -152,7 +152,12 @@
 
 /* 报表设计器工具栏 */
 .jexcel_toolbar {
-    z-index: 85 !important;
+    position:fixed !important;
+    bottom:0 !important;
+    height: 35px !important; 
+    display:flex !important;
+    top: initial !important;
+    /* z-index: 85 !important; */
 }
 
 .jexcel_content td {
@@ -174,8 +179,17 @@ select.jexcel_toolbar_item {
     font-size: 0px;
     color: white;
 }
+
 /* 报表设计器公式向导公式内容高度 */
 textarea.formula {
-max-height: 20rem;
-overflow-y:scroll !important;
+    max-height: 20rem;
+    overflow-y: scroll !important;
+}
+/* 报表设计器全屏时,计算弹出的遮罩应在最前面z-index=1000 */
+.fullscreen{
+    z-index: 999 !important;
+}
+.jexecl_toolbar_width{
+    bottom: initial !important;
+    top:0px !important;
 }
