@@ -1428,7 +1428,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         tooltip: '移动工具栏',
                         content: 'swap_vertical',
                         onclick: function () {
-                            self.$el.find('.jexcel_toolbar').toggleClass('jexecl_toolbar_width');
+                            self.$el.find('.jexcel_toolbar').toggleClass('jexecl_toolbar_place');
 
                         }
                     },
