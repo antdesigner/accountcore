@@ -189,7 +189,8 @@ textarea.formula {
 .fullscreen{
     z-index: 999 !important;
 }
-.jexecl_toolbar_width{
+/* 移动报表设计器工具栏 */
+.jexecl_toolbar_place{
     bottom: initial !important;
     top:0px !important;
 }
