@@ -1074,7 +1074,7 @@
         <search string="accountFilter">
           <field name="name" string="科目名称包含" domain="[('name','ilike', self)]" />
           <field name="number" string="科目编号包含" domain="[('number','ilike', self)]" />
-          <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
+          <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
           <filter string="非一级科目" name="leve_2" domain="[('fatherAccountId','!=',False)]"></filter>
           <filter string="末级科目" name="is_last" domain="[('childs_ids','=',False)]"></filter>
@@ -1095,7 +1095,7 @@
         <search string="itemFilter">
           <field name="name" string="项目名称包含" domain="[('name','ilike', self)]" />
           <field name="number" string="项目编号包含" domain="[('number','ilike', self)]" />
-          <field name="glob_tag" string="全局标签包含" domain="[('glob_tagr','ilike', self)]" widget='many2one' />
+          <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <field name="uniqueNumber" string="唯一编号包含" domain="[('uniqueNumber','ilike', self)]" />
           <filter name="groupby_itemClass" string="按项目类别分组" context = "{'group_by': 'itemClass'}" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
