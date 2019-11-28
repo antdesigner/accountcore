@@ -1174,6 +1174,13 @@
         </search>
       </field>
     </record>
+        <!-- 窗体动作-打开用户 -->
+    <record model='ir.actions.act_window' id='accountcore_user_action_window'>
+      <field name='name'>管理用户</field>
+      <field name='res_model'>res.users</field>
+      <field name='view_mode'>tree,form</field>
+      <field name="target">current</field>
+    </record>
     <!-- 窗体动作-打开核算机构 -->
     <record model='ir.actions.act_window' id='accountcore_org_action_window'>
       <field name='name'>核算机构</field>
