@@ -13,7 +13,7 @@
         <menuitem name='第8步:设置凭证编号策略' id='accountcore_guide_menu_7' parent='accountcore_guide_menu' action='accountcore_set_number_acionts_window' sequence="70" />
         <menuitem name='第9步:可以开始录入凭证了' id='accountcore_guide_menu_8' parent='accountcore_guide_menu' action='accountcore_vouchers_action_window' sequence="80" />
         <menuitem name='★详细帮助和服务支持' id='accountcore_guide_menu_9' parent='accountcore_guide_menu' action='accountcore_helps_actions_window' sequence="90" />
-        <menuitem name='用户' id='accountcore_user_menu' parent='accountcore_menu' action='accountcore_user_action_window' sequence="33" />
+        <menuitem name='用户' id='accountcore_user_menu' parent='accountcore_menu' action='base.action_res_users' sequence="33" />
         <menuitem name='核算机构' id='accountcore_org_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="35" />
         <menuitem name="启用期初" id='accountcore_begining_menu' parent='accountcore_menu' sequence='36'/>
         <menuitem name="科目初始余额" id='accountcore_begining_balance_menu' parent='accountcore_begining_menu' action='accountcore_accounts_balance_actions_window'/>
