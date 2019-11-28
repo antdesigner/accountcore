@@ -194,3 +194,15 @@ textarea.formula {
     bottom: initial !important;
     top:0px !important;
 }
+/* 报表设计器打印时隐藏 */
+@media print{
+    .jexcel_toolbar{
+        display: none !important;
+    }
+    .jexcel_content table>thead{
+       visibility: hidden !important;
+    }
+    .jexcel_content .jexcel_row{
+        visibility: hidden !important;
+    }
+}
