@@ -1408,7 +1408,9 @@
       <field name="res_model">accountcore.accounts_balance</field>
       <field name="view_mode">tree,form</field>
       <field name="target">current</field>
-      <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1,'search_default_group_by_account_class_id':1}</field>
+      <!-- <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1,'search_default_group_by_account_class_id':1}</field> -->
+      <!-- 默认按列表显示，不分组 -->
+      <field name='context'>{'default_isbegining':True}</field>
       <field name='domain'>[('isbegining','=',True)]</field>
     </record>
     <!-- 报表动作-凭证打印 -->
@@ -1447,6 +1449,20 @@
       <field name='res_model'>accountcore.begin_balance_check</field>
       <field name='view_mode'>form</field>
     </record>
+    <!-- 服务器动作-打开数据库管理界面 -->
+<record model="ir.actions.server" id="accountcore_report_model_actions_sever">
+    <field name="name">管理账套</field>
+    <field name="model_id" ref="base.ir_config_list_action"/>
+    <field name="state">code</field>
+    <field name="code">
+    action = {
+    'type': 'ir.actions.act_url',
+    'url': '/web/database/manager',
+    'target': 'new',
+
+}
+    </field>
+</record>
   </data>
 </odoo>
 

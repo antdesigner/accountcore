@@ -1262,6 +1262,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         onclick: function () {
                             self.jexcel_obj.undo();
                             if (self.mode != 'edit') {
+                                self.do_notify('提示', '在编辑状态下才能操作！');
                                 return;
                             }
 
@@ -1274,6 +1275,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         onclick: function () {
                             self.jexcel_obj.redo();
                             if (self.mode != 'edit') {
+                                self.do_notify('提示', '在编辑状态下才能操作！');
                                 return;
                             }
 
@@ -1338,6 +1340,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         tooltip: '合并选中的单元格',
                         onclick: function () {
                             if (self.mode != 'edit') {
+                                self.do_notify('提示', '在编辑状态下才能合并选中的单元格！');
                                 return;
                             }
                             // var cell = jexcel.getColumnNameFromId([self.selection_x1, self.selection_y1])
@@ -1354,6 +1357,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         tooltip: '对选中的单元格取消合并',
                         onclick: function () {
                             if (self.mode != 'edit') {
+                                self.do_notify('提示', '在编辑状态下才能取消合并！');
                                 return;
                             }
                             var cell = jexcel.getColumnNameFromId([self.selection_x1, self.selection_y1]);
@@ -1368,6 +1372,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         tooltip: '设置选中单元格的公式',
                         onclick: function () {
                             if (self.mode != 'edit') {
+                                self.do_notify('提示', '在编辑状态下才能设置公式！');
                                 return;
                             }
                             self._openAccountFormulaWizard();

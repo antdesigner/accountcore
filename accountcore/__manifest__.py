@@ -48,3 +48,4 @@
         'static/css/jsuites.css',
     ],
 }
+
