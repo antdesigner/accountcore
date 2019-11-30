@@ -340,7 +340,10 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                     obj.options.columns[i].title = obj.options.colHeaders[i] ? obj.options.colHeaders[i] : '';
                 }
                 if (!obj.options.columns[i].width) {
+                    // tiger-修改开始
                     obj.options.columns[i].width = obj.options.colWidths[i] ? obj.options.colWidths[i] : '50';
+                // tiger-修改结束
+                // 原代码 obj.options.columns[i].width = obj.options.colWidths[i] ? obj.options.colWidths[i] : obj.options.defaultColWidth;
                 }
                 if (!obj.options.columns[i].align) {
                     obj.options.columns[i].align = obj.options.colAlignments[i] ? obj.options.colAlignments[i] : 'center';
@@ -442,7 +445,10 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
             // Colsgroup
             obj.colgroupContainer = document.createElement('colgroup');
             var tempCol = document.createElement('col');
+            //tiger-修改开始
             tempCol.setAttribute('width', 50);
+            // tiger-修改结束
+            //原代码 tempCol.setAttribute('width', obj.options.defaultColWidth);
             obj.colgroupContainer.appendChild(tempCol);
 
             // Nested
@@ -6365,6 +6371,8 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
 
     jexcel.destroy = function (element, destroyEventHandlers) {
         if (element.jexcel) {
+            element.removeEventListener("DOMMouseScroll", element.jexcel.scrollControls);
+            element.removeEventListener("mousewheel", element.jexcel.scrollControls);
             element.jexcel = null;
             element.innerHTML = '';
 
