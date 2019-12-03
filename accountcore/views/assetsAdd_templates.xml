@@ -39,5 +39,17 @@
                 <script type="text/javascript" src="/accountcore/static/js/accountcore.js"></script>
             </xpath>
         </template>
+        <!-- print.js插件开始 -->
+                        <template id="accountcore_print_js" inherit_id="web.assets_backend" name="accountcore print js">
+            <xpath expr="script[last()]" position="after">
+                <script type="text/javascript" src="/accountcore/static/js/print.min.js"></script>
+            </xpath>
+        </template>
+          <template id="accountcore_print_css" inherit_id="web.report_assets_common" name="accountcore print css">
+            <xpath expr="link[last()]" position="after">
+                <link rel='stylesheet' type='text/css' href="/accountcore/static/css/print.min.css" />
+            </xpath>
+        </template>
+        <!-- print.js插件结束 -->
     </data>
 </odoo>
