@@ -1223,11 +1223,12 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             };
             this.ddom = document.createElement('div');
             this.$el.append(this.ddom);
+
             // var d = self.value;
             var options = {
                 editable: (this.mode === 'edit'),
                 tableOverflow: true,
-                tableHeight: 600,
+                tableHeight: "297mm",
                 fullscreen: false,
                 defaultColWidth: 150,
                 wordWrap: true,
@@ -1437,6 +1438,24 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
 
                         }
                     },
+                    // 打印
+                    {
+                        type: 'i',
+                        tooltip: '打印',
+                        content: 'print',
+                        onclick: function () {
+                            printJS({
+                                printable: 'print_content',
+                                type: 'html',
+                                css: ['/accountcore/static/css/jsuites.css','/accountcore/static/css/jexcel.css'],
+                                scanStyles: false,
+                                ignoreElements:[],
+                                style:".jexcel_row{visibility: hidden !important;}.jexcel_toolbar{display: none !important;}table>thead{visibility: hidden !important;}",
+                            })
+
+
+                        }
+                    },
                     // 计算
                     {
                         type: 'i',
@@ -1640,6 +1659,8 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
 
             };
             self.jexcel_obj = jexcel(this.ddom, options);
+            // 添加ID以便打印调用
+            this.$el.find('.jexcel').attr("id","print_content");
             // 设置右键科目取数公式菜单在编辑状态下可见
             self.jexcel_obj.options.allowOpenAccountFormula = (this.mode === 'edit');
             // 设置默认行高             

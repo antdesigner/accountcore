@@ -2,8 +2,7 @@
 <templates>
     <!-- jexcel表格-->
     <t t-name="ac_jexcel">
-        <div style="width:100%;overflow:auto">
+        <div style="overflow:hidden">
         </div>
-
     </t>
 </templates>
