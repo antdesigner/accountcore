@@ -9,6 +9,7 @@
 thead, th {
     text-align: center;
 }
+caption { caption-side: top !important;}
 td, th {
     vertical-align: middle!important;
     font-size: small;
@@ -23,6 +24,7 @@ td, th {
     .voucher_tastics {
         display: none;
     }
+
 }
 .account_number {
     text-overflow: ellipsis;
@@ -38,7 +40,7 @@ table tr {
 
         </style>
             <t t-call="web.basic_layout"> 
-                    <div class="container text-center" style='display:flex;flex-direction:column;'>
+                    <div class="container text-center" style='display:flex;flex-direction:column;' >
                         <t t-set="start" t-value="data['form']['startDate']"></t>
                         <t t-set="end" t-value="data['form']['endDate']"></t>
 
@@ -59,26 +61,11 @@ table tr {
                                 <span t-if="end=='9999-12-31'">9999年12月</span>
                             </h6>
                         </div>
-
-                        <t t-foreach="docs" t-as="account_entry">
-                        <t t-set='direction' t-value='account_entry.main_account.direction'></t>
-                        <t t-set='account_name' t-value='account_entry.main_account.name'></t>
-                        <t t-set='item' t-value='account_entry.item'></t>
-                    
-    
-                    <!-- 单个科目循环开始 -->
-
-                    <div class="row">
-                        <span class='col text-left'>科目:                        
-                            <t t-esc='account_name'></t>
-                        </span>
-                        <span t-if='item' class='col text-left'>核算项目:                        
-                            <t t-esc='item[1]'></t>
-                        </span>
+                        <div class="row">
                         <t t-if="report_type == 'html'">
                         <div class='col voucher_tastics'>凭证号策略:
                             <select id='tastics_select' class='text-left small' style="border-width:0px;">
-                                <t t-foreach='account_entry.tasticsTypes' t-as='type'>
+                                <t t-foreach='docs[0].tasticsTypes' t-as='type'>
                                     <option t-attf-value="{{type.id}}">
                                         <t t-esc="type.name" />
                                     </option>
@@ -86,10 +73,25 @@ table tr {
                             </select>
                         </div>
                         </t>
-                    </div>
-                    <div class="row">
+                        </div>
+                        <t t-foreach="docs" t-as="account_entry">
+                        <t t-set='direction' t-value='account_entry.main_account.direction'></t>
+                        <t t-set='account_name' t-value='account_entry.main_account.name'></t>
+                        <t t-set='item' t-value='account_entry.item'></t>
+                    
+                    <!-- 单个科目循环开始 -->
+                    <div class="row" >
                         <div class="">
                             <table class='table table-bordered table-sm table-hover'>
+                            <caption style='caption-side:top !important;'>
+                            <div class="row" >
+                        <span class='col text-left'>科目:                        
+                            <t t-esc='account_name'></t>
+                        </span>
+                        <span t-if='item' class='col text-left'>核算项目:                        
+                            <t t-esc='item[1]'></t>
+                        </span></div>
+                            </caption>
                                 <thead>
                                     <tr>
                                         <th colspan="2">凭证日期</th>
