@@ -697,7 +697,7 @@
                     <field name='camount' sum='ac_csum' class='amountColor'></field>
                     <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True}" />
                     <field name='account_item' invisible='1' />
-                    <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}" ></field>
+                    <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
                     <control>
                       <create string="添加一行分录" />
                     </control>
@@ -1029,13 +1029,21 @@
               <field name="orgs" widget="many2many_checkboxes_floatleft" />
             </group>
             <group>
-              <field name="account" options="{'no_create_edit':1,'no_create':1,'no_open':1}" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
-              </field>
-              <field name="only_this_level"/>
-              <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
-            </group>
-            <group>
               <field name="voucher_number_tastics" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+              <field name="only_this_level" />
+              <field name="account"  default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}" >
+                <tree default_order='accountClass,number,org'  >
+                  <field name='org' />
+                  <field name='accountClass' />
+                  <field name='fatherAccountId' />
+                  <field name='number' />
+                  <field name='name' />
+                  <control>
+                    <create string="选择查询的科目" />
+                  </control>
+                </tree>
+              </field>
+              <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <footer>
               <button name="getReport" type="object" class='btn-primary' string="开始查询" />
@@ -1174,7 +1182,7 @@
         </search>
       </field>
     </record>
-        <!-- 窗体动作-打开用户 -->
+    <!-- 窗体动作-打开用户 -->
     <record model='ir.actions.act_window' id='accountcore_user_action_window'>
       <field name='name'>管理用户</field>
       <field name='res_model'>res.users</field>
@@ -1386,7 +1394,7 @@
       <field name="header_spacing">35</field>
       <field name="dpi">90</field>
     </record>
-	    <!-- 凭证24cmX14cm -->
+    <!-- 凭证24cmX14cm -->
     <record id="paperformat_invoice" model="report.paperformat">
       <field name="name">会计凭证</field>
       <field name="default" eval="True" />
@@ -1416,7 +1424,7 @@
     <!-- 报表动作-凭证打印 -->
     <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证A5' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
     <!-- 打印凭证24cmX14cm -->
-    <report id='accounctore_voucher_report_a5haft' model='accountcore.voucher' string='凭证24cmX14cm(发票大小)' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_invoice'  />	
+    <report id='accounctore_voucher_report_a5haft' model='accountcore.voucher' string='凭证24cmX14cm(发票大小)' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_invoice'  />
     <!--form-平衡检查向导 -->
     <record id="accountcore_check_begin_balance_form" model="ir.ui.view">
       <field name="name">平衡检查</field>
@@ -1450,19 +1458,19 @@
       <field name='view_mode'>form</field>
     </record>
     <!-- 服务器动作-打开数据库管理界面 -->
-<record model="ir.actions.server" id="accountcore_report_model_actions_sever">
-    <field name="name">管理账套</field>
-    <field name="model_id" ref="base.ir_config_list_action"/>
-    <field name="state">code</field>
-    <field name="code">
+    <record model="ir.actions.server" id="accountcore_report_model_actions_sever">
+      <field name="name">管理账套</field>
+      <field name="model_id" ref="base.ir_config_list_action" />
+      <field name="state">code</field>
+      <field name="code">
     action = {
     'type': 'ir.actions.act_url',
     'url': '/web/database/manager',
     'target': 'new',
 
 }
-    </field>
-</record>
+      </field>
+    </record>
   </data>
 </odoo>
 

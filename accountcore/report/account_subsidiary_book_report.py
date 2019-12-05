@@ -27,64 +27,69 @@ class SubsidiaryBook(models.AbstractModel):
         period = Period(form['startDate'],
                         form['endDate'])
         org_ids = form['orgs']
-        account_id = form['account'][0]
-        item = form['item']
-        self.voucher_number_tastics_id = form['voucher_number_tastics'][0]
-        # 向导中选择的科目
-        main_account = self.env['accountcore.account'].sudo().search(
-            [('id', '=', account_id)])
         tasticsTypes = self.env['accountcore.voucher_number_tastics'].sudo(
         ).search([('id', '!=', 0)])
-        # 获得查询科目及其全部明细科目的ID列表,通过科目编号查找
-        searchAccount = [account_id]
-        if not form['only_this_level']:
-            searchAccount = main_account.getMeAndChild_ids()
-        # 依据是否在查询向导中选择了核算项目,构建不同的查询参数,从数据库取出明细
-        # if选择了核算项目
-        if item:
-            item_id = form['item'][0]
-            # 用于获得分录明细
-            params = (period.start_year,
-                      1,
-                      period.end_year,
-                      period.end_month,
-                      tuple(org_ids),
-                      tuple(searchAccount),
-                      item_id)
-            # 从数据库获得需要的分录明细
-            # 用于查询期初余额
-            params2 = (period.start_year,
-                       tuple(org_ids),
-                       tuple(searchAccount),
-                       item_id)
-        # 没有选择核算项目
-        else:
-            params = (period.start_year,
-                      1,
-                      period.end_year,
-                      period.end_month,
-                      tuple(org_ids),
-                      tuple(searchAccount))
-            params2 = (period.start_year,
-                       tuple(org_ids),
-                       tuple(searchAccount))
-        # 从获得查询期间的分录明细
-        entrys = self._getEntrys(params)
-        # 科目在查询期间的全部分录明细,从开始日期的年初开始
-        entryArchs = self.build_entryArchs(entrys)
-        # 科目在查询期间的余额表记录
-        beginingOfYearBalance = self._getBeginingOfYearBalance(params2)
-        beginBlances = self._getBeginBalances(params)
-        entrys = EntrysAssembler(main_account,
-                                 item,
-                                 period,
-                                 beginingOfYearBalance,
-                                 beginBlances,
-                                 entryArchs,
-                                 tasticsTypes,
-                                 self.voucher_number_tastics_id)
+        account_ids = form['account']
+        # 存放每个科目明细账的容器
+        multi_entrys = []
+        # 对每一个科目生成明细账
+        for account_id in account_ids:
+            item = form['item']
+            self.voucher_number_tastics_id = form['voucher_number_tastics'][0]
+            # 向导中选择的科目
+            main_account = self.env['accountcore.account'].sudo().search(
+                [('id', '=', account_id)])
+            # 获得查询科目及其全部明细科目的ID列表,通过科目编号查找
+            searchAccount = [account_id]
+            if not form['only_this_level']:
+                searchAccount = main_account.getMeAndChild_ids()
+            # 依据是否在查询向导中选择了核算项目,构建不同的查询参数,从数据库取出明细
+            # if选择了核算项目
+            if item:
+                item_id = form['item'][0]
+                # 用于获得分录明细
+                params = (period.start_year,
+                          1,
+                          period.end_year,
+                          period.end_month,
+                          tuple(org_ids),
+                          tuple(searchAccount),
+                          item_id)
+                # 从数据库获得需要的分录明细
+                # 用于查询期初余额
+                params2 = (period.start_year,
+                           tuple(org_ids),
+                           tuple(searchAccount),
+                           item_id)
+            # 没有选择核算项目
+            else:
+                params = (period.start_year,
+                          1,
+                          period.end_year,
+                          period.end_month,
+                          tuple(org_ids),
+                          tuple(searchAccount))
+                params2 = (period.start_year,
+                           tuple(org_ids),
+                           tuple(searchAccount))
+            # 从获得查询期间的分录明细
+            entrys = self._getEntrys(params)
+            # 科目在查询期间的全部分录明细,从开始日期的年初开始
+            entryArchs = self.build_entryArchs(entrys)
+            # 科目在查询期间的余额表记录
+            beginingOfYearBalance = self._getBeginingOfYearBalance(params2)
+            beginBlances = self._getBeginBalances(params)
+            entrys = EntrysAssembler(main_account,
+                                     item,
+                                     period,
+                                     beginingOfYearBalance,
+                                     beginBlances,
+                                     entryArchs,
+                                     tasticsTypes,
+                                     self.voucher_number_tastics_id)
+            multi_entrys.append(entrys)
         return {'doc_ids': docids,
-                'docs': entrys,
+                'docs': multi_entrys,
                 'data': data}
 
     def _getBeginingOfYearBalance(self, params):
