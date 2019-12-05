@@ -327,7 +327,7 @@ class GetSubsidiaryBook(models.TransientModel):
                             string='机构范围',
                             default=lambda s: s.env.user.currentOrg,
                             required=True)
-    account = fields.Many2one(
+    account = fields.Many2many(
         'accountcore.account', string='查询的科目', required=True)
     only_this_level = fields.Boolean(string='只包含本级科目', default=False)
     item = fields.Many2one('accountcore.item', string='查询的核算项目')
