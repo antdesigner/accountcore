@@ -43,9 +43,9 @@
             <h1>新增编辑=>核算机构</h1>
             <hr></hr>
             <group>
-              <field name="number" />
-              <field name="name" />
-              <field name='glob_tag' widget='many2many_tags' />
+              <field name="number" help='核算机构的编码，不能相同'/>
+              <field name="name" help='一个核算机构就是一个会计主体，不能相同'/>
+              <field name='glob_tag' widget='many2many_tags' help='对核算机构的一个分类标签，非必填'/>
             </group>
           </sheet>
         </form>
@@ -138,9 +138,9 @@
             <h1>新增编辑=>核算项目</h1>
             <hr></hr>
             <group>
+              <field name="org" widget='many2many_tags'/>
               <field name='uniqueNumber' readonly='1'></field>
               <field name="number" />
-              <field name="org" />
               <field name="itemClass" />
               <field name="name" />
               <field name='glob_tag' widget='many2many_tags' />
@@ -241,7 +241,7 @@
             <h1>新增编辑=>会计科目</h1>
             <hr></hr>
             <group>
-              <field name="org" />
+              <field name="org" widget='many2many_tags'/>
               <field name="accountsArch" />
               <field name="accountClass" />
               <field name='fatherAccountId' readonly='1' />
@@ -304,9 +304,9 @@
           <field name='isbegining' invisible='1'></field>
           <field name='account_number' invisible='1'></field>
           <field name="account_class_id" string="类别" />
-          <field name='account' domain="[('is_show','=',True)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+          <field name='account' domain="[('is_show','=',True),'|',('org','=',False),('org','in',org)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='accountItemClass' string="项目类别" class="oe_grey" />
-          <field name='items' domain="[('itemClass.id','=',accountItemClass)]" attrs="{'readonly':[('accountItemClass','=',False)]}" />
+          <field name='items' domain="[('itemClass.id','=',accountItemClass),'|',('org','=',False),('org','in',org)]" attrs="{'readonly':[('accountItemClass','=',False)]}" />
           <field name="beginingDamount" string='月初余额(借方)' sum="合计" />
           <field name="beginingCamount" string='月初余额(贷方)' sum="合计" />
           <field name="damount" string='月已发生额(借方)' sum="合计" />
@@ -598,16 +598,16 @@
     </record>
     <!-- form-设置新增凭证默认值向导 -->
     <record id='accountcore_userdefaults_form' model='ir.ui.view'>
-      <field name='name'>设置新增凭证默认值</field>
+      <field name='name'>设置新增凭证等的默认值</field>
       <field name='model'>accountcoure.userdefaults</field>
       <field name='arch' type='xml'>
         <form string='' create='false'>
           <sheet>
             <group col='2'>
-              <field name='default_voucherDate' required='1' default_focus='2' />
-              <field name='default_real_date' default_focus='3' />
-              <field name='default_org' required='1' default_focus='1' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
-              <field name='default_ruleBook' required='1' default_focus='4'>
+              <field name='default_voucherDate' required='1' default_focus='2' help='新增凭证的记账日期' />
+              <field name='default_real_date' default_focus='3' help='业务的发生日期，可以和凭证记账日期不同'/>
+              <field name='default_org' required='1' default_focus='1' options="{'no_create_edit':1,'no_create':1,'no_open':1}" help='默认的核算机构，设置后，录入凭证，查账时会默认选取该机构'/>
+              <field name='default_ruleBook' required='1' default_focus='4' help='录入凭证时的，默认选取这里设置的凭证标签项'>
                 <tree>
                   <field name='name' />
                   <control>
@@ -692,7 +692,7 @@
                     <field name='org' invisible='1' />
                     <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
                     <!-- org_id,show_balance用于在 -->
-                    <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,',org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
+                    <field name='account' domain="[('is_show','=',True)]"  context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                     <field name='damount' sum='ac_dsum' class='amountColor'></field>
                     <field name='camount' sum='ac_csum' class='amountColor'></field>
                     <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True}" />
@@ -803,7 +803,7 @@
         <form>
           <sheet>
             <group>
-              <field name='org' ></field>
+              <field name='org' widget='many2many_tags'></field>
               <field name='accountsArch' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
               <field name='accountClass' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
               <field name='fatherAccountNumber' readonly='1'></field>
@@ -992,7 +992,7 @@
               <field name="sum_orgs" />
             </group>
             <group>
-              <field name="account" default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}">
+              <field name="account" default_focus='1' domain="['|',('org','=',False),('org','in',orgs)]" context="{'search_default_group_by_accountClassClass':True}">
                 <tree default_order='accountClass,number,org' >
                   <field name='org' />
                   <field name='accountClass' />
@@ -1007,8 +1007,8 @@
             </group>
           </sheet>
           <footer>
-            <button type="object" string='开始查询' class='btn-primary' name="getReport" />
           </footer>
+            <button type="object" string='开始查询' class='btn-primary' name="getReport" />
         </form>
       </field>
     </record>
@@ -1031,7 +1031,7 @@
             <group>
               <field name="voucher_number_tastics" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
               <field name="only_this_level" />
-              <field name="account"  default_focus='1' domain="['|',('org','in',orgs),('org','=',False)]" context="{'search_default_group_by_accountClassClass':True}" >
+              <field name="account"  default_focus='1' domain="['|',('org','=',False),('org','in',orgs)]" context="{'search_default_group_by_accountClassClass':True}" >
                 <tree default_order='accountClass,number,org'  >
                   <field name='org' />
                   <field name='accountClass' />
@@ -1043,7 +1043,7 @@
                   </control>
                 </tree>
               </field>
-              <field name="item" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+              <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <footer>
               <button name="getReport" type="object" class='btn-primary' string="开始查询" />
