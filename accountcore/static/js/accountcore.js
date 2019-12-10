@@ -1227,7 +1227,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             // var d = self.value;
             var options = {
                 editable: (this.mode === 'edit'),
-                tableOverflow: true,
+                tableOverflow: false,
                 tableHeight: "297mm",
                 fullscreen: false,
                 defaultColWidth: 150,
