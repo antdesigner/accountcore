@@ -34,8 +34,10 @@
         'views/autoNumber.xml',
         'views/menu.xml',
         'data/default_data.xml',
+        'data/report_model.xml',
         'data/help_data.xml',
         'security/ir.model.access.csv',
+
     ],
     'qweb': [
         'views/btn_templates.xml',

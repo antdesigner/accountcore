@@ -1,5 +1,5 @@
 /**
- * (c) jExcel v3.6.0
+ * (c) jExcel v3.6.4
  * 
  * Author: Paul Hodel <paul.hodel@gmail.com>
  * Website: https://bossanova.uk/jexcel/
@@ -11,7 +11,7 @@
  * Frozen columns
  * Meta information
  */
-odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
+odoo.define('accountcore.jexcel', ['accountcore.jsuites'], function (require) {
     'use strict';
     var jSuites = require('accountcore.jsuites');
     var jexcel = (function (el, options) {
@@ -187,7 +187,7 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                 noCellsSelected: 'No cells selected',
             },
             // About message
-            about: "jExcel CE Spreadsheet\nVersion 3.6.1\nAuthor: Paul Hodel <paul.hodel@gmail.com>\nWebsite: https://bossanova.uk/jexcel/v3",
+            about: "jExcel CE Spreadsheet\nVersion 3.6.4\nAuthor: Paul Hodel <paul.hodel@gmail.com>\nWebsite: https://bossanova.uk/jexcel/v3",
         };
 
         // Loading initial configuration from user
@@ -342,8 +342,8 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                 if (!obj.options.columns[i].width) {
                     // tiger-修改开始
                     obj.options.columns[i].width = obj.options.colWidths[i] ? obj.options.colWidths[i] : '50';
-                // tiger-修改结束
-                // 原代码 obj.options.columns[i].width = obj.options.colWidths[i] ? obj.options.colWidths[i] : obj.options.defaultColWidth;
+                    // tiger-修改结束
+                    // 原代码 obj.options.columns[i].width = obj.options.colWidths[i] ? obj.options.colWidths[i] : obj.options.defaultColWidth;
                 }
                 if (!obj.options.columns[i].align) {
                     obj.options.columns[i].align = obj.options.colAlignments[i] ? obj.options.colAlignments[i] : 'center';
@@ -745,8 +745,8 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
         /**
          * Get the whole table data
          * 
-         * @param integer row number
-         * @return string value
+         * @param bool get highlighted cells only
+         * @return array data
          */
         obj.getData = function (highlighted) {
             // Control vars
@@ -3807,7 +3807,7 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                 // Events
                 if (obj.ignoreEvents != true) {
                     if (typeof (obj.options.oninsertcolumn) == 'function') {
-                        obj.options.oninsertcolumn(el, columnNumber, numOfColumns);
+                        obj.options.oninsertcolumn(el, columnNumber, numOfColumns, historyRecords, insertBefore);
                     }
                 }
             }
@@ -4225,8 +4225,8 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                         var cell = jexcel.getIdFromColumnName(obj.formula[cellId][i], true);
                         // Update cell
                         var value = '' + obj.options.data[cell[1]][cell[0]];
-                      
-                        if (value.substr(0, 1) == '=') { 
+
+                        if (value.substr(0, 1) == '=') {
 
                             records.push(obj.updateCell(cell[0], cell[1], value, true));
                         } else {
@@ -4454,20 +4454,20 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                     // Convert formula to javascript
                     try {
                         evalstring += "function COLUMN() { return parseInt(x) + 1; }; function ROW() { return parseInt(y) + 1; }; function CELL() { return parentId; };";
-                    //    tiger-修改开始,
-                    // 是否已经计算过
-                        var isComputed= obj.getMeta(parentId,'isComputed');
-                        if(isComputed && isComputed=='y'){
+                        //    tiger-修改开始,
+                        // 是否已经计算过
+                        var isComputed = obj.getMeta(parentId, 'isComputed');
+                        if (isComputed && isComputed == 'y') {
                             // 获得计算的缓存值
-                            var res =  obj.getMeta(parentId,'formulaResult');                   
-                        }else{
+                            var res = obj.getMeta(parentId, 'formulaResult');
+                        } else {
                             var res = eval(evalstring + expression.substr(1));
                             // tiger-修改开始
                             //缓存计算结果
-                            if (tokens) {                           
+                            if (tokens) {
 
-                            }else if (jexcel.current.options.computing){
-                                obj.setMeta(parentId, 'isComputed', 'y');              
+                            } else if (jexcel.current.options.computing) {
+                                obj.setMeta(parentId, 'isComputed', 'y');
                                 obj.setMeta(parentId, 'formulaResult', res);
                             }
                             // tiger-修改结束
@@ -4477,7 +4477,11 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                     } catch (e) {
                         var res = '#ERROR';
                     }
-
+                    // tiger 修改开始,数字计算后保留2位小数
+                    if (!isNaN(res)) {
+                        return jexcel.methods.math.ROUND(Number(res), 2);
+                    }
+                    // tiger 修改结束
                     return res;
                 }
             }
@@ -6718,6 +6722,7 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                                         (e.keyCode >= 48 && e.keyCode <= 57) ||
                                         (e.keyCode >= 96 && e.keyCode <= 111) ||
                                         (e.keyCode == 187) ||
+                                        (e.keyCode == 189) ||
                                         // (jexcel.validLetter(String.fromCharCode(e.keyCode)))) {
                                         ((String.fromCharCode(e.keyCode) == e.key || String.fromCharCode(e.keyCode).toLowerCase() == e.key.toLowerCase()) && jexcel.validLetter(String.fromCharCode(e.keyCode)))) {
                                         // Start edition
@@ -13165,9 +13170,9 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
                         console.log("ERROR ", data);
                     }
                 });
-                return jexcel.methods.math.ROUND(Number(result),2)
+                return jexcel.methods.math.ROUND(Number(result), 2)
             } else {
-                return jexcel.methods.math.ROUND(0,2);
+                return jexcel.methods.math.ROUND(0, 2);
             }
         };
         // 取数机构
@@ -13206,7 +13211,7 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
             if (jexcel.current.options.computing) {
                 var widget = jexcel.current.options.widget;
                 return widget.startDate;
-            }else {
+            } else {
                 return "<span class='fa fa-calendar-check-o'>开始日期</span>";
             }
         };
@@ -13225,7 +13230,7 @@ odoo.define('accountcore.jexcel',['accountcore.jsuites'], function (require) {
             if (jexcel.current.options.computing) {
                 var widget = jexcel.current.options.widget;
                 return widget.startDate + '到' + widget.endDate;
-            }else {
+            } else {
                 return "<span class='fa fa-calendar-minus-o'>取数期间</span>";
             }
         };

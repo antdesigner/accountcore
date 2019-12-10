@@ -116,7 +116,7 @@ class Item(models.Model, Glob_tag_Model):
     _name = 'accountcore.item'
     _description = '核算项目'
     org = fields.Many2many('accountcore.org',
-                           string='核算机构',
+                           string='所属机构',
                            help="核算项目所属核算机构,该机构可以使用的核算项目,不选默认全部机构可用",
                            index=True,
                            ondelete='restrict')
