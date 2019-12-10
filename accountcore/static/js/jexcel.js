@@ -11,9 +11,10 @@
  * Frozen columns
  * Meta information
  */
-odoo.define('accountcore.jexcel', ['accountcore.jsuites'], function (require) {
+odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting'], function (require) {
     'use strict';
     var jSuites = require('accountcore.jsuites');
+    var accounting=require('accountcore.accounting');
     var jexcel = (function (el, options) {
         // Create jexcel object
         var obj = {};
@@ -4479,8 +4480,10 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites'], function (require) {
                     }
                     // tiger 修改开始,数字计算后保留2位小数
                     if (!isNaN(res)) {
-                        return jexcel.methods.math.ROUND(Number(res), 2);
+                        return accounting.formatMoney(res, ""); 
+                    // return jexcel.methods.ac.toDecimal(res);
                     }
+                    
                     // tiger 修改结束
                     return res;
                 }
@@ -12038,8 +12041,8 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites'], function (require) {
                 }
             }
             // tiger -修改开始,保留两位小数
-            // return result;原来
-            return result.toFixed(2)
+            return result;
+            // return result.toFixed(2)
             // 修改结束
         };
 
@@ -13171,8 +13174,15 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites'], function (require) {
                     }
                 });
                 return jexcel.methods.math.ROUND(Number(result), 2)
+                // return jexcel.methods.ac.toDecimal(result);
             } else {
                 return jexcel.methods.math.ROUND(0, 2);
+                // return   jexcel.methods.ac.toDecimal(0);                  
+                // tiger 修改开始,数字计算后保留2位小数
+                // if (!isNaN(res)) {
+                // return jexcel.methods.ac.toDecimal(res);
+                // }
+                // tiger 修改结束
             }
         };
         // 取数机构
@@ -13229,11 +13239,30 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites'], function (require) {
         exports.betweenDate = function () {
             if (jexcel.current.options.computing) {
                 var widget = jexcel.current.options.widget;
-                return widget.startDate + '到' + widget.endDate;
+                return '从'+widget.startDate + '到' + widget.endDate;
             } else {
                 return "<span class='fa fa-calendar-minus-o'>取数期间</span>";
             }
         };
+        //
+        exports.toDecimal=function (x) {    
+                var f = parseFloat(x);    
+                if (isNaN(f)) {    
+                    return x;    
+                }    
+                var f = Math.round(x*100)/100;    
+                var s = f.toString();    
+                var rs = s.indexOf('.');    
+                if (rs < 0) {    
+                    rs = s.length;    
+                    s += '.';    
+                }    
+                while (s.length <= rs + 2) {    
+                    s += '0';    
+                }    
+                return s;    
+        
+            };
         return exports;
     })();
 
