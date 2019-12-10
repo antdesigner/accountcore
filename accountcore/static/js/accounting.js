@@ -1,4 +1,6 @@
-(function(root, undefined) {
+odoo.define('accountcore.accounting', function (require) {
+    'use strict';
+// var according=(function(root, undefined) {
 
 	/* --- Setup --- */
 
@@ -370,34 +372,35 @@
 
 	// Export accounting for CommonJS. If being loaded as an AMD module, define it as such.
 	// Otherwise, just add `accounting` to the global object
-	if (typeof exports !== 'undefined') {
-		if (typeof module !== 'undefined' && module.exports) {
-			exports = module.exports = lib;
-		}
-		exports.accounting = lib;
-	} else if (typeof define === 'function' && define.amd) {
-		// Return the library as an AMD module:
-		define([], function() {
-			return lib;
-		});
-	} else {
-		// Use accounting.noConflict to restore `accounting` back to its original value.
-		// Returns a reference to the library's `accounting` object;
-		// e.g. `var numbers = accounting.noConflict();`
-		lib.noConflict = (function(oldAccounting) {
-			return function() {
-				// Reset the value of the root's `accounting` variable:
-				root.accounting = oldAccounting;
-				// Delete the noConflict method:
-				lib.noConflict = undefined;
-				// Return reference to the library to re-assign it:
-				return lib;
-			};
-		})(root.accounting);
+	// if (typeof exports !== 'undefined') {
+	// 	if (typeof module !== 'undefined' && module.exports) {
+	// 		exports = module.exports = lib;
+	// 	}
+	// 	exports.accounting = lib;
+	// } else if (typeof define === 'function' && define.amd) {
+	// 	// Return the library as an AMD module:
+	// 	define([], function() {
+	// 		return lib;
+	// 	});
+	// } else {
+	// 	// Use accounting.noConflict to restore `accounting` back to its original value.
+	// 	// Returns a reference to the library's `accounting` object;
+	// 	// e.g. `var numbers = accounting.noConflict();`
+	// 	lib.noConflict = (function(oldAccounting) {
+	// 		return function() {
+	// 			// Reset the value of the root's `accounting` variable:
+	// 			root.accounting = oldAccounting;
+	// 			// Delete the noConflict method:
+	// 			lib.noConflict = undefined;
+	// 			// Return reference to the library to re-assign it:
+	// 			return lib;
+	// 		};
+	// 	})(root.accounting);
 
-		// Declare `fx` on the root (global/window) object:
-		root['accounting'] = lib;
-	}
+	// 	// Declare `fx` on the root (global/window) object:
+	// 	root['accounting'] = lib;
+	// }
 
 	// Root will be `window` in browser or `global` on the server:
-}(this));
+// }(this));
+return lib;})

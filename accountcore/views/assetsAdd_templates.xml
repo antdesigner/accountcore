@@ -51,5 +51,13 @@
             </xpath>
         </template>
         <!-- print.js插件结束 -->
+                <!-- accounting.js插件开始 -->
+                        <template id="accountcore_accounting_js" inherit_id="web.assets_backend" name="accountcore accounting js">
+            <xpath expr="script[last()]" position="after">
+                <script type="text/javascript" src="/accountcore/static/js/accounting.js"></script>
+            </xpath>
+        </template>
+                <!-- accounting.js插件结束 -->
+
     </data>
 </odoo>

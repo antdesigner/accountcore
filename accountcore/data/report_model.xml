@@ -28,7 +28,6 @@
             <field name='merge_info' >{"A1":[4,1],"A2":[4,1],"A3":[4,1]}</field>
             <field name='summary' >系统预设,根据需要修改</field>
         </record>
-
         <!-- 报表模板-结束 -->
     </data>
 </odoo>
