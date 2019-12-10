@@ -13174,15 +13174,8 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                     }
                 });
                 return jexcel.methods.math.ROUND(Number(result), 2)
-                // return jexcel.methods.ac.toDecimal(result);
             } else {
                 return jexcel.methods.math.ROUND(0, 2);
-                // return   jexcel.methods.ac.toDecimal(0);                  
-                // tiger 修改开始,数字计算后保留2位小数
-                // if (!isNaN(res)) {
-                // return jexcel.methods.ac.toDecimal(res);
-                // }
-                // tiger 修改结束
             }
         };
         // 取数机构
