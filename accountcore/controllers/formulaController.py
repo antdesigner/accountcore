@@ -5,6 +5,7 @@ from ..models.ac_obj import ACTools
 from ..models.ac_period import Period, VoucherPeriod
 from odoo import http
 from odoo.http import request
+# from odoo.tools.profiler import profile
 
 
 class ACMethosContainer():
@@ -276,8 +277,8 @@ class FormulaController(http.Controller):
             orgIds+","+startDate+","+endDate+","
         tactics = [('account(', accountAmount)]
         newFormula = self.rebuildFormula(formula, tactics)
-
         self.env = request.env
+        self.env['accountcore.account'].clear_caches()
         result = eval(newFormula)
         return str(result)
 
@@ -328,16 +329,18 @@ class FormulaController(http.Controller):
                                                        period)
 
         return amount
-
     def getAmountOfType(self, account, org, item, amountType, period):
         '''根据不同的金额类型取数'''
         method = ACMethosContainer.getMethod(amountType)
         amount = ACTools.ZeroAmount()
-        # 带有核算项目的科目，取全部核算项目
-
+        # 带有核算项目的科目，取对应机构和科目在余额表有记录的核算项目
         if not item and account.accountItemClass:
-            items = self.env['accountcore.item'].sudo().search(
-                [('itemClass', '=', account.accountItemClass.id)])
+            domain = [('org', '=', org.id),
+                      ('account', '=', account.id)]
+            usedItemsIds = (self.env['accountcore.accounts_balance'].sudo().search(
+                domain).mapped('items')).mapped('id')
+            items = self.env['accountcore.item'].sudo().browse(
+                list(set(usedItemsIds)))
             for itm in items:
                 amount += ACTools.TranslateToDecimal(method.getAmount(account,
                                                                       org,

@@ -7,6 +7,7 @@ import logging
 import multiprocessing
 from ..models.ac_obj import ACTools
 from odoo import models, fields, api, SUPERUSER_ID, exceptions
+from odoo import tools
 import sys
 sys.path.append('.\\.\\server\\odoo')
 sys.path.append('.\\.\\')
@@ -132,6 +133,7 @@ class Item(models.Model, Glob_tag_Model):
                                 ondelete='restrict')
     item_class_name = fields.Char(related='itemClass.name',
                                   string='核算项目类别',
+                                  index=True,
                                   store=True,
                                   ondelete='restrict')
     _sql_constraints = [('accountcore_item_number_unique', 'unique(number)',
@@ -549,6 +551,7 @@ class Account(models.Model, Glob_tag_Model):
     def getBalances(self, org=None, item=None):
         '''获得科目(考虑机构和核算项目)的余额记录,相同科目下的不同机构和核算项目视为不同科目'''
         domain = [('account', '=', self.id)]
+        domain = []
         if item:
             domain.append(('items', '=', item.id))
         else:
@@ -1646,8 +1649,8 @@ class AccountsBalance(models.Model):
                           required=True,
                           index=True)
     # 通过createDate生成,不要直接修改
-    month = fields.Integer(string='月', required=True)
-    isbegining = fields.Boolean(string="是启用期间", default=False)
+    month = fields.Integer(string='月', required=True, index=True)
+    isbegining = fields.Boolean(string="是启用期间", default=False, index=True)
     account = fields.Many2one('accountcore.account',
                               string='会计科目',
                               required=True,
@@ -1655,10 +1658,12 @@ class AccountsBalance(models.Model):
                               ondelete='cascade')
     account_number = fields.Char(related='account.number',
                                  string='科目编码',
-                                 store=True)
+                                 store=True,
+                                 index=True)
     account_class_id = fields.Many2one(related='account.accountClass',
                                        string='科目类别',
-                                       store=True)
+                                       store=True,
+                                       index=True)
     accountItemClass = fields.Many2one('accountcore.itemclass',
                                        string='核算项目类别',
                                        related='account.accountItemClass')
