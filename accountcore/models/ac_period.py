@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import calendar
 import datetime
-
-
 # 一到多个会计期间
+
+
 class Period(object):
     '''一到多个会计期间'''
-
     def __init__(self, start_date, end_date):
         if isinstance(start_date, str):
             self.start_date = datetime.datetime.strptime(
@@ -24,7 +23,6 @@ class Period(object):
         self.voucherPeriods = self.getPeriodList()
 
     # 获得日期范围内的会计期间列表
-
     def getPeriodList(self):
         '''获得日期范围内的会计期间列表'''
         months = (self.end_year - self.start_year) * \
