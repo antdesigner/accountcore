@@ -551,7 +551,6 @@ class Account(models.Model, Glob_tag_Model):
     def getBalances(self, org=None, item=None):
         '''获得科目(考虑机构和核算项目)的余额记录,相同科目下的不同机构和核算项目视为不同科目'''
         domain = [('account', '=', self.id)]
-        domain = []
         if item:
             domain.append(('items', '=', item.id))
         else:
