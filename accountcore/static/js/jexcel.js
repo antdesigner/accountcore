@@ -4438,7 +4438,11 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                                         evalstring += "var " + tokens[i] + " = " + Number(value) + ";";
                                     } else {
                                         // Trying any formatted number
-                                        var number = obj.parseNumber(value, position[0])
+                                        // tiger-修改开始,为了使千分位符号字符串能被识别为数字
+                                        var ac_s=value.replace(",","");
+                                        var number = obj.parseNumber(ac_s, position[0]);
+                                        // tiger修改结束
+                                        // var number = obj.parseNumber(value, position[0]) 原来
                                         if (obj.options.autoCasting == true && number) {
                                             // Render as number
                                             evalstring += "var " + tokens[i] + " = " + number + ";";
@@ -4481,6 +4485,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                     // tiger 修改开始,数字计算后保留2位小数
                     if (!isNaN(res)) {
                         return accounting.formatMoney(res, ""); 
+                        // return accounting.formatNumber(res,2,"",".");
                     // return jexcel.methods.ac.toDecimal(res);
                     }
                     
@@ -4511,7 +4516,10 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
             }
 
             // Is a valid number
-            if (number[0] && Number(number[0]) >= 0) {
+            // if (number[0] && Number(number[0]) >= 0) {原来
+            // tiger 修改开始,负数也是数字
+             if (number[0]) {
+                // tiger 修改结束
                 if (!number[1]) {
                     var value = Number(number[0] + '.00');
                 } else {
