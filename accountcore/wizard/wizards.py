@@ -23,7 +23,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
     fatherAccountNumber = fields.Char(related='fatherAccountId.number',
                                       string='上级科目编码')
 
-    org = fields.Many2one('accountcore.org',
+    org = fields.Many2many('accountcore.org',
                           string='所属机构',
                           help="科目所属机构",
                           index=True,
@@ -64,7 +64,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
             [['id', '=', fatherAccountId]])
         default['accountsArch'] = fatherAccount.accountsArch.id
         default['fatherAccountId'] = fatherAccountId
-        default['org'] = fatherAccount.org.id
+        default['org'] = fatherAccount.org.ids
         default['accountClass'] = fatherAccount.accountClass.id
         default['direction'] = fatherAccount.direction
         default['cashFlowControl'] = fatherAccount.cashFlowControl
@@ -84,7 +84,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
         fatherAccount = accountTable.search(
             [['id', '=', fatherAccountId]])
         newAccount = {'fatherAccountId': fatherAccountId,
-                      'org': fatherAccount.org.id,
+                    #   'org': fatherAccount.org.id,
                       'accountClass': fatherAccount.accountClass.id,
                       'cashFlowControl': values['cashFlowControl'],
                       'name': fatherAccount.name+'---'+values['name'],
