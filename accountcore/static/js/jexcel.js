@@ -4439,10 +4439,10 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                                     } else {
                                         // Trying any formatted number
                                         // tiger-修改开始,为了使千分位符号字符串能被识别为数字
-                                        var ac_s=value.replace(",","");
-                                        var number = obj.parseNumber(ac_s, position[0]);
+                                        // var ac_s=value.replace(",","");
+                                        // var number = obj.parseNumber(value, position[0]);
                                         // tiger修改结束
-                                        // var number = obj.parseNumber(value, position[0]) 原来
+                                        var number = obj.parseNumber(value, position[0])
                                         if (obj.options.autoCasting == true && number) {
                                             // Render as number
                                             evalstring += "var " + tokens[i] + " = " + number + ";";
