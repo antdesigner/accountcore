@@ -237,9 +237,9 @@
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
         <tree default_order='org,accountClass,number' limit='9999'>
+          <field name='org' widget='many2many_tags'></field>
           <field name='accountsArch' />
           <field name='accountClass'></field>
-          <field name='org' widget='many2many_tags'></field>
           <field name='number'></field>
           <field name='name'></field>
           <field name='itemClassesHtml'></field>
@@ -1438,7 +1438,7 @@
       <field name="name">科目启用期初余额</field>
       <field name="res_model">accountcore.accounts_balance</field>
       <field name="view_mode">tree,form</field>
-      <field name="target">inline</field>
+      <field name="target">current</field>
       <!-- <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1,'search_default_group_by_account_class_id':1}</field> -->
       <!-- 默认按列表显示，不分组 -->
       <field name='context'>{'default_isbegining':True}</field>
