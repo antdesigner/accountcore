@@ -207,3 +207,8 @@ textarea.formula {
     }
 
 }
+/* 移动报表设计器列头浮动上边距为0*/
+.with-toolbar .jexcel > thead > tr > td
+{
+    top:0px !important;
+}
