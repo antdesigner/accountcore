@@ -63,7 +63,6 @@ class StorageReport(models.Model, Glob_tag_Model, Jexcel_fields):
     receivers = fields.Many2many('accountcore.receiver', string='接收者')
     summary = fields.Text(string='归档报表说明')
     htmlstr = fields.Html(string='html内容')
-
     # @api.onchange('startDate', 'endDate')
     # def _onchange_starDate_endDate(self):
     #     if self.startDate and self.endDate and self.startDate > self.endDate:
@@ -75,10 +74,11 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     '''报表模板'''
     _name = 'accountcore.report_model'
     _description = '报表模板，用于生成报表'
-    report_type = fields.Many2one('accountcore.report_type', string='报表类型')
+    report_type = fields.Many2one(
+        'accountcore.report_type', string='报表类型', copy=True)
     guid = fields.Char(string='模板唯一码', required=True,
-                       default=lambda s: uuid.uuid4())
-    name = fields.Char(string='报表模板名称', required=True)
+                       default=lambda s: uuid.uuid4(), copy=False)
+    name = fields.Char(string='报表模板名称', required=True, copy=False)
     version = fields.Char(string='报表模板版本', required=True)
     summary = fields.Text(string='报表模板简介')
     explain = fields.Html(string='报表模板详细介绍')
@@ -88,7 +88,7 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     orgs = fields.Many2many('accountcore.org',
                             string='机构范围',
                             default=lambda s: s.env.user.currentOrg,
-                            required=True)
+                            required=True, copy=True)
     _sql_constraints = [('accountcore_repormodel_name_unique', 'unique(name)',
                          '报表模版名称重复了!')]
 
@@ -118,12 +118,22 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
                     record._name, record.guid)))
         return result
 
+    def copy(self, default=None):
+        '''复制模板'''
+        newName = self.name+"副本"
+        records = self.search([('name', '=', newName)])
+        while records.exists():
+            newName = newName+"副本"
+            records = records.search([('name', '=', newName)])
+        updateFields = {'name': newName}
+        rl = super(ReportModel, self).copy(updateFields)
+        return rl
     # @api.onchange('startDate', 'endDate')
     # def _onchange_starDate_endDate(self):
     #     if self.startDate and self.endDate and self.startDate > self.endDate:
     #         raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
 
-        
+
 # 科目取数金额类型
 class AccountAmountType(models.Model, Glob_tag_Model):
     '''科目取数的金额类型'''
