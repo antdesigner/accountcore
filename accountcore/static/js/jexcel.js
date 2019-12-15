@@ -446,10 +446,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
             // Colsgroup
             obj.colgroupContainer = document.createElement('colgroup');
             var tempCol = document.createElement('col');
-            //tiger-修改开始
             tempCol.setAttribute('width', 50);
-            // tiger-修改结束
-            //原代码 tempCol.setAttribute('width', obj.options.defaultColWidth);
             obj.colgroupContainer.appendChild(tempCol);
 
             // Nested
@@ -612,6 +609,37 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
             }
         }
 
+     /**
+      * Refresh the data
+      * 
+      * @return void
+      */
+     obj.refresh = function() {
+        if (obj.options.url) {
+            // Loading
+            if (obj.options.loadingSpin == true) {
+                jSuites.loading.show();
+            }
+
+            jSuites.ajax({
+                url: obj.options.url,
+                method: 'GET',
+                dataType: 'json',
+                success: function(result) {
+                    // Data
+                    obj.options.data = (result.data) ? result.data : result;
+                    // Prepare table
+                    obj.setData();
+                    // Hide spin
+                    if (obj.options.loadingSpin == true) {
+                        jSuites.loading.hide();
+                    }
+                }
+            });
+        } else {
+            obj.setData();
+        }
+    }
         /**
          * Set data
          * 
@@ -2769,6 +2797,8 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
 
                 if (newValue) {
                     obj.headers[column].innerHTML = newValue;
+                    // Keep the title property
+                    obj.headers[column].setAttribute('title', newValue);
                 }
 
                 obj.setHistory({
