@@ -24,10 +24,10 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
                                       string='上级科目编码')
 
     org = fields.Many2many('accountcore.org',
-                          string='所属机构',
-                          help="科目所属机构",
-                          index=True,
-                          ondelete='restrict')
+                           string='所属机构',
+                           help="科目所属机构",
+                           index=True,
+                           ondelete='restrict')
 
     accountsArch = fields.Many2one('accountcore.accounts_arch',
                                    string='所属科目体系',
@@ -84,7 +84,6 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
         fatherAccount = accountTable.search(
             [['id', '=', fatherAccountId]])
         newAccount = {'fatherAccountId': fatherAccountId,
-                    #   'org': fatherAccount.org.id,
                       'accountClass': fatherAccount.accountClass.id,
                       'cashFlowControl': values['cashFlowControl'],
                       'name': fatherAccount.name+'---'+values['name'],
@@ -94,6 +93,8 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
         fatherAccount.currentChildNumber = fatherAccount.currentChildNumber+1
         values.update(newAccount)
         rl = super(CreateChildAccountWizard, self).create(values)
+        if values["accountItemClass"] not in values["itemClasses"][0][2]:
+            (values["itemClasses"][0][2]).insert(0, values["accountItemClass"])
         a = accountTable.create(values)
         # 添加到上级科目的直接下级
         fatherAccount.write({'childs_ids': [(4, a.id)], 'is_show': False})
@@ -853,7 +854,7 @@ class ReportModelFormula(models.TransientModel):
         if not self.btn_show_orgs:
             return
         self.formula = "show_orgs()"
-    
+
     @api.onchange('btn_start_date')
     def join_start_date(self):
         '''填入取数的开始日期'''
@@ -861,7 +862,7 @@ class ReportModelFormula(models.TransientModel):
         if not self.btn_start_date:
             return
         self.formula = "startDate()"
-        
+
     @api.onchange('btn_end_date')
     def join_end_date(self):
         '''填入取数的结束日期'''
@@ -877,6 +878,7 @@ class ReportModelFormula(models.TransientModel):
         if not self.btn_between_date:
             return
         self.formula = "betweenDate()"
+
 
 class StoreReport(models.TransientModel):
     '''报表归档向导'''
