@@ -93,7 +93,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
         fatherAccount.currentChildNumber = fatherAccount.currentChildNumber+1
         values.update(newAccount)
         rl = super(CreateChildAccountWizard, self).create(values)
-        if values["accountItemClass"] not in values["itemClasses"][0][2]:
+        if values["accountItemClass"] and (values["accountItemClass"] not in values["itemClasses"][0][2]):
             (values["itemClasses"][0][2]).insert(0, values["accountItemClass"])
         a = accountTable.create(values)
         # 添加到上级科目的直接下级

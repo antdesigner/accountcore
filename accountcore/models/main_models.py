@@ -952,7 +952,7 @@ class Voucher(models.Model, Glob_tag_Model):
     name = fields.Char(related='uniqueNumber', string="唯一号", store=True)
     voucherdate = fields.Date(string='记账日期',
                               required=True,
-                              placeholder='记账日期')
+                              placeholder='记账日期', default=fields.Date.today())
     real_date = fields.Date(string='业务日期', help='业务实际发生日期')
     # 前端通过voucherDate生成,不要直接修改
     year = fields.Integer(string='年份',
