@@ -1,3 +1,4 @@
+
 /* 凭证列表表格-开始 */
 .oe_accountcore_table_fix th {
     white-space: nowrap;
@@ -7,26 +8,96 @@
 .oe_accountcore_table_fix td {
     white-space: nowrap;
 }
-
 .oe_accountcore_entrys {
     margin: 0px;
     width: 1070px;
 
 }
 
-.ac_rulebook td {
+
+div.ac_rulebook  {
     white-space: normal !important;
     vertical-align: middle !important;
-    border: 0px;
 }
 
-.oe_accountcore_entrys td {
+/* 凭证列表分录内容 */
+th[data-name="entrysHtml"]{
+    max-width: 1200px !important;
+    width: 1200px !important;
+}
+
+.oe_accountcore_entrys>div:nth-child(odd){
+    background-color: whitesmoke;
+}
+div.oe_accountcore_entrys{
+   
+}
+div.oe_accountcore_entrys>div{
+    padding-bottom: 10px !important;
+}
+div.oe_accountcore_entrys>div:hover{
+border-top:1px solid gray;
+border-bottom: 1px solid gray;
+}
+.oe_accountcore_entrys>div>div {
+    display: inline-block;
+    vertical-align:middle;
+}
+
+.oe_accountcore_entrys>div>div.oe_ac_explain {
+    width:200px !important;
+    word-break:break-all !important;
+    word-wrap:break-word !important;
     white-space: normal !important;
-    vertical-align: middle !important;
-    border: 0px;
 }
+.oe_accountcore_entrys>div>div.oe_ac_account {
+    width:300px !important;
+    word-break:break-all !important;
+    word-wrap:break-word !important;
+    white-space: normal !important;
+    margin-left: 30px;
 
-/* 凭证列表表格结束 */
+}
+.oe_accountcore_entrys>div>div.o_list_number {
+    width:130px !important;
+    text-align: right;
+}
+.oe_accountcore_entrys>div>div.oe_ac_cashflow {
+    width:250px !important;
+    text-overflow:ellipsis !important;
+    overflow: hidden !important;
+
+}
+/* 凭证列表分录内容 结束*/
+/* 分录列表开始 */
+.oe_ac_entrylist table{
+    width:2000px !important;
+}
+.oe_ac_entrylist th{
+    white-space: nowrap;
+}
+.oe_ac_entrylist td{
+    vertical-align:middle;
+}
+/* 记账日期 */
+.oe_ac_entrylist table tr td:nth-child(3) {
+    white-space: nowrap;
+}
+/* 分录说明 */
+.oe_ac_entrylist table tr td:nth-child(5) {
+    width:200px !important;
+    word-break:break-all !important;
+    word-wrap:break-word !important;
+    white-space: normal !important;
+}
+/* 科目 */
+.oe_ac_entrylist table tr td:nth-child(6) {
+    width:250px !important;
+    /* word-break:break-all !important;
+    word-wrap:break-word !important;
+    white-space: normal !important; */
+}
+/* 分录列表结束 */
 /* 会计凭证界面(非打印)-开始 */
 .oe_ac_voucher_entrys {
     margin: 0px;
@@ -61,6 +132,7 @@
     /* 凭证分录 */
     table-layout: fixed;
 }
+
 
 .oe_ac_explain .FieldChar_voucher_explain {
     /* 凭证说明 */

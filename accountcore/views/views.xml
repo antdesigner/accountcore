@@ -459,13 +459,13 @@
       <field name='arch' type='xml'>
         <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,sequence,voucherdate,number" limit='300'>
           <field name="sequence" widget="handle" />
-          <field name='org' />
           <field name='voucherdate' />
+          <field name='entrysHtml' />
           <field name='number' class='voucherNumber' />
           <field name='uniqueNumber' />
-          <field name='reviewer' />
+          <field name='org' />
           <field name='roolbook_html' />
-          <field name='entrysHtml' />
+          <field name='reviewer' />
           <field name='glob_tag' widget='many2many_tags' />
           <field name='createUser' />
           <field name='appendixCount' />
@@ -698,16 +698,16 @@
                 <field name='voucherdate' nolabel="1" col='1' default_focus='3' attrs="{'readonly':[('state','=','reviewed')]}" />
               </center>
             </div>
-            <group col='4' class='oe_grey'>
+            <group col='4'>
               <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='real_date' col='2' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='number' col='2' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
+              <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags"  readonly='1'/>
               <field name='uniqueNumber' col='2' readonly='1'></field>
             </group>
             <notebook>
-              <page string='会计'>
+              <page string='会计分录'>
                 <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1'>
                   <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
                     <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':account,'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
@@ -730,12 +730,13 @@
                 <field name='glob_tag' widget='many2many_tags' />
               </page>
             </notebook>
-            <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
+
+            <group col='8'>
+                        <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
               <span>借贷方差额：</span>
               <field name="sum_amount" />
               <span id="auto_balance" style="margin-left:5px">自动平衡</span>
             </div>
-            <group col='8' class='oe_grey'>
               <field name='soucre' />
               <field name='createUser' />
               <field name='reviewer' />
@@ -755,19 +756,19 @@
       <field name='name'>会计分录列表</field>
       <field name='model'>accountcore.entry</field>
       <field name='arch' type='xml'>
-        <tree class='oe_accountcore_table_fix' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
-          <button type='object' class="btn btn-sm fa fa-reply" aria-label="show_voucher" title="show_voucher" name='show_voucher'></button>
-          <field name='org'></field>
+        <tree class='oe_ac_entrylist' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
+          <button type='object' class="btn btn-sm fa fa-reply" aria-label="show_voucher" title="打开凭证编辑" name='show_voucher'></button>
           <field name="v_voucherdate" />
           <field name="v_year" invisible='1' />
           <field name="v_month" invisible='1' />
           <field name="voucher" />
-          <field name="explain" />
+          <field name="explain" string='分录说明'/>
           <field name="account" />
           <field name="damount" />
           <field name="camount" />
-          <field name="items" widget='many2many_tags' />
+          <field name="items_html" />
           <field name="cashFlow" />
+          <field name='org'></field>
           <field name="v_real_date" />
           <field name="business" />
           <field name='glob_tag' string='全局标签' widget='many2many_tags' />
@@ -958,7 +959,7 @@
               <field name="month" invisible='1'></field>
               <field name="isbegining" invisible='1'></field>
               <field name="account" domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-              <field name='accountItemClass' string="核算项目类别" class="oe_grey" />
+              <field name='accountItemClass' string="核算项目类别"/>
               <field name="items" domain="[('itemClass.id','=',accountItemClass),'|',('org','=',False),('org','in',org)]"   context="{'org_id':org}" attrs="{'readonly':[('accountItemClass','=',False)]}"></field>
               <field name="beginingDamount" string='月初余额(借方)'></field>
               <field name="beginingCamount" string='月初余额(贷方)'></field>
@@ -1000,7 +1001,7 @@
               <field name="endDate" />
               <field name="fast_period" widget="ac_fast_period" />
             </group>
-            <group col='6' class='oe_grey'>
+            <group col='6'>
               <field name="onlyShowOneLevel" />
               <field name="noShowNoAmount" />
               <field name="summaryLevelByLevel" />
@@ -1029,8 +1030,8 @@
             </group>
           </sheet>
           <footer>
-          </footer>
           <button type="object" string='开始查询' class='btn-primary' name="getReport" />
+          </footer>
         </form>
       </field>
     </record>
@@ -1053,6 +1054,7 @@
             <group>
               <field name="voucher_number_tastics" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
               <field name="only_this_level" />
+              <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
               <field name="account" default_focus='1' domain="['|',('org','=',False),('org','in',orgs)]" context="{'search_default_group_by_accountClassClass':True}">
                 <tree default_order='accountClass,number,org'  >
                   <field name='org' />
@@ -1065,7 +1067,6 @@
                   </control>
                 </tree>
               </field>
-              <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
             </group>
             <footer>
               <button name="getReport" type="object" class='btn-primary' string="开始查询" />
@@ -1321,7 +1322,7 @@
       <field name='name'>新增凭证</field>
       <field name='res_model'>accountcore.voucher</field>
       <field name='view_mode'>form</field>
-      <field name="target">new</field>
+      <field name="target">current</field>
     </record>
     <!-- 窗体动作-打开凭证编号策略列表 -->
     <record model='ir.actions.act_window' id='accountcore_voucher_number_acionts_window'>

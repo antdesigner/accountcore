@@ -266,8 +266,7 @@ class AccountBalanceReport(models.AbstractModel):
 
     def _getAccountAcrch(self):
         '''获得科目表结构对象'''
-        query = '''SELECT t_org.id as account_org_id,
-                    t_org.name  as account_org_name,
+        query = '''SELECT 
                     null as org_id,
                     '' as org_name,
                     t_account."fatherAccountId" as account_father_id,
@@ -283,8 +282,6 @@ class AccountBalanceReport(models.AbstractModel):
                     CAST(0 as numeric)  as damount,
                     CAST(0 as numeric)  as camount
                 FROM accountcore_account AS t_account
-                LEFT OUTER JOIN accountcore_org as t_org
-                ON t_account.org=t_org.id
                 LEFT OUTER JOIN accountcore_accountClass as t_account_class
                 ON t_account."accountClass"=t_account_class.id
                 ORDER BY account_number'''
