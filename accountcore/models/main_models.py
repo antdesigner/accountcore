@@ -1261,12 +1261,12 @@ class Voucher(models.Model, Glob_tag_Model):
         content = None
         entrys = None
         for voucher in self:
-            content = "<table class='oe_accountcore_entrys'>"
+            content = "<div class='oe_accountcore_entrys'>"
             if voucher.entrys:
                 entrys = voucher.entrys
                 for entry in entrys:
                     content = content+self._buildingEntryHtml(entry)
-            content = content+"</table>"
+            content = content+"</div>"
             voucher.entrysHtml = content
         return True
 
@@ -1275,33 +1275,34 @@ class Voucher(models.Model, Glob_tag_Model):
     def buildRuleBook(self):
         '''购建凭证标签展示内容'''
         for voucher in self:
-            content = '<table class="ac_rulebook">'
+            content = '<div class="ac_rulebook">'
             for item in voucher.ruleBook:
-                content = content+'<tr><td>'+item.name+'</td></tr>'
-            voucher.roolbook_html = content+"</table>"
+                content = content+'/'+item.name
+            voucher.roolbook_html = content+"</div>"
 
     def _buildingEntryHtml(self, entry):
         '''购建一条分录展示内容'''
         content = ""
         items = ""
         for item in entry.items:
-            items = items+"<div>"+item.name+"</div>"
+            items = items+"<span>["+item.item_class_name+"]"+item.name+"</span>"
         if entry.explain:
             explain = entry.explain
         else:
             explain = "*"
         damount = format(entry.damount, '0.2f') if entry.damount != 0 else ""
         camount = format(entry.camount, '0.2f') if entry.camount != 0 else ""
-        content = content+"<tr>"+"<td class='oe_ac_explain'>" + \
-            explain+"</td>"+"<td class='oe_ac_account'>" + \
-            entry.account.name+"</td>" + "<td class='o_list_number'>" + \
-            damount+"</td>" + "<td class='o_list_number'>" + \
-            camount+"</td>" + "<td class='oe_ac_items'>" + \
-            items+"</td>"
+        content = content+"<div>"+"<div class='oe_ac_explain'>" + \
+            explain+"</div>"+"<div class='oe_ac_account'>" + \
+            entry.account.name+items+"</div>" + "<div class='o_list_number'>" + \
+            damount+"</div>" + "<div class='o_list_number'>" + \
+            camount+"</div>"
+            #  + "<div class='oe_ac_items'>" + \
+            # items+"</div>"
         if entry.cashFlow:
-            content = content+"<td class='oe_ac_cashflow'>"+entry.cashFlow.name+"</td></tr>"
+            content = content+"<div class='oe_ac_cashflow'>"+entry.cashFlow.name+"</div></div>"
         else:
-            content = content+"<td class='oe_ac_cashflow'></td></tr>"
+            content = content+"<div class='oe_ac_cashflow'></div></div>"
         return content
 
     def searchNumber(self, operater, value):
@@ -1524,7 +1525,7 @@ class Enty(models.Model, Glob_tag_Model):
                                    compute="_getAccountItem",
                                    store=True,
                                    index=True)
-    items_html = fields.Html(string="分录内容",
+    items_html = fields.Html(string="核算项目",
                              compute='_createItemsHtml',
                              store=True)
     business = fields.Text(string='业务数据')
