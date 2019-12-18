@@ -1604,7 +1604,7 @@ class Enty(models.Model, Glob_tag_Model):
             'view_type': 'form',
             'view_mode': 'form',
             'res_id': self.voucher_id,
-            'target': 'new',
+            'target': '',
         }
 # 凭证编号策略
 
