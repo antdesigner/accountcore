@@ -525,7 +525,10 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             var seletiontag = itemRow.find('.ac-item-selection').first();
             oneItemChoice.appendTo(seletiontag);
             self.ac_choiceItemsMany2ones.push(oneItemChoice);
+            while(!oneItemChoice.$el){
             oneItemChoice.$el.find('input').attr('id', typeId);
+            return;
+            }
         },
         /**获取科目下挂的核算项目类别
          * @param  {integer} accountId 科目ID
