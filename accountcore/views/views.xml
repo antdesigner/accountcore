@@ -215,8 +215,8 @@
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
         <tree default_order='org,accountClass,number' limit='9999'>
-          <field name='org'></field>
-          <field name='accountsArch' />
+          <field name='org' invisible='1'></field>
+          <field name='accountsArch' invisible='1'/>
           <field name='accountClass'></field>
           <field name='number'></field>
           <field name='name'></field>
@@ -225,7 +225,7 @@
           <field name="is_show" />
           <field name="is_last" />
           <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
-          <field name='glob_tag' widget='many2many_tags' />
+          <field name='glob_tag' widget='many2many_tags' invisible='1'/>
           <field name='fatherAccountId' invisible='1'></field>
           <!-- <field name="childs_ids"/> -->
         </tree>
