@@ -458,7 +458,7 @@
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
         <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,sequence,voucherdate,number" limit='300'>
-          <field name="sequence" widget="handle" />
+          <field name="sequence" invisible='1'/>
           <field name='voucherdate' />
           <field name='entrysHtml' />
           <field name='number' class='voucherNumber' />
@@ -1285,6 +1285,7 @@
       <field name='res_model'>accountcore.voucher</field>
       <field name='view_mode'>tree,form</field>
       <field name="context">{'search_default_this_month': 1}</field>
+      <field name="target">current</field>
     </record>
     <!-- 窗体动作-打开分录列表 -->
     <record model='ir.actions.act_window' id='accountcore_entrys_action_window'>

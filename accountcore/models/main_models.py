@@ -1275,17 +1275,17 @@ class Voucher(models.Model, Glob_tag_Model):
     def buildRuleBook(self):
         '''购建凭证标签展示内容'''
         for voucher in self:
-            content = '<div class="ac_rulebook">'
+            content = ''
             for item in voucher.ruleBook:
                 content = content+'/'+item.name
-            voucher.roolbook_html = content+"</div>"
+            voucher.roolbook_html = content
 
     def _buildingEntryHtml(self, entry):
         '''购建一条分录展示内容'''
         content = ""
         items = ""
         for item in entry.items:
-            items = items+"<span>["+item.item_class_name+"]"+item.name+"</span>"
+            items = items+"【"+item.item_class_name+"】"+item.name
         if entry.explain:
             explain = entry.explain
         else:
@@ -1297,8 +1297,6 @@ class Voucher(models.Model, Glob_tag_Model):
             entry.account.name+items+"</div>" + "<div class='o_list_number'>" + \
             damount+"</div>" + "<div class='o_list_number'>" + \
             camount+"</div>"
-            #  + "<div class='oe_ac_items'>" + \
-            # items+"</div>"
         if entry.cashFlow:
             content = content+"<div class='oe_ac_cashflow'>"+entry.cashFlow.name+"</div></div>"
         else:
@@ -1533,7 +1531,7 @@ class Enty(models.Model, Glob_tag_Model):
     @api.depends('items.name', 'account_item', 'items.item_class_name')
     def _createItemsHtml(self):
         for entry in self:
-            content = ["<div>["+item.item_class_name+"]" +
+            content = ["<div>【"+item.item_class_name+"】" +
                        item.name+"</div>" for item in entry.items]
             entry.items_html = ''.join(content)
 
