@@ -161,9 +161,10 @@ div.oe_accountcore_entrys>div:hover {
 }
 
 .oe_ac_voucher_entrys tbody>tr {
-    vertical-align: middle;
+    vertical-align: middle !important;
     height: 6rem !important;
 }
+
 
 /* 第1列 跳转按钮 */
 .oe_ac_voucher_entrys table tr th:nth-child(1) {
@@ -208,21 +209,33 @@ div.oe_accountcore_entrys>div:hover {
 
 /* 借方 */
 .oe_ac_voucher_entrys [name='damount'] input{
-    height:6rem !important;
+    height: 5.3rem !important;
+    border: 0px;
 }
 .oe_ac_voucher_entrys table tr th:nth-child(4) {
     width: 130px !important;
 }
 
 /* 贷方 */
+
 .oe_ac_voucher_entrys [name='camount'] input{
-    height:6rem !important;
+    height: 5.3rem !important;
+    border: 0px;
 }
 .oe_ac_voucher_entrys table tr th:nth-child(5) {
     width: 130px !important;
 }
 
 /*核算统计项目 */
+.oe_ac_voucher_entrys  [name='items']{
+    display:flex !important;
+    align-items:center !important;
+}
+.oe_ac_voucher_entrys div.ac-items-choice{
+    display:flex;
+    flex-wrap:wrap;
+    flex-direction: row;
+}
 .oe_ac_voucher_entrys table tr th:nth-child(6) {
     width: 240px !important;
     text-align: center ;
@@ -231,7 +244,6 @@ div.oe_accountcore_entrys>div:hover {
 /* 现金流量 */
 .oe_ac_voucher_entrys table tr th:nth-child(7) {
     width: 100px !important;
-    text-align: center ;
 }
 
 .oe_ac_voucher_entrys table tr td:nth-child(7) {
@@ -239,11 +251,12 @@ div.oe_accountcore_entrys>div:hover {
     word-break: break-all !important;
     word-wrap: break-word !important;
     white-space: normal !important;
+    text-align: center;
 }
 
-.oe_ac_voucher_entrys .oe_ac_account input {
+/* .oe_ac_voucher_entrys .oe_ac_account input {
     height: 6rem !important;
-}
+} */
 
 div.tab-pane {
     padding: 0px !important;
