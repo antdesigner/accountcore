@@ -21,7 +21,7 @@
         <button class="btn btn-secondary ac_balance_check" type="button">平衡检查</button>
     </t>
     <!-- 快速选取期间 \addons\accountcore\static\js\accountcore.js\server\addons\accountcore\static\js\accountcore.js-->
-    <t t-name="accountcore.fast_period">
+    <t t-name="accountcore_fast_period">
         <center>
             <button type="button" class="btn btn-sm" >上月</button>
             <button type="button" class="btn btn-sm" style="margin-left:1.5em">本月</button>

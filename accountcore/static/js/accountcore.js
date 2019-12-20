@@ -727,7 +727,7 @@ odoo.define("accountcore.fast_period", ['web.AbstractField', 'web.field_registry
     var Perod_tool = require('accountcore.period_tool');
     var ac_fast_period = AbstractField.extend({
         supportedFieldTypes: ['date'],
-        template: 'accountcore.fast_period',
+        template: 'accountcore_fast_period',
         attributes: {
             style: "background-color:white;border: 1px solid grey;"
         },
