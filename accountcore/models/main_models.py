@@ -15,7 +15,7 @@ sys.path.append('.\\.\\')
 # 日志
 LOGGER = logging.getLogger(__name__)
 # 新增,修改,删除凭证时对科目余额的改变加锁
-VOCHER_LOCK = multiprocessing.Lock()
+VOCHER_LOCK = multiprocessing.RLock()
 
 
 # 全局标签模型,用于多重继承方式添加到模型
@@ -1798,32 +1798,49 @@ class AccountsBalance(models.Model):
                 '''不能在该月份创建启用期初，因为在该月前包含有该科目的凭证!
                 删除该科目以前月份的凭证或分录，就可以在该月创建启用期初''')
         else:
-            rl = super(AccountsBalance, self).create(values)
-            # 删除启用期以前的余额记录（不删影响对科目余额表的查询）
-            preBalances = rl.get_pre_balanceRecords(includeCrrentMonth=False)
-            if len(preBalances) > 0:
-                preBalances.unlink()
-            # 更新启用期以后各期的期初余额,
-            nextBalances = (rl.get_next_balanceRecords(
-                includeCurrentMonth=True)).filtered(lambda r: not r.isbegining)
+             # 只允许一条分录更新余额表,进程锁
+            VOCHER_LOCK.acquire()
+            # 出错了，必须释放锁，要不就会死锁
+            try:
+                rl = super(AccountsBalance, self).create(values)
+                # 删除启用期以前的余额记录（不删影响对科目余额表的查询）
+                preBalances = rl.get_pre_balanceRecords(includeCrrentMonth=False)
+                if len(preBalances) > 0:
+                    preBalances.unlink()
+                # 更新启用期以后各期的期初余额,
+                nextBalances = (rl.get_next_balanceRecords(
+                    includeCurrentMonth=True)).filtered(lambda r: not r.isbegining)
 
-            if len(nextBalances) > 0:
-                rl.setNextBalance(nextBalances[0])
-                rl.changeNextBalanceBegining(rl.endDamount,
-                                             rl.endCamount)
-
+                if len(nextBalances) > 0:
+                    rl.setNextBalance(nextBalances[0])
+                    rl.changeNextBalanceBegining(rl.endDamount,
+                                                rl.endCamount)
+            finally:
+                VOCHER_LOCK.release()
         return rl
 
     @api.multi
     def unlink(self):
         '''删除科目余额记录'''
+        locked= False
         for mySelf in self:
-            mySelf.deleteRelatedAndUpdate()
-            # if删除的是启用期初，以后各期本年累计需要减去用该启用期初时的本年累计
-            # if mySelf.isbegining:
-            #     mySelf.updateCumulative(-mySelf.cumulativeDamount,
-            #                             -mySelf.cumulativeCamount)
-        rl_bool = super(AccountsBalance, self).unlink()
+            if mySelf.isbegining:
+                VOCHER_LOCK.acquire()
+                locked=True               
+                break
+            else:
+                continue
+        try:     
+            for mySelf in self:
+                mySelf.deleteRelatedAndUpdate()
+                # if删除的是启用期初，以后各期本年累计需要减去用该启用期初时的本年累计
+                # if mySelf.isbegining:
+                #     mySelf.updateCumulative(-mySelf.cumulativeDamount,
+                #                             -mySelf.cumulativeCamount)
+            rl_bool = super(AccountsBalance, self).unlink()
+        finally:
+            if locked:
+                VOCHER_LOCK.release()
         return rl_bool
 
     @api.multi
@@ -1831,79 +1848,83 @@ class AccountsBalance(models.Model):
         '''修改编辑科目余额'''
         self.ensure_one()
         if self.isbegining:
-            if any(['account' in values,
-                    'items' in values,
-                    'year' in values,
-                    'month' in values,
-                    'org' in values]):
-                oldSelf = {}
-                oldSelf['org'] = self.org.id
-                oldSelf['createDate'] = self.createDate
-                oldSelf['year'] = self.year
-                oldSelf['month'] = self.month
-                oldSelf['account'] = self.account.id
-                if (values.setdefault('items', False)):
-                    oldSelf['items'] = self.items.id
-                else:
-                    oldSelf['items'] = None
-                oldSelf['beginingDamount'] = self.beginingDamount
-                oldSelf['beginingCamount'] = self.beginingCamount
-                oldSelf['damount'] = self.damount
-                oldSelf['camount'] = self.camount
-                oldSelf['endDamount'] = self.endDamount
-                oldSelf['endCamount'] = self.endCamount
-                oldSelf['cumulativeDamount'] = self.beginCumulativeDamount+self.damount
-                oldSelf['cumulativeCamount'] = self.beginCumulativeCamount+self.camount
-                oldSelf['beginCumulativeDamount'] = self.beginCumulativeDamount
-                oldSelf['beginCumulativeCamount'] = self.beginCumulativeCamount
-                oldSelf['preRecord'] = None
-                oldSelf['nextRecord'] = None
-                oldSelf['isbegining'] = self.isbegining
-                oldSelf.update(values)
-                # 改变科目后，如果科目有必选项目类别，判断是否输入
-                if not oldSelf['items']:
-                    newAccount = self.env['accountcore.account'].sudo().browse([
-                        oldSelf['account']])
-                    itemClass_need = newAccount.accountItemClass
-                    if itemClass_need.id:
+            VOCHER_LOCK.acquire()
+            try:
+                if any(['account' in values,
+                        'items' in values,
+                        'year' in values,
+                        'month' in values,
+                        'org' in values]):
+                    oldSelf = {}
+                    oldSelf['org'] = self.org.id
+                    oldSelf['createDate'] = self.createDate
+                    oldSelf['year'] = self.year
+                    oldSelf['month'] = self.month
+                    oldSelf['account'] = self.account.id
+                    if (values.setdefault('items', False)):
+                        oldSelf['items'] = self.items.id
+                    else:
+                        oldSelf['items'] = None
+                    oldSelf['beginingDamount'] = self.beginingDamount
+                    oldSelf['beginingCamount'] = self.beginingCamount
+                    oldSelf['damount'] = self.damount
+                    oldSelf['camount'] = self.camount
+                    oldSelf['endDamount'] = self.endDamount
+                    oldSelf['endCamount'] = self.endCamount
+                    oldSelf['cumulativeDamount'] = self.beginCumulativeDamount+self.damount
+                    oldSelf['cumulativeCamount'] = self.beginCumulativeCamount+self.camount
+                    oldSelf['beginCumulativeDamount'] = self.beginCumulativeDamount
+                    oldSelf['beginCumulativeCamount'] = self.beginCumulativeCamount
+                    oldSelf['preRecord'] = None
+                    oldSelf['nextRecord'] = None
+                    oldSelf['isbegining'] = self.isbegining
+                    oldSelf.update(values)
+                    # 改变科目后，如果科目有必选项目类别，判断是否输入
+                    if not oldSelf['items']:
+                        newAccount = self.env['accountcore.account'].sudo().browse([
+                            oldSelf['account']])
+                        itemClass_need = newAccount.accountItemClass
+                        if itemClass_need.id:
+                            raise exceptions.ValidationError(
+                                newAccount.name+" 科目的 "+itemClass_need.name+' 为必须录入项目')
+
+                    if self._check_preVoucherExist(oldSelf):
+                        raise exceptions.ValidationError('''不能在该月份创建启用期初，因为在该月前包含有该科目的凭证!
+                    删除该科目以前月份的凭证或分录，就可以在该月创建启用期初''')
+                    if self._check_repeat(oldSelf):
                         raise exceptions.ValidationError(
-                            newAccount.name+" 科目的 "+itemClass_need.name+' 为必须录入项目')
+                            '''已经存在一条相同科目的期初余额记录行,请取消,在另一行已存在的记录上修改!
+                            若不想保留本行，请勾选本行，并在动作中选择删除操作''')
+                    # 删除旧关系，更新原有余额记录链各种金额，但不删除记录
+                    self.deleteRelatedAndUpdate()
 
-                if self._check_preVoucherExist(oldSelf):
-                    raise exceptions.ValidationError('''不能在该月份创建启用期初，因为在该月前包含有该科目的凭证!
-                删除该科目以前月份的凭证或分录，就可以在该月创建启用期初''')
-                if self._check_repeat(oldSelf):
-                    raise exceptions.ValidationError(
-                        '''已经存在一条相同科目的期初余额记录行,请取消,在另一行已存在的记录上修改!
-                        若不想保留本行，请勾选本行，并在动作中选择删除操作''')
-                # 删除旧关系，更新原有余额记录链各种金额，但不删除记录
-                self.deleteRelatedAndUpdate()
-
-                rl_bool = super(AccountsBalance, self).write(oldSelf)
-                # 删除启用期以前的余额记录（不删影响对科目余额表的查询）
-                preBalances = self.get_pre_balanceRecords(
-                    includeCrrentMonth=False)
-                if len(preBalances) > 0:
-                    preBalances.unlink()
-                # 添加新的关系，更新新的余额记录链条各种金额
-                self.buildRelatedAndUpdate()
-                return rl_bool
-            else:
-                # 更新启用期初的本年累计
-                if 'beginCumulativeDamount' in values:
-                    values.update(
-                        {'cumulativeDamount': values['beginCumulativeDamount']})
-                if 'beginCumulativeCamount' in values:
-                    values.update(
-                        {'cumulativeCamount': values['beginCumulativeCamount']})
-                rool_bool = super(AccountsBalance, self).write(values)
-                # 跟新本期及以后期间的科目余额记录的期初余额
-                nextBalances = (self.get_next_balanceRecords(True)).filtered(
-                    lambda r: not r.isbegining)
-                if len(nextBalances) > 0:
-                    self.changeNextBalanceBegining(
-                        self.endDamount, self.endCamount)
-                return rool_bool
+                    rl_bool = super(AccountsBalance, self).write(oldSelf)
+                    # 删除启用期以前的余额记录（不删影响对科目余额表的查询）
+                    preBalances = self.get_pre_balanceRecords(
+                        includeCrrentMonth=False)
+                    if len(preBalances) > 0:
+                        preBalances.unlink()
+                    # 添加新的关系，更新新的余额记录链条各种金额
+                    self.buildRelatedAndUpdate()
+                    return rl_bool
+                else:
+                    # 更新启用期初的本年累计
+                    if 'beginCumulativeDamount' in values:
+                        values.update(
+                            {'cumulativeDamount': values['beginCumulativeDamount']})
+                    if 'beginCumulativeCamount' in values:
+                        values.update(
+                            {'cumulativeCamount': values['beginCumulativeCamount']})
+                    rool_bool = super(AccountsBalance, self).write(values)
+                    # 跟新本期及以后期间的科目余额记录的期初余额
+                    nextBalances = (self.get_next_balanceRecords(True)).filtered(
+                        lambda r: not r.isbegining)
+                    if len(nextBalances) > 0:
+                        self.changeNextBalanceBegining(
+                            self.endDamount, self.endCamount)
+                    return rool_bool
+            finally:
+                 VOCHER_LOCK.release()
         else:
             rl_bool = super(AccountsBalance, self).write(values)
             return rl_bool
