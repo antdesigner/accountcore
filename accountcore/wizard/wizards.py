@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
+import datetime
 import json
 from odoo import api
 from odoo import exceptions
@@ -302,6 +303,15 @@ class GetAccountsBalance(models.TransientModel):
             # return False
         self._setDefaultDate()
         [data] = self.read()
+        startDate = data['startDate']
+        start_year = startDate.year
+        start_month = startDate.month
+        period = self._periodIsBeforBeging(
+            start_year, start_month, data['orgs'],  data['account'])
+        if period:
+            raise exceptions.ValidationError(
+                "查询范围内有科目的启用期间晚于查询的开始期间" + str(start_year) + "-"+str(start_month) +", \
+                查询的开始期间不能大于启用期间,当前选择的机构和科目范围的最早启用期间为"+period+"请选择该期间为查询的开始期间")
         datas = {
             'form': data
         }
@@ -314,6 +324,23 @@ class GetAccountsBalance(models.TransientModel):
             self.endDate = '9999-12-31'
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
+
+    def _periodIsBeforBeging(self, start_year, start_month, org_ids, account_ids):
+        '''检查查询期间是否早于启用期间'''
+        domain = [('isbegining', '=', True),
+                  ('org', 'in', org_ids),
+                  ('account', 'in', account_ids), '|', '&',
+                  ('year', '=', start_year),
+                  ('month', '>', start_month),
+                  ('year', '>', start_year)]
+        records = self.env['accountcore.accounts_balance'].sudo().search(
+            domain)
+        if records.exists():
+            records_sorted = records.sorted(key=lambda r: r.year+r.month*12)
+            period_str = str(records_sorted[-1].year) + \
+                "-"+str(records_sorted[-1].month)
+            return period_str
+        return False
 
 
 # 科目明细账查询向导
