@@ -12,7 +12,6 @@ import sys
 sys.path.append('.\\.\\server')
 
 
-
 # 查询科目余额表
 class AccountBalanceReport(models.AbstractModel):
     '''科目余额表'''
@@ -48,8 +47,7 @@ class AccountBalanceReport(models.AbstractModel):
         endDate = datetime.datetime.strptime(form['endDate'],
                                              '%Y-%m-%d')
         end_year = endDate.year
-        end_month = endDate.month
-
+        end_month = endDate.month    
         # 构建查询数据库的参数
         params = (start_year,
                   start_month,
@@ -266,7 +264,7 @@ class AccountBalanceReport(models.AbstractModel):
 
     def _getAccountAcrch(self):
         '''获得科目表结构对象'''
-        query = '''SELECT 
+        query = '''SELECT
                     null as org_id,
                     '' as org_name,
                     t_account."fatherAccountId" as account_father_id,
@@ -303,11 +301,10 @@ class AccountBalanceReport(models.AbstractModel):
 
         return rl+virtual_accounts
 
-
 # 一条余额记录
 class Balance(object):
     '''一条余额记录'''
-    __slots__ = ['org_id',
+    __slots__=['org_id',
                  'org_name',
                  'account_father_id',
                  'account_id',
@@ -325,21 +322,21 @@ class Balance(object):
                  ]
 
     def __init__(self, org_id, account_id, item_id):
-        self.org_id = org_id
-        self.org_name = ""
-        self.account_father_id = ""
-        self.account_id = account_id
-        self.account_number = ""
-        self.account_name = ""
-        self.item_class_name = ""
-        self.item_id = item_id
-        self.item_number = ""
-        self.item_name = ""
-        self.beginingDamount = 0
-        self.beginingCamount = 0
-        self.damount = 0
-        self.camount = 0
-        self.org_account_item = str(org_id)+"." \
+        self.org_id=org_id
+        self.org_name=""
+        self.account_father_id=""
+        self.account_id=account_id
+        self.account_number=""
+        self.account_name=""
+        self.item_class_name=""
+        self.item_id=item_id
+        self.item_number=""
+        self.item_name=""
+        self.beginingDamount=0
+        self.beginingCamount=0
+        self.damount=0
+        self.camount=0
+        self.org_account_item=str(org_id)+"." \
             + str(account_id)+"-" \
             + str(item_id)
 
@@ -365,18 +362,18 @@ class Balances(object):
     '''余额记录的明细容器'''
 
     def __init__(self):
-        self.org_account_items = {}
+        self.org_account_items={}
 
     def add(self, balance):
         '''添加一行余额记录'''
-        mark = str(balance.org_id)+'.' \
+        mark=str(balance.org_id)+'.' \
             + str(balance.account_id) + "-" \
             + str(balance.item_id)
         self.org_account_items.update({mark: balance})
 
     def exit(self, org_id, account_id, item_id):
         '''存在相同科目和和核算项目的余额'''
-        org_account_item = str(org_id)+"." \
+        org_account_item=str(org_id)+"." \
             + str(account_id)+"-" \
             + str(item_id)
         if org_account_item in self.org_account_items:
@@ -393,13 +390,13 @@ class AccountsArchManager(object):
     '''科目余额管理器'''
 
     def __init__(self, accountsArch, orgs):
-        self.accountsArch = []
-        self.accountsArch_items = []
+        self.accountsArch=[]
+        self.accountsArch_items=[]
         # 一个核算机构一个科目列表
         for org in orgs:
-            newAccountsArch = []
+            newAccountsArch=[]
             for account in accountsArch:
-                newAccount = account.copy()
+                newAccount=account.copy()
                 newAccount.update(
                     {'org_id': org.id,
                      'org_name': org.name})
@@ -408,7 +405,7 @@ class AccountsArchManager(object):
 
     def updateBy(self, balance):
         # 在科目列表中找出该科目
-        accountArch = self._getAccountArchById(balance.account_id,
+        accountArch=self._getAccountArchById(balance.account_id,
                                                balance.org_id)
         # 更新各种金额
         accountArch.addAmount(balance.beginingDamount,
@@ -417,7 +414,7 @@ class AccountsArchManager(object):
                               balance.camount)
         # if有上级科目，下级科目金额合并到上级科目
         if accountArch.father_id:
-            fatherAccount = self._getFatherAccountById(accountArch.father_id,
+            fatherAccount=self._getFatherAccountById(accountArch.father_id,
                                                        balance.org_id)
             fatherAccount.addAmount(balance.beginingDamount,
                                     balance.beginingCamount,
@@ -439,7 +436,7 @@ class AccountsArchManager(object):
 
     def appendItem(self, accountArch, balance):
         '''添加带有核算项目的余额记录'''
-        accountArch_ = accountArch.do_copy()
+        accountArch_=accountArch.do_copy()
         accountArch_.update(balance)
         self.accountsArch_items.append(accountArch_.account)
 
@@ -449,7 +446,7 @@ class AccountsArchManager(object):
         self.accountsArch.extend(self.accountsArch_items)
         self.sortBy('account_number')
         for filter in filters:
-            self.accountsArch = filter(self.accountsArch)
+            self.accountsArch=filter(self.accountsArch)
         return self.accountsArch
 
     def sortBy(self, field_str, reverse_it=False):
@@ -463,26 +460,26 @@ class AccountArch(object):
     '''科目余额管理器管理对象'''
 
     def __init__(self, account):
-        self.account = account
-        self.account_id = account['account_id']
-        self.father_id = account['account_father_id']
+        self.account=account
+        self.account_id=account['account_id']
+        self.father_id=account['account_father_id']
 
     def addAmount(self,
                   beginingDamount,
                   beginingCamount,
                   damount,
                   camount):
-        self.account['beginingDamount'] = (self.account['beginingDamount']
+        self.account['beginingDamount']=(self.account['beginingDamount']
                                            + beginingDamount)
-        self.account['beginingCamount'] = (self.account['beginingCamount']
+        self.account['beginingCamount']=(self.account['beginingCamount']
                                            + beginingCamount)
-        self.account['damount'] = self.account['damount']+damount
-        self.account['camount'] = self.account['camount']+camount
+        self.account['damount']=self.account['damount']+damount
+        self.account['camount']=self.account['camount']+camount
         return self
 
     def do_copy(self):
-        newAccount = self.account.copy()
-        newAccountArch = AccountArch(newAccount)
+        newAccount=self.account.copy()
+        newAccountArch=AccountArch(newAccount)
         return newAccountArch
 
     def update(self, balance):
@@ -497,10 +494,10 @@ class AccountsArch_filter_org(object):
     '''筛选机构'''
 
     def __init__(self, org_ids):
-        self.__org_ids = org_ids
+        self.__org_ids=org_ids
 
     def __call__(self, accountsArch):
-        newAccountsArch = [a for a in accountsArch
+        newAccountsArch=[a for a in accountsArch
                            if a['org_id'] in self.__org_ids]
         return newAccountsArch
 
@@ -510,10 +507,10 @@ class AccountsArch_filter_accounts(object):
     '''筛选科目'''
 
     def __init__(self, account_ids):
-        self.__account_ids = account_ids
+        self.__account_ids=account_ids
 
     def __call__(self, accountsArch):
-        newAccountsArch = [a for a in accountsArch
+        newAccountsArch=[a for a in accountsArch
                            if a['account_id'] in self.__account_ids]
         return newAccountsArch
 
@@ -523,11 +520,11 @@ class AccountsArch_filter_noShowNoAmount(object):
     '''无金额不显示'''
 
     def __init__(self, noShowNoAmount=True):
-        self.__noShowNoAmount = noShowNoAmount
+        self.__noShowNoAmount=noShowNoAmount
 
     def __call__(self, accountsArch):
         if self.__noShowNoAmount:
-            newAccountsArch = [a for a in accountsArch
+            newAccountsArch=[a for a in accountsArch
                                if any([(a['beginingDamount']-a['beginingCamount']) != 0,
                                        a['damount'] != 0,
                                        a['camount'] != 0])]
@@ -541,11 +538,11 @@ class AccountsArch_filter_noShowZeroBalance(object):
     '''余额为零不显示'''
 
     def __init__(self, noShowZeroBalance=True):
-        self.__noShowZeroBalance = noShowZeroBalance
+        self.__noShowZeroBalance=noShowZeroBalance
 
     def __call__(self, accountsArch):
         if self.__noShowZeroBalance:
-            newAccountsArch = [a for a in accountsArch
+            newAccountsArch=[a for a in accountsArch
                                if (a['beginingDamount']
                                    + a['damount']
                                    - a['beginingCamount']
@@ -560,11 +557,11 @@ class AccountsArch_filter_no_show_no_hanppend(object):
     '''不显示无发生额的科目'''
 
     def __init__(self, no_show_no_hanppend=False):
-        self.__no_show_no_hanppend = no_show_no_hanppend
+        self.__no_show_no_hanppend=no_show_no_hanppend
 
     def __call__(self, accountsArch):
         if self.__no_show_no_hanppend:
-            newAccountsArch = [a for a in accountsArch
+            newAccountsArch=[a for a in accountsArch
                                if a['damount'] != 0
                                or a['camount'] != 0]
             return newAccountsArch
@@ -577,11 +574,11 @@ class AccountsArch_filter_onlyShowOneLevel(object):
     '''只显示一级科目'''
 
     def __init__(self, onlyShowOneLevel=False):
-        self.__onlyShowOneLevel = onlyShowOneLevel
+        self.__onlyShowOneLevel=onlyShowOneLevel
 
     def __call__(self, accountsArch):
         if self.__onlyShowOneLevel:
-            newAccountsArch = [a for a in accountsArch
+            newAccountsArch=[a for a in accountsArch
                                if not a['account_father_id']
                                and('item_id' not in a
                                    or not a['item_id'])]
@@ -595,13 +592,13 @@ class AccountsArch_filter_includeAccountItems(object):
     '''不显示核算项目'''
 
     def __init__(self, includeAccountItems=True):
-        self.__includeAccountItems = includeAccountItems
+        self.__includeAccountItems=includeAccountItems
 
     def __call__(self, accountsArch):
         if self.__includeAccountItems:
             return accountsArch
         else:
-            newAccountsArch = [a for a in accountsArch
+            newAccountsArch=[a for a in accountsArch
                                if ('item_id' not in a
                                    or not a['item_id'])]
             return newAccountsArch
@@ -612,7 +609,7 @@ class AccountsArch_filter_order_orgs(object):
     '''多机构分开显示'''
 
     def __init__(self, order_orgs=True):
-        self.__order_orgs = order_orgs
+        self.__order_orgs=order_orgs
 
     def __call__(self, accountsArch):
         if self.__order_orgs:
@@ -629,38 +626,38 @@ class AccountsArch_filter_sum_orgs(object):
     '''多机构合并显示'''
 
     def __init__(self, sum_orgs=False):
-        self.__sum_orgs = sum_orgs
+        self.__sum_orgs=sum_orgs
 
     def __call__(self, accountsArch):
         if not self.__sum_orgs:
             return accountsArch
         else:
             accountsArch.sort(key=lambda t: (
-                t['account_number'],t['account_name'], t.setdefault('item_id', 0)))
-            newAccountsArch = []
-            a_temp = ""
+                t['account_number'], t['account_name'], t.setdefault('item_id', 0)))
+            newAccountsArch=[]
+            a_temp=""
             for a in accountsArch:
-                add = False
+                add=False
                 if a_temp == "":
-                    add = True
+                    add=True
                 # elif a_temp['account_id'] != a['account_id']:
                 #     add = True
                 # elif a_temp['account_id'] == a['account_id']:
                 elif a_temp['account_name'] != a['account_name']:
-                        add = True
+                    add=True
                 elif a_temp['account_name'] == a['account_name']:
                     # 存在核算项目
                     if a_temp['item_id'] != 0:
                         if a['item_id'] != a_temp['item_id']:
-                            add = True
+                            add=True
                     # 不存在核算项目
                     else:
                         if a['item_id'] != 0:
-                            add = True
+                            add=True
                 if add:
-                    a_temp = a.copy()
-                    a_temp['org_id'] = 0
-                    a_temp['org_name'] = ''
+                    a_temp=a.copy()
+                    a_temp['org_id']=0
+                    a_temp['org_name']=''
                     newAccountsArch.append(a_temp)
                 else:
                     a_temp['beginingDamount'] += a['beginingDamount']
