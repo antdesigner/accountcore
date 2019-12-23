@@ -1298,7 +1298,8 @@ class Voucher(models.Model, Glob_tag_Model):
             damount+"</div>" + "<div class='o_list_number'>" + \
             camount+"</div>"
         if entry.cashFlow:
-            content = content+"<div class='oe_ac_cashflow'>"+entry.cashFlow.name+"</div></div>"
+            content = content+"<div class='oe_ac_cashflow'>" + \
+                entry.cashFlow.name+"</div></div>"
         else:
             content = content+"<div class='oe_ac_cashflow'></div></div>"
         return content
@@ -1370,6 +1371,7 @@ class Voucher(models.Model, Glob_tag_Model):
                     self._modifyBalance(entry_damount,
                                         accountBalance,
                                         entry_camount)
+                    return True
                 # else 不存在就新增一条,但必须是科目的必选核算项目类
                 elif item_.id == itemId:
                     self._buildBalance(True,
@@ -1377,6 +1379,14 @@ class Voucher(models.Model, Glob_tag_Model):
                                        entry,
                                        entry_damount,
                                        entry_camount)
+                    return True
+            # 存在统计项目,不存在核算项的情况,
+            self._buildBalance(False,
+                               accountBalanceMark,
+                               entry,
+                               entry_damount,
+                               entry_camount)
+
         # else 一条会计分录没有核算项目
         else:
             accountBalance = self._getBalanceRecord(entry.account.id)
@@ -1495,7 +1505,7 @@ class Enty(models.Model, Glob_tag_Model):
     # sequence = fields.Integer('Sequence')
     explain = fields.Char(string='说明')
     account = fields.Many2one('accountcore.account',
-                              string='科目',
+                              string='会计科目',
                               required=True,
                               index=True,
                               ondelete='restrict')
@@ -1804,7 +1814,8 @@ class AccountsBalance(models.Model):
             try:
                 rl = super(AccountsBalance, self).create(values)
                 # 删除启用期以前的余额记录（不删影响对科目余额表的查询）
-                preBalances = rl.get_pre_balanceRecords(includeCrrentMonth=False)
+                preBalances = rl.get_pre_balanceRecords(
+                    includeCrrentMonth=False)
                 if len(preBalances) > 0:
                     preBalances.unlink()
                 # 更新启用期以后各期的期初余额,
@@ -1814,7 +1825,7 @@ class AccountsBalance(models.Model):
                 if len(nextBalances) > 0:
                     rl.setNextBalance(nextBalances[0])
                     rl.changeNextBalanceBegining(rl.endDamount,
-                                                rl.endCamount)
+                                                 rl.endCamount)
             finally:
                 VOCHER_LOCK.release()
         return rl
@@ -1822,15 +1833,15 @@ class AccountsBalance(models.Model):
     @api.multi
     def unlink(self):
         '''删除科目余额记录'''
-        locked= False
+        locked = False
         for mySelf in self:
             if mySelf.isbegining:
                 VOCHER_LOCK.acquire()
-                locked=True               
+                locked = True
                 break
             else:
                 continue
-        try:     
+        try:
             for mySelf in self:
                 mySelf.deleteRelatedAndUpdate()
                 # if删除的是启用期初，以后各期本年累计需要减去用该启用期初时的本年累计
@@ -1924,7 +1935,7 @@ class AccountsBalance(models.Model):
                             self.endDamount, self.endCamount)
                     return rool_bool
             finally:
-                 VOCHER_LOCK.release()
+                VOCHER_LOCK.release()
         else:
             rl_bool = super(AccountsBalance, self).write(values)
             return rl_bool
