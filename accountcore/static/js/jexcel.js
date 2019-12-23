@@ -572,7 +572,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                 if (obj.options.tableOverflow == true) {
                     if (obj.options.tableHeight) {
                         obj.content.style['overflow-y'] = 'auto';
-                        obj.content.style.height = obj.options.tableHeight;
+                        obj.content.style.maxHeight = obj.options.tableHeight;
                     }
                     if (obj.options.tableWidth) {
                         obj.content.style['overflow-x'] = 'auto';
@@ -4223,6 +4223,27 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
             }, 0);
         }
 
+     /**
+      * Show column
+      */
+     obj.showColumn = function(colNumber) {
+        obj.headers[colNumber].style.display = '';
+        obj.colgroup[colNumber].style.display = '';
+        for (var j = 0; j < obj.options.data.length; j++) {
+            obj.records[j][colNumber].style.display = '';
+        }
+    }
+
+    /**
+     * Hide column
+     */
+    obj.hideColumn = function(colNumber) {
+        obj.headers[colNumber].style.display = 'none';
+        obj.colgroup[colNumber].style.display = 'none';
+        for (var j = 0; j < obj.options.data.length; j++) {
+            obj.records[j][colNumber].style.display = 'none';
+        }
+    }
         /**
          * Show index column
          */

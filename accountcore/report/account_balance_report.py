@@ -413,13 +413,15 @@ class AccountsArchManager(object):
                               balance.damount,
                               balance.camount)
         # if有上级科目，下级科目金额合并到上级科目
-        if accountArch.father_id:
-            fatherAccount=self._getFatherAccountById(accountArch.father_id,
+        fathId=accountArch.father_id
+        while fathId:
+            fatherAccount=self._getFatherAccountById(fathId,
                                                        balance.org_id)
             fatherAccount.addAmount(balance.beginingDamount,
                                     balance.beginingCamount,
                                     balance.damount,
                                     balance.camount)
+            fathId=fatherAccount.father_id
         return accountArch
 
     def _getAccountArchById(self, account_id, org_id):
