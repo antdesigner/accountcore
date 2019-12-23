@@ -1381,11 +1381,21 @@ class Voucher(models.Model, Glob_tag_Model):
                                        entry_camount)
                     return True
             # 存在统计项目,不存在核算项的情况,
-            self._buildBalance(False,
-                               accountBalanceMark,
-                               entry,
-                               entry_damount,
-                               entry_camount)
+            accountBalance = self._getBalanceRecord(entry.account.id)
+            # if 当月已经存在一条该科目的余额记录（不包括启用期初余额那条）
+            if accountBalance.exists():
+                self._modifyBalance(entry_damount,
+                                    accountBalance,
+                                    entry_camount)
+            # else 不存在就新增一条
+            else:
+                # 不排除启用期初那条记录
+                self._buildBalance(False,
+                                   accountBalanceMark,
+                                   entry,
+                                   entry_damount,
+                                   entry_camount)
+            return True
 
         # else 一条会计分录没有核算项目
         else:
