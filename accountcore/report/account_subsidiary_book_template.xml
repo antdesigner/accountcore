@@ -1,49 +1,19 @@
 <odoo>
     <!-- 明细账 -->
     <template id='subsidiary_book_report'>
-        <style>
-    h4 {
-        padding-top: 2 rem;
-        padding-bottom: 1 rem;
-    }
-thead, th {
-    text-align: center;
-}
-caption { caption-side: top !important;}
-td, th {
-    vertical-align: middle!important;
-    font-size: small;
-}
-.damount, .camount, bamount {
-    white-space: nowrap!important;
-}
-@media print {
-    .damount, .camount, bamount {
-        white-space: nowrap!important;
-    }
-    .voucher_tastics {
-        display: none;
-    }
-
-}
-.account_number {
-    text-overflow: ellipsis;
-}
-table tr {
-    page-break-inside: avoid!important;
-}
-.org_name {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-        </style>
             <t t-call="web.basic_layout"> 
+                    <style>
+h4 {padding-top: 2 rem;padding-bottom: 1 rem;}
+table{table-layout: fixed !important;width:100% !important}
+table tr {page-break-inside: avoid!important;}
+thead, th {text-align: center;white-space: nowrap; !important}
+caption { caption-side: top !important;}
+td, th {vertical-align: middle!important;font-size: small;}
+.damount, .camount, .bamount{white-space: nowrap!important;}
+        </style>
                     <div class="container text-center" style='display:flex;flex-direction:column;' >
                         <t t-set="start" t-value="data['form']['startDate']"></t>
                         <t t-set="end" t-value="data['form']['endDate']"></t>
-
                         <!-- 凭证编号策略ID -->
                         <span id="default_tastics" style="display:none" t-esc='docs[0].default_tastics'></span>
                         <t t-set='by' t-value='docs[0].beginingOfYearBalance'></t>
@@ -81,16 +51,12 @@ table tr {
                     
                     <!-- 单个科目循环开始 -->
                     <div class="row" >
-                        <div class="">
                             <table class='table table-bordered table-sm table-hover'>
                             <caption style='caption-side:top !important;'>
-                            <div class="row" >
-                        <span class='col text-left'>科目:                        
-                            <t t-esc='account_name'></t>
-                        </span>
-                        <span t-if='item' class='col text-left'>核算项目:                        
-                            <t t-esc='item[1]'></t>
-                        </span></div>
+                        <div class="row">
+                        <span class='col text-left'>科目:<t t-esc='account_name'></t></span>
+                        <span t-if='item' class='col text-left'>核算项目:<t t-esc='item[1]'></t></span>
+                        </div>
                             </caption>
                                 <thead>
                                     <tr>
@@ -121,7 +87,7 @@ table tr {
                                             </td>
                                             <td style="width:5rem" class='text-center' t-attf-tastics='{{entry.numberTasticsContainer_str}}'>
                                                 <span t-attf-class="number" t-esc='entry.number'></span>
-                                                <a t-if="report_type=='html' and  isinstance(entry.voucher_id,int)" class="fa fa-reply" t-attf-href='/web?#id={{entry.voucher_id}}&amp;action=%(accountore_voucher_id_actions_window)d&amp;model=accountcore.voucher&amp;view_type=form' target='_blank'></a>
+                                                <a t-if="report_type=='html' and  isinstance(entry.voucher_id,int)" class="fa fa-reply" t-attf-href='/web?#id={{entry.voucher_id}}&amp;action=%(accountore_voucher_id_actions_window)d&amp;model=accountcore.voucher&amp;' target='_blank'></a>
                                                 <br />
                                                 <span t-esc="entry.uniqueNumber"></span>
                                             </td>
@@ -165,7 +131,6 @@ table tr {
                                 <tfoot>
                                 </tfoot>
                             </table>
-                        </div>
                     </div>
                    <!-- 单个科目循环结束 -->
                    </t>
