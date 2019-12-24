@@ -47,8 +47,10 @@
                         </thead>
                         <tbody class="text-left">
                             <t t-set='dsum' t-value='0'></t>
+                            <t t-set='csum' t-value='0'></t>
                             <tr t-foreach="doc.entrys" t-as="entry">
                                 <t t-set='dsum' t-value='dsum+entry.damount'></t>
+                                <t t-set='csum' t-value='csum+entry.camount'></t>
                                 <td>
                                     <span t-field='entry.explain' class="explain" />
                                 </td>
@@ -72,7 +74,9 @@
                                 <td>
                                     <t t-esc='"{:,.2f}".format(dsum)'></t>
                                 </td>
-                                <td></td>
+                                <td>
+                                <t t-esc='"{:,.2f}".format(csum)'></t>
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan='4' class='ac-no-border'>
