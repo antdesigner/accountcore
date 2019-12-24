@@ -2,21 +2,6 @@
     <data>
         <!-- 凭证打印 -->
         <template id='voucher_report'>
-            <style>
-           td
-{
-vertical-align:middle !important;
-}
-.damount,.camount{
-white-space:nowrap !important;
-}
-table, tr, td, th, tbody, thead, tfoot{
-page-break-inside: avoid !important;}
-.explain{
-font-size:0.7em}
-
-
-            </style>
             <div class="page container text-center" style="page-break-after:always">
                 <div class="row">
                     <table class='table table-bordered table-sm ac-no-border'>
@@ -61,7 +46,9 @@ font-size:0.7em}
                             </tr>
                         </thead>
                         <tbody class="text-left">
+                            <t t-set='dsum' t-value='0'></t>
                             <tr t-foreach="doc.entrys" t-as="entry">
+                                <t t-set='dsum' t-value='dsum+entry.damount'></t>
                                 <td>
                                     <span t-field='entry.explain' class="explain" />
                                 </td>
@@ -81,6 +68,13 @@ font-size:0.7em}
                         </tbody>
                         <tfoot>
                             <tr>
+                                <td colspan='2'>合计</td>
+                                <td>
+                                    <t t-esc='"{:,.2f}".format(dsum)'></t>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
                                 <td colspan='4' class='ac-no-border'>
                                     <center>
                                         <span style='margin-left:0px'>记账:</span>
@@ -97,6 +91,15 @@ font-size:0.7em}
         </template>
         <template id='vouchers_report'>
             <t t-call="web.basic_layout">
+                <style>
+table{table-layout: fixed;}
+table>tbody>tr {height: 5em;}
+table, tr, td, th, tbody, thead, tfoot{page-break-inside: avoid !important;}
+.explain{font-size:0.7em}
+th, td{border:1px solid black !important;}
+td{vertical-align:middle !important;}
+.damount,.camount{white-space:nowrap !important;}
+                </style>
                 <t t-foreach="docs" t-as="doc">
                     <t t-call="accountcore.voucher_report" />
                 </t>

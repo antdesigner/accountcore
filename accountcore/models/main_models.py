@@ -1734,7 +1734,7 @@ class AccountsBalance(models.Model):
             if b.account.direction == '1':
                 b.begin_year_amount = begin_d-begin_c
             else:
-                b.begin_year_amount = begin_d-begin_c
+                b.begin_year_amount = begin_c-begin_d
 
     @api.onchange('beginingDamount')
     def _damountChange(self):
