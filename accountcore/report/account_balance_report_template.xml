@@ -4,18 +4,14 @@
     <template id='account_balance_report'>
         <style>
 h4{padding-top:2rem;padding-bottom:1rem;}
-table{table-layout: fixed !important;width:100% !important}
+table{table-layout: fixed !important;width:100% !important} 
 thead,th{text-align:center;}
-td,th{
-vertical-align:middle !important;
-font-size:small;}
+td,th{vertical-align:middle !important;font-size:small;}
 .beginingDamount,.beginingCamount,.damount,.camount,.endDamount,.endCamount{
 white-space:nowrap !important;}
-@media print{
-.beginingDamount,.beginingCamount,.damount,.camount,.endDamount,.endCamount{
-white-space:nowrap !important;}}
 .account_number{}
 table tr{page-break-inside: avoid !important;}
+.org_name{}
         </style>
         <!-- 通过列表选择(例如：启用期初) -->
         <t t-if='lines'>
@@ -25,7 +21,8 @@ table tr{page-break-inside: avoid !important;}
                     <h4 class='col'>启用期初余额表</h4>
                 </div>        
                 <div class="row">
-                        <table  class='table  table-bordered table-sm table-striped table-hover'>
+                    <div class="">
+                        <table class='table  table-bordered table-sm table-striped table-hover'>
                             <thead>
                                 <tr>
                                     <th rowspan='2' colspan="2">机构名称</th>
@@ -51,18 +48,11 @@ table tr{page-break-inside: avoid !important;}
                                     <td colspan="2"><span t-esc='l.org.name'></span></td>
                                     <td colspan="2" class='text-center'><span t-esc='l.createDate'></span></td>
                                     <!-- <td colspan=""><span t-esc='l.account_number'></span></td> -->
+
                                     <td t-if='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/>[<span t-esc='l.accountItemClass.name'></span>]<span t-esc='l.items.name'></span></td>
                                     <td t-else='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/><span t-esc='l.accountItemClass.name'></span><span t-esc='l.items.name'></span></td>
-                                    <t t-set='direction' t-value="l.account.direction"></t>
-                                  
-                                    <td  class='amount text-right' colspan="2">
-                                      <span  t-if="direction=='1'" t-esc="'{:,.2f}'.format(l.beginingDamount-l.beginCumulativeDamount)"></span>
-                                      <span  t-else=""  t-esc="'{:,.2f}'.format(0)"></span>
-                                    </td>
-                                    <td  class='amount text-right' colspan="2">
-                                    <span t-if="direction=='-1'" t-esc="'{:,.2f}'.format(l.beginingCamount-l.beginCumulativeCamount)"></span>
-                                    <span t-else="" t-esc="'{:,.2f}'.format(0)"></span>
-                                    </td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingDamount-l.beginCumulativeDamount)"></span></td>
+                                    <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingCamount-l.beginCumulativeCamount)"></span></td>
                                     <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.damount+l.beginCumulativeDamount)"></span></td>
                                     <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.camount+l.beginCumulativeCamount)"></span></td>
                                     <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingDamount+l.damount)"></span></td>
@@ -73,6 +63,7 @@ table tr{page-break-inside: avoid !important;}
                             <tfoot>
                             </tfoot>
                         </table>
+                    </div>
                 </div>
             </div>
         </t>
@@ -81,7 +72,7 @@ table tr{page-break-inside: avoid !important;}
         <!-- 通过科目余额表查询 -->
         <t t-if='not lines'>
         <t t-call="web.basic_layout">
-            <div class="container center text-center" style='display:flex;flex-direction:column;justify-content:center'>
+            <div class="container center text-center" style='display:flex;flex-direction:column;'>
                 <t t-set="start" t-value="data['form']['startDate']">
                 </t>
                 <t t-set="sum_orgs" t-value="data['form']['sum_orgs']"></t>
@@ -103,7 +94,8 @@ table tr{page-break-inside: avoid !important;}
                     </h6>
                 </div> 
                 <div class="row text-left small" t-if="sum_orgs or orgs_count ==1"><span>合并机构：</span><span t-esc="data['sum_orgs_name']"></span></div>            
-                <div class="row" >
+                <div class="row">
+                    <div class="">
                         <table class='table  table-bordered table-sm table-striped table-hover'>
                             <thead>
                                 <tr>
@@ -133,9 +125,9 @@ table tr{page-break-inside: avoid !important;}
                                             <span t-if="'item_id' in account and account['item_id'] != 0">
                                             <span t-esc="account['account_name']"></span>
                                             <br/>
-                                                <span>【</span>
+                                                <span>[</span>
                                                 <t t-esc="account['item_class_name']"></t>
-                                                <span>】
+                                                <span>]
                                                 </span>
                                                 <span t-esc="account['item_name']"></span>
                                             </span>
@@ -184,7 +176,7 @@ table tr{page-break-inside: avoid !important;}
                             <tfoot>
                             </tfoot>
                         </table>
-
+                    </div>
                 </div>
             </div>
         </t>

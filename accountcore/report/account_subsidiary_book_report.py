@@ -529,7 +529,7 @@ class EntrysAssembler():
         for e in self.entryArchs:
             if main_direction != e.direction:
                 raise exceptions.ValidationError(
-                    e.name+"科目默认余额方向和"+self.main_account.name+"的方向不一致")
+                    e.account_name+"科目默认余额方向和"+self.main_account.name+"的方向不一致")
 
             # 新的一年开始
             if e.year != tmp_year:
