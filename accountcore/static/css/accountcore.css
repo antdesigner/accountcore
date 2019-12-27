@@ -314,7 +314,7 @@ table.jexcel {
     height: 35px !important;
     display: flex !important;
     top: initial !important;
-    /* z-index: 85 !important; */
+    z-index: 85 !important;
 }
 
 .jexcel_content td {
