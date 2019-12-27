@@ -215,6 +215,10 @@ class SetingVoucherNumberWizard(models.TransientModel):
     def setingNumber(self, args):
         startNumber = self.startNumber
         numberTasticsId = self.voucherNumberTastics.id
+        currentUserId = self.env.uid
+        currentUserTable = self.env['res.users'].sudo().browse(currentUserId)
+        currentUserTable.write(
+            {'voucherNumberTastics': self. voucherNumberTastics.id})
         vouchers = self.env['accountcore.voucher'].sudo().browse(
             args['active_ids'])
         vouchers.sorted(key=lambda r: r.sequence)
