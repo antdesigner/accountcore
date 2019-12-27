@@ -276,6 +276,9 @@ div.tab-pane {
 }
 
 /* jexel 在弹出窗口下面*/
+table.jexcel {
+    border-collapse:initial !important;
+}
 .jexcel>thead>tr>td {
     z-index: 80 !important;
 }
