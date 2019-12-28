@@ -691,7 +691,7 @@
           </header>
           <sheet>
               <div class="row">
-                <label for="number" />
+                <label for="number"  style="margin-left:1rem"/>
                 <field name='number' class="badge badge-info"  readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <label for="uniqueNumber" />
                 <field name='uniqueNumber' class="badge badge-info" readonly='1'></field>
@@ -702,13 +702,12 @@
               <div class="text-center">
                 <field name='voucherdate' col='1' nolabel="1"  default_focus='3' attrs="{'readonly':[('state','=','reviewed')]}" />
                 </div>
-            <group col='4'>
-              <field name='org' col='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='appendixCount' col='1' attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='real_date' col='2' attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='number' col='2' readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='ruleBook' col='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags"  readonly='1'/>
-              <field name='uniqueNumber' col='2' readonly='1'></field>
+            <group col='4' >
+              <field name='org' colspan='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='appendixCount' colspan='2' attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='real_date' colspan='2' attrs="{'readonly':[('state','=','reviewed')]}" />
+              <field name='glob_tag' colspan='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
+              <field name='ruleBook' colspan='2' readonly='1' widget="many2many_tags" />
             </group>
                 <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1'>
                   <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
