@@ -690,8 +690,7 @@
             <field name='state' widget='statusbar' class='text-danger'></field>
           </header>
           <sheet>
-              <div class="row">
-              <span>   </span>
+              <div class="row" style="padding:1rem">
                 <label for="number" />
                 <field name='number' class="badge badge-info"  readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <label for="uniqueNumber" />
