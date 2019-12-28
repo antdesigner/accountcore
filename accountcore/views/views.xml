@@ -691,7 +691,8 @@
           </header>
           <sheet>
               <div class="row">
-                <label for="number"  style="margin-left:1rem"/>
+              <span>   </span>
+                <label for="number" />
                 <field name='number' class="badge badge-info"  readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <label for="uniqueNumber" />
                 <field name='uniqueNumber' class="badge badge-info" readonly='1'></field>
