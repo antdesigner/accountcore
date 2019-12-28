@@ -148,7 +148,6 @@ div.oe_accountcore_entrys>div:hover {
 
 /* 凭证分录开始*/
 .oe_ac_voucher_entrys thead>tr>th {
-    border-top: 0px !important;
     border-bottom: 0px !important;
 }
 
