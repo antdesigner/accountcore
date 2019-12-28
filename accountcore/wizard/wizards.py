@@ -107,20 +107,22 @@ class AccountcoreUserDefaults(models.TransientModel):
     '''用户设置模型字段的默认取值向导'''
     _name = 'accountcoure.userdefaults'
     _description = '用户设置模型字段默认值'
-    default_ruleBook = fields.Many2many('accountcore.rulebook',
-                                        string='默认凭证标签')
+    # default_ruleBook = fields.Many2many('accountcore.rulebook',
+    #                                     string='默认凭证标签')
     default_org = fields.Many2one('accountcore.org',
                                   string='默认机构')
     default_voucherDate = fields.Date(string='记账日期',
                                       default=fields.Date.today())
     default_real_date = fields.Date(string='业务日期')
+    default_glob_tag = fields.Many2many('accountcore.glob_tag',
+                                        string='默认全局标签')
 
     # 设置新增凭证,日期,机构和账套字段的默认值
     def setDefaults(self):
         modelName = 'accountcore.voucher'
         self._setDefault(modelName,
-                         'ruleBook',
-                         self.default_ruleBook.ids)
+                    'glob_tag',
+                    self.default_glob_tag.ids)
         self._setDefault(modelName,
                          'org',
                          self.default_org.id)

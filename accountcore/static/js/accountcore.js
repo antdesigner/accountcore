@@ -609,15 +609,15 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     var ListView = require('web.ListView');
     var viewRegistry = require('web.view_registry');
     var ListController = require('web.ListController');
+    var VoucherSort = require('accountcore.voucher_sort_by_number');
     var voucherListController = ListController.extend({
         renderButtons: function () {
             this._super.apply(this, arguments);
             if (this.$buttons) {
                 var btns = this.$buttons;
-                var ac_voucher_number_sort_btn = btns.find('.ac_voucher_number_sort'); //凭证编号排序按钮
-                ac_voucher_number_sort_btn.on('click', this.proxy('vouchersSortByNumber'));
-                var ac_voucher_filter_btn = btns.find('.ac_voucher_filter'); //查询按钮
-                ac_voucher_filter_btn.on('click', this.proxy('voucher_filter'));
+                var voucherSort = new VoucherSort(this);
+                voucherSort.appendTo(btns);
+                voucherSort._click= this.proxy('vouchersSortByNumber');
             };
         },
         /**依据凭证编号对凭证列表进行排序
@@ -645,6 +645,20 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     });
     viewRegistry.add('voucherListView', voucherListView);
     return voucherListView;
+});
+//凭证列表排序按钮
+odoo.define("accountcore.voucher_sort_by_number", function (require) {
+    "use strict";
+    var Widget = require('web.Widget');
+    var VoucherSort = Widget.extend({
+        template: 'accountcore.voucher_sort_by_number',
+        events: {
+            'click': '_click',
+        },
+        _click: function () {
+        },
+    });
+    return VoucherSort;
 });
 //启用期初列表视图
 odoo.define('accountcore.balanceListView', function (require) {

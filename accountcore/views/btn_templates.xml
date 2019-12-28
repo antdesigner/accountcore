@@ -5,16 +5,9 @@
         <div class="container ac-items-choice">
         </div>
     </t>
-    <!-- 给系统自带的tree视图添加按钮 -->
-    <t t-extend="ListView.buttons">
-        <t t-jquery='div.o_list_buttons' t-operation="append">
-            <t t-if="widget.displayName=='凭证列表'">
-                <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
-            </t>
-            <t t-elif="widget.displayName=='已生成凭证编号'">
-                <button class="btn btn-secondary ac_voucher_number_sort" type="button">凭证编号排序</button>
-            </t>
-        </t>
+    <!-- 凭证列表排序按钮-->
+    <t t-name="accountcore.voucher_sort_by_number">
+        <button class='btn btn-secondary ac_voucher_number_sort' type="button">凭证编号排序</button>
     </t>
     <!-- 科目期初平衡检查按钮 -->
     <t t-name="accountcore.check_balance">
