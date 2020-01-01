@@ -92,6 +92,11 @@
             <field name="name">计提坏账</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
         </record>
+        <record id="rulebook_8" model="accountcore.rulebook">
+            <field name="number">8</field>
+            <field name="name">冲销</field>
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>	
         <record id="voucher_number_tastics_1" model="accountcore.voucher_number_tastics">
             <field name="number">1</field>
             <field name="name">记</field>

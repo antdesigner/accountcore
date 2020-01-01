@@ -1480,7 +1480,41 @@ class Voucher(models.Model, Glob_tag_Model):
                                       ['items', '=', itemId],
                                       ['isbegining', '=', False]])
         return record
-
+    
+    def writeoff(self):
+        '''冲销'''
+        voucher_date = fields.Date.today()
+        if self.env.user.current_date:
+            voucher_date = self.env.user.current_date
+        updateFields = {'state': 'creating',
+                        'reviewer': self.env.uid,
+                        'createUser': self.env.uid,
+                        'numberTasticsContainer_str': '{}',
+                        'soucre': self.env.ref('accountcore.source_2').id,
+                        'appendixCount': 0,
+                        'voucherdate': voucher_date,
+                        'ruleBook':[(6, 0, [self.env.ref("accountcore.rulebook_8").id])]}
+        uniqueNumber = self.uniqueNumber
+        rl = super(Voucher, self.with_context(
+            {'ac_from_copy': True})).copy(updateFields)
+        VOCHER_LOCK.acquire()
+        try:
+            for entry in self.entrys:
+                entry.copy({'voucher': rl.id,
+                "explain":entry.explain+"【冲销"+uniqueNumber+"号凭证】",
+                "damount":-entry.damount,
+                "camount":-entry.camount
+                })
+            rl.updateBalance()
+        finally:
+            VOCHER_LOCK.release()
+        return {
+            'name': "冲销",
+            'type': 'ir.actions.act_window',
+            'res_model': 'accountcore.voucher',
+            'view_mode': 'form',
+            'res_id': rl.id,
+        }
 
 # 分录
 class Enty(models.Model, Glob_tag_Model):

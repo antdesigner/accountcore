@@ -686,6 +686,7 @@
             <button string='取消审核' type='object' name='cancelReview' attrs="{'invisible':[('state','=','creating')]}"></button>
             <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
             <button string='修改凭证编号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
+            <button string='冲销' type='object' name='writeoff' ></button>    
             <button string='设为默认值' type='action' name='%(accountcore_userdefaults_action)d' context="{'default_default_voucherDate':voucherdate,'default_default_org':org,'default_default_real_date':real_date,'default_default_ruleBook':ruleBook}"></button>
             <field name='state' widget='statusbar' class='text-danger'></field>
           </header>
