@@ -642,6 +642,11 @@ class Account(models.Model, Glob_tag_Model):
                     amount = balance.beginingDamount-balance.beginingCamount
                 else:
                     amount = balance.beginingCamount-balance.beginingCamount
+            # 在启用当年的年初1月
+            elif startP.month == 1:
+                begin = self.getBegins(org, item)
+                if begin and begin.year == startP.year:
+                    amount = begin.begin_year_amount 
         return amount
 
     # 获得指定会计期间的期初借方余额
@@ -663,6 +668,14 @@ class Account(models.Model, Glob_tag_Model):
                 amount = balance.beginingDamount-balance.beginingCamount
                 if amount < 0:
                     amount = 0
+            # 在启用当年的年初1月
+            elif startP.month == 1:
+                begin = self.getBegins(org, item)
+                if begin and begin.year == startP.year:
+                    begin_d = begin.beginingDamount-begin.beginCumulativeDamount
+                    begin_c = begin.beginingCamount-begin.beginCumulativeCamount
+                    if abs(begin_d)>abs(begin_c):
+                        amount = begin_d-begin_c
         return amount
     # 获得指定会计期间的期初贷方余额
 
@@ -684,6 +697,14 @@ class Account(models.Model, Glob_tag_Model):
                 amount = balance.beginingCamount-balance.beginingDamount
                 if amount < 0:
                     amount = 0
+            # 在启用当年的年初1月
+            elif startP.month == 1:
+                begin = self.getBegins(org, item)
+                if begin and begin.year == startP.year:
+                    begin_d = begin.beginingDamount-begin.beginCumulativeDamount
+                    begin_c = begin.beginingCamount-begin.beginCumulativeCamount
+                    if abs(begin_d)<abs(begin_c):
+                        amount = begin_c - begin_d
         return amount
     # 获得一个期间的借方发生额
 
