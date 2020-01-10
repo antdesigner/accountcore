@@ -1,5 +1,5 @@
 /**
- * (c) jExcel v3.6.4
+ * jExcel v3.7.7
  * 
  * Author: Paul Hodel <paul.hodel@gmail.com>
  * Website: https://bossanova.uk/jexcel/
@@ -188,7 +188,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                 noCellsSelected: 'No cells selected',
             },
             // About message
-            about: "jExcel CE Spreadsheet\nVersion 3.6.4\nAuthor: Paul Hodel <paul.hodel@gmail.com>\nWebsite: https://bossanova.uk/jexcel/v3",
+            about: "jExcel CE Spreadsheet\nVersion 3.7.7\nAuthor: Paul Hodel <paul.hodel@gmail.com>\nWebsite: https://bossanova.uk/jexcel/v3",
         };
 
         // Loading initial configuration from user
@@ -538,6 +538,10 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
             var paginationPages = document.createElement('div');
             obj.pagination.appendChild(paginationInfo);
             obj.pagination.appendChild(paginationPages);
+ // Hide pagination if not in use
+ if (! obj.options.pagination) {
+    obj.pagination.style.display = 'none';
+}
 
             // Append containers to the table
             if (obj.options.search == true) {
@@ -5431,11 +5435,14 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                         col.push(value);
 
                         // Labels
-                        var label = obj.records[j][i].innerHTML;
-                        if (label.match && (label.match(/,/g) || label.match(/\n/) || label.match(/\"/))) {
-                            // Scape double quotes
-                            label = label.replace(new RegExp('"', 'g'), '""');
-                            label = '"' + label + '"';
+                        if (obj.options.columns[i].type == 'checkbox' || obj.options.columns[i].type == 'radio') {
+                            var label = value;
+                        } else {
+                            if (label.match && (label.match(/,/g) || label.match(/\n/) || label.match(/\"/))) {
+                                // Scape double quotes
+                                label = label.replace(new RegExp('"', 'g'), '""');
+                                label = '"' + label + '"';
+                            }
                         }
                         colLabel.push(label);
 
@@ -5571,11 +5578,14 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                         col.push(value);
 
                         // Labels
-                        var label = obj.records[j][i].innerHTML;
-                        if (label.match && (label.match(/,/g) || label.match(/\n/) || label.match(/\"/))) {
-                            // Scape double quotes
-                            label = label.replace(new RegExp('"', 'g'), '""');
-                            label = '"' + label + '"';
+                        if (obj.options.columns[i].type == 'checkbox' || obj.options.columns[i].type == 'radio') {
+                            var label = value;
+                        } else {
+                            if (label.match && (label.match(/,/g) || label.match(/\n/) || label.match(/\"/))) {
+                                // Scape double quotes
+                                label = label.replace(new RegExp('"', 'g'), '""');
+                                label = '"' + label + '"';
+                            }
                         }
                         colLabel.push(label);
 
@@ -6117,6 +6127,10 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                     obj.options.onafterchanges(el, records);
                 }
             }
+        }
+
+        obj.destroy = function() {
+            jexcel.destroy(el);
         }
 
         /**
@@ -7476,6 +7490,12 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                     jexcel.current.updateSelectionFromCoords(columnId, rowId);
 
                     jexcel.timeControl = setTimeout(function () {
+                         // Keep temporary reference to the element
+                     if (jexcel.current.options.columns[columnId].type == 'color') {
+                        jexcel.tmpElement = null;
+                    } else {
+                        jexcel.tmpElement = e.target;
+                    }
                         jexcel.current.openEditor(e.target, false, e);
                     }, 500);
                 }
@@ -7488,7 +7508,12 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
         if (jexcel.timeControl) {
             clearTimeout(jexcel.timeControl);
             jexcel.timeControl = null;
-        }
+                // Element
+                if (jexcel.tmpElement && jexcel.tmpElement.children[0].tagName == 'INPUT') {
+                    jexcel.tmpElement.children[0].focus();
+                }
+                jexcel.tmpElement = null;
+            }
     }
 
     /**
