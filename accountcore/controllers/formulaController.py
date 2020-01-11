@@ -292,42 +292,77 @@ class FormulaController(http.Controller):
         return '+'.join(orgsName)
 
     def accountAmount(self, org_ids, start_date, end_data, accountName, hasChild, amountType, itemsName):
+        amount = ACTools.ZeroAmount()
         orgIds = org_ids.split("/")
         org_ids = list(map(int, orgIds))
         orgs = self.env['accountcore.org'].sudo().browse(org_ids)
 
         account = request.env['accountcore.account'].sudo().search(
             [('name', '=', accountName)])
+        if len(account) != 1:
+            # 如果科目名称不存在
+            return amount
         accounts = [account]
         if hasChild.lower() == "true":
             accounts = account.getMeAndChilds()
 
         items = []
+        haveItem = False
+        itemExist = False
         if len(itemsName) != 0:
+            haveItem = True
             itemsName = itemsName.split("/")
             items = self.env['accountcore.item'].sudo().search(
                 [('name', 'in', itemsName)])
+            if len(items) > 0:
+                itemExist=True
 
         period = Period(start_date, end_data)
 
-        amount = ACTools.ZeroAmount()
+        
 
         for org in orgs:
             for ac in accounts:
-                if len(items) == 0:
+                if not haveItem:
                     amount += self.getAmountOfType(ac,
                                                    org,
                                                    None,
                                                    amountType,
                                                    period)
-                else:
+                elif (haveItem and itemExist):
                     for item in items:
                         amount += self.getAmountOfType(ac,
                                                        org,
                                                        item,
                                                        amountType,
                                                        period)
+                elif (haveItem and not itemExist):
+                    pass
+                    # 设置了核算项目但核算项目不存在
+        return amount
+    def getAmountOfType(self, account, org, item, amountType, period):
+        '''根据不同的金额类型取数'''
+        method = ACMethosContainer.getMethod(amountType)
+        amount = ACTools.ZeroAmount()
+        # 带有核算项目的科目，取对应机构和科目在余额表有记录的核算项目
+        if not item and account.accountItemClass:
+            domain = [('org', '=', org.id),
+                      ('account', '=', account.id)]
+            usedItemsIds = (self.env['accountcore.accounts_balance'].sudo().search(
+                domain).mapped('items')).mapped('id')
+            items = self.env['accountcore.item'].sudo().browse(
+                list(set(usedItemsIds)))
+            for itm in items:
+                amount += ACTools.TranslateToDecimal(method.getAmount(account,
+                                                                      org,
+                                                                      itm,
+                                                                      period))
 
+        else:
+            amount = ACTools.TranslateToDecimal(method.getAmount(account,
+                                                                 org,
+                                                                 item,
+                                                                 period))
         return amount
     def getAmountOfType(self, account, org, item, amountType, period):
         '''根据不同的金额类型取数'''
