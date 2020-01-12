@@ -525,9 +525,9 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             var seletiontag = itemRow.find('.ac-item-selection').first();
             oneItemChoice.appendTo(seletiontag);
             self.ac_choiceItemsMany2ones.push(oneItemChoice);
-            while(!oneItemChoice.$el){
-            oneItemChoice.$el.find('input').attr('id', typeId);
-            return;
+            while (!oneItemChoice.$el) {
+                oneItemChoice.$el.find('input').attr('id', typeId);
+                return;
             }
         },
         /**获取科目下挂的核算项目类别
@@ -617,7 +617,7 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
                 var btns = this.$buttons;
                 var voucherSort = new VoucherSort(this);
                 voucherSort.appendTo(btns);
-                voucherSort._click= this.proxy('vouchersSortByNumber');
+                voucherSort._click = this.proxy('vouchersSortByNumber');
             };
         },
         /**依据凭证编号对凭证列表进行排序
@@ -655,8 +655,7 @@ odoo.define("accountcore.voucher_sort_by_number", function (require) {
         events: {
             'click': '_click',
         },
-        _click: function () {
-        },
+        _click: function () {},
     });
     return VoucherSort;
 });
@@ -1464,10 +1463,10 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             printJS({
                                 printable: 'print_content',
                                 type: 'html',
-                                css: ['/accountcore/static/css/jsuites.css','/accountcore/static/css/jexcel.css'],
+                                css: ['/accountcore/static/css/jsuites.css', '/accountcore/static/css/jexcel.css'],
                                 scanStyles: false,
-                                ignoreElements:[],
-                                style:".jexcel_row{visibility: hidden !important;}.jexcel_toolbar{display: none !important;}table>thead{visibility: hidden !important;}",
+                                ignoreElements: [],
+                                style: ".jexcel_row{visibility: hidden !important;}.jexcel_toolbar{display: none !important;}table>thead{visibility: hidden !important;}",
                             })
 
 
@@ -1606,6 +1605,19 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 oninsertrow: function (instance) {
 
                 },
+                onbeforedeleterow: function (instance, rowNumber, numOfRows) {
+                    // removeMerge
+                    var x = rowNumber + numOfRows;
+                    var y = self.jexcel_obj.colgroup.length;
+                    var cellname = '';
+                    for (var j = 0; j < y; j++) {
+                        for (var i = rowNumber; i < x; i++) {
+                            cellname = jexcel.getColumnNameFromId([j, i]);
+                            instance.jexcel.removeMerge(cellname);
+                        }
+                    }
+                    return true
+                },
                 ondeleterow: function (instance) {
 
                     self._changeStyleAndData(instance);
@@ -1677,7 +1689,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             };
             self.jexcel_obj = jexcel(this.ddom, options);
             // 添加ID以便打印调用
-            this.$el.find('.jexcel').attr("id","print_content");
+            this.$el.find('.jexcel').attr("id", "print_content");
             // 设置右键科目取数公式菜单在编辑状态下可见
             self.jexcel_obj.options.allowOpenAccountFormula = (this.mode === 'edit');
             // 设置默认行高             
