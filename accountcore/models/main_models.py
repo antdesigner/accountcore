@@ -233,7 +233,13 @@ class Item(models.Model, Glob_tag_Model):
         values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
             'item.uniqueNumber')
         rl = super(Item, self).create(values)
+        self.env.user.current_itemclass=rl.itemClass.id
         return rl
+    @api.model
+    def default_get(self, field_names):
+        default['itemClass'] = self.env.user.current_itemclass.id
+        default = super().default_get(field_names)
+        return default
 
     # @api.model
     # def name_search(self, name='', args=None, operator='ilike', limit=0):
