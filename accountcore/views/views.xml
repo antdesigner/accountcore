@@ -1138,6 +1138,7 @@
           <field name="account" string="科目名称包含" domain="[('account.name','ilike', self)]" />
           <field name="account_number" string="科目编号包含" domain="[('account_number','ilike', self)]" />
           <field name="items" string="项目名称包含" domain="[('items.name','ilike', self)]" />
+          <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_account_class_id" string="按科目类别分组" context = "{'group_by': 'account_class_id'}" />
           <filter name="group_by_account_number" string="按科目编码分组" context = "{'group_by': 'account_number'}" />

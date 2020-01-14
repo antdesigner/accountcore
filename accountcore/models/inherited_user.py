@@ -10,5 +10,6 @@ class ExtensionUser(models.Model):
                                            string='默认凭证编号策略')
     current_date = fields.Date(
         string='当期操作日期', default=fields.Date.today())
+    current_itemclass = fields.Many2one('accountcore.itemclass', string="当前核算项目类别")
 # 继承和扩展model-结束
 # model-结束
