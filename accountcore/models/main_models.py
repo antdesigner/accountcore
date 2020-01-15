@@ -1527,8 +1527,11 @@ class Voucher(models.Model, Glob_tag_Model):
         VOCHER_LOCK.acquire()
         try:
             for entry in self.entrys:
+                explain = "【冲销"+uniqueNumber+"号凭证】"
+                if entry.explain:
+                    explain = str(entry.explain)+explain
                 entry.copy({'voucher': rl.id,
-                "explain":entry.explain+"【冲销"+uniqueNumber+"号凭证】",
+                "explain":explain ,
                 "damount":-entry.damount,
                 "camount":-entry.camount
                 })
