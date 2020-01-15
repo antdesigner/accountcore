@@ -913,7 +913,7 @@ class CashFlow(models.Model, Glob_tag_Model):
                          '现金流量编码重复了!'),
                         ('accountcore_cashflow_name_unique', 'unique(name)',
                          '现金流量名称重复了!')]
-
+    sequence = fields.Integer(string="显示优先级",help="显示顺序")
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=20):
         args = args or []
@@ -925,7 +925,7 @@ class CashFlow(models.Model, Glob_tag_Model):
         # 源代码默认为160,突破其限制   详细见 /web/static/src/js/views/form_common.js
         if limit == 160:
             limit = 0
-        pos = self.search(domain+args, limit=limit, order='number')
+        pos = self.search(domain+args, limit=limit, order='sequence')
         return pos._my_name_get()
 
     @api.model

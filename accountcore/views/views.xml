@@ -271,7 +271,7 @@
             <group>
               <field name='number' attrs="{'readonly':[('fatherAccountId','&gt;',0)]}" />
               <field name="name" default_focus='1' />
-              <field name='direction' widget='radio' />
+              <field name='direction' widget='radio' attrs="{'readonly':['|',('fatherAccountId','&gt;',0),('childs_ids','!=',[])]}"/>
               <field name="is_show" />
               <field name="cashFlowControl" />
             </group>
@@ -378,6 +378,7 @@
           <field name='cashFlowType'></field>
           <field name='number'></field>
           <field name='direction' />
+          <field name='sequence'></field>
           <field name='name'></field>
           <button string='下级流量' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_create_child_cashflow_action)d'></button>
           <field name='parent_id' invisible='1'></field>
@@ -400,6 +401,7 @@
               <field name='number' />
               <field name='direction' widget='radio' />
               <field name='name' />
+              <field name='sequence'></field>
               <field name='glob_tag' widget='many2many_tags' />
             </group>
             <group>
@@ -870,6 +872,7 @@
               <field name='number' readonly='1'></field>
               <field name='name' default_focus='1'></field>
               <field name='direction' widget='radio' readonly='1' />
+              <field name='sequence'></field>
               <field name='glob_tag' widget='many2many_tags' />
             </group>
           </sheet>
