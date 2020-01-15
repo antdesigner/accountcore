@@ -374,7 +374,7 @@
       <field name='name'>现金流量项目列表</field>
       <field name='model'>accountcore.cashflow</field>
       <field name='arch' type='xml'>
-        <tree default_order='cashFlowType,number' >
+        <tree default_order='number,cashFlowType' >
           <field name='cashFlowType'></field>
           <field name='number'></field>
           <field name='direction' />
