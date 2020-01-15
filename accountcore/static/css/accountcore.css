@@ -257,10 +257,6 @@ div.oe_accountcore_entrys>div:hover {
     height: 6rem !important;
 } */
 
-div.tab-pane {
-    padding: 0px !important;
-    margin: 0px !important;
-}
 /* 凭证分录结束 */
 /* 会计凭证界面-结束 */
 [name='fast_period'] button {
