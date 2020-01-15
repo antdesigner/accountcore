@@ -1093,6 +1093,17 @@
         </form>
       </field>
     </record>
+    <!-- 搜素视图-核算机构-->
+    <record id="accountcore_org_search" model="ir.ui.view">
+      <field name="name">机构查询</field>
+      <field name="model">accountcore.org</field>
+      <field name="arch" type="xml">
+        <search string="orgFilter">
+          <field name="name" string="核算机构名称包含" domain="[('name','ilike', self)]" />
+          <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
+        </search>
+      </field>
+    </record>
     <!-- 搜索视图-科目 -->
     <record id="accountcore_account_search" model="ir.ui.view">
       <field name="name">科目查询</field>
@@ -1158,6 +1169,7 @@
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
           <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="state" string="Test" domain="[('state','=', self)]" />
+          <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <filter string="本月" name="this_month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
           <filter string="上月" name="pre_month" domain="[('voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
           <filter string="本年" name="this_year" domain="[('year','=', time.strftime('%Y'))]" />
