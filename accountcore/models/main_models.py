@@ -1107,6 +1107,8 @@ class Voucher(models.Model, Glob_tag_Model):
     def cancelReview(self):
         '''取消凭证审核'''
         vouchers = self.filtered(lambda v: v.reviewer.id == self.env.uid)
+        if not vouchers.exists():
+            raise exceptions.UserError('没有可供取消审核的凭证,没有选择已经被审计的凭证,只能取消自己审核的凭证')
         for v in vouchers:
             v.write({'state': 'creating', 'reviewer': None})
 
@@ -1513,7 +1515,7 @@ class Voucher(models.Model, Glob_tag_Model):
         voucher_date = fields.Date.today()
         if self.env.user.current_date:
             voucher_date = self.env.user.current_date
-        updateFields = {'state': 'creating',
+        updateFields = {'state': 'reviewed',
                         'reviewer': self.env.uid,
                         'createUser': self.env.uid,
                         'numberTasticsContainer_str': '{}',
