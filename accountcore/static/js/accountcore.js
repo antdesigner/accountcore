@@ -222,9 +222,11 @@ odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields
                 if (amount > 0) {
                     camount_input.val(amount);
                     camount_input.trigger('input');
+                    camount_input.trigger('change');
                 } else if (amount < 0) {
                     damount_input.val(-amount);
                     damount_input.trigger('input');
+                    damount_input.trigger('change');
                 };
             };
 
@@ -315,6 +317,14 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             };
             return "";
 
+        },
+        //该方法覆写父类的FieldMany2One的对应方法 ,为了在凭证中直接新增项目,传递项目类别给上下文
+        _createContext: function (name) {
+            var tmp = this._super.apply(this, arguments);
+            if(tmp){
+                tmp["default_itemClass"] = this.ac_itemTypeId;
+            }
+            return tmp;
         },
         _search: function (search_val) {
             var self = this;

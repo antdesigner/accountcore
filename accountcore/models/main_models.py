@@ -238,7 +238,9 @@ class Item(models.Model, Glob_tag_Model):
     @api.model
     def default_get(self, field_names):
         default = super().default_get(field_names)
-        default['itemClass'] = self.env.user.current_itemclass.id
+        # 如果上下文有此标记为TRUE,就用res.user中设置的项目类别
+        if not self.env.context.get('itemclass_no_from_userInfo'):
+            default['itemClass'] = self.env.user.current_itemclass.id
         return default
 
     # @api.model

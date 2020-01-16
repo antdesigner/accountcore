@@ -721,7 +721,7 @@
                     <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
                     <field name='damount' sum='ac_dsum' class='amountColor'></field>
                     <field name='camount' sum='ac_csum' class='amountColor'></field>
-                    <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True}" />
+                    <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True,'itemclass_no_from_userInfo':True}" />
                     <field name='account_item' invisible='1' />
                     <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
                     <control>
