@@ -237,8 +237,8 @@ class Item(models.Model, Glob_tag_Model):
         return rl
     @api.model
     def default_get(self, field_names):
-        default['itemClass'] = self.env.user.current_itemclass.id
         default = super().default_get(field_names)
+        default['itemClass'] = self.env.user.current_itemclass.id
         return default
 
     # @api.model
