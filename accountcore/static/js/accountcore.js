@@ -318,6 +318,14 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
             return "";
 
         },
+        //该方法覆写父类的FieldMany2One的对应方法 ,为了在凭证中直接新增项目,传递项目类别给上下文
+        _createContext: function (name) {
+            var tmp = this._super.apply(this, arguments);
+            if(tmp){
+                tmp["default_itemClass"] = this.ac_itemTypeId;
+            }
+            return tmp;
+        },
         _search: function (search_val) {
             var self = this;
             var def = $.Deferred();
