@@ -131,6 +131,8 @@ class AccountcoreUserDefaults(models.TransientModel):
         if self.default_real_date:
             self._setDefault(modelName, 'real_date',
                              json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
+        else:
+            self._setDefault(modelName, 'real_date',json.dumps(""))
         self.env.user.currentOrg = self.default_org.id
         self.env.user.current_date = self.default_voucherDate
         return True
