@@ -222,9 +222,11 @@ odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields
                 if (amount > 0) {
                     camount_input.val(amount);
                     camount_input.trigger('input');
+                    camount_input.trigger('change');
                 } else if (amount < 0) {
                     damount_input.val(-amount);
                     damount_input.trigger('input');
+                    damount_input.trigger('change');
                 };
             };
 
