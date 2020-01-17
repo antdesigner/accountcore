@@ -689,7 +689,7 @@
             <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
             <button string='修改凭证编号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
             <button string='冲销' type='object' name='writeoff' ></button>    
-            <button string='设为默认值' type='action' name='%(accountcore_userdefaults_action)d' context="{'default_default_voucherDate':voucherdate,'default_default_org':org,'default_default_real_date':real_date,'default_default_glob_tag':[glob_tag]}"></button>
+            <button string='设为默认值' type='action' name='%(accountcore_userdefaults_action)d' context="{'default_default_voucherDate':voucherdate,'default_default_org':org,'default_default_real_date':real_date,'default_default_glob_tag':(glob_tag)}"></button>
             <field name='state' widget='statusbar' class='text-danger'></field>
           </header>
           <sheet>
@@ -1171,7 +1171,8 @@
           <field name="number" string="凭证编号等于" domain="[('number','=', self)]" />
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
           <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
-          <field name="state" string="Test" domain="[('state','=', self)]" />
+          <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
+		      <field name="reviewer" string="审核人包含" domain="[('reviewer.name','ilike', self)]" />
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <filter string="本月" name="this_month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
           <filter string="上月" name="pre_month" domain="[('voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
@@ -1179,6 +1180,9 @@
           <filter string="更多期间范围" name="voucherdate" date='voucherdate' default_period="this_week" />
           <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
           <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
+          <filter string="审核人是自己" name="reviewer_is_me" domain="[('reviewer','=',uid)]" /> 
+          <filter string="审核人是他人" name="reviewer_not_me" domain="[('reviewer','!=',uid)]" />
+          <filter string="制单人是他人" name="createUser_not_me" domain="[('createUser','!=',uid)]" /> 
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />
           <filter name="group_by_reviewer" string="按审核人分组" context = "{'group_by': 'reviewer'}" />
@@ -1199,6 +1203,7 @@
           <field name="account" string="科目名称包含" domain="[('account','ilike', self)]" />
           <field name="explain" string="说明包含" domain="[('explain','ilike', self)]" />
           <field name="items" string="核算统计项目包含" domain="[('items','ilike', self)]" />
+          <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <field name="damount" string="借方金额等于" domain="[('damount','=', self)]" />
           <field name="camount" string="贷方金额等于" domain="[('camount','=', self)]" />
           <filter string="本月" name="this_month" domain="[('v_month','=', time.strftime('%m')),('v_year','=', time.strftime('%Y'))]" />
@@ -1296,7 +1301,7 @@
       <field name='name'>凭证列表</field>
       <field name='res_model'>accountcore.voucher</field>
       <field name='view_mode'>tree,form</field>
-      <field name="context">{'search_default_this_month': 1}</field>
+      <field name="context">{'search_default_this_month': 1,'search_default_pre_month': 1,'search_default_group_by_org':1}</field>
       <field name="target">current</field>
     </record>
     <!-- 窗体动作-打开分录列表 -->
@@ -1304,7 +1309,7 @@
       <field name='name'>分录列表</field>
       <field name='res_model'>accountcore.entry</field>
       <field name='view_mode'>tree,pivot</field>
-      <field name="context">{'search_default_this_month': 1}</field>
+      <field name="context">{'search_default_this_month': 1,'search_default_pre_month': 1,'search_default_group_by_org':1}</field>
     </record>
     <!-- 窗体动作-打开特殊科目列表 -->
     <record model="ir.actions.act_window" id="accountcore_special_accounts_actions_window">
