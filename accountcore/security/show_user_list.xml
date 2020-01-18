@@ -1,0 +1,8 @@
+<odoo>
+    <record id="accountcore_resuser_rule" model="ir.rule">
+        <field name="name">会计自能看见自己的用户信息</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="domain_force">[('id','=',user.id)]</field>
+        <field name="groups" eval="[(4,ref('accountcore.users_accounters'))]"/>
+    </record>
+</odoo>
