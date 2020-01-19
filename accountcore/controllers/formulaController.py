@@ -133,11 +133,10 @@ class ACMethod_realHappend(ACMethodBace):
             [('name', '=', self.ruleBookName_shunyi)])
         vouchers = ruleBook.getVouchersOfOrg(org, period)
         if item:
-            entrys = [e for e in vouchers.entrys if (e.account.id == account.id
-                                                     and e.account_item.id == item.id)]
+            entrys = [e for v in vouchers for e in v.entrys if (e.account.id == account.id and e.account_item.id == item.id)]
             balance = account.getBegins(org, item)
         else:
-            entrys = [e for e in vouchers.entrys if e.account.id == account.id]
+            entrys = [e for v in vouchers for e in v.entrys if e.account.id == account.id]
             balance = account.getBegins(org)
         if account.direction == '1':
             amount_j = sum([ACTools.TranslateToDecimal(e.camount)
@@ -190,11 +189,14 @@ class ACMethod_realHappendYear(ACMethodBace):
             [('name', '=', self.ruleBookName_shunyi)])
         vouchers = ruleBook.getVouchersOfOrg(org, newP)
         if item:
-            entrys = [e for e in vouchers.entrys if (e.account.id == account.id
-                                                     and e.account_item.id == item.id)]
+            entrys = [e for v in vouchers for e in v.entrys if (e.account.id == account.id and e.account_item.id == item.id)]
+
+            # entrys = [e for e in vouchers.entrys if (e.account.id == account.id
+            #                                          and e.account_item.id == item.id)]
             balance = account.getBegins(org, item)
         else:
-            entrys = [e for e in vouchers.entrys if e.account.id == account.id]
+            # entrys = [e for e in vouchers.entrys if e.account.id == account.id]
+            entrys = [e for v in vouchers for e in v.entrys if e.account.id == account.id]         
             balance = account.getBegins(org)
 
         if account.direction == '1':
