@@ -1174,6 +1174,7 @@
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <field name="org" string="机构名称等于" domain="[('org.name','=', self)]" />
           <field name="reviewer" string="审核人包含" domain="[('reviewer.name','ilike', self)]" />
+          <field name="ruleBook" string="凭证标签包含" domain="[('ruleBook','ilike', self)]" widget='many2one' />
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <filter string="本月" name="this_month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
           <filter string="上月" name="pre_month" domain="[('voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
@@ -1184,6 +1185,7 @@
           <filter string="审核人是自己" name="reviewer_is_me" domain="[('reviewer','=',uid)]" /> 
           <filter string="审核人是他人" name="reviewer_not_me" domain="[('reviewer','!=',uid)]" />
           <filter string="制单人是他人" name="createUser_not_me" domain="[('createUser','!=',uid)]" /> 
+          <filter string="结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','ilike', '结转损益')]" /> 
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />
           <filter name="group_by_reviewer" string="按审核人分组" context = "{'group_by': 'reviewer'}" />
