@@ -1567,7 +1567,7 @@ class Voucher(models.Model, Glob_tag_Model):
                 search_default_group_by_org= 1,
             )
         return {
-            'name':'打开凭证列表',
+            'name':'凭证列表',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form',
             'res_model': 'accountcore.voucher',

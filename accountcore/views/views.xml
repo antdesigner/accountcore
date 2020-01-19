@@ -459,7 +459,7 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,sequence,voucherdate,number" limit='300' >
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,uniqueNumber" limit='300' >
           <field name="sequence" invisible='1'/>
           <field name='voucherdate' />
           <field name='entrysHtml' />
