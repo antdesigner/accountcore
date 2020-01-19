@@ -1549,6 +1549,31 @@ class Voucher(models.Model, Glob_tag_Model):
             'view_mode': 'form',
             'res_id': rl.id,
         }
+    @api.model
+    def show_vouchers(self):
+        '''打开凭证列表窗体'''
+        if self.env.user.currentOrg:
+            context =dict(
+                self.env.context,
+                search_default_this_month= 1,
+                search_default_pre_month= 1,
+                search_default_org= self.env.user.currentOrg.id,
+            )
+        else :
+            context =dict(
+                self.env.context,
+                search_default_this_month= 1,
+                search_default_pre_month= 1,
+                search_default_group_by_org= 1,
+            )
+        return {
+            'name':'打开凭证列表',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'list,form',
+            'res_model': 'accountcore.voucher',
+            'context': context,
+        }
+
 
 # 分录
 class Enty(models.Model, Glob_tag_Model):
@@ -1691,6 +1716,30 @@ class Enty(models.Model, Glob_tag_Model):
             'view_mode': 'form',
             'res_id': self.voucher_id,
             'target': '',
+        }
+    @api.model
+    def show_vouchers(self):
+        '''打开分录列表窗体'''
+        if self.env.user.currentOrg:
+            context =dict(
+                self.env.context,
+                search_default_this_month= 1,
+                search_default_pre_month= 1,
+                search_default_org= self.env.user.currentOrg.id,
+            )
+        else :
+            context =dict(
+                self.env.context,
+                search_default_this_month= 1,
+                search_default_pre_month= 1,
+                search_default_group_by_org= 1,
+            )
+        return {
+            'name':'打开凭证列表',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'list,form',
+            'res_model': 'accountcore.entry',
+            'context': context,
         }
 # 凭证编号策略
 

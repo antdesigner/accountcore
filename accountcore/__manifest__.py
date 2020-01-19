@@ -37,6 +37,7 @@
         'data/report_model.xml',
         'data/help_data.xml',
         'security/ir.model.access.csv',
+        'security/show_user_list.xml',
 
     ],
     'qweb': [
