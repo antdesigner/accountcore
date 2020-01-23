@@ -405,8 +405,8 @@ class Account(models.Model, Glob_tag_Model):
     @api.onchange('itemClasses')
     def _checkItemClasses(self):
         '''改变科目的核算项目类别 '''
-        item_ids = [item.id for item in self.itemClasses]
-        if self.accountItemClass and self.accountItemClass.id not in item_ids:
+        # item_ids = [item.id for item in self.itemClasses]
+        if self.accountItemClass and self.accountItemClass.id not in self.itemClasses.ids:
             raise exceptions.ValidationError(
                 '['+self.accountItemClass.name+"]已经作为明细科目的类别,不能删除.如果要删除,请你在'作为明细的类别'中先取消它")
 
