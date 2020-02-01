@@ -1589,7 +1589,7 @@ class Voucher(models.Model, Glob_tag_Model):
         return {
             'name':'凭证列表',
             'type': 'ir.actions.act_window',
-            'view_mode': 'list,form',
+            'view_mode': 'list,form,pivot',
             'res_model': 'accountcore.voucher',
             'context': context,
         }
@@ -1757,7 +1757,7 @@ class Enty(models.Model, Glob_tag_Model):
         return {
             'name':'打开凭证列表',
             'type': 'ir.actions.act_window',
-            'view_mode': 'list,form',
+            'view_mode': 'list,form,pivot',
             'res_model': 'accountcore.entry',
             'context': context,
         }

@@ -8,8 +8,8 @@
         <menuitem name='第3步:添加核算项目类别' id='accountcore_guide_menu_2' parent='accountcore_guide_menu' action='accountcore_itemclass_action_window' sequence="20" />
         <menuitem name='第4步:添加核算项目' id='accountcore_guide_menu_3' parent='accountcore_guide_menu' action='accountcore_items_action_window' sequence="30" />
         <menuitem name='第5步:完善会计科目' id='accountcore_guide_menu_4' parent='accountcore_guide_menu' action='accountcore_account_action_window' sequence="40" />
-        <menuitem name='第6步:录入期初余额' id='accountcore_guide_menu_5' parent='accountcore_guide_menu' action='accountcore_accounts_balance_actions_window' sequence="50" />
-        <menuitem name='第7步:设置凭证默认值' id='accountcore_guide_menu_6' parent='accountcore_guide_menu' action='accountcore_userdefaults_action' sequence="60" />
+        <menuitem name='第6步:设置凭证默认值' id='accountcore_guide_menu_6' parent='accountcore_guide_menu' action='accountcore_userdefaults_action' sequence="60" />
+        <menuitem name='第7步:录入期初余额' id='accountcore_guide_menu_5' parent='accountcore_guide_menu' action='accountcore_accounts_balance_actions_window' sequence="50" />
         <menuitem name='第8步:设置凭证编号策略' id='accountcore_guide_menu_7' parent='accountcore_guide_menu' action='accountcore_set_number_acionts_window' sequence="70" />
         <menuitem name='第9步:可以开始录入凭证了' id='accountcore_guide_menu_8' parent='accountcore_guide_menu' action='accountcore_vouchers_action_window' sequence="80" />
         <menuitem name='★详细帮助和服务支持' id='accountcore_guide_menu_9' parent='accountcore_guide_menu' action='accountcore_helps_actions_window' sequence="90" />

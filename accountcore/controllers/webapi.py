@@ -46,6 +46,11 @@ class WebapiController(http.Controller):
     #检查数据逻辑
     def _check_voucher_logic(self,data):
         '''检查推送的凭证是否符合逻辑'''
+        #检查机构
+        if "org" not in data:
+            raise exceptions.UserError('缺少核算机构参数：org')
+        if not data['org']:
+            raise exceptions.UserError('核算机构参数org的值不能为空')
         #检查日期是否正确
         time.strptime(data['voucherdate'], "%Y-%m-%d")
         if 'real_date' in data and data['real_date']:
@@ -62,7 +67,7 @@ class WebapiController(http.Controller):
                 raise exceptions.UserError('分录的借贷方金不能全为0或都不为0')
             #检查后带核算项目类别的分录,必选类别是否<=1
             if 'items' in e:
-                require_itemclass=([require[2] for require in e['items']]).count(True)
+                require_itemclass=([require[1] for require in e['items']]).count(True)
                 if require_itemclass >1:
                     raise exceptions.UserError('科目后的必选核算项目只能有一个')
             sum_d=sum_d+ACTools.TranslateToDecimal(e['damount'])
@@ -82,7 +87,8 @@ class WebapiController(http.Controller):
         #购建核算机构
         voucher['org']=self._build_org(voucher['org'],autoCreate)
         #购建全局标签
-        voucher['glob_tag'] = self._build_glob_tag(voucher['glob_tag'],autoCreate)
+        if 'glob_tag' in voucher:
+            voucher['glob_tag'] = self._build_glob_tag(voucher['glob_tag'],autoCreate)
         #购建每条分录
         for i in range(0,len(voucher['entrys'])):
             entry = voucher['entrys'][i]
