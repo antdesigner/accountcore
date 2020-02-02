@@ -1420,7 +1420,15 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         content: 'save_alt',
                         tooltip: '下载报表(数据)',
                         onclick: function () {
-                            self.jexcel_obj.ACDownloadOnlyDate();
+                            // self.jexcel_obj.ACDownloadOnlyDate();
+                            var startDate = self._getStartDate()
+                            var endDate = self._getEndDate()
+                            $("#print_content tbody").table2excel({
+                                exclude: "tr td:first-child",
+                                name: "abc",
+                                filename:self.record.data['name']+"["+startDate+"至"+endDate+"].xls", 
+                                preserveColors: true
+                            });
                         }
                     },
                     // 归档
