@@ -52,7 +52,7 @@ class GlobTag(models.Model):
                                      string='全局标签类别',
                                      index=True,
                                      ondelete='restrict')
-    summary = fields.Char(string='使用范围和简介', required=True)
+    summary = fields.Char(string='使用范围和简介')
     js_code = fields.Text(string='js代码')
     python_code = fields.Text(string='python代码')
     sql_code = fields.Text(string='sql代码')
@@ -68,7 +68,7 @@ class Org(models.Model, Glob_tag_Model):
     '''会计核算机构'''
     _name = 'accountcore.org'
     _description = '会计核算机构'
-    number = fields.Char(string='核算机构编码', required=True)
+    number = fields.Char(string='核算机构编码')
     name = fields.Char(string='核算机构名称', required=True)
     accounts = fields.One2many('accountcore.account',
                                'org',
@@ -102,7 +102,7 @@ class ItemClass(models.Model, Glob_tag_Model):
     '''核算项目类别'''
     _name = 'accountcore.itemclass'
     _description = '核算项目类别'
-    number = fields.Char(string='核算项目类别编码', required=True)
+    number = fields.Char(string='核算项目类别编码')
     name = fields.Char(string='核算项目类别名称', required=True,
                        help='对核算项目的一个分类,不能重复,例如:员工,部门等')
     _sql_constraints = [('accountcore_itemclass_number_unique', 'unique(number)',
@@ -132,7 +132,7 @@ class Item(models.Model, Glob_tag_Model):
                                 required=True,
                                 ondelete='restrict')
     item_class_name = fields.Char(related='itemClass.name',
-                                  string='核算项目类别',
+                                  string='项目类别',
                                   index=True,
                                   store=True,
                                   ondelete='restrict')
@@ -265,7 +265,7 @@ class RuleBook(models.Model, Glob_tag_Model):
     '''凭证标签'''
     _name = 'accountcore.rulebook'
     _description = '凭证标签'
-    number = fields.Char(string='凭证标签编码', required=True)
+    number = fields.Char(string='凭证标签编码')
     name = fields.Char(string='凭证标签名称', required=True, help='用于给凭证做标记')
     _sql_constraints = [('accountcore_rulebook_number_unique', 'unique(number)',
                          '标签编码重复了!'),
@@ -325,7 +325,8 @@ class Account(models.Model, Glob_tag_Model):
     accountClass = fields.Many2one('accountcore.accountclass',
                                    string='科目类别',
                                    index=True,
-                                   ondelete='restrict')
+                                   ondelete='restrict',
+                                   required=True)
     number = fields.Char(string='科目编码', required=True)
     name = fields.Char(string='科目名称', required=True)
     direction = fields.Selection([('1', '借'),
@@ -855,7 +856,26 @@ class Account(models.Model, Glob_tag_Model):
     def cancelShowInVoucher(self):
         '''取消凭证中显示'''
         self.write({'is_show': False})
+    #获取科目带的项目类别,如[[id,true],[id,false]]  
+    def getAllItemClassIds(self):
+        '''获取科目带的项目类别,如[[id,true],[id,false]]'''
+        itemClass_list=[]
+        for i in self.itemClasses:
+            if i.id!=self.accountItemClass:
+                itemClass_list.append([i.id,False])
+            else:
+                itemClass_list.append([i.id,True])
+        return itemClass_list
 
+    #判断科目已经在余额表中存在
+    def haveBeenUsedInBalance(self):
+        '''判断科目在余额表中已被使用过'''
+        accountBalances = self.env['accountcore.accounts_balance'].sudo().search(
+            [('account', '=', self.id)],limit=1)
+        if accountBalances.exists():
+            return True
+        else:
+            return False
 # 特殊的会计科目
 
 
@@ -965,7 +985,7 @@ class Source(models.Model, Glob_tag_Model):
     '''凭证来源'''
     _name = 'accountcore.source'
     _description = '凭证来源'
-    number = fields.Char(string='凭证来源编码', required=True)
+    number = fields.Char(string='凭证来源编码')
     name = fields.Char(string='凭证来源名称', required=True)
     _sql_constraints = [('accountcore_source_number_unique', 'unique(number)',
                          '凭证来源编码重复了!'),
@@ -1569,7 +1589,7 @@ class Voucher(models.Model, Glob_tag_Model):
         return {
             'name':'凭证列表',
             'type': 'ir.actions.act_window',
-            'view_mode': 'list,form',
+            'view_mode': 'list,form,pivot',
             'res_model': 'accountcore.voucher',
             'context': context,
         }
@@ -1580,7 +1600,7 @@ class Enty(models.Model, Glob_tag_Model):
     '''一条分录'''
     _name = 'accountcore.entry'
     _description = "会计分录"
-    voucher_id = fields.Integer(related="voucher.id")
+    voucher_id = fields.Integer(related="voucher.id",string='voucher_id')
     voucher = fields.Many2one('accountcore.voucher',
                               string='所属凭证',
                               index=True,
@@ -1737,7 +1757,7 @@ class Enty(models.Model, Glob_tag_Model):
         return {
             'name':'打开凭证列表',
             'type': 'ir.actions.act_window',
-            'view_mode': 'list,form',
+            'view_mode': 'list,form,pivot',
             'res_model': 'accountcore.entry',
             'context': context,
         }

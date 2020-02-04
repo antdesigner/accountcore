@@ -214,7 +214,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,accountClass,number' limit='9999'>
+        <tree default_order='accountClass,number' limit='9999'>
           <field name='org' invisible='1'></field>
           <field name='accountsArch' invisible='1'/>
           <field name='accountClass'></field>
@@ -236,7 +236,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='org,accountClass,number' limit='9999'>
+        <tree default_order='accountClass,number' limit='9999'>
           <field name='org' widget='many2many_tags'></field>
           <field name='accountsArch' />
           <field name='accountClass'></field>
@@ -291,7 +291,7 @@
             </group>
             <group>
               <field name="childs_ids">
-                <tree default_order='org,accountClass,number' create='0' limit='80' >
+                <tree default_order='accountClass,number' create='0' limit='80' >
                   <field name='org'></field>
                   <field name='accountsArch' />
                   <field name='accountClass'></field>
@@ -768,7 +768,7 @@
           <field name="cashFlow" />
           <field name='org'></field>
           <field name="v_real_date" />
-          <field name="business" />
+          <!-- <field name="business" /> -->
           <field name='glob_tag' string='全局标签' widget='many2many_tags' />
         </tree>
       </field>
@@ -1174,6 +1174,7 @@
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <field name="org" string="机构名称等于" domain="[('org.name','=', self)]" />
           <field name="reviewer" string="审核人包含" domain="[('reviewer.name','ilike', self)]" />
+          <field name="soucre" string="凭证来源包含" domain="[('soucre','ilike', self)]" widget='many2one' />
           <field name="ruleBook" string="凭证标签包含" domain="[('ruleBook','ilike', self)]" widget='many2one' />
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <filter string="本月" name="this_month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />
