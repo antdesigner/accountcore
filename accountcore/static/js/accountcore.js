@@ -1070,6 +1070,15 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             }
             return this._changeDateStr(endDate);
         },
+                      /**
+         * 获得机构名称
+         */
+        _getOrgs: function () {
+            var orgs = _.map($(".ac_choice_orgs").find('input:checked'), function (input) {
+                return $(input).parent().find("label").text();
+            });
+            return orgs.join('+');
+        },
         /**
          * 获得供报表公式计算的机构范围参数
          */
@@ -1421,12 +1430,13 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         tooltip: '下载报表(数据)',
                         onclick: function () {
                             // self.jexcel_obj.ACDownloadOnlyDate();
-                            var startDate = self._getStartDate()
-                            var endDate = self._getEndDate()
+                            var startDate = self._getStartDate();
+                            var endDate = self._getEndDate();
+                            var orgs=self._getOrgs();
+                            var fileName=self.record.data['name']+"["+startDate+"至"+endDate+"]"+orgs+".xls";
                             $("#print_content tbody").table2excel({
                                 exclude: "tr td:first-child",
-                                name: "abc",
-                                filename:self.record.data['name']+"["+startDate+"至"+endDate+"].xls", 
+                                filename:fileName, 
                                 preserveColors: true
                             });
                         }
