@@ -181,7 +181,7 @@ function openVoucher(e) {
 //导出EXCEL
 odoo.define(['accountcore.table2excel'], function (require) {
 	$(function () {
-		var btn_contaner = $('.o_report_buttons', window.parent.document);
+		var btn_contaner = $('.o_report_no_edit_mode', window.parent.document);
         if ($('#t2excel', window.parent.document).length > 0) {
           $('#t2excel', window.parent.document).remove();
 		}
