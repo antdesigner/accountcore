@@ -1414,7 +1414,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             self.jexcel_obj.ACDownloadFomular();
                         }
                     },
-                    // 下载表格为csv,数据，不带公式
+                    // 下载表格为excel,数据，不带公式
                     {
                         type: 'i',
                         content: 'save_alt',

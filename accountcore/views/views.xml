@@ -760,7 +760,7 @@
           <field name="v_year" invisible='1' />
           <field name="v_month" invisible='1' />
           <field name="voucher" />
-          <field name="explain" string='分录说明'/>
+          <field name="explain" string='所属凭证'/>
           <field name="account" />
           <field name="damount" />
           <field name="camount" />
@@ -768,7 +768,7 @@
           <field name="cashFlow" />
           <field name='org'></field>
           <field name="v_real_date" />
-          <field name="business" />
+          <!-- <field name="business" /> -->
           <field name='glob_tag' string='全局标签' widget='many2many_tags' />
         </tree>
       </field>
@@ -1174,6 +1174,7 @@
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <field name="org" string="机构名称等于" domain="[('org.name','=', self)]" />
           <field name="reviewer" string="审核人包含" domain="[('reviewer.name','ilike', self)]" />
+          <field name="soucre" string="凭证来源包含" domain="[('soucre','ilike', self)]" widget='many2one' />
           <field name="ruleBook" string="凭证标签包含" domain="[('ruleBook','ilike', self)]" widget='many2one' />
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <filter string="本月" name="this_month" domain="[('month','=', time.strftime('%m')),('year','=', time.strftime('%Y'))]" />

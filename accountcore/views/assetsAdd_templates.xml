@@ -65,6 +65,12 @@
             </xpath>
         </template>
         <!-- table2excel.js插件结束 -->
-
+        <!-- 报表添加前端table2excel.js插件开始 -->
+        <template id="accountcore_report_assets" inherit_id="web.report_assets_common" name="accountcore report assets">
+            <xpath expr="script[last()]" position="after">
+                <script type="text/javascript" src="/accountcore/static/js/table2excel.js"></script>
+            </xpath>
+        </template>
+        <!-- 报表添加前端table2excel.js插件开始结束 -->
     </data>
 </odoo>

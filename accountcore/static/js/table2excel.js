@@ -1,13 +1,3 @@
-
-/*
- *  jQuery table2excel - v1.1.2
- *  jQuery plugin to export an .xls file in browser from an HTML table
- *  https://github.com/rainabba/jquery-table2excel
- *
- *  Made by rainabba
- *  Under MIT License
- */
-//table2excel.js
 odoo.define('accountcore.table2excel',function(require){
 
     'use strict';
@@ -19,7 +9,7 @@ odoo.define('accountcore.table2excel',function(require){
         name: "Table2Excel",
         filename: "table2excel",
         fileext: ".xls",
-        exclude_img: true,
+        exclude_img: false,
         exclude_links: true,
         exclude_inputs: true,
         preserveColors: true

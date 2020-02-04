@@ -96,7 +96,7 @@ table tr{page-break-inside: avoid !important;}
                 <div class="row text-left small" t-if="sum_orgs or orgs_count ==1"><span>合并机构：</span><span t-esc="data['sum_orgs_name']"></span></div>            
                 <div class="row">
                     <div class="">
-                        <table class='table  table-bordered table-sm table-striped table-hover'>
+                        <table id='ac_table' class='table  table-bordered table-sm table-striped table-hover'>
                             <thead>
                                 <tr>
                                     <th t-if='not (sum_orgs or orgs_count==1)' rowspan='2' colspan="3">机构名称</th>
@@ -190,8 +190,26 @@ table tr{page-break-inside: avoid !important;}
             </div>
         </div>
         <script>
-        $(function(){ $('[data-toggle="tooltip"]').tooltip();  
-        });
+       $(function () {
+	$('[data-toggle="tooltip"]').tooltip();
+});
+odoo.define(['accountcore.table2excel'], function (require) {
+	$(function () {
+		var btn_contaner = $('.o_report_buttons', window.parent.document);
+        if ($('#t2excel', window.parent.document).length > 0) {
+          $('#t2excel', window.parent.document).remove();
+		}
+ btn_contaner.append('<button id="t2excel" type="button" class="btn btn-primary" title="导出EXCEL">导出EXCEL</button>');
+		var btn2excel = require('accountcore.table2excel');
+		$('#t2excel', window.parent.document).click(function () {
+            var fileName="科目余额表[<t t-esc="data['form']['startDate']"></t>至<t t-esc="data['form']['endDate']"></t>]<t t-esc="data['sum_orgs_name']"></t>.xls";
+			$("#ac_table").table2excel({
+				filename: fileName,
+				preserveColors: false
+			});
+		});
+	});
+});
         </script>
     </template>
 </odoo>
