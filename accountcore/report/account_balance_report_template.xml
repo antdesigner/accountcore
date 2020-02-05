@@ -116,7 +116,7 @@ table tr{page-break-inside: avoid !important;}
                             </thead>
                             <tbody class='text-left'>
                                 <t t-foreach="docs" t-as="account">
-                                    <tr style="page-break-inside: avoid !important;"t-att="{'org_id': account['org_id'],'accountId':account['account_id']}">
+                                    <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'],'accountId':account['account_id']}">
                                         <td t-if='not (sum_orgs or orgs_count==1)' class='org_name' colspan="3" data-toggle="tooltip" t-att-title="account['org_name']">
                                             <span t-esc="account['org_name']"></span>
                                         </td>
@@ -125,9 +125,9 @@ table tr{page-break-inside: avoid !important;}
                                             <span t-if="'item_id' in account and account['item_id'] != 0">
                                             <span t-esc="account['account_name']"></span>
                                             <br/>
-                                                <span t-att="{'itemId':account['item_id']}">[</span>
+                                                <span t-att="{'itemId':account['item_id']}">【</span>
                                                 <t t-esc="account['item_class_name']"></t>
-                                                <span>]
+                                                <span>】
                                                 </span>
                                                 <span t-esc="account['item_name']"></span>
                                             </span>
