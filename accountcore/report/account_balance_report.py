@@ -40,6 +40,7 @@ class AccountBalanceReport(models.AbstractModel):
         orgs = self.env['accountcore.org'].sudo().browse(org_id)
         # 多机构合并显示名称
         data['sum_orgs_name'] = "+".join(orgs.mapped('name'))
+        data['sum_orgids'] = org_id 
         startDate = datetime.datetime.strptime(form['startDate'],
                                                '%Y-%m-%d')
         start_year = startDate.year
