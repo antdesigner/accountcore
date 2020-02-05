@@ -116,7 +116,7 @@ table tr{page-break-inside: avoid !important;}
                             </thead>
                             <tbody class='text-left'>
                                 <t t-foreach="docs" t-as="account">
-                                    <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'], 'account_father_id':account['account_father_id']}">
+                                    <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'],'accountId':account['account_id']}">
                                         <td t-if='not (sum_orgs or orgs_count==1)' class='org_name' colspan="3" data-toggle="tooltip" t-att-title="account['org_name']">
                                             <span t-esc="account['org_name']"></span>
                                         </td>
@@ -125,9 +125,9 @@ table tr{page-break-inside: avoid !important;}
                                             <span t-if="'item_id' in account and account['item_id'] != 0">
                                             <span t-esc="account['account_name']"></span>
                                             <br/>
-                                                <span>[</span>
+                                                <span t-att="{'itemId':account['item_id']}">【</span>
                                                 <t t-esc="account['item_class_name']"></t>
-                                                <span>]
+                                                <span>】
                                                 </span>
                                                 <span t-esc="account['item_name']"></span>
                                             </span>
@@ -207,6 +207,36 @@ odoo.define(['accountcore.table2excel'], function (require) {
 				filename: fileName,
 				preserveColors: false
 			});
+		});
+	});
+});
+//关联打开明细账向导
+odoo.define(function (require) {
+	$(function () {
+		$('#ac_table').bind("click",function(e){
+            var web_client_ =window.top.odoo.__DEBUG__.services['web.web_client'];
+            var tr=$(e.target).parents("tr");
+            var _startDate="<t t-esc="data['form']['startDate']"/>";
+            var _endDate="<t t-esc="data['form']['endDate']"/>";
+            var _orgs=<t t-esc="data['sum_orgids']"/>;
+            var _account=[parseInt(tr.attr("accountId"))];
+            var _item=parseInt(tr.find("span[itemId]").attr("itemId"));
+            web_client_.do_action({
+                                name: '关联查询明细账',
+                                type: 'ir.actions.act_window',
+                                res_model: 'accountcore.get_subsidiary_book',
+                                context: {
+                                    default_startDate:_startDate,
+                                    default_endDate:_endDate,
+                                    default_account: _account,
+                                    default_orgs:_orgs,
+                                    default_item:_item
+                                },
+                                views: [
+                                    [false, 'form']
+                                ],
+                                target: 'new'
+                            });
 		});
 	});
 });
