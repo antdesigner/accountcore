@@ -6262,7 +6262,16 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                     });
                 }
                 // tiger 打开公式设置向导，扩展源代码-结束
-
+		 // tiger 打开现金流量公式设置向导，扩展源代码-开始
+         if (obj.options.allowopenCashFlowFormula == true) {
+            items.push({
+                title: obj.options.text.openCashFlowFormula,
+                onclick: function () {
+                    obj.openCashFlowFormula();
+                }
+            });
+        }
+        // tiger 打开现金流量公式设置向导，扩展源代码-结束
                 if (y == null) {
                     // Insert a new column
                     if (obj.options.allowInsertColumn == true) {
@@ -13362,6 +13371,40 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites','accountcore.accounting
                 return s;    
         
             };
+              // 现金流量取数公式
+          exports.cashflow = function (name, hasChilds) {
+            var result = "";
+            if (jexcel.current.options.computing) {
+                var widget = jexcel.current.options.widget;
+                var startDate = "'" + widget.startDate + "'";
+                var endDate = "'" + widget.endDate + "'";
+                var orgIds = "'" + widget.orgIds + "'";
+                var url = '/ac/cashflow';
+                var argslist = new Array("'" + name + "'", "'" + hasChilds + "'");
+                var formula = "cashflow(" + argslist.join(',') + ")";
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    dataType: 'text',
+                    data: {
+                        formula: formula,
+                        startDate: startDate,
+                        endDate: endDate,
+                        orgIds: orgIds
+                    },
+                    async: false,
+                    success: function (data) {
+                        result = data;
+                    },
+                    error: function (data) {
+                        console.log("ERROR ", data);
+                    }
+                });
+                return jexcel.methods.math.ROUND(Number(result), 2)
+            } else {
+                return jexcel.methods.math.ROUND(0, 2);
+            }
+        };
         return exports;
     })();
 

@@ -321,7 +321,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         //该方法覆写父类的FieldMany2One的对应方法 ,为了在凭证中直接新增项目,传递项目类别给上下文
         _createContext: function (name) {
             var tmp = this._super.apply(this, arguments);
-            if(tmp){
+            if (tmp) {
                 tmp["default_itemClass"] = this.ac_itemTypeId;
             }
             return tmp;
@@ -1070,7 +1070,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             }
             return this._changeDateStr(endDate);
         },
-                      /**
+        /**
          * 获得机构名称
          */
         _getOrgs: function () {
@@ -1432,11 +1432,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             // self.jexcel_obj.ACDownloadOnlyDate();
                             var startDate = self._getStartDate();
                             var endDate = self._getEndDate();
-                            var orgs=self._getOrgs();
-                            var fileName=self.record.data['name']+"["+startDate+"至"+endDate+"]"+orgs+".xls";
+                            var orgs = self._getOrgs();
+                            var fileName = self.record.data['name'] + "[" + startDate + "至" + endDate + "]" + orgs + ".xls";
                             $("#print_content tbody").table2excel({
                                 exclude: "tr td:first-child",
-                                filename:fileName, 
+                                filename: fileName,
                                 preserveColors: true
                             });
                         }
@@ -1537,6 +1537,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     show: '显示',
                     entries: '明细',
                     openAccountFormula: '设置科目取数公式',
+                    openCashFlowFormula: '设置现金流量取数公式',
                     insertANewColumnBefore: '在前面插入一列',
                     insertANewColumnAfter: '在后面插入一列',
                     deleteSelectedColumns: '删除选中列',
@@ -1720,11 +1721,16 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             this.$el.find('.jexcel').attr("id", "print_content");
             // 设置右键科目取数公式菜单在编辑状态下可见
             self.jexcel_obj.options.allowOpenAccountFormula = (this.mode === 'edit');
+            self.jexcel_obj.options.allowopenCashFlowFormula = (this.mode === 'edit');
             // 设置默认行高             
             self.jexcel_obj.options.defaultRowsHeight = 25;
             // 注册打开设置公式向导方法                                                                     
             self.jexcel_obj.openAccountFormula = function () {
                 self._openAccountFormulaWizard();
+            };
+            // 注册打开设置现金流量公式向导方法                                                                     
+            self.jexcel_obj.openCashFlowFormula = function () {
+                self._openCashFlowFormulaWizard();
             };
 
         },
@@ -1766,6 +1772,41 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
 
 
         },
+                          // 打开报表现金流量设置向导窗体
+    _openCashFlowFormulaWizard: function () {
+        var formula = self.jexcel_obj.getValueFromCoords(self.selection_x1, self.selection_y1) || '';
+        if (formula) {
+            var pre = formula.slice(0, 1);
+            if (pre == '=') {
+                // if 单元格定义了ac公式
+                var context = {
+                    ac: formula.slice(1)
+                }
+                this.do_action({
+                    name: '报表现金流量取数公式设置向导',
+                    type: 'ir.actions.act_window',
+                    res_model: 'accountcore.report_cashflow_formula',
+                    context: context,
+                    views: [
+                        [false, 'form']
+                    ],
+                    target: 'new'
+                });
+                return;
+            }
+        }
+        this.do_action({
+            name: '报表现金流量取数公式设置向导',
+            type: 'ir.actions.act_window',
+            res_model: 'accountcore.report_cashflow_formula',
+            views: [
+                [false, 'form']
+            ],
+            target: 'new'
+        });
+
+
+    },
     });
     // 表格设计器表格的样式字段小部件
     var ac_jexcel_style = AbstractField.extend({
@@ -1868,7 +1909,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             this._super.apply(this, arguments);
         },
         start: function () {
-            core.bus.trigger('ac_jexcel_set_formula', this.context.accountName);
+            core.bus.trigger('ac_jexcel_set_formula', this.context.ac_formula);
         },
         on_attach_callback: function () {
             // 取消遮挡的小部件

@@ -280,7 +280,7 @@ class FormulaController(http.Controller):
         tactics = [('account(', accountAmount)]
         newFormula = self.rebuildFormula(formula, tactics)
         self.env = request.env
-        self.env['accountcore.account'].clear_caches()
+        # self.env['accountcore.account'].clear_caches()
         result = eval(newFormula)
         return str(result)
 
@@ -398,3 +398,34 @@ class FormulaController(http.Controller):
         for item in tactics:
             newFormula = newFormula.replace(item[0], item[1])
         return newFormula
+    @http.route('/ac/cashflow', type='http', auth='user', csrf=False)
+    def cashflow(self, formula, startDate, endDate, orgIds):
+        '''现金流量取数'''
+        replaceStr = 'self.cashflowAmount(' + \
+            orgIds+","+startDate+","+endDate+","
+        newFormula = formula.replace('cashflow(',replaceStr)
+        self.env = request.env
+        result = eval(newFormula)
+        return str(result)
+    def cashflowAmount(self, org_ids, start_date, end_date, cashflowName, hasChild):
+        _org_ids = (org_ids).split("/")
+        cashflowIds=[]
+        cashflowId = self.env['accountcore.cashflow'].sudo().search([('name','=',cashflowName)],limit=1).id
+        cashflowIds.append(cashflowId)
+        if hasChild.lower() == "true":
+            childIds= self.env['accountcore.cashflow'].sudo().search([('id','child_of',cashflowId)]).mapped("id")
+            cashflowIds.extend(childIds)
+        params = (tuple(cashflowIds),
+                    tuple(_org_ids),
+                    start_date,
+                    end_date)
+        query = '''SELECT sum(damount+ camount) as amount
+                        FROM public.accountcore_entry 
+                        WHERE "cashFlow" IN %s
+                        AND org IN %s
+                        AND v_voucherdate BETWEEN %s AND %s '''
+        self.env.cr.execute(query, params)
+        amount=self.env.cr.fetchone()
+        if amount[0]:
+            return str(amount[0])
+        return str(0)
