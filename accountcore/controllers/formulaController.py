@@ -398,7 +398,7 @@ class FormulaController(http.Controller):
         for item in tactics:
             newFormula = newFormula.replace(item[0], item[1])
         return newFormula
-      @http.route('/ac/cashflow', type='http', auth='user', csrf=False)
+    @http.route('/ac/cashflow', type='http', auth='user', csrf=False)
     def cashflow(self, formula, startDate, endDate, orgIds):
         '''现金流量取数'''
         replaceStr = 'self.cashflowAmount(' + \
