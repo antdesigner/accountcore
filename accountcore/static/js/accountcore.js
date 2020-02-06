@@ -1772,20 +1772,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
 
 
         },
-    });
-    // 表格设计器表格的样式字段小部件
-    var ac_jexcel_style = AbstractField.extend({
-        events: _.extend({}, AbstractField.prototype.events, {}),
-        supportedFieldTypes: ['text'],
-        template: 'ac_jexcel',
-        start: function () {
-            this._super.apply(this, arguments);
-            core.bus.on('ac_jexcel_style_change', this, this._onStyleChange);
-        },
-        _onStyleChange: function (style) {
-            this._setValue(JSON.stringify(style));
-        },
-                  // 打开报表现金流量设置向导窗体
+                          // 打开报表现金流量设置向导窗体
     _openCashFlowFormulaWizard: function () {
         var formula = self.jexcel_obj.getValueFromCoords(self.selection_x1, self.selection_y1) || '';
         if (formula) {
@@ -1820,6 +1807,19 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
 
 
     },
+    });
+    // 表格设计器表格的样式字段小部件
+    var ac_jexcel_style = AbstractField.extend({
+        events: _.extend({}, AbstractField.prototype.events, {}),
+        supportedFieldTypes: ['text'],
+        template: 'ac_jexcel',
+        start: function () {
+            this._super.apply(this, arguments);
+            core.bus.on('ac_jexcel_style_change', this, this._onStyleChange);
+        },
+        _onStyleChange: function (style) {
+            this._setValue(JSON.stringify(style));
+        },
     });
     // 保存表格列宽度信息小部件
     var ac_jexcel_width_info = AbstractField.extend({
