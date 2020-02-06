@@ -807,7 +807,7 @@ class ReportModelFormula(models.TransientModel):
             'name': '',
             'tag': 'update_formula',
             'target': 'new',
-            'context': {'accountName': self.formula}
+            'context': {'ac_formula': self.formula}
         }
 
     @api.onchange('btn_join_reduce')
@@ -961,3 +961,86 @@ class StoreReport(models.TransientModel):
             "orgs":  [(6, 0, orgIds)],
         }
         ])
+# 设置报表现金流量公式向导
+
+
+class ReportCashFlowFormula(models.TransientModel):
+    '''设置报表现金流量公式向导'''
+    _name = 'accountcore.report_cashflow_formula'
+    _description = '设置报表现金流量公式向导'
+    cashflow_id = fields.Many2one('accountcore.cashflow', string='现金流量项目')
+    has_child = fields.Boolean(string='是否包含明细', default=True)
+    formula = fields.Text(string='公式内容')
+    btn_join_reduce = fields.Char()
+    btn_join_add = fields.Char()
+    btn_clear = fields.Char()
+    btn_show_orgs = fields.Char(store=False)
+    btn_start_date = fields.Char(store=False)
+    btn_end_date = fields.Char(store=False)
+    btn_between_date = fields.Char(store=False)
+    @api.model
+    def default_get(self, field_names):
+        default = super().default_get(field_names)
+        if self.env.context.get('ac'):
+            default['formula'] = self.env.context.get('ac')
+        return default
+
+    def do(self):
+        '''公式填入单元格'''
+        return {
+            'type': 'ir.actions.client',
+            'name': '',
+            'tag': 'update_formula',
+            'target': 'new',
+            'context': {'ac_formula': self.formula}
+        }
+
+    @api.onchange('btn_join_reduce')
+    def join_reduce(self):
+        '''减进公式'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_join_reduce:
+            return
+        if not self.cashflow_id.name:
+            return {
+                'warning': {
+                    'message': "请选择现金流量项目",
+                },
+            }
+        mark = "-"
+        if not self.formula:
+            self.formula = ""
+        self.formula = (self.formula+mark+"cashflow('"
+                        + self.cashflow_id.name
+                        + "','"+str(self.has_child)
+                        + "')")
+
+    @api.onchange('btn_join_add')
+    def join_add(self):
+        '''加进公式'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_join_add:
+            return
+        if not self.cashflow_id.name:
+            return {
+                'warning': {
+                    'message': "请选择现金流量项目",
+                },
+            }
+        mark = ""
+        if self.formula:
+            mark = "+"
+        else:
+            self.formula = ""
+        self.formula = (self.formula+mark+"cashflow('"
+                        + self.cashflow_id.name
+                        + "','"+str(self.has_child)
+                        + "')")
+
+    @api.onchange('btn_clear')
+    def join_clear(self):
+        '''清除公式'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_clear:
+            return
+        self.formula = ""

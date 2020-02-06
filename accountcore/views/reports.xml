@@ -341,7 +341,7 @@
                 </search>
             </field>
         </record>
-                <!-- 搜索视图-归档报表 -->
+        <!-- 搜索视图-归档报表 -->
         <record id="accountcore_storage_report_search" model="ir.ui.view">
             <field name="name">归档报表查询</field>
             <field name="model">accountcore.storage_report</field>
@@ -357,6 +357,38 @@
                     <filter string="取数结束期间范围" name="endDate" date='endDate' default_period="this_week" />
                 </search>
             </field>
+        </record>
+        <!--form-报表模板现金流量取数公式设置向导-->
+        <record id="accountcore_report_cashflow_formula_form" model="ir.ui.view">
+            <field name='name'>报表模板现金流量取数公式设置向导</field>
+            <field name="model">accountcore.report_cashflow_formula</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="cashflow_id" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+                            <field name="has_child" />
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="do" type="object" string="把公式填回单元格" class='btn-primary' />
+                        <field name="btn_clear" string=" " class='fa fa-eraser' widget='ac_btn_trigger_onchange' />
+                        <field name="btn_show_orgs" string="取数机构" widget='ac_btn_trigger_onchange' />
+                        <field name="btn_start_date" string="开始日期" widget='ac_btn_trigger_onchange' />
+                        <field name="btn_end_date" string="结束日期" widget='ac_btn_trigger_onchange' />
+                        <field name="btn_between_date" string="取数期间" widget='ac_btn_trigger_onchange' />
+                        <field name="btn_join_reduce" string=" " class='fa fa-minus-square' widget='ac_btn_trigger_onchange' />
+                        <field name="btn_join_add" string=" " class='fa fa-plus-square' widget='ac_btn_trigger_onchange' />
+                        <field name="formula" class='formula font-weight-bold' placeholder='公式内容' />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <!-- 窗体动作-打开报表现金流量取数公式设置向导 -->
+        <record id='accountcore_report_cashflow_formula_actions_window' model='ir.actions.act_window' >
+            <field name="name">报表模板现金流量取数公式设置向导</field>
+            <field name='res_model'>accountcore.report_cashflow_formula</field>
+            <field name='view_mode'>form</field>
         </record>
     </data>
 </odoo>

@@ -180,16 +180,7 @@ table tr{page-break-inside: avoid !important;}
                 </div>
             </div>
         </t>
-        </t>
-        <!-- 页脚 -->
-        <div class="footer o_standard_footer">
-            <div class="text-right">
-                <div t-if="report_type == 'pdf'" >
-                    Page: <span class="page"/> / <span class="topage"/>
-                </div>
-            </div>
-        </div>
-        <script>
+          <script>
        $(function () {
 	$('[data-toggle="tooltip"]').tooltip();
 });
@@ -241,5 +232,15 @@ odoo.define(function (require) {
 	});
 });
         </script>
+        </t>
+        <!-- 页脚 -->
+        <div class="footer o_standard_footer">
+            <div class="text-right">
+                <div t-if="report_type == 'pdf'" >
+                    Page: <span class="page"/> / <span class="topage"/>
+                </div>
+            </div>
+        </div>
+      
     </template>
 </odoo>
