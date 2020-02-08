@@ -327,9 +327,9 @@ class GetAccountsBalance(models.TransientModel):
 
     def _setDefaultDate(self):
         if not self.startDate:
-            self.startDate = '1970-01-01'
+            self.startDate = '1900-01-01'
         if not self.endDate:
-            self.endDate = '9999-12-30'
+            self.endDate = '2219-12-31'
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
 
@@ -393,9 +393,9 @@ class GetSubsidiaryBook(models.TransientModel):
 
     def _setDefaultDate(self):
         if not self.startDate:
-            self.startDate = '1970-01-01'
+            self.startDate = '1900-01-01'
         if not self.endDate:
-            self.endDate = '9999-12-30'
+            self.endDate = '2219-12-31'
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
 
