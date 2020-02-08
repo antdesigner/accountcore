@@ -632,7 +632,7 @@
             <group col='2'>
               <field name='default_voucherDate' required='1' default_focus='2' help='新增凭证的记账日期' />
               <field name='default_real_date' default_focus='3' help='业务的发生日期，可以和凭证记账日期不同' />
-              <field name='default_org' required='1' default_focus='1' options="{'no_create_edit':1,'no_create':1,'no_open':1}" help='默认的核算机构，设置后，录入凭证，查账时会默认选取该机构' />
+              <field name='default_org' widget='selection' required='1' default_focus='1' options="{'no_create_edit':1,'no_create':1,'no_open':1}" help='默认的核算机构，设置后，录入凭证，查账时会默认选取该机构' />
               <field name='default_glob_tag' required='1' default_focus='4' help='录入凭证时的，默认选取这里设置的全局凭证标签项'>
                 <tree>
                   <field name='name' />
