@@ -23,9 +23,18 @@ class Glob_tag_Model(models.AbstractModel):
     '''全局标签模型,用于多重继承方式添加到模型'''
     _name = "accountcore.glob_tag_model"
     _description = '全局标签模型'
+    is_current = fields.Boolean(string="当前机构",compute="_is_current")
     glob_tag = fields.Many2many('accountcore.glob_tag',
                                 string='全局标签',
                                 index=True)
+    def _is_current(self):
+        '''是否当前机构'''
+        current_id=self.env.user.currentOrg.id
+        for e in self:
+            if current_id==e.id:
+                e.is_current=True
+            else:
+                e.is_current=False
 
 
 # 全局标签类别

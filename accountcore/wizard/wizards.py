@@ -110,9 +110,9 @@ class AccountcoreUserDefaults(models.TransientModel):
     # default_ruleBook = fields.Many2many('accountcore.rulebook',
     #                                     string='默认凭证标签')
     default_org = fields.Many2one('accountcore.org',
-                                  string='默认机构')
+                                  string='默认机构',default=lambda s: s.env.user.currentOrg)
     default_voucherDate = fields.Date(string='记账日期',
-                                      default=fields.Date.today())
+                                      default=lambda s: s.env.user.current_date)
     default_real_date = fields.Date(string='业务日期')
     default_glob_tag = fields.Many2many('accountcore.glob_tag',
                                         string='默认全局标签')
@@ -329,7 +329,7 @@ class GetAccountsBalance(models.TransientModel):
         if not self.startDate:
             self.startDate = '1970-01-01'
         if not self.endDate:
-            self.endDate = '9999-12-31'
+            self.endDate = '9999-12-30'
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
 
@@ -395,7 +395,7 @@ class GetSubsidiaryBook(models.TransientModel):
         if not self.startDate:
             self.startDate = '1970-01-01'
         if not self.endDate:
-            self.endDate = '9999-12-31'
+            self.endDate = '9999-12-30'
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
 
@@ -1044,3 +1044,34 @@ class ReportCashFlowFormula(models.TransientModel):
         if not self.btn_clear:
             return
         self.formula = ""
+    @api.onchange('btn_show_orgs')
+    def join_show_orgs(self):
+        '''填入取机构名称的公式'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_show_orgs:
+            return
+        self.formula = "show_orgs()"
+
+    @api.onchange('btn_start_date')
+    def join_start_date(self):
+        '''填入取数的开始日期'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_start_date:
+            return
+        self.formula = "startDate()"
+
+    @api.onchange('btn_end_date')
+    def join_end_date(self):
+        '''填入取数的结束日期'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_end_date:
+            return
+        self.formula = "endDate()"
+
+    @api.onchange('btn_between_date')
+    def join_between_date(self):
+        '''填入取数的期间'''
+        # 窗口弹出时不执行，直接返回
+        if not self.btn_between_date:
+            return
+        self.formula = "betweenDate()"

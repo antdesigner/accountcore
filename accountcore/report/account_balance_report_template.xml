@@ -83,14 +83,14 @@ table tr{page-break-inside: avoid !important;}
                     <h4 class='col'>科目余额表</h4>
                 </div>
                 <div class="row">
-                    <h6 class='col' t-if="start=='1970-01-01' and end=='9999-12-31'">1970年1月至9999年12月</h6>
+                    <h6 class='col' t-if="start=='1970-01-01' and end=='9999-12-30'">1970年1月至9999年12月</h6>
                     <h6 class='col' t-else="">
                         <t t-esc="(start[0:7]).replace('-','年')"></t>
                         <span>月至</span>
-                        <span t-if="end!='9999-12-31'">
+                        <span t-if="end!='9999-12-30'">
                             <t t-esc="(end[0:7]).replace('-','年')"></t>月
                         </span>
-                        <span t-if="end=='9999-12-31'">9999年12月</span>
+                        <span t-if="end=='9999-12-30'">9999年12月</span>
                     </h6>
                 </div> 
                 <div class="row text-left small" t-if="sum_orgs or orgs_count ==1"><span>合并机构：</span><span t-esc="data['sum_orgs_name']"></span></div>            
@@ -204,7 +204,7 @@ odoo.define(['accountcore.table2excel'], function (require) {
 //关联打开明细账向导
 odoo.define(function (require) {
 	$(function () {
-		$('#ac_table').bind("click",function(e){
+		$('#ac_table>tbody).bind("click",function(e){
             var web_client_ =window.top.odoo.__DEBUG__.services['web.web_client'];
             var tr=$(e.target).parents("tr");
             var _startDate="<t t-esc="data['form']['startDate']"/>";

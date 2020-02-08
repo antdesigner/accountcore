@@ -28,7 +28,9 @@
       <field name='arch' type='xml'>
         <tree>
           <field name='number' />
+          <field name="is_current" />
           <field name='name' />
+          <button string='设为默认' type='action' class="btn-sm  btn-outline-light text-muted"  name='%(accountcore_userdefaults_action)d' context="{'default_default_org':id}"></button>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
@@ -269,7 +271,7 @@
               <field name='fatherAccountId' readonly='1' />
             </group>
             <group>
-              <field name='number' attrs="{'readonly':[('fatherAccountId','&gt;',0)]}" />
+              <field name='number' attrs="{'readonly':['|',('fatherAccountId','&gt;',0),('childs_ids','!=',[])]}"/>
               <field name="name" default_focus='1' />
               <field name='direction' widget='radio' attrs="{'readonly':['|',('fatherAccountId','&gt;',0),('childs_ids','!=',[])]}"/>
               <field name="is_show" />
@@ -398,8 +400,8 @@
             <group>
               <field name='cashFlowType' />
               <field name="parent_id" />
-              <field name='number' />
-              <field name='direction' widget='radio' />
+              <field name='number' attrs="{'readonly':['|',('parent_id','&gt;',0),('childs_ids','!=',[])]}"/>
+              <field name='direction' widget='radio' attrs="{'readonly':['|',('parent_id','&gt;',0),('childs_ids','!=',[])]}" />
               <field name='name' />
               <field name='sequence'></field>
               <field name='glob_tag' widget='many2many_tags' />
