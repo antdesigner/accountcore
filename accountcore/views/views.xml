@@ -216,7 +216,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='accountClass,number' limit='9999'>
+        <tree default_order='accountClass,number' limit='600'>
           <field name='org' invisible='1'></field>
           <field name='accountsArch' invisible='1'/>
           <field name='accountClass'></field>
@@ -238,7 +238,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='accountClass,number' limit='9999'>
+        <tree default_order='accountClass,number' limit='600'>
           <field name='org' widget='many2many_tags'></field>
           <field name='accountsArch' />
           <field name='accountClass'></field>
