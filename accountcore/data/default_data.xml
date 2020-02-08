@@ -208,6 +208,11 @@
             <field name="name">成本对象</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
         </record>
+        <record id="item_class_13" model="accountcore.itemclass">
+            <field name="number">13</field>
+            <field name="name">结算方式</field>
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>
         <!-- 核算项目类别结束 -->
         <!-- 现金流量类别开始 -->
         <record id="cashflow_class_1" model="accountcore.cashflowtype">
