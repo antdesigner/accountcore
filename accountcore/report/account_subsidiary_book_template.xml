@@ -48,7 +48,6 @@ td, th {vertical-align: middle!important;font-size: small;}
                         <t t-set='direction' t-value='account_entry.main_account.direction'></t>
                         <t t-set='account_name' t-value='account_entry.main_account.name'></t>
                         <t t-set='item' t-value='account_entry.item'></t>
-                    
                     <!-- 单个科目循环开始 -->
                     <div class="row" >
                             <table class='table table-bordered table-sm table-hover'>
@@ -72,7 +71,6 @@ td, th {vertical-align: middle!important;font-size: small;}
                                         <th colspan="2">贷方金额</th>
                                         <th style="width:2rem">方向</th>
                                         <th colspan="2">余额</th>
-                                        <!-- <th colspan="2">现金流量</th> -->
                                     </tr>
                                 </thead>
                                 <tbody class='text-left'>
@@ -98,17 +96,11 @@ td, th {vertical-align: middle!important;font-size: small;}
                                             <td colspan="3">
                                                 <span t-esc='entry.org_name'></span>
                                             </td>
-                                            <!-- <td>
-                                                <span t-esc='entry.account_number'></span>
-                                            </td> -->
                                             <td colspan="5">
                                             <span t-esc='entry.account_number'></span>
                                                 <span t-esc='entry.account_name'></span><br/>
                                                  <span t-raw="entry.items_html"></span>
                                             </td>
-                                            <!-- <td>
-                                                <span t-raw="entry.items_html"></span>
-                                            </td> -->
                                             <td  colspan="2" class='damount text-right'>
                                                 <span t-if='entry.damount!=0' t-esc="'{:,.2f}'.format(entry.damount)"></span>
                                             </td>
@@ -122,9 +114,6 @@ td, th {vertical-align: middle!important;font-size: small;}
                                             <td  colspan="2" class='bamount text-right'>
                                                 <span t-if='entry.balance!=0' t-esc="'{:,.2f}'.format(entry.balance)"></span>
                                             </td>
-                                            <!-- <td colspan="2">
-                                                <span t-esc='entry.cash_flow'></span>
-                                            </td> -->
                                         </tr>
                                     </t>
                                 </tbody>
@@ -147,14 +136,12 @@ td, th {vertical-align: middle!important;font-size: small;}
 var voucherNumbers = $("td[tastics]");
 var default_tastics = $("#default_tastics").text();
 var tastics_select = $("#tastics_select");
-
 $(function () {
     flashVouchersNumber(default_tastics);
     initTasticSelect();
     //点击打开凭证
     $("tr").on("click", openVoucher);
 });
-
 function getVoucherNumber(str, voucher_number_tastics_id) {
     //获得在某一编号策略下的凭证编号
     var number = JSON.parse(str)[voucher_number_tastics_id];
@@ -166,7 +153,6 @@ function flashVouchersNumber(voucher_number_tastics_id) {
         $(this).find(".number").text(getVoucherNumber($(this).attr("tastics"), voucher_number_tastics_id));
     });
 };
-
 function initTasticSelect() {
     //默认选中策略
     tastics_select.find("option[value=" + default_tastics + "]").attr("selected", "selected");

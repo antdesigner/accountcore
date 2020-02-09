@@ -20,7 +20,6 @@
         </form>
       </field>
     </record>
-
     <!-- list-核算机构 -->
     <record model='ir.ui.view' id='accountcore_org_list'>
       <field name='name'>核算机构</field>
@@ -30,7 +29,7 @@
           <field name='number' />
           <field name="is_current" />
           <field name='name' />
-          <button string='设为默认' type='object' class="btn-sm  btn-outline-light text-muted"  name='toggle' context="{'default_default_org':id}"></button>
+          <button string='设为默认' type='object' class="btn-sm  btn-outline-light text-muted" name='toggle' context="{'default_default_org':id}"></button>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
@@ -218,7 +217,7 @@
       <field name='arch' type='xml'>
         <tree default_order='accountClass,number' limit='600'>
           <field name='org' invisible='1'></field>
-          <field name='accountsArch' invisible='1'/>
+          <field name='accountsArch' invisible='1' />
           <field name='accountClass'></field>
           <field name='number'></field>
           <field name='name'></field>
@@ -227,7 +226,7 @@
           <field name="is_show" />
           <field name="is_last" />
           <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
-          <field name='glob_tag' widget='many2many_tags' invisible='1'/>
+          <field name='glob_tag' widget='many2many_tags' invisible='1' />
           <field name='fatherAccountId' invisible='1'></field>
           <!-- <field name="childs_ids"/> -->
         </tree>
@@ -271,9 +270,9 @@
               <field name='fatherAccountId' readonly='1' />
             </group>
             <group>
-              <field name='number' attrs="{'readonly':['|',('fatherAccountId','&gt;',0),('childs_ids','!=',[])]}"/>
+              <field name='number' attrs="{'readonly':['|',('fatherAccountId','&gt;',0),('childs_ids','!=',[])]}" />
               <field name="name" default_focus='1' />
-              <field name='direction' widget='radio' attrs="{'readonly':['|',('fatherAccountId','&gt;',0),('childs_ids','!=',[])]}"/>
+              <field name='direction' widget='radio' attrs="{'readonly':['|',('fatherAccountId','&gt;',0),('childs_ids','!=',[])]}" />
               <field name="is_show" />
               <field name="cashFlowControl" />
             </group>
@@ -400,7 +399,7 @@
             <group>
               <field name='cashFlowType' />
               <field name="parent_id" />
-              <field name='number' attrs="{'readonly':['|',('parent_id','&gt;',0),('childs_ids','!=',[])]}"/>
+              <field name='number' attrs="{'readonly':['|',('parent_id','&gt;',0),('childs_ids','!=',[])]}" />
               <field name='direction' widget='radio' attrs="{'readonly':['|',('parent_id','&gt;',0),('childs_ids','!=',[])]}" />
               <field name='name' />
               <field name='sequence'></field>
@@ -462,7 +461,7 @@
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
         <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,uniqueNumber" limit='300' >
-          <field name="sequence" invisible='1'/>
+          <field name="sequence" invisible='1' />
           <field name='voucherdate' />
           <field name='entrysHtml' />
           <field name='number' class='voucherNumber' />
@@ -690,23 +689,23 @@
             <button string='取消审核' type='object' name='cancelReview' attrs="{'invisible':[('state','=','creating')]}"></button>
             <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
             <button string='修改凭证编号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
-            <button string='冲销' type='object' name='writeoff' ></button>    
+            <button string='冲销' type='object' name='writeoff' ></button>
             <button string='设为默认值' type='action' name='%(accountcore_userdefaults_action)d' context="{'default_default_voucherDate':voucherdate,'default_default_org':org,'default_default_real_date':real_date,'default_default_glob_tag':(glob_tag)}"></button>
             <field name='state' widget='statusbar' class='text-danger'></field>
           </header>
           <sheet>
-              <div class="row" style="padding:1rem">
-                <label for="number" />
-                <field name='number' class="badge badge-info"  readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
+            <div class="row" style="padding:1rem">
+              <label for="number" />
+              <field name='number' class="badge badge-info" readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <label for="uniqueNumber" />
-                <field name='uniqueNumber' class="badge badge-info" readonly='1'></field>
-              </div>
-              <div class="row text-center">
-                <h1 class='col'>记账凭证</h1>
-              </div>
-              <div class="text-center">
-                <field name='voucherdate' col='1' nolabel="1"  default_focus='3' attrs="{'readonly':[('state','=','reviewed')]}" />
-                </div>
+              <field name='uniqueNumber' class="badge badge-info" readonly='1'></field>
+            </div>
+            <div class="row text-center">
+              <h1 class='col'>记账凭证</h1>
+            </div>
+            <div class="text-center">
+              <field name='voucherdate' col='1' nolabel="1" default_focus='3' attrs="{'readonly':[('state','=','reviewed')]}" />
+            </div>
             <group col='4' >
               <field name='org' colspan='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' colspan='2' attrs="{'readonly':[('state','=','reviewed')]}" />
@@ -714,29 +713,29 @@
               <field name='glob_tag' colspan='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
               <field name='ruleBook' colspan='2' readonly='1' widget="many2many_tags" />
             </group>
-                <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1'>
-                  <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
-                    <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':[account],'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
-                    <field name='org' invisible='1' />
-                    <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
-                    <!-- org_id,show_balance用于在 -->
-                    <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
-                    <field name='damount' sum='ac_dsum' class='amountColor'></field>
-                    <field name='camount' sum='ac_csum' class='amountColor'></field>
-                    <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True,'itemclass_no_from_userInfo':True}" />
-                    <field name='account_item' invisible='1' />
-                    <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-                    <control>
-                      <create string="添加一行分录" />
-                    </control>
-                  </tree>
-                </field>
+            <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1'>
+              <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
+                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':[account],'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
+                <field name='org' invisible='1' />
+                <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
+                <!-- org_id,show_balance用于在 -->
+                <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
+                <field name='damount' sum='ac_dsum' class='amountColor'></field>
+                <field name='camount' sum='ac_csum' class='amountColor'></field>
+                <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True,'itemclass_no_from_userInfo':True}" />
+                <field name='account_item' invisible='1' />
+                <field name='cashFlow' class='oe_ac_cashflow' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
+                <control>
+                  <create string="添加一行分录" />
+                </control>
+              </tree>
+            </field>
             <group col='8'>
-                        <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
-              <span>借贷方差额：</span>
-              <field name="sum_amount" />
-              <span id="auto_balance" style="margin-left:5px">自动平衡</span>
-            </div>
+              <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
+                <span>借贷方差额：</span>
+                <field name="sum_amount" />
+                <span id="auto_balance" style="margin-left:5px">自动平衡</span>
+              </div>
               <field name='soucre' />
               <field name='createUser' />
               <field name='reviewer' />
@@ -762,7 +761,7 @@
           <field name="v_year" invisible='1' />
           <field name="v_month" invisible='1' />
           <field name="voucher" />
-          <field name="explain" string='分录说明'/>
+          <field name="explain" string='分录说明' />
           <field name="account" />
           <field name="damount" />
           <field name="camount" />
@@ -960,8 +959,8 @@
               <field name="month" invisible='1'></field>
               <field name="isbegining" invisible='1'></field>
               <field name="account" domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
-              <field name='accountItemClass' string="核算项目类别"/>
-              <field name="items" domain="[('itemClass.id','=',accountItemClass),'|',('org','=',False),('org','in',org)]"   context="{'org_id':org}" attrs="{'readonly':[('accountItemClass','=',False)]}"></field>
+              <field name='accountItemClass' string="核算项目类别" />
+              <field name="items" domain="[('itemClass.id','=',accountItemClass),'|',('org','=',False),('org','in',org)]" context="{'org_id':org}" attrs="{'readonly':[('accountItemClass','=',False)]}"></field>
               <field name="beginingDamount" string='月初余额(借方)'></field>
               <field name="beginingCamount" string='月初余额(贷方)'></field>
               <field name="damount" string='月已发生额(借方)'></field>
@@ -1031,7 +1030,7 @@
             </group>
           </sheet>
           <footer>
-          <button type="object" string='开始查询' class='btn-primary' name="getReport" />
+            <button type="object" string='开始查询' class='btn-primary' name="getReport" />
           </footer>
         </form>
       </field>
@@ -1185,10 +1184,10 @@
           <filter string="更多期间范围" name="voucherdate" date='voucherdate' default_period="this_week" />
           <filter string="未审核" name="reviewedN" domain="[('state','!=', 'reviewed')]" />
           <filter string="已审核" name="reviewedY" domain="[('state','=', 'reviewed')]" />
-          <filter string="审核人是自己" name="reviewer_is_me" domain="[('reviewer','=',uid)]" /> 
+          <filter string="审核人是自己" name="reviewer_is_me" domain="[('reviewer','=',uid)]" />
           <filter string="审核人是他人" name="reviewer_not_me" domain="[('reviewer','!=',uid)]" />
-          <filter string="制单人是他人" name="createUser_not_me" domain="[('createUser','!=',uid)]" /> 
-          <filter string="结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','ilike', '结转损益')]" /> 
+          <filter string="制单人是他人" name="createUser_not_me" domain="[('createUser','!=',uid)]" />
+          <filter string="结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','ilike', '结转损益')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />
           <filter name="group_by_reviewer" string="按审核人分组" context = "{'group_by': 'reviewer'}" />
@@ -1444,7 +1443,6 @@
     records.cancelReview()
       </field>
     </record>
-
     <!-- 纸张定义-凭证打印 -->
     <record id="paperformat_a4half" model="report.paperformat">
       <field name="name">会计凭证</field>
@@ -1534,11 +1532,8 @@
     'type': 'ir.actions.act_url',
     'url': '/web/database/manager',
     'target': 'new',
-
 }
       </field>
     </record>
   </data>
 </odoo>
-
-

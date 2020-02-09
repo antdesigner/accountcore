@@ -2,9 +2,9 @@
 import uuid
 from odoo import models, fields, api, exceptions
 from .main_models import Glob_tag_Model
-
-
 # jexcel表格模型的字段
+
+
 class Jexcel_fields(models.AbstractModel):
     '''全局标签模型,用于多重继承方式添加到模型'''
     _name = "accountcore.jexcel_fields"
@@ -17,9 +17,9 @@ class Jexcel_fields(models.AbstractModel):
     comments_info = fields.Text(string='批注定义')
     merge_info = fields.Text(string='合并单元格定义', default='{}')
     meta_info = fields.Text(string='隐藏的信息定义')
-
-
 # 报表接收者
+
+
 class Receiver(models.Model, Glob_tag_Model):
     '''报表接收者'''
     _name = "accountcore.receiver"
@@ -28,9 +28,9 @@ class Receiver(models.Model, Glob_tag_Model):
     name = fields.Char(string='接收者', required=True)
     _sql_constraints = [('accountcore_receiver_name_unique', 'unique(name)',
                          '接收者名称重复了!')]
-
-
 # 报表类型
+
+
 class ReportType(models.Model, Glob_tag_Model):
     '''报表类型'''
     _name = 'accountcore.report_type'
@@ -39,9 +39,9 @@ class ReportType(models.Model, Glob_tag_Model):
     name = fields.Char(string='报表类型名称', required=True)
     _sql_constraints = [('accountcore_reportytpe_name_unique', 'unique(name)',
                          '报表类型名称重复了!')]
-
-
 # 归档报表
+
+
 class StorageReport(models.Model, Glob_tag_Model, Jexcel_fields):
     '''归档的报表'''
     _name = 'accountcore.storage_report'
@@ -63,13 +63,9 @@ class StorageReport(models.Model, Glob_tag_Model, Jexcel_fields):
     receivers = fields.Many2many('accountcore.receiver', string='接收者')
     summary = fields.Text(string='归档报表说明')
     htmlstr = fields.Html(string='html内容')
-    # @api.onchange('startDate', 'endDate')
-    # def _onchange_starDate_endDate(self):
-    #     if self.startDate and self.endDate and self.startDate > self.endDate:
-    #         raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
-
-
 # 报表模板
+
+
 class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
     '''报表模板'''
     _name = 'accountcore.report_model'
@@ -128,13 +124,9 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
         updateFields = {'name': newName}
         rl = super(ReportModel, self).copy(updateFields)
         return rl
-    # @api.onchange('startDate', 'endDate')
-    # def _onchange_starDate_endDate(self):
-    #     if self.startDate and self.endDate and self.startDate > self.endDate:
-    #         raise exceptions.ValidationError('你选择的开始日期应该早于结束日期')
-
-
 # 科目取数金额类型
+
+
 class AccountAmountType(models.Model, Glob_tag_Model):
     '''科目取数的金额类型'''
     _name = 'accountcore.account_amount_type'

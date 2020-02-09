@@ -10,10 +10,10 @@ from ..models.main_models import AccountsBalance
 from ..models.main_models import Voucher
 from ..models.ac_period import Period
 from ..models.main_models import Glob_tag_Model
-
-
 # 向导部分-开始
 # 新增下级科目的向导
+
+
 class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
     '''新增下级科目的向导'''
     _name = 'accountcore.create_child_account'
@@ -23,19 +23,16 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
                                       help='新增科目的直接上级科目')
     fatherAccountNumber = fields.Char(related='fatherAccountId.number',
                                       string='上级科目编码')
-
     org = fields.Many2many('accountcore.org',
                            string='所属机构',
                            help="科目所属机构",
                            index=True,
                            ondelete='restrict')
-
     accountsArch = fields.Many2one('accountcore.accounts_arch',
                                    string='所属科目体系',
                                    help="科目所属体系",
                                    index=True,
                                    ondelete='restrict')
-
     accountClass = fields.Many2one('accountcore.accountclass',
                                    string='科目类别',
                                    index=True,
@@ -100,9 +97,9 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
         # 添加到上级科目的直接下级
         fatherAccount.write({'childs_ids': [(4, a.id)], 'is_show': False})
         return rl
-
-
 # 用户设置模型字段的默认取值向导(如，设置凭证默认值)
+
+
 class AccountcoreUserDefaults(models.TransientModel):
     '''用户设置模型字段的默认取值向导'''
     _name = 'accountcoure.userdefaults'
@@ -110,19 +107,19 @@ class AccountcoreUserDefaults(models.TransientModel):
     # default_ruleBook = fields.Many2many('accountcore.rulebook',
     #                                     string='默认凭证标签')
     default_org = fields.Many2one('accountcore.org',
-                                  string='默认机构',default=lambda s: s.env.user.currentOrg)
+                                  string='默认机构', default=lambda s: s.env.user.currentOrg)
     default_voucherDate = fields.Date(string='记账日期',
                                       default=lambda s: s.env.user.current_date)
     default_real_date = fields.Date(string='业务日期')
     default_glob_tag = fields.Many2many('accountcore.glob_tag',
                                         string='默认全局标签')
-
     # 设置新增凭证,日期,机构和账套字段的默认值
+
     def setDefaults(self):
         modelName = 'accountcore.voucher'
         self._setDefault(modelName,
-                    'glob_tag',
-                    self.default_glob_tag.ids)
+                         'glob_tag',
+                         self.default_glob_tag.ids)
         self._setDefault(modelName,
                          'org',
                          self.default_org.id)
@@ -132,12 +129,12 @@ class AccountcoreUserDefaults(models.TransientModel):
             self._setDefault(modelName, 'real_date',
                              json.dumps(self.default_real_date.strftime('%Y-%m-%d')))
         else:
-            self._setDefault(modelName, 'real_date',json.dumps(""))
+            self._setDefault(modelName, 'real_date', json.dumps(""))
         self.env.user.currentOrg = self.default_org.id
         self.env.user.current_date = self.default_voucherDate
         return True
-
     # 设置默认值
+
     def _setDefault(self, modelName, fieldName, defaultValue):
         idOfField = self._getIdOfIdField(fieldName,
                                          modelName,)
@@ -146,15 +143,15 @@ class AccountcoreUserDefaults(models.TransientModel):
             self._modifyDefault(rd, idOfField, defaultValue)
         else:
             self._createDefault(idOfField, defaultValue)
-
     # 获取要设置默认值的字段在ir.model.fields中的id
+
     def _getIdOfIdField(self, fieldName, modelname):
         domain = [('model', '=', modelname),
                   ('name', '=', fieldName)]
         rds = self.env['ir.model.fields'].sudo().search(domain, limit=1)
         return rds.id
-
     # 是否已经设置过该字段的默认值
+
     def _getDefaultRecord(self, id):
         domain = [('field_id', '=', id),
                   ('user_id', '=', self.env.uid)]
@@ -174,9 +171,9 @@ class AccountcoreUserDefaults(models.TransientModel):
             'json_value': defaultValue,
             'user_id': self.env.uid
         })
-
-
 # 设置用户默认凭证编码策略向导
+
+
 class NumberStaticsWizard(models.TransientModel):
     '''设置用户默认凭证编码策略向导'''
     _name = 'accountcore.voucher_number_statics_default'
@@ -196,9 +193,9 @@ class NumberStaticsWizard(models.TransientModel):
         currentUserTable.write(
             {'voucherNumberTastics': self. voucherNumberTastics.id})
         return True
-
-
 # 设置凭证编号向导
+
+
 class SetingVoucherNumberWizard(models.TransientModel):
     '''设置凭证编号向导'''
     _name = 'accountcore.seting_vouchers_number'
@@ -207,7 +204,6 @@ class SetingVoucherNumberWizard(models.TransientModel):
                                            '要使用的凭证编码策略',
                                            required=True)
     startNumber = fields.Integer(string='从此编号开始', default=1, required=True)
-
     @api.model
     def default_get(self, field_names):
         '''获得用户的默认凭证编号策略'''
@@ -243,9 +239,9 @@ class SetingVoucherNumberWizard(models.TransientModel):
                 'type': 'ir.actions.act_window',
                 'domain': [('id', 'in',  args['active_ids'])]
                 }
-
-
 # 设置单张凭证编号向导
+
+
 class SetingVoucherNumberSingleWizard(models.TransientModel):
     '''设置单张凭证编号向导'''
     _name = 'accountcore.seting_voucher_number_single'
@@ -265,9 +261,9 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
             currentUserNumberTastics_id,
             newNumber)
         return True
-
-
 # 科目余额查询向导
+
+
 class GetAccountsBalance(models.TransientModel):
     '''科目余额查询向导'''
     _name = 'accountcore.get_account_balance'
@@ -292,7 +288,6 @@ class GetAccountsBalance(models.TransientModel):
         string='机构范围',
         default=lambda s: s.env.user.currentOrg,
         required=True
-
     )
     account = fields.Many2many('accountcore.account',
                                string='科目范围',
@@ -318,7 +313,7 @@ class GetAccountsBalance(models.TransientModel):
             start_year, start_month, data['orgs'],  data['account'])
         if period:
             raise exceptions.ValidationError(
-                "查询范围内有科目的启用期间晚于查询的开始期间" + str(start_year) + "-"+str(start_month) +", \
+                "查询范围内有科目的启用期间晚于查询的开始期间" + str(start_year) + "-"+str(start_month) + ", \
                 查询的开始期间不能大于启用期间,当前选择的机构和科目范围的最早启用期间为"+period+"请选择该期间为查询的开始期间")
         datas = {
             'form': data
@@ -349,9 +344,9 @@ class GetAccountsBalance(models.TransientModel):
                 "-"+str(records_sorted[-1].month)
             return period_str
         return False
-
-
 # 科目明细账查询向导
+
+
 class GetSubsidiaryBook(models.TransientModel):
     "科目明细账查询向导"
     _name = 'accountcore.get_subsidiary_book'
@@ -398,9 +393,9 @@ class GetSubsidiaryBook(models.TransientModel):
             self.endDate = '2219-12-31'
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
-
-
 # 自动结转损益向导
+
+
 class currencyDown_sunyi(models.TransientModel):
     "自动结转损益向导"
     _name = 'accountcore.currency_down_sunyi'
@@ -412,10 +407,8 @@ class currencyDown_sunyi(models.TransientModel):
         'accountcore.org',
         string='机构范围',
         default=lambda s: s.env.user.currentOrg, required=True)
-
     # def soucre(self):
     #     return self.env.ref('rulebook_1')
-
     @api.multi
     def do(self, *args):
         '''执行结转损益'''
@@ -425,10 +418,8 @@ class currencyDown_sunyi(models.TransientModel):
             return False
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
-
         # 获得需要结转的会计期间
         periods = Period(self.startDate, self.endDate).getPeriodList()
-
         self.t_entry = self.env['accountcore.entry']
         # 本年利润科目
         self.ben_nian_li_run_account = self.env['accountcore.special_accounts'].sudo().search([
@@ -455,7 +446,6 @@ class currencyDown_sunyi(models.TransientModel):
                 voucher = self._do_currencyDown(org, p)
                 if voucher:
                     voucher_ids.append(voucher.id)
-
         return {'name': '自动生成的结转损益凭证',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
@@ -467,7 +457,6 @@ class currencyDown_sunyi(models.TransientModel):
 
     def _do_currencyDown(self, org, voucher_period):
         '''结转指定机构某会计期间的损益'''
-
         # 找出损益类相关科目
         accounts = self._get_sunyi_accounts(org)
         # 获得损益类相关科目在期间的余额
@@ -516,7 +505,6 @@ class currencyDown_sunyi(models.TransientModel):
         sum_d = Decimal.from_float(0).quantize(Decimal('0.00'))
         # 结转到本年利润的贷方合计
         sum_c = Decimal.from_float(0).quantize(Decimal('0.00'))
-
         entrys_value = []
         # 根据科目余额生成分录
         for b in accountsBalance:
@@ -527,7 +515,6 @@ class currencyDown_sunyi(models.TransientModel):
                 Decimal('0.00'))-Decimal.from_float(b.endCamount).quantize(Decimal('0.00'))
             if b.account.direction == '1':
                 if endAmount != zero:
-
                     entrys_value.append({"explain": '结转损益',
                                          "account": b.account.id,
                                          "items": [(6, 0, b_items_id)],
@@ -543,7 +530,6 @@ class currencyDown_sunyi(models.TransientModel):
                                          })
                     sum_c = sum_c - endAmount
         # 本年利润科目分录
-
         # 结转到贷方
         if sum_d != zero:
             entrys_value.append({"explain": '结转损益',
@@ -570,9 +556,9 @@ class currencyDown_sunyi(models.TransientModel):
             'createUser': self.env.uid,
         })
         return voucher
-
-
 # 启用期初试算平衡向导
+
+
 class BeginBalanceCheck(models.TransientModel):
     '''启用期初试算平衡向导'''
     _name = 'accountcore.begin_balance_check'
@@ -582,7 +568,6 @@ class BeginBalanceCheck(models.TransientModel):
                                required=True,
                                default=lambda s: s.env.user.currentOrg)
     result = fields.Html(string='检查结果')
-
     @api.multi
     def do_check(self, *args):
         '''对选中机构执行平衡检查'''
@@ -674,9 +659,9 @@ class BeginBalanceCheck(models.TransientModel):
     def _checkBalance(self, balance_records):
         '''检查资产=负债+所有者权益+收入-成本'''
         return (True, ".....")
-
-
 # 新增下级现金流量向导
+
+
 class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
     '''新增下级现金流量的向导'''
     _name = 'accountcore.create_child_cashflow'
@@ -686,7 +671,6 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
                                 help='新增现金流量的直接上级科目')
     parent_number = fields.Char(related='parent_id.number',
                                 string='上级现金流量编码')
-
     cash_flow_type = fields.Many2one('accountcore.cashflowtype',
                                      string='现金流量类别',
                                      index=True,
@@ -695,7 +679,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
     name = fields.Char(string='现金流量名称', required=True)
     direction = fields.Selection(
         [("-1", "流出"), ("1", "流入")], string='流量方向', required=True)
-    sequence = fields.Integer(string="显示优先级",help="显示顺序")
+    sequence = fields.Integer(string="显示优先级", help="显示顺序")
     @api.model
     def default_get(self, field_names):
         default = super().default_get(field_names)
@@ -728,11 +712,10 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
         # 添加到上级科目的直接下级
         parent.write({'childs_ids': [(4, a.id)]})
         return rl
-
         # 向导部分-结束
-
-
 # 报表生成向导
+
+
 class GetReport(models.TransientModel):
     "报表生成向导"
     _name = 'accountcore.get_report'
@@ -772,7 +755,6 @@ class GetReport(models.TransientModel):
                 'form_view_initial_mode': 'edit',
             }
         }
-
 # 设置报表模板公式向导
 
 
@@ -1044,6 +1026,7 @@ class ReportCashFlowFormula(models.TransientModel):
         if not self.btn_clear:
             return
         self.formula = ""
+
     @api.onchange('btn_show_orgs')
     def join_show_orgs(self):
         '''填入取机构名称的公式'''

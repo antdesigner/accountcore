@@ -12,9 +12,9 @@ from ..models.ac_period import Period
 from ..models.main_models import VoucherNumberTastics
 import sys
 sys.path.append('.\\.\\server')
-
-
 # 查询明细账
+
+
 class SubsidiaryBook(models.AbstractModel):
     '''查询明细账'''
     _name = 'report.accountcore.subsidiary_book_report'
@@ -144,7 +144,6 @@ class SubsidiaryBook(models.AbstractModel):
                                   isbegining desc'''
         else:
             raise exceptions.ValidationError('查询参数数量错误!')
-
         self.env.cr.execute(query, params)
         records = self.env.cr.dictfetchall()
         temp_accountId = ""
@@ -215,7 +214,6 @@ class SubsidiaryBook(models.AbstractModel):
                         GROUP BY year, month '''
         else:
             raise exceptions.ValidationError('查询参数数量错误!')
-
         self.env.cr.execute(query, params)
         beginRecords = self.env.cr.dictfetchall()
         return beginRecords
@@ -319,12 +317,11 @@ class SubsidiaryBook(models.AbstractModel):
                 '''
         else:
             raise exceptions.ValidationError('查询参数数量错误!')
-
         self.env.cr.execute(query, params)
         return self.env.cr.dictfetchall()
-
-
 # 明细账明细
+
+
 class EntryArch(object):
     '''明细账明细'''
     __slots__ = ['voucher_id',
@@ -375,9 +372,9 @@ class EntryArch(object):
         self.cash_flow = ''
         self.is_not_begining = True
         self.is_PrebeginBalance = False
-
-
 # 年初余额
+
+
 class BeginYear(EntryArch):
     '''年初余额'''
 
@@ -392,9 +389,9 @@ class BeginYear(EntryArch):
         self.balance_c = camount
         self.balance = (
             damount-camount) if direction == '1' else (camount-damount)
-
-
 # 启用期初
+
+
 class BeginBalance(EntryArch):
     '''启用期初'''
 
@@ -408,9 +405,9 @@ class BeginBalance(EntryArch):
         self.damount = damount
         self.camount = camount
         self.is_not_begining = False
-
-
 # 启用期初以前
+
+
 class PrebeginBalance(EntryArch):
     '''启用期初以前'''
 
@@ -426,9 +423,9 @@ class PrebeginBalance(EntryArch):
         self.camount = camount
         self.is_not_begining = False
         self.is_PrebeginBalance = True
-
-
 # 本月合计
+
+
 class SumMonth(EntryArch):
     '''本月合计'''
 
@@ -441,9 +438,9 @@ class SumMonth(EntryArch):
         self.direction = direction
         self.damount = damount
         self.camount = camount
-
-
 # 本年累计
+
+
 class CumulativeYear(EntryArch):
     '''本年累计'''
 
@@ -456,9 +453,9 @@ class CumulativeYear(EntryArch):
         self.direction = direction
         self.damount = damount
         self.camount = camount
-
-
 # 明细账组装器
+
+
 class EntrysAssembler():
     '''明细账组装器'''
 
@@ -480,7 +477,6 @@ class EntrysAssembler():
         self.tasticsTypes = tasticsTypes
         self.default_tastics = voucher_number_tastics_id
         self.entrys = []
-
         self._generating()
 
     def _generating(self):
@@ -501,13 +497,10 @@ class EntrysAssembler():
         # 每年年初,没考虑查询期间有启用期初的
         tmp_begin_year_d = self.beginingOfYearBalance[0]
         tmp_begin_year_c = self.beginingOfYearBalance[1]
-
         # 查询期间启用期初记录的本年累计和期初余额对年初借贷方的影响
         thisYearbegins = list(
             filter(lambda b: b['year'] == tmp_year, self.beginBalances))
         # 启用期初对年初借方影响
-        # d = sum([b['begin_d']-b['cumulative_d']+b['damount']
-        #          for b in thisYearbegins])
         d = sum([b['begin_d']-b['cumulative_d']+b['damount']
                  for b in thisYearbegins])
         tmp_begin_year_d = tmp_begin_year_d+d
@@ -515,7 +508,6 @@ class EntrysAssembler():
         c = sum([b['begin_c']-b['cumulative_c']+b['camount']
                  for b in thisYearbegins])
         tmp_begin_year_c = tmp_begin_year_c+c
-
         # 调整后的年初余额
         tmp_pre_blanace = tmp_begin_year_d-tmp_begin_year_c
         # 添加年初余额
@@ -523,18 +515,14 @@ class EntrysAssembler():
                                      self.main_account.direction,
                                      tmp_begin_year_d,
                                      tmp_begin_year_c))
-
         # entryArchs必须已经按年月进行了升序排列,查询期间的各月启用期初记录被看做一条分录
         # 启用期初的"当月已反生额的借贷方"被看做一条分录的借贷方
         for e in self.entryArchs:
             if main_direction != e.direction:
                 raise exceptions.ValidationError(
                     e.account_name+"科目默认余额方向和"+self.main_account.name+"的方向不一致")
-
             # 新的一年开始
             if e.year != tmp_year:
-                # if tmp_month == 12:
-                # if True:
                 # 添加查询期间最后的本月合计
                 self.entrys.append(SumMonth(tmp_year,
                                             tmp_month,
@@ -550,7 +538,6 @@ class EntrysAssembler():
                 # 添加年初余额
                 tmp_begin_year_d = tmp_begin_year_d+sum_year_d
                 tmp_begin_year_c = tmp_begin_year_c+sum_year_c
-
                 thisYearbegins = list(
                     filter(lambda b: b['year'] == e.year, self.beginBalances))
                 # 启用期初对年初借方影响
@@ -561,17 +548,14 @@ class EntrysAssembler():
                 c = sum([b['begin_c']-b['cumulative_c']+b['camount']
                          for b in thisYearbegins])
                 tmp_begin_year_c = tmp_begin_year_c+c
-
                 self.entrys.append(BeginYear(e.year,
                                              main_direction,
                                              tmp_begin_year_d,
                                              tmp_begin_year_c))
-
                 sum_year_d = 0
                 sum_year_c = 0
                 sum_month_d = 0
                 sum_month_c = 0
-
                 tmp_year = e.year
                 tmp_month = e.month
             if e.year == tmp_year and e.month == tmp_month:
@@ -587,7 +571,6 @@ class EntrysAssembler():
                     sum_month_c = sum_month_c+e.camount
                 sum_year_d = sum_year_d+e.damount
                 sum_year_c = sum_year_c+e.camount
-
             if (e.year == tmp_year and e.month != tmp_month):
                 # 添加本月合计
                 self.entrys.append(SumMonth(tmp_year,
@@ -604,7 +587,6 @@ class EntrysAssembler():
                 # 一个月结束,本月合计清零
                 sum_month_d = 0
                 sum_month_c = 0
-
                 # 依据余额方向更新余额记
                 if main_direction == '1':
                     e.balance = tmp_pre_blanace+e.damount-e.camount
@@ -612,16 +594,13 @@ class EntrysAssembler():
                     e.balance = -tmp_pre_blanace-e.damount+e.camount
                 tmp_pre_blanace = tmp_pre_blanace+e.damount-e.camount
                 self.entrys.append(e)
-
                 if not e.is_PrebeginBalance:
                     sum_month_d = sum_month_d+e.damount
                     sum_month_c = sum_month_c+e.camount
                 sum_year_d = sum_year_d+e.damount
                 sum_year_c = sum_year_c+e.camount
-
             tmp_year = e.year
             tmp_month = e.month
-
         # 添加查询期间最后的本月合计
         self.entrys.append(SumMonth(tmp_year,
                                     tmp_month,

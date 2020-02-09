@@ -10,7 +10,6 @@ from odoo.http import request
 
 class ACMethosContainer():
     _methods = {}
-
     @classmethod
     def addMethod(cls, method):
         cls._methods.update({method.name: method})
@@ -29,33 +28,33 @@ class ACMethodBace():
 
     def getAmount(self, account, org, item, period):
         pass
-
-
 # 期初余额
+
+
 class ACMethod_beginningBalance(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''期初余额'''
         amount = account.getBegingAmountOf(period.startP, org, item)
         return amount
-
-
 # 期初借方余额
+
+
 class ACMethod_beginingDamount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''期初借方余额'''
         amount = account.getBegingDAmountOf(period.startP, org, item)
         return amount
-
-
 # 期初贷方余额
+
+
 class ACMethod_beginingCamount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''期初贷方余额'''
         amount = account.getBegingCAmountOf(period.startP, org, item)
         return amount
-
-
 # 借方发生额
+
+
 class ACMethod_damount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''借方发生额'''
@@ -63,9 +62,9 @@ class ACMethod_damount(ACMethodBace):
         end_p = period.endP
         amount = account.getDamountBetween(start_p, end_p, org, item)
         return amount
-
-
 # 贷方发生额
+
+
 class ACMethod_camount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''贷方发生额'''
@@ -73,53 +72,52 @@ class ACMethod_camount(ACMethodBace):
         end_p = period.endP
         amount = account.getCamountBetween(start_p, end_p, org, item)
         return amount
-
-
 # 期末余额
+
+
 class ACMethod_endAmount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''期末余额'''
         amount = account.getEndAmountOf(period.endP, org, item)
         return amount
-
-
 # 期末借方余额
+
+
 class ACMethod_endDamount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''期末借方余额'''
         amount = account.getEndDAmount(period.endP, org, item)
         return amount
-
-
 # 期末贷方余额
+
+
 class ACMethod_endCamount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''期末贷方余额'''
         amount = account.getEndCAmount(period.endP, org, item)
         return amount
-
-
 # 本年借方累计发生额
+
+
 class ACMethod_cumulativeDamount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''本年借方累计发生额'''
         endP = period.endP
         amount = account.getCumulativeDAmountOf(endP, org, item)
         return amount
-
-
 # 本年贷方累计发生额
+
+
 class ACMethod_cumulativeCamount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''本年贷方累计发生额'''
         endP = period.endP
         amount = account.getCumulativeCAmountOf(endP, org, item)
         return amount
-
-
 # 损益表本期实际发生额
-class ACMethod_realHappend(ACMethodBace):
 
+
+class ACMethod_realHappend(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''损益表本期实际发生额'''
         # 科目在结转损益凭证中的发生额合计'''
@@ -133,10 +131,12 @@ class ACMethod_realHappend(ACMethodBace):
             [('name', '=', self.ruleBookName_shunyi)])
         vouchers = ruleBook.getVouchersOfOrg(org, period)
         if item:
-            entrys = [e for v in vouchers for e in v.entrys if (e.account.id == account.id and e.account_item.id == item.id)]
+            entrys = [e for v in vouchers for e in v.entrys if (
+                e.account.id == account.id and e.account_item.id == item.id)]
             balance = account.getBegins(org, item)
         else:
-            entrys = [e for v in vouchers for e in v.entrys if e.account.id == account.id]
+            entrys = [
+                e for v in vouchers for e in v.entrys if e.account.id == account.id]
             balance = account.getBegins(org)
         if account.direction == '1':
             amount_j = sum([ACTools.TranslateToDecimal(e.camount)
@@ -167,7 +167,6 @@ class ACMethod_realHappend(ACMethodBace):
                 amount_begin = ACTools.TranslateToDecimal(
                     balance[0].beginCumulativeDamount)
         return amount_-(amount-amount_j)+amount_begin
-
 # 损益表本年实际发生额
 
 
@@ -189,16 +188,16 @@ class ACMethod_realHappendYear(ACMethodBace):
             [('name', '=', self.ruleBookName_shunyi)])
         vouchers = ruleBook.getVouchersOfOrg(org, newP)
         if item:
-            entrys = [e for v in vouchers for e in v.entrys if (e.account.id == account.id and e.account_item.id == item.id)]
-
+            entrys = [e for v in vouchers for e in v.entrys if (
+                e.account.id == account.id and e.account_item.id == item.id)]
             # entrys = [e for e in vouchers.entrys if (e.account.id == account.id
             #                                          and e.account_item.id == item.id)]
             balance = account.getBegins(org, item)
         else:
             # entrys = [e for e in vouchers.entrys if e.account.id == account.id]
-            entrys = [e for v in vouchers for e in v.entrys if e.account.id == account.id]         
+            entrys = [
+                e for v in vouchers for e in v.entrys if e.account.id == account.id]
             balance = account.getBegins(org)
-
         if account.direction == '1':
             amount_j = sum([ACTools.TranslateToDecimal(e.camount)
                             for e in entrys])
@@ -227,16 +226,14 @@ class ACMethod_realHappendYear(ACMethodBace):
             if balance and newP.includeDateTime(balance[0].createDate):
                 amount_begin = ACTools.TranslateToDecimal(
                     balance[0].beginCumulativeDamount)
-
         return amount_-(amount-amount_j)+amount_begin
-
-
 # 即时余额
+
+
 class ACMethod_currentBalance(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''即时余额'''
         return account.getEndAmount(org, item)
-
 # 即时本年借方累计
 
 
@@ -244,7 +241,6 @@ class ACMethod_currentCumulativeDamount(ACMethodBace):
     def getAmount(self, account, org, item, period):
         '''即时本年借方累计'''
         return account.getCurrentCumulativeDamount(org, item)
-
 # 即时本年贷方方累计
 
 
@@ -274,7 +270,6 @@ ACMethosContainer.addMethod(ACMethod_currentCumulativeCamount('即时本年贷�
 class FormulaController(http.Controller):
     @http.route('/ac/account', type='http', auth='user', csrf=False)
     def account(self, formula, startDate, endDate, orgIds):
-
         accountAmount = 'self.accountAmount(' + \
             orgIds+","+startDate+","+endDate+","
         tactics = [('account(', accountAmount)]
@@ -298,7 +293,6 @@ class FormulaController(http.Controller):
         orgIds = org_ids.split("/")
         org_ids = list(map(int, orgIds))
         orgs = self.env['accountcore.org'].sudo().browse(org_ids)
-
         account = request.env['accountcore.account'].sudo().search(
             [('name', '=', accountName)])
         if len(account) != 1:
@@ -307,7 +301,6 @@ class FormulaController(http.Controller):
         accounts = [account]
         if hasChild.lower() == "true":
             accounts = account.getMeAndChilds()
-
         items = []
         haveItem = False
         itemExist = False
@@ -317,12 +310,8 @@ class FormulaController(http.Controller):
             items = self.env['accountcore.item'].sudo().search(
                 [('name', 'in', itemsName)])
             if len(items) > 0:
-                itemExist=True
-
+                itemExist = True
         period = Period(start_date, end_data)
-
-        
-
         for org in orgs:
             for ac in accounts:
                 if not haveItem:
@@ -342,6 +331,7 @@ class FormulaController(http.Controller):
                     pass
                     # 设置了核算项目但核算项目不存在
         return amount
+
     def getAmountOfType(self, account, org, item, amountType, period):
         '''根据不同的金额类型取数'''
         method = ACMethosContainer.getMethod(amountType)
@@ -359,13 +349,13 @@ class FormulaController(http.Controller):
                                                                       org,
                                                                       itm,
                                                                       period))
-
         else:
             amount = ACTools.TranslateToDecimal(method.getAmount(account,
                                                                  org,
                                                                  item,
                                                                  period))
         return amount
+
     def getAmountOfType(self, account, org, item, amountType, period):
         '''根据不同的金额类型取数'''
         method = ACMethosContainer.getMethod(amountType)
@@ -383,49 +373,52 @@ class FormulaController(http.Controller):
                                                                       org,
                                                                       itm,
                                                                       period))
-
         else:
             amount = ACTools.TranslateToDecimal(method.getAmount(account,
                                                                  org,
                                                                  item,
                                                                  period))
         return amount
-
     # 替换公式为内部名称，并插入更多参数
+
     def rebuildFormula(self, oldFormula, tactics):
         '''重建公式'''
         newFormula = oldFormula
         for item in tactics:
             newFormula = newFormula.replace(item[0], item[1])
         return newFormula
+
     @http.route('/ac/cashflow', type='http', auth='user', csrf=False)
     def cashflow(self, formula, startDate, endDate, orgIds):
         '''现金流量取数'''
         replaceStr = 'self.cashflowAmount(' + \
             orgIds+","+startDate+","+endDate+","
-        newFormula = formula.replace('cashflow(',replaceStr)
+        newFormula = formula.replace('cashflow(', replaceStr)
         self.env = request.env
         result = eval(newFormula)
         return str(result)
+
     def cashflowAmount(self, org_ids, start_date, end_date, cashflowName, hasChild):
         _org_ids = (org_ids).split("/")
-        cashflowIds=[]
-        cashflowId = self.env['accountcore.cashflow'].sudo().search([('name','=',cashflowName)],limit=1).id
+        cashflowIds = []
+        cashflowId = self.env['accountcore.cashflow'].sudo().search(
+            [('name', '=', cashflowName)], limit=1).id
         cashflowIds.append(cashflowId)
         if hasChild.lower() == "true":
-            childIds= self.env['accountcore.cashflow'].sudo().search([('id','child_of',cashflowId)]).mapped("id")
+            childIds = self.env['accountcore.cashflow'].sudo().search(
+                [('id', 'child_of', cashflowId)]).mapped("id")
             cashflowIds.extend(childIds)
         params = (tuple(cashflowIds),
-                    tuple(_org_ids),
-                    start_date,
-                    end_date)
+                  tuple(_org_ids),
+                  start_date,
+                  end_date)
         query = '''SELECT sum(damount+ camount) as amount
                         FROM public.accountcore_entry 
                         WHERE "cashFlow" IN %s
                         AND org IN %s
                         AND v_voucherdate BETWEEN %s AND %s '''
         self.env.cr.execute(query, params)
-        amount=self.env.cr.fetchone()
+        amount = self.env.cr.fetchone()
         if amount[0]:
             return str(amount[0])
         return str(0)
