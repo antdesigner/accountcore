@@ -91,6 +91,7 @@ class Org(models.Model, Glob_tag_Model):
 
     def toggle(self):
         return {
+            'name':'设置机构默认值',
             'type': 'ir.actions.act_window',
             'res_model': 'accountcoure.userdefaults',
             'view_mode': 'form',
