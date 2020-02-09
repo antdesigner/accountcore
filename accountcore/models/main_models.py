@@ -23,18 +23,10 @@ class Glob_tag_Model(models.AbstractModel):
     '''全局标签模型,用于多重继承方式添加到模型'''
     _name = "accountcore.glob_tag_model"
     _description = '全局标签模型'
-    is_current = fields.Boolean(string="当前机构",compute="_is_current")
+    is_current = fields.Boolean(string="当前机构", compute="_is_current")
     glob_tag = fields.Many2many('accountcore.glob_tag',
                                 string='全局标签',
                                 index=True)
-    def _is_current(self):
-        '''是否当前机构'''
-        current_id=self.env.user.currentOrg.id
-        for e in self:
-            if current_id==e.id:
-                e.is_current=True
-            else:
-                e.is_current=False
 
 
 # 全局标签类别
@@ -87,6 +79,23 @@ class Org(models.Model, Glob_tag_Model):
                          '核算机构编码重复了!'),
                         ('accountcore_org_name_unique', 'unique(name)',
                          '核算机构名称重复了!')]
+
+    def _is_current(self):
+        '''是否当前机构'''
+        current_id = self.env.user.currentOrg.id
+        for e in self:
+            if current_id == e.id:
+                e.is_current = True
+            else:
+                e.is_current = False
+
+    def toggle(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'accountcoure.userdefaults',
+            'view_mode': 'form',
+            'target': 'new',
+        }
 
 
 # 会计科目体系
@@ -242,8 +251,9 @@ class Item(models.Model, Glob_tag_Model):
         values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
             'item.uniqueNumber')
         rl = super(Item, self).create(values)
-        self.env.user.current_itemclass=rl.itemClass.id
+        self.env.user.current_itemclass = rl.itemClass.id
         return rl
+
     @api.model
     def default_get(self, field_names):
         default = super().default_get(field_names)
@@ -664,7 +674,7 @@ class Account(models.Model, Glob_tag_Model):
             elif startP.month == 1:
                 begin = self.getBegins(org, item)
                 if begin and begin.year == startP.year:
-                    amount = begin.begin_year_amount 
+                    amount = begin.begin_year_amount
         return amount
 
     # 获得指定会计期间的期初借方余额
@@ -692,7 +702,7 @@ class Account(models.Model, Glob_tag_Model):
                 if begin and begin.year == startP.year:
                     begin_d = begin.beginingDamount-begin.beginCumulativeDamount
                     begin_c = begin.beginingCamount-begin.beginCumulativeCamount
-                    if abs(begin_d)>abs(begin_c):
+                    if abs(begin_d) > abs(begin_c):
                         amount = begin_d-begin_c
         return amount
     # 获得指定会计期间的期初贷方余额
@@ -721,7 +731,7 @@ class Account(models.Model, Glob_tag_Model):
                 if begin and begin.year == startP.year:
                     begin_d = begin.beginingDamount-begin.beginCumulativeDamount
                     begin_c = begin.beginingCamount-begin.beginCumulativeCamount
-                    if abs(begin_d)<abs(begin_c):
+                    if abs(begin_d) < abs(begin_c):
                         amount = begin_c - begin_d
         return amount
     # 获得一个期间的借方发生额
@@ -865,22 +875,23 @@ class Account(models.Model, Glob_tag_Model):
     def cancelShowInVoucher(self):
         '''取消凭证中显示'''
         self.write({'is_show': False})
-    #获取科目带的项目类别,如[[id,true],[id,false]]  
+    # 获取科目带的项目类别,如[[id,true],[id,false]]
+
     def getAllItemClassIds(self):
         '''获取科目带的项目类别,如[[id,true],[id,false]]'''
-        itemClass_list=[]
+        itemClass_list = []
         for i in self.itemClasses:
-            if i.id!=self.accountItemClass:
-                itemClass_list.append([i.id,False])
+            if i.id != self.accountItemClass:
+                itemClass_list.append([i.id, False])
             else:
-                itemClass_list.append([i.id,True])
+                itemClass_list.append([i.id, True])
         return itemClass_list
 
-    #判断科目已经在余额表中存在
+    # 判断科目已经在余额表中存在
     def haveBeenUsedInBalance(self):
         '''判断科目在余额表中已被使用过'''
         accountBalances = self.env['accountcore.accounts_balance'].sudo().search(
-            [('account', '=', self.id)],limit=1)
+            [('account', '=', self.id)], limit=1)
         if accountBalances.exists():
             return True
         else:
@@ -944,7 +955,7 @@ class CashFlow(models.Model, Glob_tag_Model):
                          '现金流量编码重复了!'),
                         ('accountcore_cashflow_name_unique', 'unique(name)',
                          '现金流量名称重复了!')]
-    sequence = fields.Integer(string="显示优先级",help="显示顺序")
+    sequence = fields.Integer(string="显示优先级", help="显示顺序")
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=20):
         args = args or []
@@ -1540,7 +1551,7 @@ class Voucher(models.Model, Glob_tag_Model):
                                       ['items', '=', itemId],
                                       ['isbegining', '=', False]])
         return record
-    
+
     def writeoff(self):
         '''冲销'''
         voucher_date = fields.Date.today()
@@ -1553,7 +1564,7 @@ class Voucher(models.Model, Glob_tag_Model):
                         'soucre': self.env.ref('accountcore.source_2').id,
                         'appendixCount': 0,
                         'voucherdate': voucher_date,
-                        'ruleBook':[(6, 0, [self.env.ref("accountcore.rulebook_8").id])]}
+                        'ruleBook': [(6, 0, [self.env.ref("accountcore.rulebook_8").id])]}
         uniqueNumber = self.uniqueNumber
         rl = super(Voucher, self.with_context(
             {'ac_from_copy': True})).copy(updateFields)
@@ -1564,10 +1575,10 @@ class Voucher(models.Model, Glob_tag_Model):
                 if entry.explain:
                     explain = str(entry.explain)+explain
                 entry.copy({'voucher': rl.id,
-                "explain":explain ,
-                "damount":-entry.damount,
-                "camount":-entry.camount
-                })
+                            "explain": explain,
+                            "damount": -entry.damount,
+                            "camount": -entry.camount
+                            })
             rl.updateBalance()
         finally:
             VOCHER_LOCK.release()
@@ -1578,25 +1589,26 @@ class Voucher(models.Model, Glob_tag_Model):
             'view_mode': 'form',
             'res_id': rl.id,
         }
+
     @api.model
     def show_vouchers(self):
         '''打开凭证列表窗体'''
         if self.env.user.currentOrg:
-            context =dict(
+            context = dict(
                 self.env.context,
-                search_default_this_month= 1,
-                search_default_pre_month= 1,
-                search_default_org= self.env.user.currentOrg.id,
+                search_default_this_month=1,
+                search_default_pre_month=1,
+                search_default_org=self.env.user.currentOrg.id,
             )
-        else :
-            context =dict(
+        else:
+            context = dict(
                 self.env.context,
-                search_default_this_month= 1,
-                search_default_pre_month= 1,
-                search_default_group_by_org= 1,
+                search_default_this_month=1,
+                search_default_pre_month=1,
+                search_default_group_by_org=1,
             )
         return {
-            'name':'凭证列表',
+            'name': '凭证列表',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form,pivot',
             'res_model': 'accountcore.voucher',
@@ -1609,7 +1621,7 @@ class Enty(models.Model, Glob_tag_Model):
     '''一条分录'''
     _name = 'accountcore.entry'
     _description = "会计分录"
-    voucher_id = fields.Integer(related="voucher.id",string='voucher_id')
+    voucher_id = fields.Integer(related="voucher.id", string='voucher_id')
     voucher = fields.Many2one('accountcore.voucher',
                               string='所属凭证',
                               index=True,
@@ -1746,25 +1758,26 @@ class Enty(models.Model, Glob_tag_Model):
             'res_id': self.voucher_id,
             'target': '',
         }
+
     @api.model
     def show_vouchers(self):
         '''打开分录列表窗体'''
         if self.env.user.currentOrg:
-            context =dict(
+            context = dict(
                 self.env.context,
-                search_default_this_month= 1,
-                search_default_pre_month= 1,
-                search_default_org= self.env.user.currentOrg.id,
+                search_default_this_month=1,
+                search_default_pre_month=1,
+                search_default_org=self.env.user.currentOrg.id,
             )
-        else :
-            context =dict(
+        else:
+            context = dict(
                 self.env.context,
-                search_default_this_month= 1,
-                search_default_pre_month= 1,
-                search_default_group_by_org= 1,
+                search_default_this_month=1,
+                search_default_pre_month=1,
+                search_default_group_by_org=1,
             )
         return {
-            'name':'打开凭证列表',
+            'name': '打开凭证列表',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form,pivot',
             'res_model': 'accountcore.entry',
