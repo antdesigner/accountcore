@@ -188,7 +188,6 @@
                                     <field name='glob_tag' widget='many2many_tags' />
                                 </group>
                             </page>
-
                             <page string='机构范围'>
                                 <group>
                                     <field name="orgs" widget="many2many_checkboxes_floatleft" class="ac_choice_orgs" required='True' />
@@ -248,7 +247,6 @@
                             <field name="has_child" />
                             <field name="item_ids" />
                             <field name="account_amount_type" widget='selection' options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
-
                         </group>
                     </sheet>
                     <footer>
@@ -285,7 +283,6 @@
                 </form>
             </field>
         </record>
-
         <!-- 窗体动作-打开接收者列表 -->
         <record model="ir.actions.act_window" id="accountcore_receivers_actions_window">
             <field name="name">接受者列表</field>

@@ -6,6 +6,7 @@ import datetime
 
 class Period(object):
     '''一到多个会计期间'''
+
     def __init__(self, start_date, end_date):
         if isinstance(start_date, str):
             self.start_date = datetime.datetime.strptime(
@@ -21,8 +22,8 @@ class Period(object):
         self.start_month = self.start_date.month
         self.end_month = self.end_date.month
         self.voucherPeriods = self.getPeriodList()
-
     # 获得日期范围内的会计期间列表
+
     def getPeriodList(self):
         '''获得日期范围内的会计期间列表'''
         months = (self.end_year - self.start_year) * \
@@ -53,7 +54,6 @@ class Period(object):
         if start_year*12+start_month <= data.year*12+data.month <= end_year*12+end_month:
             return True
         return False
-
     # 将字符串时间转变成时间dateTime对象
     @staticmethod
     def translateToDate(date):
@@ -62,14 +62,12 @@ class Period(object):
             return datetime.datetime.strptime(date, '%Y-%m-%d')
         else:
             return date
-
     # 从年初到最晚期间的全部期间
+
     def getBeginYearToThisEnd(self):
         '''从年初到最晚期间的全部期间'''
         startDate = str(self.startP.year)+"-1-1"
         return Period(startDate, self.endP)
-
-
 # 一个会计期间，月份
 
 
@@ -109,8 +107,8 @@ class VoucherPeriod(object):
         if data.year == self.year and data.month == self.month:
             return True
         return False
-
     # 从年初到现在期间的全部期间
+
     def getBeginYearToThis(self):
         '''从年初到现在期间的全部期间'''
         startDate = str(self.year)+"-1-1"

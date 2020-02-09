@@ -5,7 +5,6 @@ table {
 
 .oe_accountcore_table_fix th {
     white-space: nowrap;
-
 }
 
 .oe_accountcore_table_fix td {
@@ -15,9 +14,7 @@ table {
 .oe_accountcore_entrys {
     margin: 0px;
     width: 1000px;
-
 }
-
 
 div.ac_rulebook {
     white-space: normal !important;
@@ -33,7 +30,6 @@ th[data-name="entrysHtml"] {
 .oe_accountcore_entrys>div:nth-child(odd) {
     background-color: whitesmoke;
 }
-
 
 div.oe_accountcore_entrys>div {
     padding-bottom: 10px !important;
@@ -62,11 +58,12 @@ div.oe_accountcore_entrys>div:hover {
     word-wrap: break-word !important;
     white-space: normal !important;
     margin-left: 30px;
-
 }
-.oe_accountcore_entrys>div>div.oe_ac_account>span{
+
+.oe_accountcore_entrys>div>div.oe_ac_account>span {
     font-style: italic
 }
+
 .oe_accountcore_entrys>div>div.o_list_number {
     width: 130px !important;
     text-align: right;
@@ -77,7 +74,6 @@ div.oe_accountcore_entrys>div:hover {
     word-break: break-all !important;
     word-wrap: break-word !important;
     white-space: normal !important;
-
 }
 
 /* 凭证列表分录内容 结束*/
@@ -136,6 +132,7 @@ div.oe_accountcore_entrys>div:hover {
 .oe_ac_voucher_entrys td {
     vertical-align: middle !important;
 }
+
 .amount-zero {
     /* 凭证分录借贷金额为零显示颜色 */
     color: white !important;
@@ -164,11 +161,10 @@ div.oe_accountcore_entrys>div:hover {
     height: 6rem !important;
 }
 
-
 /* 第1列 跳转按钮 */
 .oe_ac_voucher_entrys table tr th:nth-child(1) {
     width: 2rem !important;
-    text-align: left ;
+    text-align: left;
 }
 
 .oe_ac_voucher_entrys table tr td:nth-child(1) {
@@ -180,8 +176,7 @@ div.oe_accountcore_entrys>div:hover {
 .oe_ac_voucher_entrys table tr th:nth-child(2) {
     width: 150px !important;
     border-left: 0px !important;
-    text-align: center ;
-
+    text-align: center;
 }
 
 .oe_ac_voucher_entrys table tr td:nth-child(2) {
@@ -195,8 +190,7 @@ div.oe_accountcore_entrys>div:hover {
 /* 科目 */
 .oe_ac_voucher_entrys table tr th:nth-child(3) {
     width: 245px !important;
-    text-align: center ;
-
+    text-align: center;
 }
 
 .oe_ac_voucher_entrys table tr td:nth-child(3) {
@@ -207,37 +201,40 @@ div.oe_accountcore_entrys>div:hover {
 }
 
 /* 借方 */
-.oe_ac_voucher_entrys [name='damount'] input{
+.oe_ac_voucher_entrys [name='damount'] input {
     height: 5.3rem !important;
     border: 0px;
 }
+
 .oe_ac_voucher_entrys table tr th:nth-child(4) {
     width: 130px !important;
 }
 
 /* 贷方 */
-
-.oe_ac_voucher_entrys [name='camount'] input{
+.oe_ac_voucher_entrys [name='camount'] input {
     height: 5.3rem !important;
     border: 0px;
 }
+
 .oe_ac_voucher_entrys table tr th:nth-child(5) {
     width: 130px !important;
 }
 
 /*核算统计项目 */
-.oe_ac_voucher_entrys  [name='items']{
-    display:flex !important;
-    align-items:center !important;
+.oe_ac_voucher_entrys [name='items'] {
+    display: flex !important;
+    align-items: center !important;
 }
-.oe_ac_voucher_entrys div.ac-items-choice{
-    display:flex;
-    flex-wrap:wrap;
+
+.oe_ac_voucher_entrys div.ac-items-choice {
+    display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
 }
+
 .oe_ac_voucher_entrys table tr th:nth-child(6) {
     width: 240px !important;
-    text-align: center ;
+    text-align: center;
 }
 
 /* 现金流量 */
@@ -256,7 +253,6 @@ div.oe_accountcore_entrys>div:hover {
 /* .oe_ac_voucher_entrys .oe_ac_account input {
     height: 6rem !important;
 } */
-
 /* 凭证分录结束 */
 /* 会计凭证界面-结束 */
 [name='fast_period'] button {
@@ -272,8 +268,9 @@ div.oe_accountcore_entrys>div:hover {
 
 /* jexel 在弹出窗口下面*/
 table.jexcel {
-    border-collapse:initial !important;
+    border-collapse: initial !important;
 }
+
 .jexcel>thead>tr>td {
     z-index: 80 !important;
 }
@@ -362,7 +359,6 @@ textarea.formula {
     .jexcel_content .jexcel_row {
         visibility: hidden !important;
     }
-
 }
 
 /* 移动报表设计器列头浮动上边距为0*/

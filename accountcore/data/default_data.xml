@@ -96,7 +96,7 @@
             <field name="number">8</field>
             <field name="name">冲销</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
-        </record>	
+        </record>
         <record id="voucher_number_tastics_1" model="accountcore.voucher_number_tastics">
             <field name="number">1</field>
             <field name="name">记</field>
@@ -119,7 +119,6 @@
             <field name='name' >内部自定义类</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
         </record>
-
         <!-- 报表类型-结束 -->
         <!-- 接收者-开始 -->
         <record id='receiver_1' model='accountcore.receiver'>
@@ -193,7 +192,7 @@
             <field name="name">无形资产</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
         </record>
-                <record id="item_class_10" model="accountcore.itemclass">
+        <record id="item_class_10" model="accountcore.itemclass">
             <field name="number">10</field>
             <field name="name">在建工程</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
@@ -245,11 +244,11 @@
             <field name="name">机制</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
         </record>
-         <record id="source_3" model="accountcore.source">
+        <record id="source_3" model="accountcore.source">
             <field name="number">3</field>
-           <field name="name">推送</field>
-           <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />        
-       </record>
+            <field name="name">推送</field>
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>
         <!-- 现金流量类别结束 -->
         <!-- 现金流量项目开始 -->
         <record id="cashflow_1" model="accountcore.cashflow">
@@ -2159,7 +2158,6 @@
         <record id='account_amount_type_15' model='accountcore.account_amount_type'>
             <field name='name' >即时本年贷方累计</field>
         </record>
-
         <!-- 科目取数金额类型结束 -->
     </data>
 </odoo>

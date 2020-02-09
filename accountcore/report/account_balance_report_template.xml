@@ -48,7 +48,6 @@ table tr{page-break-inside: avoid !important;}
                                     <td colspan="2"><span t-esc='l.org.name'></span></td>
                                     <td colspan="2" class='text-center'><span t-esc='l.createDate'></span></td>
                                     <!-- <td colspan=""><span t-esc='l.account_number'></span></td> -->
-
                                     <td t-if='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/>[<span t-esc='l.accountItemClass.name'></span>]<span t-esc='l.items.name'></span></td>
                                     <td t-else='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/><span t-esc='l.accountItemClass.name'></span><span t-esc='l.items.name'></span></td>
                                     <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingDamount-l.beginCumulativeDamount)"></span></td>
@@ -67,7 +66,6 @@ table tr{page-break-inside: avoid !important;}
                 </div>
             </div>
         </t>
-
         </t>
         <!-- 通过科目余额表查询 -->
         <t t-if='not lines'>
@@ -133,7 +131,6 @@ table tr{page-break-inside: avoid !important;}
                                             </span>
                                             <span t-else="" t-esc="account['account_name']"></span>
                                         </td>
-                                        
                                         <t t-set='direction' t-value="account['direction']"></t>
                                         <t t-set='beginingAmount' t-value="account['beginingDamount']-account['beginingCamount']"></t>
                                         <td class='beginingDamount text-right' colspan="2">
@@ -148,7 +145,6 @@ table tr{page-break-inside: avoid !important;}
                                             <span t-elif="direction=='-1' and beginingAmount &lt; 0" t-esc="'{:,.2f}'.format(-beginingAmount)"></span>
                                             <span t-elif="direction=='1'"></span>
                                         </td>
-
                                         <td class='damount text-right' colspan="2">
                                             <span t-if="account['damount']!=0" t-esc="'{:,.2f}'.format(account['damount'])"></span>
                                             <span t-else=""></span>
@@ -241,6 +237,5 @@ odoo.define(function (require) {
                 </div>
             </div>
         </div>
-      
     </template>
 </odoo>
