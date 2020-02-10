@@ -30,8 +30,8 @@
         <menuitem name='★查询凭证(分录)' id='accountcore_entrys_menu'  parent='accountcore_voucher_menu' action='accountcore_entrys_action_server' sequence="49" />
         <menuitem name='查询凭证' id='accountcore_vouchers_menu'  parent='accountcore_voucher_menu' action='accountcore_vouchers_action_server' sequence="50" />
         <menuitem name='结转损益' id='accountcore_voucher_sunyi_menu' parent='accountcore_voucher_menu' action='accountore_voucher_shunyi_actions_window' sequence='51' />        
-        <menuitem name='凭证标签' id='acctountcore_rulebook_menu' parent='accountcore_voucher_menu' action='accountcore_rulebook_action_window' sequence="53" />
-        <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" />
+        <!-- <menuitem name='凭证标签' id='acctountcore_rulebook_menu' parent='accountcore_voucher_menu' action='accountcore_rulebook_action_window' sequence="53" /> -->
+        <!-- <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" /> -->
         <menuitem name='凭证编号' id='accountcore_voucher_number_memu' parent='accountcore_voucher_menu' sequence='58' />
         <menuitem name='凭证编号策略列表' id='accountcore_voucher_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_voucher_number_acionts_window' sequence='50' />
         <menuitem name='切换凭证编号策略' id='accountcore_set_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_set_number_acionts_window' sequence='51' />

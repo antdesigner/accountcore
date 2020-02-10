@@ -4,7 +4,7 @@ import datetime
 from decimal import Decimal
 import json
 import logging
-import multiprocessing
+import threading
 from ..models.ac_obj import ACTools
 from odoo import models, fields, api, SUPERUSER_ID, exceptions
 from odoo import tools
@@ -14,7 +14,7 @@ sys.path.append('.\\.\\')
 # 日志
 LOGGER = logging.getLogger(__name__)
 # 新增,修改,删除凭证时对科目余额的改变加锁
-VOCHER_LOCK = multiprocessing.RLock()
+VOCHER_LOCK = threading.RLock()
 # 全局标签模型,用于多重继承方式添加到模型
 
 
