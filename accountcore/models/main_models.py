@@ -1095,6 +1095,25 @@ class Voucher(models.Model, Glob_tag_Model):
     @api.model
     def create(self, values):
         '''新增凭证'''
+        # # 只允许一条分录更新余额表,进程锁
+        # VOCHER_LOCK.acquire()
+        # # 出错了，必须释放锁，要不就会死锁
+        # try:
+        #     values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
+        #         'voucher.uniqueNumber')
+        #     rl = super(Voucher, self).create(values)
+        #     # 如果是复制新增就不执行凭证检查
+        #     isCopye = self.env.context.get('ac_from_copy')
+        #     if isCopye:
+        #         pass
+        #     else:
+        #         rl.checkVoucher(values)
+        #     rl.updateBalance()
+        #     # 跟新处理并发冲突
+        #     self.env.cr.commit()
+        # finally:
+        #     VOCHER_LOCK.release()
+        # return rl
         # 只允许一条分录更新余额表,进程锁
         VOCHER_LOCK.acquire()
         # 出错了，必须释放锁，要不就会死锁
@@ -1108,9 +1127,19 @@ class Voucher(models.Model, Glob_tag_Model):
                 pass
             else:
                 rl.checkVoucher(values)
+                # 跟新处理并发冲突
             rl.updateBalance()
-            # 跟新处理并发冲突
-            self.env.cr.commit()
+            try:
+                self.env.cr.commit()
+            except:
+                n=self.env.context.get('ac_try_count',0)
+                if int(n)<3:
+                    self.env.cr.rollback()
+                    sql_db.flush_env(self.env.cr)
+                    n+=1               
+                    rl=self.with_context({'ac_try_count': n}) .create(values)
+                else:
+                    raise
         finally:
             VOCHER_LOCK.release()
         return rl
