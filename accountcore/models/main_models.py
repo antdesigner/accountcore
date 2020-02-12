@@ -8,6 +8,7 @@ import threading
 from ..models.ac_obj import ACTools
 from odoo import models, fields, api, SUPERUSER_ID, exceptions
 from odoo import tools
+from odoo import sql_db
 import sys
 sys.path.append('.\\.\\server\\odoo')
 sys.path.append('.\\.\\')
@@ -1018,7 +1019,7 @@ class Voucher(models.Model, Glob_tag_Model):
     sequence = fields.Integer(string='Sequence')
     entrys = fields.One2many('accountcore.entry',
                              'voucher',
-                             string='分录')
+                             string='分录', copy=True)
     voucherFile = fields.Many2one('accountcore.voucherfile',
                                   string='附件文件',
                                   ondelete='restrict')
@@ -1132,12 +1133,12 @@ class Voucher(models.Model, Glob_tag_Model):
             try:
                 self.env.cr.commit()
             except:
-                n=self.env.context.get('ac_try_count',0)
+                n=self.env.context.get('ac_create_count',0)
                 if int(n)<3:
                     self.env.cr.rollback()
                     sql_db.flush_env(self.env.cr)
                     n+=1               
-                    rl=self.with_context({'ac_try_count': n}) .create(values)
+                    rl=self.with_context({'ac_create_count': n}) .create(values)
                 else:
                     raise
         finally:
@@ -1191,13 +1192,6 @@ class Voucher(models.Model, Glob_tag_Model):
                         'appendixCount': 1}
         rl = super(Voucher, self.with_context(
             {'ac_from_copy': True})).copy(updateFields)
-        VOCHER_LOCK.acquire()
-        try:
-            for entry in self.entrys:
-                entry.copy({'voucher': rl.id})
-            rl.updateBalance()
-        finally:
-            VOCHER_LOCK.release()
         return rl
 
     @api.multi
