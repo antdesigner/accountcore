@@ -289,7 +289,7 @@ class AccountBalanceReport(models.AbstractModel):
                 virtualAccount['account_father_id'] = x['account_id']
                 virtualAccount['is_virtual'] = True
                 virtualAccount['is_last'] = True
-                virtualAccount['account_name'] = x['account_name']+"*"
+                virtualAccount['account_name'] = x['account_name']+"▲"
                 virtual_accounts.append(virtualAccount)
         return rl+virtual_accounts
 # 一条余额记录
