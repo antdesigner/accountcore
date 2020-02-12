@@ -200,7 +200,7 @@ odoo.define(['accountcore.table2excel'], function (require) {
        //关联打开明细账向导
 odoo.define(function (require) {
 	$(function () {
-		$('#ac_table>tbody').bind("click",function(e){
+		$('#ac_table>tbody').bind("dblclick",function(e){
             var web_client_ =window.top.odoo.__DEBUG__.services['web.web_client'];
             var _startDate='<t t-esc="data['form']['startDate']"/>';
             var _endDate='<t t-esc="data['form']['endDate']"/>';
