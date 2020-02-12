@@ -1177,7 +1177,17 @@ class Voucher(models.Model, Glob_tag_Model):
             if needUpdateBalance:
                 self.updateBalance()
                 # 跟新处理并发冲突
-                self.env.cr.commit()
+                try:
+                    self.env.cr.commit()
+                except:
+                    n=self.env.context.get('ac_write_count',0)
+                    if int(n)<3:
+                        self.env.cr.rollback()
+                        sql_db.flush_env(self.env.cr)
+                        n+=1               
+                        rl_bool=self.with_context({'ac_write_count': n}).write(values)
+                    else:
+                        raise
         finally:
             VOCHER_LOCK.release()
         return rl_bool
