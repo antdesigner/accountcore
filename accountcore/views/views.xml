@@ -460,16 +460,17 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,uniqueNumber" limit='300' >
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,v_number,uniqueNumber" limit='300' >
           <field name="sequence" invisible='1' />
           <field name='voucherdate' />
+          <field name='v_number' />
           <field name='entrysHtml' />
-          <field name='number' class='voucherNumber' />
           <field name='uniqueNumber' />
           <field name='org' />
           <field name='roolbook_html' />
           <field name='reviewer' />
           <field name='glob_tag' widget='many2many_tags' />
+          <field name='number' class='voucherNumber' />
           <field name='createUser' />
           <field name='appendixCount' />
           <field name='soucre' />
@@ -612,11 +613,20 @@
         </form>
       </field>
     </record>
-    <!-- 报表动作-修改凭证编号 -->
+    <!-- 窗体动作-修改凭证策略号 -->
     <record id="accountcore_seting_voucher_number_single_action" model="ir.actions.act_window">
-      <field name="name">修改凭证编号</field>
+      <field name="name">修改凭证策略号</field>
       <field name="type">ir.actions.act_window</field>
       <field name="res_model">accountcore.seting_voucher_number_single</field>
+      <field name="view_mode">form</field>
+      <field name="view_type">form</field>
+      <field name="target">new</field>
+    </record>
+    <!-- 窗体动作-修改凭证号 -->
+    <record id="accountcore_seting_v_number_single_action" model="ir.actions.act_window">
+      <field name="name">修改凭证号</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">accountcore.seting_v_number_single</field>
       <field name="view_mode">form</field>
       <field name="view_type">form</field>
       <field name="target">new</field>
@@ -648,10 +658,27 @@
         </form>
       </field>
     </record>
-    <!-- form-修改凭证编号向导 -->
+        <!-- form-修改凭证策略号向导 -->
     <record id="accoutcore_seting_voucher_number_single_form" model="ir.ui.view">
-      <field name="name">修改凭证编号</field>
+      <field name="name">修改策略号</field>
       <field name="model">accountcore.seting_voucher_number_single</field>
+      <field name="arch" type="xml">
+        <form string="">
+          <sheet>
+            <group>
+              <field name="newNumber" />
+            </group>
+          </sheet>
+          <footer>
+            <button name="setVoucherNumberSingle" type="object" string="确定" />
+          </footer>
+        </form>
+      </field>
+    </record>
+    <!-- form-修改凭证号向导 -->
+    <record id="accoutcore_seting_v_number_single_form" model="ir.ui.view">
+      <field name="name">修改凭证号</field>
+      <field name="model">accountcore.seting_v_number_single</field>
       <field name="arch" type="xml">
         <form string="">
           <sheet>
@@ -688,13 +715,16 @@
           <header>
             <button string='取消审核' type='object' name='cancelReview' attrs="{'invisible':[('state','=','creating')]}"></button>
             <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
-            <button string='修改凭证编号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
+            <button string='修改凭证号' type='action' name='%(accountcore_seting_v_number_single_action)d'></button>
+            <button string='修改凭证策略号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
             <button string='冲销' type='object' name='writeoff' ></button>
             <button string='设为默认值' type='action' name='%(accountcore_userdefaults_action)d' context="{'default_default_voucherDate':voucherdate,'default_default_org':org,'default_default_real_date':real_date,'default_default_glob_tag':(glob_tag)}"></button>
             <field name='state' widget='statusbar' class='text-danger'></field>
           </header>
           <sheet>
             <div class="row" style="padding:1rem">
+              <label for="v_number" />
+              <field name='v_number' class="badge badge-info" readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <label for="number" />
               <field name='number' class="badge badge-info" readonly='1' attrs="{'readonly':[('state','=','reviewed')]}" />
               <label for="uniqueNumber" />
@@ -760,13 +790,14 @@
           <field name="v_voucherdate" />
           <field name="v_year" invisible='1' />
           <field name="v_month" invisible='1' />
-          <field name="voucher" />
+          <field name="v_number" />
           <field name="explain" string='分录说明' />
           <field name="account" />
           <field name="damount" />
           <field name="camount" />
           <field name="items_html" />
           <field name="cashFlow" />
+          <field name="voucher" />
           <field name='org'></field>
           <field name="v_real_date" />
           <!-- <field name="business" /> -->
@@ -910,7 +941,7 @@
         </form>
       </field>
     </record>
-    <!-- form-设置凭证编号策略 -->
+    <!-- form-设置凭证号策略 -->
     <record id='accountcore_vouchre_number_statics_default_form' model='ir.ui.view'>
       <field name='name'>设置凭证编号策略</field>
       <field name='model'>accountcore.voucher_number_statics_default</field>
@@ -927,15 +958,33 @@
         </form>
       </field>
     </record>
-    <!-- form-自动生成凭证编号 -->
+    <!-- form-自动生成凭证策略号 -->
     <record id="accountcore_seting_vouchers_number_form" model="ir.ui.view">
-      <field name="name">自动生成凭证编号</field>
+      <field name="name">自动生成凭证策略号</field>
       <field name="model">accountcore.seting_vouchers_number</field>
       <field name="arch" type="xml">
         <form >
           <sheet>
             <group>
               <field name="voucherNumberTastics"></field>
+              <field name="startNumber"></field>
+            </group>
+          </sheet>
+          <footer>
+            <button name="setingNumber" type="object" string="开始生成" class='btn-primary' />
+          </footer>
+        </form>
+      </field>
+    </record>
+
+        <!-- form-自动生成凭证号 -->
+    <record id="accountcore_seting_v_number_form" model="ir.ui.view">
+      <field name="name">自动生成凭证号</field>
+      <field name="model">accountcore.seting_v_number</field>
+      <field name="arch" type="xml">
+        <form >
+          <sheet>
+            <group>
               <field name="startNumber"></field>
             </group>
           </sheet>
@@ -1052,7 +1101,6 @@
               <field name="orgs" widget="many2many_checkboxes_floatleft" />
             </group>
             <group>
-              <field name="voucher_number_tastics" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
               <field name="only_this_level" />
               <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
               <field name="account" default_focus='1' domain="['|',('org','=',False),('org','in',orgs)]" context="{'search_default_group_by_accountClassClass':True}">
@@ -1401,8 +1449,10 @@
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
+    <!-- 窗体动作-打开自动生成多张凭证策略号向导-->
+    <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证策略号" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
     <!-- 窗体动作-打开自动生成多张凭证编码向导-->
-    <act_window id="accountcore_seting_vouchers_nubmer_action" name="自动生成凭证编号" src_model="accountcore.voucher" res_model="accountcore.seting_vouchers_number" view_type="form" view_mode="form" target="new" multi="True" />
+    <act_window id="accountcore_seting_v_nubmer_action" name="自动生成凭证编号" src_model="accountcore.voucher" res_model="accountcore.seting_v_number" view_type="form" view_mode="form" target="new" multi="True" />
     <!-- 服务器动作-科目在凭证中显示-->
     <record model="ir.actions.server" id="account_show_actions_server">
       <field name="name">设置科目在凭证中可选</field>
