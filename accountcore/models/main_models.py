@@ -995,10 +995,8 @@ class Voucher(models.Model, Glob_tag_Model):
                                 index=True,
                                 help='可用于标记不同的凭证',
                                 ondelete='restrict')
-    number = fields.Integer(string='凭证编号',
-                            help='''该编号更据不同凭证编号策略会不同,
-                            一张凭证可以有多个不同编号.可在查询凭证界面批量自动编号.
-                            和原始凭证对应可另用唯一编号''',
+    v_number = fields.Integer(string='凭证号', default=0)
+    number = fields.Integer(string='策略号',
                             compute='getVoucherNumber',
                             search="searchNumber")
     appendixCount = fields.Integer(string='附件张数',
@@ -1026,7 +1024,7 @@ class Voucher(models.Model, Glob_tag_Model):
     state = fields.Selection([('creating', '制单'),
                               ('reviewed', '已审核')],
                              default='creating', index=True)
-    uniqueNumber = fields.Char(string='唯一编号', help='一张凭证只有一个唯一编号')
+    uniqueNumber = fields.Char(string='唯一编号')
     numberTasticsContainer_str = fields.Char(string='凭证可用编号策略',
                                              default="{}")
     entrysHtml = fields.Html(string="分录内容",
@@ -1133,12 +1131,13 @@ class Voucher(models.Model, Glob_tag_Model):
             try:
                 self.env.cr.commit()
             except:
-                n=self.env.context.get('ac_create_count',0)
-                if int(n)<3:
+                n = self.env.context.get('ac_create_count', 0)
+                if int(n) < 3:
                     self.env.cr.rollback()
                     sql_db.flush_env(self.env.cr)
-                    n+=1               
-                    rl=self.with_context({'ac_create_count': n}) .create(values)
+                    n += 1
+                    rl = self.with_context(
+                        {'ac_create_count': n}) .create(values)
                 else:
                     raise
         finally:
@@ -1180,12 +1179,13 @@ class Voucher(models.Model, Glob_tag_Model):
                 try:
                     self.env.cr.commit()
                 except:
-                    n=self.env.context.get('ac_write_count',0)
-                    if int(n)<3:
+                    n = self.env.context.get('ac_write_count', 0)
+                    if int(n) < 3:
                         self.env.cr.rollback()
                         sql_db.flush_env(self.env.cr)
-                        n+=1               
-                        rl_bool=self.with_context({'ac_write_count': n}).write(values)
+                        n += 1
+                        rl_bool = self.with_context(
+                            {'ac_write_count': n}).write(values)
                     else:
                         raise
         finally:
@@ -1589,6 +1589,7 @@ class Enty(models.Model, Glob_tag_Model):
     _name = 'accountcore.entry'
     _description = "会计分录"
     voucher_id = fields.Integer(related="voucher.id", string='voucher_id')
+    v_number = fields.Integer(related="voucher.v_number",string='凭证号')
     voucher = fields.Many2one('accountcore.voucher',
                               string='所属凭证',
                               index=True,

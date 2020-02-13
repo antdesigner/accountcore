@@ -193,13 +193,13 @@ class NumberStaticsWizard(models.TransientModel):
         currentUserTable.write(
             {'voucherNumberTastics': self. voucherNumberTastics.id})
         return True
-# 设置凭证编号向导
+# 设置凭证策略号向导
 
 
 class SetingVoucherNumberWizard(models.TransientModel):
-    '''设置凭证编号向导'''
+    '''设置凭证策略号向导'''
     _name = 'accountcore.seting_vouchers_number'
-    _description = '设置凭证编号向导'
+    _description = '设置凭证策略号向导'
     voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
                                            '要使用的凭证编码策略',
                                            required=True)
@@ -231,7 +231,34 @@ class SetingVoucherNumberWizard(models.TransientModel):
                 numberTasticsId,
                 startNumber)
             startNumber += 1
-        return {'name': '已生成凭证编号',
+        return {'name': '已生成凭证策略号',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'accountcore.voucher',
+                'view_id': False,
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in',  args['active_ids'])]
+                }
+# 设置凭证号向导
+
+
+class SetingVNumberWizard(models.TransientModel):
+    '''设置凭证号向导'''
+    _name = 'accountcore.seting_v_number'
+    _description = '设置凭证号向导'
+    startNumber = fields.Integer(string='从此编号开始', default=1, required=True)
+
+    def setingNumber(self, args):
+        startNumber = self.startNumber
+        vouchers = self.env['accountcore.voucher'].sudo().browse(
+            args['active_ids'])
+        vouchers.sorted(key=lambda r: r.voucherdate)
+        if startNumber <= 0:
+            startNumber = 1
+        for voucher in vouchers:
+            voucher.v_number = startNumber
+            startNumber += 1
+        return {'name': '已生成凭证号',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
                 'res_model': 'accountcore.voucher',
@@ -243,13 +270,13 @@ class SetingVoucherNumberWizard(models.TransientModel):
 
 
 class SetingVoucherNumberSingleWizard(models.TransientModel):
-    '''设置单张凭证编号向导'''
+    '''设置单张凭证策略号向导'''
     _name = 'accountcore.seting_voucher_number_single'
-    _description = '设置单张凭证编号向导'
-    newNumber = fields.Integer(string='新凭证编号', required=True)
+    _description = '设置单张凭证策略号向导'
+    newNumber = fields.Integer(string='新凭证策略号', required=True)
 
     def setVoucherNumberSingle(self, argsDist):
-        '''设置修改凭证编号'''
+        '''设置修改凭证策略号'''
         newNumber = self.newNumber
         currentUserNumberTastics_id = 0
         if(self.env.user.voucherNumberTastics):
@@ -260,6 +287,21 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
             voucher.numberTasticsContainer_str,
             currentUserNumberTastics_id,
             newNumber)
+        return True
+# 设置单张凭证编号向导
+
+
+class SetingVNumberSingleWizard(models.TransientModel):
+    '''设置单张凭证号向导'''
+    _name = 'accountcore.seting_v_number_single'
+    _description = '设置单张凭证号向导'
+    newNumber = fields.Integer(string='新凭证号', required=True)
+
+    def setVoucherNumberSingle(self, argsDist):
+        '''设置修改凭证号'''
+        voucher = self.env['accountcore.voucher'].sudo().browse(
+            argsDist['active_id'])
+        voucher.v_number = self.newNumber
         return True
 # 科目余额查询向导
 
@@ -362,23 +404,14 @@ class GetSubsidiaryBook(models.TransientModel):
         'accountcore.account', string='查询的科目', required=True)
     only_this_level = fields.Boolean(string='只包含本级科目', default=False)
     item = fields.Many2one('accountcore.item', string='查询的核算项目')
-    voucher_number_tastics = fields.Many2one('accountcore.voucher_number_tastics',
-                                             string='凭证号策略',
-                                             required=True,
-                                             default=lambda s: s.env.user.voucherNumberTastics)
 
     @api.multi
     def getReport(self, *args):
         self.ensure_one()
         if len(self.orgs) == 0:
             raise exceptions.ValidationError('你还没选择机构范围！')
-            return False
         if not self.account:
             raise exceptions.ValidationError('你需要选择查询的科目！')
-            return False
-        if not self.voucher_number_tastics:
-            raise exceptions.ValidationError('你需要选择查询凭证编码策略！')
-            return False
         self._setDefaultDate()
         [data] = self.read()
         datas = {

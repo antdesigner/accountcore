@@ -9,7 +9,6 @@ from odoo import exceptions
 from odoo import models, fields, api
 from odoo import http
 from ..models.ac_period import Period
-from ..models.main_models import VoucherNumberTastics
 import sys
 sys.path.append('.\\.\\server')
 # 查询明细账
@@ -27,15 +26,12 @@ class SubsidiaryBook(models.AbstractModel):
         period = Period(form['startDate'],
                         form['endDate'])
         org_ids = form['orgs']
-        tasticsTypes = self.env['accountcore.voucher_number_tastics'].sudo(
-        ).search([('id', '!=', 0)])
         account_ids = form['account']
         # 存放每个科目明细账的容器
         multi_entrys = []
         # 对每一个科目生成明细账
         for account_id in account_ids:
             item = form['item']
-            self.voucher_number_tastics_id = form['voucher_number_tastics'][0]
             # 向导中选择的科目
             main_account = self.env['accountcore.account'].sudo().search(
                 [('id', '=', account_id)])
@@ -84,9 +80,7 @@ class SubsidiaryBook(models.AbstractModel):
                                      period,
                                      beginingOfYearBalance,
                                      beginBlances,
-                                     entryArchs,
-                                     tasticsTypes,
-                                     self.voucher_number_tastics_id)
+                                     entryArchs)
             multi_entrys.append(entrys)
         return {'doc_ids': docids,
                 'docs': multi_entrys,
@@ -221,7 +215,6 @@ class SubsidiaryBook(models.AbstractModel):
     def build_entryArchs(self, entrys):
         '''构建明细记录'''
         # 选择的凭证编号策略
-        tastics_id = self.voucher_number_tastics_id
         # 对数据库取得的明细数据转化为对象列表
         entryArchs = []
         for entry in entrys:
@@ -232,10 +225,7 @@ class SubsidiaryBook(models.AbstractModel):
             entry_arch.year = entry['year']
             entry_arch.month = entry['month']
             entry_arch.org_name = entry['org_name']
-            entry_arch.numberTasticsContainer_str = entry['numberTasticsContainer_str']
-            entry_arch.number = VoucherNumberTastics.get_number(
-                entry['numberTasticsContainer_str'],
-                tastics_id)
+            entry_arch.v_number = entry['v_number']
             entry_arch.uniqueNumber = entry['uniqueNumber']
             entry_arch.roolbook_html = entry['roolbook_html']
             entry_arch.explain = entry['explain']
@@ -258,7 +248,7 @@ class SubsidiaryBook(models.AbstractModel):
                     voucherdate,
                     t_voucher.year as year,
                     t_voucher.month as month,
-                    t_voucher."numberTasticsContainer_str" as "numberTasticsContainer_str",
+                    "v_number",
                     "uniqueNumber",
                     t_voucher.roolbook_html as roolbook_html,
                     t_org.id as org_id,
@@ -281,7 +271,7 @@ class SubsidiaryBook(models.AbstractModel):
                      AND year*12+month<=%s*12+%s
                      AND t_voucher.org in %s
                      AND t_entry.account in %s
-                ORDER BY voucherdate,org_name,account_number
+                ORDER BY voucherdate,org_name,account_number,v_number
                 '''
         elif len_parmas == 7:
             query = '''SELECT
@@ -289,7 +279,7 @@ class SubsidiaryBook(models.AbstractModel):
                     voucherdate,
                     t_voucher.year as year,
                     t_voucher.month as month,
-                    t_voucher."numberTasticsContainer_str" as "numberTasticsContainer_str",
+                    "v_number",
                     "uniqueNumber",
                     t_voucher.roolbook_html as roolbook_html,
                     t_org.id as org_id,
@@ -313,7 +303,7 @@ class SubsidiaryBook(models.AbstractModel):
                     AND t_voucher.org in %s
                     AND t_entry.account in %s
                     AND t_entry.account_item = %s
-                ORDER BY voucherdate,org_name,account_number
+                ORDER BY voucherdate,org_name,account_number,v_number
                 '''
         else:
             raise exceptions.ValidationError('查询参数数量错误!')
@@ -329,7 +319,7 @@ class EntryArch(object):
                  'voucherdate',
                  'year',
                  'month',
-                 'numberTasticsContainer_str',
+                 "v_number",
                  'number',
                  'uniqueNumber',
                  'roolbook_html',
@@ -354,8 +344,7 @@ class EntryArch(object):
         self.voucherdate = None
         self.year = 0
         self.month = 0
-        self.numberTasticsContainer_str = '{}'
-        self.number = ''
+        self.v_number = ''
         self.uniqueNumber = ""
         self.roolbook_html = ""
         self.org_name = ''
@@ -465,17 +454,13 @@ class EntrysAssembler():
                  period=None,
                  beginingOfYearBalance=None,
                  beginBalances=None,
-                 entryArchs=None,
-                 tasticsTypes=None,
-                 voucher_number_tastics_id=None):
+                 entryArchs=None):
         self.main_account = main_account
         self.item = item
         self.period = period
         self.beginingOfYearBalance = beginingOfYearBalance
         self.beginBalances = beginBalances
         self.entryArchs = entryArchs
-        self.tasticsTypes = tasticsTypes
-        self.default_tastics = voucher_number_tastics_id
         self.entrys = []
         self._generating()
 

@@ -14,8 +14,6 @@ td, th {vertical-align: middle!important;font-size: small;}
                     <div id='ac_table' class="container text-center" style='display:flex;flex-direction:column;' >
                         <t t-set="start" t-value="data['form']['startDate']"></t>
                         <t t-set="end" t-value="data['form']['endDate']"></t>
-                        <!-- 凭证编号策略ID -->
-                        <span id="default_tastics" style="display:none" t-esc='docs[0].default_tastics'></span>
                         <t t-set='by' t-value='docs[0].beginingOfYearBalance'></t>
                         <div class="row">
                             <h4 class='col'>科目明细账</h4>
@@ -33,15 +31,6 @@ td, th {vertical-align: middle!important;font-size: small;}
                         </div>
                         <div class="row">
                         <t t-if="report_type == 'html'">
-                        <div class='col voucher_tastics'>凭证号策略:
-                            <select id='tastics_select' class='text-left small' style="border-width:0px;">
-                                <t t-foreach='docs[0].tasticsTypes' t-as='type'>
-                                    <option t-attf-value="{{type.id}}">
-                                        <t t-esc="type.name" />
-                                    </option>
-                                </t>
-                            </select>
-                        </div>
                         </t>
                         </div>
                         <t t-foreach="docs" t-as="account_entry">
@@ -83,8 +72,8 @@ td, th {vertical-align: middle!important;font-size: small;}
                                             <td style="width:2rem" class='text-center'>
                                                 <span t-esc='entry.month'></span>
                                             </td>
-                                            <td style="width:5rem" class='text-center' t-attf-tastics='{{entry.numberTasticsContainer_str}}'>
-                                                <span t-attf-class="number" t-esc='entry.number'></span>
+                                            <td style="width:5rem" class='text-center' >
+                                                <span  t-esc='entry.v_number'></span>
                                                 <a t-if="report_type=='html' and  isinstance(entry.voucher_id,int)" class="fa fa-reply" t-attf-href='/web?#id={{entry.voucher_id}}&amp;action=%(accountore_voucher_id_actions_window)d&amp;model=accountcore.voucher&amp;' target='_blank'></a>
                                                 <br />
                                                 <span t-esc="entry.uniqueNumber"></span>
@@ -133,33 +122,11 @@ td, th {vertical-align: middle!important;font-size: small;}
             </div>
         </div>
         <script  type="text/javascript">
-var voucherNumbers = $("td[tastics]");
-var default_tastics = $("#default_tastics").text();
-var tastics_select = $("#tastics_select");
+
 $(function () {
-    flashVouchersNumber(default_tastics);
-    initTasticSelect();
     //点击打开凭证
     $("tr").on("click", openVoucher);
 });
-function getVoucherNumber(str, voucher_number_tastics_id) {
-    //获得在某一编号策略下的凭证编号
-    var number = JSON.parse(str)[voucher_number_tastics_id];
-    return number;
-};
-function flashVouchersNumber(voucher_number_tastics_id) {
-    //刷新凭证编号
-    $.each(voucherNumbers, function (i, n) {
-        $(this).find(".number").text(getVoucherNumber($(this).attr("tastics"), voucher_number_tastics_id));
-    });
-};
-function initTasticSelect() {
-    //默认选中策略
-    tastics_select.find("option[value=" + default_tastics + "]").attr("selected", "selected");
-    tastics_select.on('change', function (e) {
-        flashVouchersNumber($(e.target).find("option:selected").val());
-    });
-};
 function openVoucher(e) {
     var url=$(e.currentTarget).find("a").attr('href');
     window.open(url);
