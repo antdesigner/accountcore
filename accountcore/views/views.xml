@@ -1217,8 +1217,9 @@
       <field name="model">accountcore.voucher</field>
       <field name="arch" type="xml">
         <search string="voucherFilter">
-          <field name="number" string="凭证编号等于" domain="[('number','=', self)]" />
+          <field name="v_number" string="凭证编号等于" domain="[('v_number','=', self)]" />
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
+          <field name="number" string="凭证策略号等于" domain="[('number','=', self)]" />
           <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <field name="org" string="机构名称等于" domain="[('org.name','=', self)]" />
@@ -1252,7 +1253,9 @@
       <field name="model">accountcore.entry</field>
       <field name="arch" type="xml">
         <search string="voucherFilter">
+          <field name="v_number" string="凭证号等于" domain="[('v_number','=', self)]" />
           <field name="voucher" string="凭证唯一编号等于" domain="[('voucher','=', self)]" />
+          <field name="number" string="凭证策略号等于" domain="[('number','=', self)]" />
           <field name="account" string="科目名称包含" domain="[('account','ilike', self)]" />
           <field name="explain" string="说明包含" domain="[('explain','ilike', self)]" />
           <field name="items" string="核算统计项目包含" domain="[('items','ilike', self)]" />
