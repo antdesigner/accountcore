@@ -70,7 +70,7 @@ div.oe_accountcore_entrys>div:hover {
 }
 
 .oe_accountcore_entrys>div>div.oe_ac_cashflow {
-    width: 220px !important;
+    width: 210px !important;
     word-break: break-all !important;
     word-wrap: break-word !important;
     white-space: normal !important;
