@@ -666,6 +666,7 @@
         <form string="">
           <sheet>
             <group>
+             <field name="voucherNumberTastics"></field>
               <field name="newNumber" />
             </group>
           </sheet>
@@ -694,7 +695,7 @@
     </record>
     <!-- 窗体动作-打开设置新增凭证默认值 -->
     <record model='ir.actions.act_window' id='accountcore_userdefaults_action'>
-      <field name='name'>设置新增凭证默认值</field>
+      <field name='name'>设置新增凭证等默认值</field>
       <field name='res_model'>accountcoure.userdefaults</field>
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
@@ -716,7 +717,7 @@
             <button string='取消审核' type='object' name='cancelReview' attrs="{'invisible':[('state','=','creating')]}"></button>
             <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
             <button string='修改凭证号' type='action' name='%(accountcore_seting_v_number_single_action)d'></button>
-            <button string='修改凭证策略号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
+            <button string='设置策略号' type='action' name='%(accountcore_seting_voucher_number_single_action)d'></button>
             <button string='冲销' type='object' name='writeoff' ></button>
             <button string='设为默认值' type='action' name='%(accountcore_userdefaults_action)d' context="{'default_default_voucherDate':voucherdate,'default_default_org':org,'default_default_real_date':real_date,'default_default_glob_tag':(glob_tag)}"></button>
             <field name='state' widget='statusbar' class='text-danger'></field>
@@ -913,7 +914,7 @@
     </record>
     <!-- list-凭证编号策略 -->
     <record id='accountcore_vouchre_number_statics_tree' model='ir.ui.view'>
-      <field name='name'>凭证编号策略列表</field>
+      <field name='name'>凭证策略号策略列表</field>
       <field name='model'>accountcore.voucher_number_tastics</field>
       <field name='arch' type='xml'>
         <tree>
@@ -1255,7 +1256,6 @@
         <search string="voucherFilter">
           <field name="v_number" string="凭证号等于" domain="[('v_number','=', self)]" />
           <field name="voucher" string="凭证唯一编号等于" domain="[('voucher','=', self)]" />
-          <field name="number" string="凭证策略号等于" domain="[('number','=', self)]" />
           <field name="account" string="科目名称包含" domain="[('account','ilike', self)]" />
           <field name="explain" string="说明包含" domain="[('explain','ilike', self)]" />
           <field name="items" string="核算统计项目包含" domain="[('items','ilike', self)]" />
@@ -1424,9 +1424,9 @@
       <field name='view_mode'>tree,form</field>
       <field name='target'>current</field>
     </record>
-    <!-- 窗体动作-打开设置凭证编号策略默认值向导 -->
+    <!-- 窗体动作-打开设置凭证策略号策略默认值向导 -->
     <record model='ir.actions.act_window' id='accountcore_set_number_acionts_window'>
-      <field name='name'>设置凭证编号策略默认值</field>
+      <field name='name'>设置当前用户默认策略</field>
       <field name='res_model'>accountcore.voucher_number_statics_default</field>
       <field name='view_mode'>form</field>
       <field name='target'>new</field>

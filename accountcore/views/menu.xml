@@ -32,9 +32,9 @@
         <menuitem name='结转损益' id='accountcore_voucher_sunyi_menu' parent='accountcore_voucher_menu' action='accountore_voucher_shunyi_actions_window' sequence='51' />        
         <!-- <menuitem name='凭证标签' id='acctountcore_rulebook_menu' parent='accountcore_voucher_menu' action='accountcore_rulebook_action_window' sequence="53" /> -->
         <!-- <menuitem name='凭证来源' id='accountcore_source_menu' parent='accountcore_voucher_menu' action='accountcore_source_action_window' sequence="55" /> -->
-        <menuitem name='凭证编号' id='accountcore_voucher_number_memu' parent='accountcore_voucher_menu' sequence='58' />
-        <menuitem name='凭证编号策略列表' id='accountcore_voucher_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_voucher_number_acionts_window' sequence='50' />
-        <menuitem name='切换凭证编号策略' id='accountcore_set_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_set_number_acionts_window' sequence='51' />
+        <menuitem name='凭证策略号' id='accountcore_voucher_number_memu' parent='accountcore_voucher_menu' sequence='58' />
+        <menuitem name='策略列表' id='accountcore_voucher_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_voucher_number_acionts_window' sequence='50' />
+        <menuitem name='切换策略' id='accountcore_set_number_tastics_menu' parent='accountcore_voucher_number_memu' action='accountcore_set_number_acionts_window' sequence='51' />
         <menuitem name='默认值' id='accountcore_serdefaults_menu' parent='accountcore_menu' action='accountcore_userdefaults_action' sequence="45" />
         <menuitem name='现金流量' id='accountcore_cashflow_menu' parent='accountcore_menu' sequence="53" />
         <menuitem name='现金流量项目类别' id='accountcore_cashflowtypw_menu' parent='accountcore_cashflow_menu' action='accountcore_cashflowtype_action_window' />

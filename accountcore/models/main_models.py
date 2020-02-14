@@ -1751,16 +1751,13 @@ class Enty(models.Model, Glob_tag_Model):
 
 
 class VoucherNumberTastics(models.Model, Glob_tag_Model):
-    '''凭证编号的生成策略,一张凭证在不同的策略下有不同的凭证编号,自动生成凭证编号时需要指定一个策略'''
+    '''凭证策略号的生成策略,一张凭证在不同的策略下有不同的凭证策略号,自动生成凭证策略号时需要指定一个策略'''
     _name = 'accountcore.voucher_number_tastics'
-    _description = '凭证编号生成策略'
-    number = fields.Char(string='凭证编号策略编码', required=True)
-    name = fields.Char(string='凭证编号策略', required=True)
-    # is_defualt = fields.Boolean(string='默认使用')
-    _sql_constraints = [('accountcore_voucher_number_tastics_unique', 'unique(number)',
-                         '凭证编号策略编码重复了!'),
-                        ('accountcore_voucher_number_tastics_unique', 'unique(name)',
-                         '凭证编号策略名称重复了!')]
+    _description = '凭证策略号的策略类别'
+    number = fields.Char(string='策略编码')
+    name = fields.Char(string='策略名称', required=True)
+    _sql_constraints = [('accountcore_voucher_number_tastics_unique', 'unique(name)',
+                         '策略名称重复了!')]
 
     @staticmethod
     def get_number(tastics_str, tastics_id):

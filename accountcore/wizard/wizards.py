@@ -171,15 +171,15 @@ class AccountcoreUserDefaults(models.TransientModel):
             'json_value': defaultValue,
             'user_id': self.env.uid
         })
-# 设置用户默认凭证编码策略向导
+# 设置用户默认凭证策略号策略向导
 
 
 class NumberStaticsWizard(models.TransientModel):
-    '''设置用户默认凭证编码策略向导'''
+    '''设置用户默认凭证策略号策略向导'''
     _name = 'accountcore.voucher_number_statics_default'
-    _description = '设置用户默认凭证编码策略向导'
+    _description = '设置用户默认凭证策略号策略向导'
     voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
-                                           string='用户默认凭证编码策略')
+                                           string='当前用户的策略')
 
     @api.model
     def default_get(self, field_names):
@@ -188,9 +188,8 @@ class NumberStaticsWizard(models.TransientModel):
         return default
 
     def setVoucherNumberTastics(self, args):
-        currentUserId = self.env.uid
-        currentUserTable = self.env['res.users'].sudo().browse(currentUserId)
-        currentUserTable.write(
+        currentUser = self.env['res.users'].sudo().browse(self.env.uid)
+        currentUser.write(
             {'voucherNumberTastics': self. voucherNumberTastics.id})
         return True
 # 设置凭证策略号向导
@@ -216,9 +215,9 @@ class SetingVoucherNumberWizard(models.TransientModel):
         startNumber = self.startNumber
         numberTasticsId = self.voucherNumberTastics.id
         currentUserId = self.env.uid
-        currentUserTable = self.env['res.users'].sudo().browse(currentUserId)
-        currentUserTable.write(
-            {'voucherNumberTastics': self. voucherNumberTastics.id})
+        currentUser = self.env['res.users'].sudo().browse(currentUserId)
+        currentUser.write(
+            {'voucherNumberTastics': numberTasticsId})
         vouchers = self.env['accountcore.voucher'].sudo().browse(
             args['active_ids'])
         vouchers.sorted(key=lambda r: r.sequence)
@@ -273,19 +272,33 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
     '''设置单张凭证策略号向导'''
     _name = 'accountcore.seting_voucher_number_single'
     _description = '设置单张凭证策略号向导'
+    voucherNumberTastics = fields.Many2one('accountcore.voucher_number_tastics',
+                                           '要使用的凭证编码策略',
+                                           required=True)
     newNumber = fields.Integer(string='新凭证策略号', required=True)
+    @api.model
+    def default_get(self, field_names):
+        '''获得用户的默认凭证编号策略'''
+        default = super().default_get(field_names)
+        if self.env.user.voucherNumberTastics:
+            default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
+        return default
 
     def setVoucherNumberSingle(self, argsDist):
         '''设置修改凭证策略号'''
         newNumber = self.newNumber
-        currentUserNumberTastics_id = 0
-        if(self.env.user.voucherNumberTastics):
-            currentUserNumberTastics_id = self.env.user.voucherNumberTastics.id
+        if newNumber < 0:
+            newNumber = 0
+        newTasticsId = self.voucherNumberTastics.id
+        currentUserId = self.env.uid
+        currentUser = self.env['res.users'].sudo().browse(currentUserId)
+        currentUser.write(
+            {'voucherNumberTastics': newTasticsId})
         voucher = self.env['accountcore.voucher'].sudo().browse(
             argsDist['active_id'])
         voucher.numberTasticsContainer_str = Voucher.getNewNumberDict(
             voucher.numberTasticsContainer_str,
-            currentUserNumberTastics_id,
+            newTasticsId,
             newNumber)
         return True
 # 设置单张凭证编号向导
@@ -301,7 +314,10 @@ class SetingVNumberSingleWizard(models.TransientModel):
         '''设置修改凭证号'''
         voucher = self.env['accountcore.voucher'].sudo().browse(
             argsDist['active_id'])
-        voucher.v_number = self.newNumber
+        if self.newNumber < 0:
+            voucher.v_number = 0
+        else:
+            voucher.v_number = self.newNumber
         return True
 # 科目余额查询向导
 
