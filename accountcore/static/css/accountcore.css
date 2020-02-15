@@ -168,7 +168,7 @@ div.oe_accountcore_entrys>div:hover {
 }
 
 .oe_ac_voucher_entrys table tr td:nth-child(1) {
-    border-left: 1px solid gainsboro;
+    /* border-left: 1px solid gainsboro; */
     border-right: 0px !important;
 }
 
@@ -248,6 +248,7 @@ div.oe_accountcore_entrys>div:hover {
     word-wrap: break-word !important;
     white-space: normal !important;
     text-align: center;
+    border-right: 0px !important;
 }
 
 /* .oe_ac_voucher_entrys .oe_ac_account input {

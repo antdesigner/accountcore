@@ -476,7 +476,7 @@ class Account(models.Model, Glob_tag_Model):
         account = self.browse([accountId])
         itemClasses = account.itemClasses
         accountItemClassId = account.accountItemClass.id
-        return [{'id': i.id, 'name':  (("*"+i.name)
+        return [{'id': i.id, 'name':  (("■"+i.name)
                                        if i.id == accountItemClassId else i.name)}
                 for i in itemClasses]
 
