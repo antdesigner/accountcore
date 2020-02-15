@@ -115,8 +115,13 @@ div.oe_accountcore_entrys>div:hover {
 /* 会计凭证界面(非打印)-开始 */
 .oe_ac_voucher_entrys {
     margin: 0px;
-    width: 1070px;
-    min-width: 1070px;
+    /* width: 1070px;
+    min-width: 1070px; */
+    padding: 1px;
+}
+
+.oe_ac_voucher_entrys>table {
+    border: 1px solid gainsboro
 }
 
 .oe_ac_voucher_entrys .o_input {
@@ -168,7 +173,7 @@ div.oe_accountcore_entrys>div:hover {
 }
 
 .oe_ac_voucher_entrys table tr td:nth-child(1) {
-    /* border-left: 1px solid gainsboro; */
+    border-left: 0px !important;
     border-right: 0px !important;
 }
 
