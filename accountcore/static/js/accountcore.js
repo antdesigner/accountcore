@@ -505,7 +505,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
          * @param  {string} itemTypeName 核算项目类别名称
          */
         _createItemChoiceHtml: function (itemTypeName) {
-            var htmlstr = "<div class='row itemChoice'><div class='col-3 ac-item-type-name'>" + itemTypeName + "</div><div class='ac-item-selection'></div></div>";
+            var htmlstr = "<div class='row itemChoice' width='100%'><div class='col-4 ac-item-type-name'>" + itemTypeName + "</div><div class='ac-item-selection col-8'></div></div>";
             return htmlstr;
         },
         _removeTag: function (id) {

@@ -17,6 +17,8 @@ LOGGER = logging.getLogger(__name__)
 # 新增,修改,删除凭证时对科目余额的改变加锁
 VOCHER_LOCK = threading.RLock()
 # 全局标签模型,用于多重继承方式添加到模型
+#金额的默认币别,人民币在系统中的id
+CNY=7
 
 
 class Glob_tag_Model(models.AbstractModel):
@@ -476,7 +478,7 @@ class Account(models.Model, Glob_tag_Model):
         account = self.browse([accountId])
         itemClasses = account.itemClasses
         accountItemClassId = account.accountItemClass.id
-        return [{'id': i.id, 'name':  (("*"+i.name)
+        return [{'id': i.id, 'name':  (("■"+i.name)
                                        if i.id == accountItemClassId else i.name)}
                 for i in itemClasses]
 
@@ -493,7 +495,7 @@ class Account(models.Model, Glob_tag_Model):
                 itemTypes = account.itemClasses
                 for itemType in itemTypes:
                     content = content+"<span>\\" + \
-                        ('*'+itemType.name if(itemType.id ==
+                        ('■'+itemType.name if(itemType.id ==
                                               accountItemClassId) else itemType.name)+"</span>"
             account.itemClassesHtml = content
         return True
@@ -503,14 +505,19 @@ class Account(models.Model, Glob_tag_Model):
         '''获得科目下的全部明细科目和自生的ID'''
         self.ensure_one()
         # 通过科目编码来判断
-        return self.search([('number', 'like', self.number)]).mapped('id')
+        # return self.search([('number', 'like', self.number)]).mapped('id')
+        return self.getMeAndChilds().mapped('id')
     # 获得科目下的全部明细科目和自生对象
     @api.multi
     def getMeAndChilds(self):
         '''获得科目下的全部明细科目和自生'''
         self.ensure_one()
         # 通过科目编码来判断
-        return self.search([('number', 'like', self.number)])
+        # return self.search([('number', 'like', self.number)])
+        rl=self
+        for c in self.childs_ids:
+            rl=rl|c.getMeAndChilds()
+        return rl
     # 科目在余额表里是否有记录(只比较科目))
 
     def isUsedInBalance(self):
@@ -1037,11 +1044,9 @@ class Voucher(models.Model, Glob_tag_Model):
         string='借贷方差额', default=0, compute='balance_check')
     # Monetory类型字段必须有
     currency_id = fields.Many2one('res.currency',
-                                  compute='get_company_currency',
+                                  compute='get_currency',
                                   readonly=True,
-                                  oldname='currency',
-                                  string="Currency",
-                                  help='Utility field to express amount currency')
+                                  string="币别")
 
     @api.onchange('org')
     def _set_userdefault_org(self):
@@ -1052,11 +1057,14 @@ class Voucher(models.Model, Glob_tag_Model):
             {'currentOrg': self.org.id})
 
     @api.multi
-    def get_company_currency(self):
-        # self.ensure_one
+    def get_currency(self):
         # Monetory类型字段必须有 currency_id
+        if tools.config["foreign_amount_id"]:
+            _currency_id=int(tools.config["foreign_amount_id"])
+        else:
+            _currency_id = CNY
         for s in self:
-            s.currency_id = self.env.user.company_id.currency_id
+            s.currency_id = _currency_id
 
     @api.onchange('entrys')
     def balance_check(self):
@@ -1523,32 +1531,33 @@ class Voucher(models.Model, Glob_tag_Model):
         '''冲销'''
         voucher_date = fields.Date.today()
         if self.env.user.current_date:
-            voucher_date = self.env.user.current_date
-        updateFields = {'state': 'reviewed',
-                        'reviewer': self.env.uid,
-                        'createUser': self.env.uid,
-                        'numberTasticsContainer_str': '{}',
-                        'soucre': self.env.ref('accountcore.source_2').id,
-                        'appendixCount': 0,
-                        'voucherdate': voucher_date,
-                        'ruleBook': [(6, 0, [self.env.ref("accountcore.rulebook_8").id])]}
+            voucher_date = self.env.user.current_date 
         uniqueNumber = self.uniqueNumber
-        rl = super(Voucher, self.with_context(
-            {'ac_from_copy': True})).copy(updateFields)
-        VOCHER_LOCK.acquire()
-        try:
-            for entry in self.entrys:
-                explain = "【冲销"+uniqueNumber+"号凭证】"
-                if entry.explain:
-                    explain = str(entry.explain)+explain
-                entry.copy({'voucher': rl.id,
-                            "explain": explain,
-                            "damount": -entry.damount,
-                            "camount": -entry.camount
-                            })
-            rl.updateBalance()
-        finally:
-            VOCHER_LOCK.release()
+        entrys=[]
+        for entry in self.entrys:
+            newEntry={}
+            explain = "【冲销"+uniqueNumber+"号凭证】"
+            if entry.explain:
+                explain = str(entry.explain)+explain
+            newEntry={"explain":explain ,
+            "account":entry.account.id,
+            "damount":-entry.damount,
+            "camount":-entry.camount,
+            "items":[(6, 0, entry.items.ids)],
+            "cashFlow":entry.cashFlow.id
+            }
+            entrys.append((0,0,newEntry))
+        newVoucher = {'state': 'reviewed',
+                    'reviewer': self.env.uid,
+                    'createUser': self.env.uid,
+                    'numberTasticsContainer_str': '{}',
+                    'soucre': self.env.ref('accountcore.source_2').id,
+                    'appendixCount': 0,
+                    'voucherdate': voucher_date,
+                    'ruleBook':[(6, 0, [self.env.ref("accountcore.rulebook_8").id])],
+                    'entrys':entrys}
+        rl = self.with_context(
+             {'ac_from_copy': True}).create(newVoucher)
         return {
             'name': "冲销",
             'type': 'ir.actions.act_window',
@@ -1627,11 +1636,9 @@ class Enty(models.Model, Glob_tag_Model):
                              ondelete='restrict')
     # Monetory类型字段必须有
     currency_id = fields.Many2one('res.currency',
-                                  compute='get_company_currency',
+                                  compute='get_currency',
                                   readonly=True,
-                                  oldname='currency',
-                                  string="Currency",
-                                  help='Utility field to express amount currency')
+                                  string="币别")
     # Monetory类型字段必须有currency_id
     damount = fields.Monetary(string='借方金额', default=0)
     # Monetory类型字段必须有currency_id
@@ -1691,10 +1698,14 @@ class Enty(models.Model, Glob_tag_Model):
         self.items = None
 
     @api.multi
-    def get_company_currency(self):
+    def get_currency(self):
         # Monetory类型字段必须有 currency_id
+        if tools.config["foreign_amount_id"]:
+            _currency_id=int(tools.config["foreign_amount_id"])
+        else:
+            _currency_id = CNY
         for s in self:
-            s.currency_id = self.env.user.company_id.currency_id
+            s.currency_id = _currency_id
 
     @api.model
     def getItemByitemClassId(self, itemClassId):
@@ -1836,10 +1847,9 @@ class AccountsBalance(models.Model):
         'accountcore.accounts_balance', string='最近后一期记录')
     # Monetory类型字段必须有,要不无法正常显示
     currency_id = fields.Many2one('res.currency',
-                                  compute='get_company_currency',
+                                  compute='get_currency',
                                   readonly=True,
-                                  string="Currency",
-                                  help='Utility field to express amount currency')
+                                  string="币别")
     begin_year_amount = fields.Monetary(
         string="年初余额", compute='_getYearBeginAmount')
 
@@ -1871,9 +1881,14 @@ class AccountsBalance(models.Model):
         self.items = None
 
     @api.multi
-    def get_company_currency(self):
+    def get_currency(self):
+        # Monetory类型字段必须有 currency_id
+        if tools.config["foreign_amount_id"]:
+            _currency_id=int(tools.config["foreign_amount_id"])
+        else:
+            _currency_id = CNY
         for s in self:
-            s.currency_id = self.env.user.company_id.currency_id
+            s.currency_id = _currency_id
 
     @api.onchange('createDate')
     @api.depends('createDate')
@@ -2310,7 +2325,7 @@ class AccountsBalance(models.Model):
                                        ('items', '=', accountBalance['items']),
                                        ('isbegining', '=', True),
                                        ('year', '=', accountBalance['year']),
-                                       ('month', '=', accountBalance['month'])])
+                                       ('month', '=', accountBalance['month'])], limit=1)
             else:
                 records = self.search([('org', '=', accountBalance['org']),
                                        ('year', '=', accountBalance['year']),
@@ -2318,7 +2333,7 @@ class AccountsBalance(models.Model):
                                        ('account', '=',
                                         accountBalance['account']),
                                        ('items', '=', accountBalance['items']),
-                                       ('isbegining', '=', False)])
+                                       ('isbegining', '=', False)], limit=1)
         else:
             if accountBalance['isbegining'] == True:
                 records = self.search([('org', '=', accountBalance['org']),
@@ -2333,7 +2348,7 @@ class AccountsBalance(models.Model):
                                        ('month', '=', accountBalance['month']),
                                        ('account', '=',
                                         accountBalance['account']),
-                                       ('isbegining', '=', False)])
+                                       ('isbegining', '=', False)], limit=1)
         if records.exists():
             return True
         return False
@@ -2346,7 +2361,7 @@ class AccountsBalance(models.Model):
                   '|', ('v_year', '<', value['year']),
                   '&', ('v_year', '=', value['year']),
                   ('v_month', '<', value['month'])]
-        entrys = self.env['accountcore.entry'].sudo().search(domain)
+        entrys = self.env['accountcore.entry'].sudo().search(domain, limit=1)
         if len(entrys) > 0:
             return True
         return False
