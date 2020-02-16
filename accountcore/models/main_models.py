@@ -505,14 +505,19 @@ class Account(models.Model, Glob_tag_Model):
         '''获得科目下的全部明细科目和自生的ID'''
         self.ensure_one()
         # 通过科目编码来判断
-        return self.search([('number', 'like', self.number)]).mapped('id')
+        # return self.search([('number', 'like', self.number)]).mapped('id')
+        return self.getMeAndChilds().mapped('id')
     # 获得科目下的全部明细科目和自生对象
     @api.multi
     def getMeAndChilds(self):
         '''获得科目下的全部明细科目和自生'''
         self.ensure_one()
         # 通过科目编码来判断
-        return self.search([('number', 'like', self.number)])
+        # return self.search([('number', 'like', self.number)])
+        rl=self
+        for c in self.childs_ids:
+            rl=rl|c.getMeAndChilds()
+        return rl
     # 科目在余额表里是否有记录(只比较科目))
 
     def isUsedInBalance(self):
