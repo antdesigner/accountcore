@@ -1523,32 +1523,33 @@ class Voucher(models.Model, Glob_tag_Model):
         '''冲销'''
         voucher_date = fields.Date.today()
         if self.env.user.current_date:
-            voucher_date = self.env.user.current_date
-        updateFields = {'state': 'reviewed',
-                        'reviewer': self.env.uid,
-                        'createUser': self.env.uid,
-                        'numberTasticsContainer_str': '{}',
-                        'soucre': self.env.ref('accountcore.source_2').id,
-                        'appendixCount': 0,
-                        'voucherdate': voucher_date,
-                        'ruleBook': [(6, 0, [self.env.ref("accountcore.rulebook_8").id])]}
+            voucher_date = self.env.user.current_date 
         uniqueNumber = self.uniqueNumber
-        rl = super(Voucher, self.with_context(
-            {'ac_from_copy': True})).copy(updateFields)
-        VOCHER_LOCK.acquire()
-        try:
-            for entry in self.entrys:
-                explain = "【冲销"+uniqueNumber+"号凭证】"
-                if entry.explain:
-                    explain = str(entry.explain)+explain
-                entry.copy({'voucher': rl.id,
-                            "explain": explain,
-                            "damount": -entry.damount,
-                            "camount": -entry.camount
-                            })
-            rl.updateBalance()
-        finally:
-            VOCHER_LOCK.release()
+        entrys=[]
+        for entry in self.entrys:
+            newEntry={}
+            explain = "【冲销"+uniqueNumber+"号凭证】"
+            if entry.explain:
+                explain = str(entry.explain)+explain
+            newEntry={"explain":explain ,
+            "account":entry.account.id,
+            "damount":-entry.damount,
+            "camount":-entry.camount,
+            "items":[(6, 0, entry.items.ids)],
+            "cashFlow":entry.cashFlow.id
+            }
+            entrys.append((0,0,newEntry))
+        newVoucher = {'state': 'reviewed',
+                    'reviewer': self.env.uid,
+                    'createUser': self.env.uid,
+                    'numberTasticsContainer_str': '{}',
+                    'soucre': self.env.ref('accountcore.source_2').id,
+                    'appendixCount': 0,
+                    'voucherdate': voucher_date,
+                    'ruleBook':[(6, 0, [self.env.ref("accountcore.rulebook_8").id])],
+                    'entrys':entrys}
+        rl = self.with_context(
+             {'ac_from_copy': True}).create(newVoucher)
         return {
             'name': "冲销",
             'type': 'ir.actions.act_window',
