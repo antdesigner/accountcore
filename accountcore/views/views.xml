@@ -460,8 +460,7 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,v_number,uniqueNumber" limit='300' >
-          <field name="sequence" invisible='1' />
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,v_number,uniqueNumber" import='0' limit='300' >
           <field name='voucherdate' />
           <field name='v_number' />
           <field name='entrysHtml' />
@@ -824,7 +823,6 @@
           <field name="items" />
           <field name="cashFlow" type='row' />
           <field name="v_real_date" />
-          <field name="updata_balance" invisible='1' />
         </pivot>
       </field>
     </record>
@@ -897,7 +895,7 @@
         <form>
           <sheet>
             <group>
-              <field name='cash_flow_type' readonly='1'></field>
+              <field name='cashFlowType' readonly='1'></field>
               <field name='parent_number' readonly='1'></field>
               <field name='parent_id' readonly='1'></field>
             </group>

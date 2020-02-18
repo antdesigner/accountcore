@@ -568,6 +568,8 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     var viewRegistry = require('web.view_registry');
     var ListController = require('web.ListController');
     var VoucherSort = require('accountcore.voucher_sort_by_number');
+    var list2excel= require('accountcore.list2excel');
+    var DataExport=require('accountcore.DataExport');
     var voucherListController = ListController.extend({
         renderButtons: function () {
             this._super.apply(this, arguments);
@@ -1397,6 +1399,10 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         tooltip: '打印',
                         content: 'print',
                         onclick: function () {
+                            var startDate = self._getStartDate();
+                            var endDate = self._getEndDate();
+                            var orgs = self._getOrgs();
+                            var fileName = self.record.data['name'] + "[" + startDate + "至" + endDate + "]" + orgs;
                             printJS({
                                 printable: 'print_content',
                                 type: 'html',
