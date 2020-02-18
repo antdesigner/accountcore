@@ -27,6 +27,10 @@
             <button type="button" class="btn btn-sm" style="margin-left:1.5em">今年上半年</button>
         </center>
     </t>
+    <!--列表视图导出excel按钮 -->
+    <t t-name="accountcore.list2excel_t">
+        <button class="btn btn-secondary fa fa-download" type="button" title='导出EXCEL'></button>
+    </t>
 </templates>
 
 

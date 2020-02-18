@@ -561,7 +561,7 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         choiceItemsModel: choiceItemsModel,
     }
 });
-//给凭证列表视图添加按钮
+//凭证列表视图
 odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     "use strict";
     var ListView = require('web.ListView');
@@ -573,6 +573,9 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
             this._super.apply(this, arguments);
             if (this.$buttons) {
                 var btns = this.$buttons;
+                var btn_excel=new list2excel(this);
+                btn_excel.appendTo(btns);
+                btn_excel._click = this.proxy('_ac_getExportDialogWidget');
                 var voucherSort = new VoucherSort(this);
                 voucherSort.appendTo(btns);
                 voucherSort._click = this.proxy('vouchersSortByNumber');
@@ -593,6 +596,15 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
         //查询凭证
         voucher_filter: function () {
             alert('暂未实现');
+        },
+        _ac_getExportDialogWidget() {
+            // ev.stopPropagation();
+            let state = this.model.get(this.handle);
+            let defaultExportFields = this.renderer.columns.filter(field => field.tag === 'field').map(field => field.attrs.name);
+            let groupedBy = this.renderer.state.groupedBy;
+            let dataExport= new DataExport(this, state, defaultExportFields, groupedBy,
+                this.getActiveDomain(), this.getSelectedIds());
+            dataExport.export();
         },
     });
     var voucherListView = ListView.extend({
@@ -1388,10 +1400,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             printJS({
                                 printable: 'print_content',
                                 type: 'html',
-                                css: ['/accountcore/static/css/jsuites.css', '/accountcore/static/css/jexcel.css'],
+                                css: [ '/accountcore/static/css/jexcel.css','/accountcore/static/css/jsuites.css'],
                                 scanStyles: false,
                                 ignoreElements: [],
-                                style: ".jexcel_row{visibility: hidden !important;}.jexcel_toolbar{display: none !important;}table>thead{visibility: hidden !important;}",
+                                style: ".jexcel_toolbar{display: none !important;}table>thead{display: none !important;visibility: hidden !important;}",
+                                documentTitle:fileName
                             })
                         }
                     },
@@ -1447,7 +1460,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     clearComments: '清除批注',
                     copy: '复制',
                     paste: '粘贴',
-                    saveAs: '下载保存',
+                    saveAs: '下载保存公式',
                     // about: ​ '关于', 修改后将无法使用
                     areYouSureToDeleteTheSelectedRows: '你确定要删除选中行?',
                     areYouSureToDeleteTheSelectedColumns: '你确定要删除选中列?',
@@ -1777,4 +1790,36 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         ac_jexcel_merge_info: ac_jexcel_merge_info,
         ac_jexcel_meta_info: ac_jexcel_meta_info,
     };
+});
+odoo.define('accountcore.DataExport',['web.DataExport'], function (require) {
+    "use strict";
+    var dataExport=require('web.DataExport');
+    var acExport= dataExport.extend({
+          /**
+     * Export all data with default values (fields, domain)
+     */
+    export() {
+        let exportedFields = this.defaultExportFields.map(field => ({
+            name: field,
+            label: this.record.fields[field].string,
+        }));
+        this._exportData(exportedFields, 'ac_xlsx', false);
+    },
+
+    })
+    return  acExport;
+})
+//列表视图导出excel按钮
+odoo.define("accountcore.list2excel", function (require) {
+    "use strict";
+    var Widget = require('web.Widget');
+    var btn = Widget.extend({
+        template: 'accountcore.list2excel_t',
+        events: {
+            'click': '_click',
+        },
+        _click: function () {
+        },
+    });
+    return btn;
 });

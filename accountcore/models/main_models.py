@@ -17,8 +17,8 @@ LOGGER = logging.getLogger(__name__)
 # 新增,修改,删除凭证时对科目余额的改变加锁
 VOCHER_LOCK = threading.RLock()
 # 全局标签模型,用于多重继承方式添加到模型
-#金额的默认币别,人民币在系统中的id
-CNY=7
+# 金额的默认币别,人民币在系统中的id
+CNY = 7
 
 
 class Glob_tag_Model(models.AbstractModel):
@@ -349,7 +349,7 @@ class Account(models.Model, Glob_tag_Model):
     currentChildNumber = fields.Integer(default=10,
                                         string='新建下级科目待用编号')
     explain = fields.Html(string='科目说明')
-    itemClassesHtml = fields.Html(string="核算类别",
+    itemClassesHtml = fields.Char(string="核算类别",
                                   help="录入凭证分录时可以选择的核算项目.其中带*的相当于明细科目,为必选.其他不带*的为统计项目,可选",
                                   compute='_itemClassesHtml',
                                   store=True)
@@ -489,15 +489,14 @@ class Account(models.Model, Glob_tag_Model):
         content = None
         itemTypes = None
         for account in self:
-            content = ""
+            content = []
             if account.itemClasses:
                 accountItemClassId = account.accountItemClass.id
                 itemTypes = account.itemClasses
-                for itemType in itemTypes:
-                    content = content+"<span>\\" + \
-                        ('■'+itemType.name if(itemType.id ==
-                                              accountItemClassId) else itemType.name)+"</span>"
-            account.itemClassesHtml = content
+                content = [('■'+itemType.name) if(itemType.id == accountItemClassId)
+                           else itemType.name for itemType in itemTypes]
+
+            account.itemClassesHtml = '\\'.join(content)
         return True
     # 获得科目下的全部明细科目和自生对象的ID
     @api.multi
@@ -514,9 +513,9 @@ class Account(models.Model, Glob_tag_Model):
         self.ensure_one()
         # 通过科目编码来判断
         # return self.search([('number', 'like', self.number)])
-        rl=self
+        rl = self
         for c in self.childs_ids:
-            rl=rl|c.getMeAndChilds()
+            rl = rl | c.getMeAndChilds()
         return rl
     # 科目在余额表里是否有记录(只比较科目))
 
@@ -1059,10 +1058,7 @@ class Voucher(models.Model, Glob_tag_Model):
     @api.multi
     def get_currency(self):
         # Monetory类型字段必须有 currency_id
-        if tools.config["foreign_amount_id"]:
-            _currency_id=int(tools.config["foreign_amount_id"])
-        else:
-            _currency_id = CNY
+        _currency_id = tools.config.get("foreign_amount_id", default=CNY)
         for s in self:
             s.currency_id = _currency_id
 
@@ -1531,33 +1527,34 @@ class Voucher(models.Model, Glob_tag_Model):
         '''冲销'''
         voucher_date = fields.Date.today()
         if self.env.user.current_date:
-            voucher_date = self.env.user.current_date 
+            voucher_date = self.env.user.current_date
         uniqueNumber = self.uniqueNumber
-        entrys=[]
+        entrys = []
         for entry in self.entrys:
-            newEntry={}
+            newEntry = {}
             explain = "【冲销"+uniqueNumber+"号凭证】"
             if entry.explain:
                 explain = str(entry.explain)+explain
-            newEntry={"explain":explain ,
-            "account":entry.account.id,
-            "damount":-entry.damount,
-            "camount":-entry.camount,
-            "items":[(6, 0, entry.items.ids)],
-            "cashFlow":entry.cashFlow.id
-            }
-            entrys.append((0,0,newEntry))
-        newVoucher = {'state': 'reviewed',
-                    'reviewer': self.env.uid,
-                    'createUser': self.env.uid,
-                    'numberTasticsContainer_str': '{}',
-                    'soucre': self.env.ref('accountcore.source_2').id,
-                    'appendixCount': 0,
-                    'voucherdate': voucher_date,
-                    'ruleBook':[(6, 0, [self.env.ref("accountcore.rulebook_8").id])],
-                    'entrys':entrys}
+            newEntry = {"explain": explain,
+                        "account": entry.account.id,
+                        "damount": -entry.damount,
+                        "camount": -entry.camount,
+                        "items": [(6, 0, entry.items.ids)],
+                        "cashFlow": entry.cashFlow.id
+                        }
+            entrys.append((0, 0, newEntry))
+        newVoucher = {'org': self.org.id,
+                      'state': 'reviewed',
+                      'reviewer': self.env.uid,
+                      'createUser': self.env.uid,
+                      'numberTasticsContainer_str': '{}',
+                      'soucre': self.env.ref('accountcore.source_2').id,
+                      'appendixCount': 0,
+                      'voucherdate': voucher_date,
+                      'ruleBook': [(6, 0, [self.env.ref("accountcore.rulebook_8").id])],
+                      'entrys': entrys}
         rl = self.with_context(
-             {'ac_from_copy': True}).create(newVoucher)
+            {'ac_from_copy': True}).create(newVoucher)
         return {
             'name': "冲销",
             'type': 'ir.actions.act_window',
@@ -1598,7 +1595,7 @@ class Enty(models.Model, Glob_tag_Model):
     _name = 'accountcore.entry'
     _description = "会计分录"
     voucher_id = fields.Integer(related="voucher.id", string='voucher_id')
-    v_number = fields.Integer(related="voucher.v_number",string='凭证号')
+    v_number = fields.Integer(related="voucher.v_number", string='凭证号')
     voucher = fields.Many2one('accountcore.voucher',
                               string='所属凭证',
                               index=True,
@@ -1700,10 +1697,7 @@ class Enty(models.Model, Glob_tag_Model):
     @api.multi
     def get_currency(self):
         # Monetory类型字段必须有 currency_id
-        if tools.config["foreign_amount_id"]:
-            _currency_id=int(tools.config["foreign_amount_id"])
-        else:
-            _currency_id = CNY
+        _currency_id = tools.config.get("foreign_amount_id", default=CNY)
         for s in self:
             s.currency_id = _currency_id
 
@@ -1883,10 +1877,7 @@ class AccountsBalance(models.Model):
     @api.multi
     def get_currency(self):
         # Monetory类型字段必须有 currency_id
-        if tools.config["foreign_amount_id"]:
-            _currency_id=int(tools.config["foreign_amount_id"])
-        else:
-            _currency_id = CNY
+        _currency_id = tools.config.get("foreign_amount_id", default=CNY)
         for s in self:
             s.currency_id = _currency_id
 
