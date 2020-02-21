@@ -47,7 +47,6 @@ table tr{page-break-inside: avoid !important;}
                                     <tr style="page-break-inside: avoid !important;" >
                                     <td colspan="2"><span t-esc='l.org.name'></span></td>
                                     <td colspan="2" class='text-center'><span t-esc='l.createDate'></span></td>
-                                    <!-- <td colspan=""><span t-esc='l.account_number'></span></td> -->
                                     <td t-if='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/>[<span t-esc='l.accountItemClass.name'></span>]<span t-esc='l.items.name'></span></td>
                                     <td t-else='l.accountItemClass' colspan="4"><span t-esc='l.account_number'></span><span t-esc='l.account.name'></span><br/><span t-esc='l.accountItemClass.name'></span><span t-esc='l.items.name'></span></td>
                                     <td  class='amount text-right' colspan="2"><span t-esc="'{:,.2f}'.format(l.beginingDamount-l.beginCumulativeDamount)"></span></td>
@@ -97,32 +96,31 @@ table tr{page-break-inside: avoid !important;}
                         <table id='ac_table' class='table  table-bordered table-sm table-striped table-hover'>
                             <thead>
                                 <tr>
-                                    <th t-if='not (sum_orgs or orgs_count==1)' rowspan='2' colspan="3">机构名称</th>
-                                     <th rowspan='2' colspan="6">科目和项目</th> 
-                                    <th colspan="4">期初余额</th>
-                                    <th colspan="4">发生金额</th>
-                                    <th colspan="4">期末余额</th>
+                                    <th t-if='not (sum_orgs or orgs_count==1)' rowspan='2' colspan="1">机构名称</th>
+                                    <th rowspan='2' colspan="1" style="width:16rem">科目和项目</th> 
+                                    <th colspan="2" style="width:14rem">期初余额</th>
+                                    <th colspan="2" style="width:14rem">发生金额</th>
+                                    <th colspan="2" style="width:14rem">期末余额</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="2">借方</th>
-                                    <th colspan="2">贷方</th>
-                                    <th colspan="2">借方</th>
-                                    <th colspan="2">贷方</th>
-                                    <th colspan="2">借方</th>
-                                    <th colspan="2">贷方</th>
+                                    <th colspan="1" style="width:7rem">借方</th>
+                                    <th colspan="1" style="width:7rem">贷方</th>
+                                    <th colspan="1" style="width:7rem">借方</th>
+                                    <th colspan="1" style="width:7rem">贷方</th>
+                                    <th colspan="1" style="width:7rem">借方</th>
+                                    <th colspan="1" style="width:7rem">贷方</th>
                                 </tr>
                             </thead>
                             <tbody class='text-left'>
                                 <t t-foreach="docs" t-as="account">
                                     <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'],'accountId':account['account_id']}">
-                                        <td t-if='not (sum_orgs or orgs_count==1)' class='org_name' colspan="3" data-toggle="tooltip" t-att-title="account['org_name']">
+                                        <td t-if='not (sum_orgs or orgs_count==1)' class='org_name' colspan="1" data-toggle="tooltip" t-att-title="account['org_name']">
                                             <span t-esc="account['org_name']"></span>
                                         </td>
-                                        <td class='account_name' colspan="6">
+                                        <td class='account_name' style="width:16rem">
                                         <span t-esc="account['account_number']"></span>
                                             <span t-if="'item_id' in account and account['item_id'] != 0">
                                             <span t-esc="account['account_name']"></span>
-                                            <br/>
                                                 <span t-att="{'itemId':account['item_id']}">【</span>
                                                 <t t-esc="account['item_class_name']"></t>
                                                 <span>】
@@ -133,34 +131,34 @@ table tr{page-break-inside: avoid !important;}
                                         </td>
                                         <t t-set='direction' t-value="account['direction']"></t>
                                         <t t-set='beginingAmount' t-value="account['beginingDamount']-account['beginingCamount']"></t>
-                                        <td class='beginingDamount text-right' colspan="2">
+                                        <td class='beginingDamount text-right' style="width:7rem">
                                             <span t-if="direction=='1' and beginingAmount &gt; 0" t-esc="'{:,.2f}'.format(beginingAmount)"></span>
                                             <span t-elif="direction=='1' and beginingAmount == 0"></span>
                                             <span t-elif="direction=='1' and beginingAmount &lt; 0" t-esc="'{:,.2f}'.format(beginingAmount)"></span>
                                             <span t-elif="direction=='-1'"></span>
                                         </td>
-                                        <td class='beginingCamount  text-right' colspan="2">
+                                        <td class='beginingCamount  text-right' style="width:7rem">
                                             <span t-if="direction=='-1' and beginingAmount &gt; 0" t-esc="'{:,.2f}'.format(-beginingAmount)"></span>
                                             <span t-elif="direction=='-1' and beginingAmount == 0"></span>
                                             <span t-elif="direction=='-1' and beginingAmount &lt; 0" t-esc="'{:,.2f}'.format(-beginingAmount)"></span>
                                             <span t-elif="direction=='1'"></span>
                                         </td>
-                                        <td class='damount text-right' colspan="2">
+                                        <td class='damount text-right' style="width:7rem">
                                             <span t-if="account['damount']!=0" t-esc="'{:,.2f}'.format(account['damount'])"></span>
                                             <span t-else=""></span>
                                         </td>
-                                        <td class='camount text-right' colspan="2">
+                                        <td class='camount text-right' style="width:7rem">
                                             <span t-if="account['camount']!=0" t-esc="'{:,.2f}'.format(account['camount'])"></span>
                                             <span t-else=""></span>
                                         </td>
                                         <t t-set='endAmount' t-value="account['beginingDamount']+account['damount']-account['beginingCamount']-account['camount']"></t>
-                                        <td class='endDamount text-right' colspan="2">
+                                        <td class='endDamount text-right' style="width:7rem">
                                             <span t-if="direction=='1' and endAmount &gt; 0" t-esc="'{:,.2f}'.format(endAmount)"></span>
                                             <span t-elif="direction=='1' and endAmount == 0"></span>
                                             <span t-elif="direction=='1' and endAmount &lt; 0" t-esc="'{:,.2f}'.format(endAmount)"></span>
                                             <span t-elif="direction=='-1'"></span>
                                         </td>
-                                        <td class='endCamount text-right' colspan="2">
+                                        <td class='endCamount text-right' style="width:7rem">
                                             <span t-if="direction=='-1' and endAmount &gt; 0" t-esc="'{:,.2f}'.format(-endAmount)"></span>
                                             <span t-elif="direction=='-1' and endAmount == 0"></span>
                                             <span t-elif="direction=='-1' and endAmount &lt; 0" t-esc="'{:,.2f}'.format(-endAmount)"></span>
@@ -186,7 +184,7 @@ odoo.define(['accountcore.table2excel'], function (require) {
         if ($('#t2excel', window.parent.document).length > 0) {
           $('#t2excel', window.parent.document).remove();
 		}
- btn_contaner.append('<button id="t2excel" type="button" class="btn btn-primary" title="导出EXCEL">导出EXCEL</button>');
+ btn_contaner.append('<button id="t2excel" type="button" class="btn btn-secondary fa fa-download" title="导出EXCEL"></button>');
 		var btn2excel = require('accountcore.table2excel');
 		$('#t2excel', window.parent.document).click(function () {
             var fileName="科目余额表[<t t-esc="data['form']['startDate']"></t>至<t t-esc="data['form']['endDate']"></t>]<t t-esc="data['sum_orgs_name']"></t>.xls";
