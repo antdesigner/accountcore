@@ -3,7 +3,7 @@
     <template id='subsidiary_book_report'>
             <t t-call="web.basic_layout"> 
                     <style>
-h4 {padding-top: 2 rem;padding-bottom: 1 rem;}
+h4{padding-top:2rem;padding-bottom:1rem;}
 table{table-layout: fixed !important;width:100% !important}
 table tr {page-break-inside: avoid!important;}
 thead, th {text-align: center;white-space: nowrap; !important}
@@ -48,59 +48,53 @@ td, th {vertical-align: middle!important;font-size: small;}
                             </caption>
                                 <thead>
                                     <tr>
-                                        <th colspan="2">凭证日期</th>
-                                        <th style="width:2rem">月</th>
-                                        <th style="width:5rem">凭证编号</th>
-                                        <th colspan="3">分录摘要</th>
-                                        <th colspan="3">机构名称</th>
-                                        <!-- <th>科目编码</th> -->
-                                        <th colspan="5">科目和项目</th>
-                                        <!-- <th>核算项目</th> -->
-                                        <th colspan="2">借方金额</th>
-                                        <th colspan="2">贷方金额</th>
-                                        <th style="width:2rem">方向</th>
-                                        <th colspan="2">余额</th>
+                                        <th colspan="1" style="width:5rem">凭证日期</th>
+                                        <th colspan="1" style="width:2rem">月</th>
+                                        <th colspan="1" style="width:4rem">凭证编号</th>
+                                        <th>分录摘要</th>
+                                        <th>机构名称</th>
+                                        <th colspan="1" style="width:18rem">科目和项目</th>
+                                        <th colspan="1" style="width:7rem">借方金额</th>
+                                        <th colspan="1" style="width:7rem">贷方金额</th>
+                                        <th colspan="1" style="width:2rem">方向</th>
+                                        <th colspan="1" style="width:7rem">余额</th>
                                     </tr>
                                 </thead>
                                 <tbody class='text-left'>
                                     <t t-set='openVoucher_id' t_value='%(accountore_voucher_id_actions_window)d'></t>
                                     <t t-foreach="account_entry.entrys" t-as="entry">
                                         <tr style="page-break-inside: avoid !important;" >
-                                            <td colspan="2">
+                                            <td style="width:5rem">
                                                 <span t-esc="entry.voucherdate"></span>
                                             </td>
                                             <td style="width:2rem" class='text-center'>
                                                 <span t-esc='entry.month'></span>
                                             </td>
-                                            <td style="width:5rem" class='text-center' >
+                                            <td style="width:4rem" class='text-center' >
                                                 <span  t-esc='entry.v_number'></span>
                                                 <a t-if="report_type=='html' and  isinstance(entry.voucher_id,int)" class="fa fa-reply" t-attf-href='/web?#id={{entry.voucher_id}}&amp;action=%(accountore_voucher_id_actions_window)d&amp;model=accountcore.voucher&amp;' target='_blank'></a>
-                                                <br />
                                                 <span t-esc="entry.uniqueNumber"></span>
                                             </td>
-                                            <td colspan="3">
-                                                <span t-raw='entry.roolbook_html'></span>
+                                            <td>
                                                 <span t-esc='entry.explain'></span>
                                             </td>
-                                            <td colspan="3">
+                                            <td>
                                                 <span t-esc='entry.org_name'></span>
                                             </td>
-                                            <td colspan="5">
-                                            <span t-esc='entry.account_number'></span>
-                                                <span t-esc='entry.account_name'></span><br/>
-                                                 <span t-raw="entry.items_html"></span>
+                                            <td style="width:18rem">  
+                                                 <span t-raw="entry.account_number+entry.account_name+entry.items_html"></span>
                                             </td>
-                                            <td  colspan="2" class='damount text-right'>
+                                            <td  style="width:7rem" class='damount text-right'>
                                                 <span t-if='entry.damount!=0' t-esc="'{:,.2f}'.format(entry.damount)"></span>
                                             </td>
-                                            <td colspan="2" class='camount text-right'>
+                                            <td style="width:7rem" class='camount text-right'>
                                                 <span t-if='entry.camount!=0' t-esc="'{:,.2f}'.format(entry.camount)"></span>
                                             </td>
                                             <td style="width:2rem" class='text-center'>
                                                 <span t-if="entry.direction=='1'">借</span>
                                                 <span t-else="">贷</span>
                                             </td>
-                                            <td  colspan="2" class='bamount text-right'>
+                                            <td style="width:7rem" class='bamount text-right'>
                                                 <span t-if='entry.balance!=0' t-esc="'{:,.2f}'.format(entry.balance)"></span>
                                             </td>
                                         </tr>

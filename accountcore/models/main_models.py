@@ -992,7 +992,7 @@ class Voucher(models.Model, Glob_tag_Model):
                              required=True,
                              ondelete='restrict')
     org = fields.Many2one('accountcore.org',
-                          string='所属机构',
+                          string='核算机构',
                           required=True,
                           index=True,
                           ondelete='restrict')
@@ -1321,10 +1321,8 @@ class Voucher(models.Model, Glob_tag_Model):
     def buildRuleBook(self):
         '''购建凭证标签展示内容'''
         for voucher in self:
-            content = ''
-            for item in voucher.ruleBook:
-                content = content+'/'+item.name
-            voucher.roolbook_html = content
+            content = [item.name for item in voucher.ruleBook]
+            voucher.roolbook_html = '/'.join(content)
 
     def _buildingEntryHtml(self, entry):
         '''购建一条分录展示内容'''
@@ -1621,7 +1619,7 @@ class Enty(models.Model, Glob_tag_Model):
                              index=True)
     updata_balance = fields.Boolean(string='是否更新科目余额内部标记', default=False)
     # sequence = fields.Integer('Sequence')
-    explain = fields.Char(string='说明')
+    explain = fields.Char(string='分录摘要')
     account = fields.Many2one('accountcore.account',
                               string='会计科目',
                               required=True,
@@ -1649,7 +1647,7 @@ class Enty(models.Model, Glob_tag_Model):
                                    compute="_getAccountItem",
                                    store=True,
                                    index=True)
-    items_html = fields.Html(string="核算项目",
+    items_html = fields.Html(string="核算统计项目",
                              compute='_createItemsHtml',
                              store=True)
     business = fields.Text(string='业务数据')
@@ -1657,8 +1655,8 @@ class Enty(models.Model, Glob_tag_Model):
     @api.depends('items.name', 'account_item', 'items.item_class_name')
     def _createItemsHtml(self):
         for entry in self:
-            content = ["<div>【"+item.item_class_name+"】" +
-                       item.name+"</div>" for item in entry.items]
+            content = ["【"+item.item_class_name+"】" +
+                       item.name+"<br/>" for item in entry.items]
             entry.items_html = ''.join(content)
 
     @api.multi
@@ -1746,7 +1744,7 @@ class Enty(models.Model, Glob_tag_Model):
                 search_default_group_by_org=1,
             )
         return {
-            'name': '打开凭证列表',
+            'name': '凭证分录列表',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form,pivot',
             'res_model': 'accountcore.entry',

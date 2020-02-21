@@ -1,6 +1,69 @@
+//导出数据用
+odoo.define('accountcore.DataExport', ['web.core', 'web.crash_manager', 'web.framework', 'web.py_utils', 'web.DataExport'], function (require) {
+    "use strict";
+    var crash_manager = require('web.crash_manager');
+    var framework = require('web.framework');
+    var pyUtils = require('web.py_utils');
+    var dataExport = require('web.DataExport');
+    var acExport = dataExport.extend({
+        // 从odoo13的相同模块_exportData
+        export: function (export_format) {
+            var self = this;
+            let exported_fields = this.defaultExportFields.map(field => ({
+                name: field,
+                label: this.record.fields[field].string,
+            }));
+            framework.blockUI();
+            var idsToExport = self.getParent().getSelectedIds();
+            this.ids_to_export = idsToExport ? idsToExport : false;
+            var domain = self.record.domain;
+            this.getSession().get_file({
+                url: '/web/export/' + export_format,
+                data: {
+                    data: JSON.stringify({
+                        model: this.record.model,
+                        fields: exported_fields,
+                        ids: this.ids_to_export,
+                        domain: domain,
+                        context: pyUtils.eval('contexts', [this.record.getContext()]),
+                        import_compat: false,
+                    })
+                },
+                complete: framework.unblockUI,
+                error: crash_manager.rpc_error.bind(crash_manager),
+            });
+        },
+    })
+    return acExport;
+});
+//列表视图导出excel的小部件(按钮)
+odoo.define("accountcore.list2excel", function (require) {
+    "use strict";
+    var Widget = require('web.Widget');
+    var btn = Widget.extend({
+        template: 'accountcore.list2excel_t',
+        events: {
+            'click': '_click',
+        },
+        _click: function () {
+            this.trigger_up('ac_down_excel', {
+                'url_suffix': this.url_suffix
+            });
+        },
+        init: function (parent, url_suffix) {
+            // 访问后台控制的路由后缀
+            this.url_suffix = url_suffix;
+            this._super.apply(this, arguments);
+        },
+    });
+    return btn;
+});
 // 猴子补丁，改变基类，
-odoo.define('accountcore.basechange', ['web.AbstractField'], function (require) {
+odoo.define('accountcore.basechange', ['web.AbstractField', 'web.ListController', 'accountcore.DataExport', 'accountcore.list2excel'], function (require) {
     var basic_fields = require('web.AbstractField');
+    var ListController = require('web.ListController');
+    var DataExport = require('accountcore.DataExport');
+    var list2excel = require('accountcore.list2excel');
     // 交换默认的回车和tab键
     basic_fields.include({
         _onKeydown: function (ev) {
@@ -53,8 +116,35 @@ odoo.define('accountcore.basechange', ['web.AbstractField'], function (require) 
             }
         },
     });
+    //列表视图导出excel的按钮(accountcore.list2excel)调用
+    ListController.include({
+        custom_events: _.extend({}, ListController.prototype.custom_events, {
+            ac_down_excel: '_ac_getExportDialogWidge',
+        }),
+        _ac_getExportDialogWidge: function (args) {
+            let state = this.model.get(this.handle);
+            let defaultExportFields = this.renderer.columns.filter(field => field.tag === 'field').map(field => field.attrs.name);
+            let groupedBy = this.renderer.state.groupedBy;
+            let dataExport = new DataExport(this, state, defaultExportFields, groupedBy,
+                this.getActiveDomain(), this.getSelectedIds());
+            dataExport.export(args.data['url_suffix']);
+        },
+        renderButtons: function ($node) {
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+                var _url_suffix = "xls";
+                if (this.ac_url_suffix) {
+                    _url_suffix = this.ac_url_suffix
+                };
+                var btns = this.$buttons;
+                var btn_excel = new list2excel(this, _url_suffix);
+                btn_excel.appendTo(btns)
+            }
+        }
+    });
+
 });
-// 凭证借贷方金额
+// 凭证借贷方金额颜色
 odoo.define('accountcore.accountcoreListRenderer', function (require) {
     "use strict";
     var ListRenderer = require('web.ListRenderer');
@@ -236,14 +326,12 @@ odoo.define('web.accountcoreExtend', ['web.basic_fields', 'web.relational_fields
     };
 });
 //凭证的核算项目字段选择
-odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relational_fields', 'web.field_registry', 'web.core', 'web.field_utils'], function (require) {
+odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relational_fields', 'web.field_registry', 'web.core'], function (require) {
     "use strict";
     var AbstractField = require('web.AbstractField');
     var relational_fields = require('web.relational_fields');
     var FieldMany2One = relational_fields.FieldMany2One;
     var core = require('web.core');
-    var qweb = core.qweb;
-    var field_utils = require('web.field_utils');
     var _t = core._t;
     var ChoiceItemsMany2one = FieldMany2One.extend({
         events: _.extend({}, FieldMany2One.prototype.events, {
@@ -561,23 +649,98 @@ odoo.define('accountcore.accountcoreVoucher', ['web.AbstractField', 'web.relatio
         choiceItemsModel: choiceItemsModel,
     }
 });
+//核算机构列表视图
+odoo.define('accountcore.orgListView', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var newListController = ListController.extend({
+
+        renderButtons: function () {
+            this.ac_url_suffix=this.modelName;
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+
+            };
+        },
+
+
+    });
+    var newListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: newListController,
+        }),
+    });
+    viewRegistry.add('orgListView', newListView);
+    return newListView;
+});
+//核算项目列表视图
+odoo.define('accountcore.itemListView', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var newListController = ListController.extend({
+
+        renderButtons: function () {
+            this.ac_url_suffix=this.modelName;
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+
+            };
+        },
+
+
+    });
+    var newListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: newListController,
+        }),
+    });
+    viewRegistry.add('itemListView', newListView);
+    return newListView;
+});
+//会计科目列表视图
+odoo.define('accountcore.accountListView', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var newListController = ListController.extend({
+
+        renderButtons: function () {
+            this.ac_url_suffix=this.modelName;
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+
+            };
+        },
+
+
+    });
+    var newListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: newListController,
+        }),
+    });
+    viewRegistry.add('accountListView', newListView);
+    return newListView;
+});
 //凭证列表视图
-odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
+odoo.define('accountcore.voucherListView', function (require) {
     "use strict";
     var ListView = require('web.ListView');
     var viewRegistry = require('web.view_registry');
     var ListController = require('web.ListController');
     var VoucherSort = require('accountcore.voucher_sort_by_number');
-    var list2excel= require('accountcore.list2excel');
-    var DataExport=require('accountcore.DataExport');
     var voucherListController = ListController.extend({
+
         renderButtons: function () {
+            this.ac_url_suffix=this.modelName;
             this._super.apply(this, arguments);
             if (this.$buttons) {
                 var btns = this.$buttons;
-                var btn_excel=new list2excel(this);
-                btn_excel.appendTo(btns);
-                btn_excel._click = this.proxy('_ac_getExportDialogWidget');
                 var voucherSort = new VoucherSort(this);
                 voucherSort.appendTo(btns);
                 voucherSort._click = this.proxy('vouchersSortByNumber');
@@ -599,15 +762,7 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
         voucher_filter: function () {
             alert('暂未实现');
         },
-        _ac_getExportDialogWidget() {
-            // ev.stopPropagation();
-            let state = this.model.get(this.handle);
-            let defaultExportFields = this.renderer.columns.filter(field => field.tag === 'field').map(field => field.attrs.name);
-            let groupedBy = this.renderer.state.groupedBy;
-            let dataExport= new DataExport(this, state, defaultExportFields, groupedBy,
-                this.getActiveDomain(), this.getSelectedIds());
-            dataExport.export();
-        },
+
     });
     var voucherListView = ListView.extend({
         config: _.extend({}, ListView.prototype.config, {
@@ -617,7 +772,7 @@ odoo.define('accountcore.accountcoreVoucheListButton', function (require) {
     viewRegistry.add('voucherListView', voucherListView);
     return voucherListView;
 });
-//凭证列表排序按钮
+//凭证列表策略号排序小部件(按钮)
 odoo.define("accountcore.voucher_sort_by_number", function (require) {
     "use strict";
     var Widget = require('web.Widget');
@@ -629,6 +784,32 @@ odoo.define("accountcore.voucher_sort_by_number", function (require) {
         _click: function () {},
     });
     return VoucherSort;
+});
+//分录列表视图
+odoo.define('accountcore.entryListView', function (require) {
+    "use strict";
+    var ListView = require('web.ListView');
+    var viewRegistry = require('web.view_registry');
+    var ListController = require('web.ListController');
+    var newListController = ListController.extend({
+
+        renderButtons: function () {
+            this.ac_url_suffix=this.modelName;
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+
+            };
+        },
+
+
+    });
+    var newListView = ListView.extend({
+        config: _.extend({}, ListView.prototype.config, {
+            Controller: newListController,
+        }),
+    });
+    viewRegistry.add('entryListView', newListView);
+    return newListView;
 });
 //启用期初列表视图
 odoo.define('accountcore.balanceListView', function (require) {
@@ -655,7 +836,7 @@ odoo.define('accountcore.balanceListView', function (require) {
     viewRegistry.add('balanceListView', balanceListView);
     return balanceListView;
 });
-//启用期初平衡检查按钮
+//启用期初平衡检查小部件(按钮)
 odoo.define("accountcore.begin_balance_check", function (require) {
     "use strict";
     var Widget = require('web.Widget');
@@ -876,8 +1057,8 @@ odoo.define('accountcore.period_tool', function (require) {
         'Period': Period,
     };
 });
-// 自定义按钮
-odoo.define('accountcore.btn', ['web.AbstractField', 'web.field_registry'], function (require) {
+// 触发服务端方法字段小部件(按钮)
+odoo.define('accountcore.field_btn', ['web.AbstractField', 'web.field_registry'], function (require) {
     "use strict";
     var AbstractField = require('web.AbstractField');
     // 点击按钮触发后台@api.onchage('本字段')装饰的方法
@@ -1406,11 +1587,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             printJS({
                                 printable: 'print_content',
                                 type: 'html',
-                                css: [ '/accountcore/static/css/jexcel.css','/accountcore/static/css/jsuites.css'],
+                                css: ['/accountcore/static/css/jexcel.css', '/accountcore/static/css/jsuites.css'],
                                 scanStyles: false,
                                 ignoreElements: [],
                                 style: ".jexcel_toolbar{display: none !important;}table>thead{display: none !important;visibility: hidden !important;}",
-                                documentTitle:fileName
+                                documentTitle: fileName
                             })
                         }
                     },
@@ -1796,36 +1977,4 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
         ac_jexcel_merge_info: ac_jexcel_merge_info,
         ac_jexcel_meta_info: ac_jexcel_meta_info,
     };
-});
-odoo.define('accountcore.DataExport',['web.DataExport'], function (require) {
-    "use strict";
-    var dataExport=require('web.DataExport');
-    var acExport= dataExport.extend({
-          /**
-     * Export all data with default values (fields, domain)
-     */
-    export() {
-        let exportedFields = this.defaultExportFields.map(field => ({
-            name: field,
-            label: this.record.fields[field].string,
-        }));
-        this._exportData(exportedFields, 'ac_xlsx', false);
-    },
-
-    })
-    return  acExport;
-})
-//列表视图导出excel按钮
-odoo.define("accountcore.list2excel", function (require) {
-    "use strict";
-    var Widget = require('web.Widget');
-    var btn = Widget.extend({
-        template: 'accountcore.list2excel_t',
-        events: {
-            'click': '_click',
-        },
-        _click: function () {
-        },
-    });
-    return btn;
 });

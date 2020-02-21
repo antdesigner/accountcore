@@ -25,7 +25,7 @@
       <field name='name'>核算机构</field>
       <field name='model'>accountcore.org</field>
       <field name='arch' type='xml'>
-        <tree>
+        <tree js_class="orgListView">
           <field name='number' />
           <field name="is_current" />
           <field name='name' />
@@ -117,7 +117,7 @@
       <field name='name'>核算项目列表</field>
       <field name='model'>accountcore.item</field>
       <field name='arch' type='xml'>
-        <tree>
+        <tree js_class="itemListView">
           <field name="org" />
           <field name='itemClass' />
           <field name='number' />
@@ -215,7 +215,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='accountClass,number' limit='600'>
+        <tree  default_order='accountClass,number' limit='600'>
           <field name='org' invisible='1'></field>
           <field name='accountsArch' invisible='1' />
           <field name='accountClass'></field>
@@ -228,7 +228,6 @@
           <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d'></button>
           <field name='glob_tag' widget='many2many_tags' invisible='1' />
           <field name='fatherAccountId' invisible='1'></field>
-          <!-- <field name="childs_ids"/> -->
         </tree>
       </field>
     </record>
@@ -237,7 +236,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree default_order='accountClass,number' limit='600'>
+        <tree js_class="accountListView" default_order='accountClass,number' limit='600'>
           <field name='org' widget='many2many_tags'></field>
           <field name='accountsArch' />
           <field name='accountClass'></field>
@@ -460,7 +459,7 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,v_number,uniqueNumber" import='0' limit='300' >
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,v_number,uniqueNumber" import='0' limit='300' duplicate="false">
           <field name='voucherdate' />
           <field name='v_number' />
           <field name='entrysHtml' />
@@ -785,22 +784,21 @@
       <field name='name'>会计分录列表</field>
       <field name='model'>accountcore.entry</field>
       <field name='arch' type='xml'>
-        <tree class='oe_ac_entrylist' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
+        <tree js_class='entryListView' class='oe_ac_entrylist' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
           <button type='object' class="btn btn-sm fa fa-reply" aria-label="show_voucher" title="打开凭证编辑" name='show_voucher'></button>
           <field name="v_voucherdate" />
           <field name="v_year" invisible='1' />
           <field name="v_month" invisible='1' />
           <field name="v_number" />
-          <field name="explain" string='分录说明' />
+          <field name="explain" string='分录摘要' />
           <field name="account" />
+          <field name="items_html" />
           <field name="damount" />
           <field name="camount" />
-          <field name="items_html" />
           <field name="cashFlow" />
           <field name="voucher" />
           <field name='org'></field>
           <field name="v_real_date" />
-          <!-- <field name="business" /> -->
           <field name='glob_tag' string='全局标签' widget='many2many_tags' />
         </tree>
       </field>
@@ -1255,7 +1253,7 @@
           <field name="v_number" string="凭证号等于" domain="[('v_number','=', self)]" />
           <field name="voucher" string="凭证唯一编号等于" domain="[('voucher','=', self)]" />
           <field name="account" string="科目名称包含" domain="[('account','ilike', self)]" />
-          <field name="explain" string="说明包含" domain="[('explain','ilike', self)]" />
+          <field name="explain" string="分录摘要包含" domain="[('explain','ilike', self)]" />
           <field name="items" string="核算统计项目包含" domain="[('items','ilike', self)]" />
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <field name="org" string="机构名称等于" domain="[('org.name','=', self)]" />

@@ -5,6 +5,7 @@ import datetime
 import decimal
 import json
 import time
+import re
 from odoo import exceptions
 from odoo import models, fields, api
 from odoo import http
@@ -233,7 +234,7 @@ class SubsidiaryBook(models.AbstractModel):
             entry_arch.account_name = entry['account_name']
             entry_arch.damount = entry['damount']
             entry_arch.camount = entry['camount']
-            entry_arch.items_html = entry['items_html']
+            entry_arch.items_html = re.sub(r'<br>|<p>|</p>', '', entry['items_html'])
             entry_arch.direction = entry['direction']
             entry_arch.cash_flow = entry['cash_flow']
             entryArchs.append(entry_arch)
