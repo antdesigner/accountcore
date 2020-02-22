@@ -265,7 +265,16 @@ class ExcelExportEntrys():
 
 class ExcelExportAccounts():
     def get_colums_headers(self, fields):
-        columns_headers = [val['label'].strip() for val in fields]
+        columns_headers = ["所属机构",
+                            "所属科目体系",
+                            "科目类别",
+                            "科目编码",	
+                            "科目名称",	
+                            "核算类别",	
+                            "余额方向",	
+                            "凭证中可选",	
+                            "末级科目",	
+                            "全局标签"]
         return columns_headers
 
     def get_export_data(self, records):
@@ -298,9 +307,13 @@ class ExcelExportAccounts():
 
 class ExcelExportItems():
     def get_colums_headers(self, fields):
-        columns_headers = [val['label'].strip() for val in fields]
-        columns_headers = ["核算项目名称" if one ==
-                           "Display Name" else one for one in columns_headers]
+        columns_headers = ["所属机构",	
+                            "核算项目类别",	
+                            "核算项目编码",	
+                            "核算项目名称",	
+                            "唯一编号",	
+                            "全局标签"]
+
         return columns_headers
 
     def get_export_data(self, records):
@@ -326,8 +339,9 @@ class ExcelExportItems():
 
 class ExcelExportOrgs():
     def get_colums_headers(self, fields):
-        columns_headers = [val['label'].strip() for val in fields]
-        columns_headers.remove("当前机构")
+        columns_headers = ["核算机构编码",
+                            "核算机构名称",
+                            "全局标签"]
         return columns_headers
 
     def get_export_data(self, records):
