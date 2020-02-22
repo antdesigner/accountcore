@@ -53,7 +53,7 @@ td, th {vertical-align: middle!important;font-size: small;}
                                         <th colspan="1" style="width:4rem">凭证编号</th>
                                         <th>分录摘要</th>
                                         <th>机构名称</th>
-                                        <th colspan="1" style="width:18rem">科目和项目</th>
+                                        <th colspan="1" style="width:18rem">科目和核算项目</th>
                                         <th colspan="1" style="width:7rem">借方金额</th>
                                         <th colspan="1" style="width:7rem">贷方金额</th>
                                         <th colspan="1" style="width:2rem">方向</th>
@@ -82,7 +82,10 @@ td, th {vertical-align: middle!important;font-size: small;}
                                                 <span t-esc='entry.org_name'></span>
                                             </td>
                                             <td style="width:18rem">  
-                                                 <span t-raw="entry.account_number+entry.account_name+entry.items_html"></span>
+                                                <span>
+                                                <span t-esc="entry.account_number"></span>
+                                                <span t-esc="entry.items_html"></span>
+                                                </span>
                                             </td>
                                             <td  style="width:7rem" class='damount text-right'>
                                                 <span t-if='entry.damount!=0' t-esc="'{:,.2f}'.format(entry.damount)"></span>

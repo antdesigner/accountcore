@@ -19,8 +19,40 @@ from odoo.addons.web.controllers.main import ExportFormat, content_disposition
 class ExcelExportBase(ExportFormat, http.Controller):
     # Excel needs raw data to correctly handle numbers and date values
     raw_data = True
-    widths = {}
     default_widths = 8000
+    widths = {"策略号": 1800,
+              "贷方金额": 3000,
+              "分录摘要": 10000,
+              "附件张数": 2000,
+              "核算机构": 8000,
+              "核算机构编码": 4000,
+              "核算机构名称": 8000,
+              "核算类别": 6000,
+              "会计科目和核算统计项目": 15000,
+              "核算项目编码": 4000,
+              "核算项目类别": 4000,
+              "核算项目名称": 12000,
+              "会计科目": 10000,
+              "记账日期": 3000,
+              "借方金额": 3000,
+              "科目编码": 3500,
+              "科目类别": 2500,
+              "科目名称": 10000,
+              "末级科目": 2500,
+              "凭证的标签": 4000,
+              "凭证号": 1800,
+              "凭证来源": 2000,
+              "凭证中可选": 3000,
+              "全局标签": 8000,
+              "审核人": 3000,
+              "所属机构": 8000,
+              "所属科目体系": 3500,
+              "所属凭证": 2500,
+              "唯一编号": 2500,
+              "现金流量": 15000,
+              "业务日期": 4000,
+              "余额方向": 2500,
+              "制单人": 3000}
 
     def index_base(self, data, token, listType):
         self.listType = listType
@@ -65,7 +97,7 @@ class ExcelExportBase(ExportFormat, http.Controller):
         for i, fieldname in enumerate(fields):
             worksheet.write(0, i, fieldname, header_style)
             worksheet.col(i).width = self.setColumnWidth(
-                worksheet.col(i), fieldname)  # around 220 pixels
+                fieldname)  # around 220 pixels
 
         base_style = xlwt.easyxf('align: wrap yes')
         date_style = xlwt.easyxf(
@@ -102,8 +134,8 @@ class ExcelExportBase(ExportFormat, http.Controller):
         fp.close()
         return data
 
-    def setColumnWidth(self, column, fieldname):
-        return self.listType.widths.get(fieldname, ExcelExportBase.default_widths)
+    def setColumnWidth(self, fieldname):
+        return ExcelExportBase.widths.get(fieldname, ExcelExportBase.default_widths)
 
     @http.route('/web/export/accountcore.voucher', type='http', auth="user")
     # @serialize_exception
@@ -139,35 +171,24 @@ class ExcelExportBase(ExportFormat, http.Controller):
 
 
 class ExcelExportVouchers():
-    # 列宽
-    widths = {"记账日期": 4000,
-              "凭证号": 1800,
-              "分录摘要": 10000,
-              "科目编码": 3000,
-              "会计科目": 10000,
-              "核算统计项目": 15000,
-              "借方金额": 3000,
-              "贷方金额": 3000,
-              "现金流量": 15000,
-              "唯一编号": 2500,
-              "核算机构": 8000,
-              "凭证的标签": 4000,
-              "审核人": 3000,
-              "全局标签": 4000,
-              "策略号": 1800,
-              "制单人": 3000,
-              "附件张数": 2000,
-              "凭证来源": 2000}
-
     def get_colums_headers(self, fields):
-        field_names = [f['name'] for f in fields]
-        entry_index = field_names.index('entrysHtml')
-        columns_headers = [val['label'].strip() for val in fields]
-        columns_headers_befor_entry = columns_headers[0:entry_index]
-        columns_headers_after_entry = columns_headers[entry_index+1:]
-        columns_headers = columns_headers_befor_entry + \
-            ['分录说明', '科目编码', '会计科目', '核算统计项目', '借方金额',
-                '贷方金额', '现金流量']+columns_headers_after_entry
+        columns_headers = ['记账日期',
+                           '核算机构',
+                           '分录摘要',
+                           '科目编码',
+                           '会计科目和核算统计项目',
+                           '借方金额',
+                           '贷方金额',
+                           '现金流量',
+                           '凭证号',
+                           '唯一编号',
+                           '制单人',
+                           '审核人',
+                           '全局标签',
+                           '凭证来源',
+                           '凭证的标签',
+                           '策略号',
+                           '附件张数']
         return columns_headers
 
     def get_export_data(self, records):
@@ -176,21 +197,20 @@ class ExcelExportVouchers():
         for v in vouchers:
             glob_tags = [g.name for g in v.glob_tag]
             glot_tags_str = '/'.join(glob_tags)
-            voucher_before_entry = [v.voucherdate, v.v_number]
-            v_after_entry = [v.uniqueNumber,
-                             v.org.name,
-                             re.sub(r'<br>|<p>|</p>', '', v.roolbook_html),
+            voucher_before_entry = [v.voucherdate, v.org.name]
+            v_after_entry = [v.v_number,
+                             v.uniqueNumber,
+                             v.createUser.name,
                              v.reviewer.name,
                              glot_tags_str,
+                             v.soucre.name,
+                             re.sub(r'<br>|<p>|</p>', '', v.roolbook_html),
                              v.number,
-                             v.createUser.name,
-                             v.appendixCount,
-                             v.soucre.name]
+                             v.appendixCount]
             entrys = v.entrys
             for e in entrys:
-                items = re.sub(r'<br>|<p>|</p>', '', e.items_html)
-                entry = [e.explain, e.account.number, e.account.name,
-                         items, e.damount, e.camount, e.cashFlow.name]
+                items_html = re.sub(r'<br>|<p>|</p>', '', e.items_html)
+                entry = [e.explain, e.account.number, items_html, e.damount, e.camount, e.cashFlow.name]
                 entry_line = []
                 entry_line.extend(voucher_before_entry)
                 entry_line.extend(entry)
@@ -203,29 +223,19 @@ class ExcelExportVouchers():
 
 
 class ExcelExportEntrys():
-    widths = {"记账日期": 3000,
-              "凭证号": 1800,
-              "分录摘要": 10000,
-              "科目编码": 3000,
-              "会计科目": 10000,
-              "借方金额": 3000,
-              "贷方金额": 3000,
-              "核算统计项目": 15000,
-              "现金流量": 15000,
-              "所属凭证": 2500,
-              "唯一编号": 2500,
-              "核算机构": 8000,
-              "业务日期": 4000,
-              "全局标签": 4000}
-
     def get_colums_headers(self, fields):
-        field_names = [f['name'] for f in fields]
-        entry_index = field_names.index('account')
-        columns_headers = [val['label'].strip() for val in fields]
-        columns_headers_befor_entry = columns_headers[0:entry_index]
-        columns_headers_after_entry = columns_headers[entry_index+1:]
-        columns_headers = columns_headers_befor_entry + \
-            ['科目编码', '会计科目']+columns_headers_after_entry
+        columns_headers = ['记账日期',
+                           '核算机构',
+                           '分录摘要',
+                           '科目编码',
+                           '会计科目和核算统计项目',
+                           '借方金额',
+                           '贷方金额',
+                           '现金流量项目',
+                           '凭证号',
+                           '所属凭证',
+                           '全局标签',
+                           '业务日期']
         return columns_headers
 
     def get_export_data(self, records):
@@ -234,20 +244,19 @@ class ExcelExportEntrys():
         for e in entry:
             glob_tags = [g.name for g in e.glob_tag]
             glot_tags_str = '/'.join(glob_tags)
-            items = re.sub(r'<br>|<p>|</p>', '', e.items_html)
+            items_html = re.sub(r'<br>|<p>|</p>', '', e.items_html)
             entry_line = [e.v_voucherdate,
-                          e.v_number,
+                          e.org.name,
                           e.explain,
                           e.account.number,
-                          e.account.name,
-                          items,
+                          items_html,
                           e.damount,
                           e.camount,
                           e.cashFlow.name,
+                          e.v_number,
                           e.voucher.name,
-                          e.org.name,
-                          e.v_real_date,
-                          glot_tags_str]
+                          glot_tags_str,
+                          e.v_real_date]
             export_data.append(entry_line)
         return export_data
 
@@ -255,17 +264,6 @@ class ExcelExportEntrys():
 
 
 class ExcelExportAccounts():
-    widths = {"所属机构": 8000,
-              "所属科目体系": 3500,
-              "科目类别": 2500,
-              "科目编码": 3000,
-              "科目名称": 10000,
-              "核算类别": 6000,
-              "余额方向": 2500,
-              "凭证中可选": 3000,
-              "末级科目": 2500,
-              "全局标签": 8000}
-
     def get_colums_headers(self, fields):
         columns_headers = [val['label'].strip() for val in fields]
         return columns_headers
@@ -299,13 +297,6 @@ class ExcelExportAccounts():
 
 
 class ExcelExportItems():
-    widths = {"所属机构": 8000,
-              "核算项目类别": 4000,
-              "核算项目编码": 4000,
-              "核算项目名称": 12000,
-              "唯一编号": 2500,
-              "全局标签": 8000}
-
     def get_colums_headers(self, fields):
         columns_headers = [val['label'].strip() for val in fields]
         columns_headers = ["核算项目名称" if one ==
@@ -334,10 +325,6 @@ class ExcelExportItems():
 
 
 class ExcelExportOrgs():
-    widths = {"核算机构编码": 5000,
-              "核算机构名称": 12000,
-              "全局标签": 12000}
-
     def get_colums_headers(self, fields):
         columns_headers = [val['label'].strip() for val in fields]
         columns_headers.remove("当前机构")

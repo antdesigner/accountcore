@@ -97,7 +97,7 @@ table tr{page-break-inside: avoid !important;}
                             <thead>
                                 <tr>
                                     <th t-if='not (sum_orgs or orgs_count==1)' rowspan='2' colspan="1">机构名称</th>
-                                    <th rowspan='2' colspan="1" style="width:16rem">科目和项目</th> 
+                                    <th rowspan='2' colspan="1" style="width:16rem">科目和核算项目</th> 
                                     <th colspan="2" style="width:14rem">期初余额</th>
                                     <th colspan="2" style="width:14rem">发生金额</th>
                                     <th colspan="2" style="width:14rem">期末余额</th>
@@ -121,9 +121,8 @@ table tr{page-break-inside: avoid !important;}
                                         <span t-esc="account['account_number']"></span>
                                             <span t-if="'item_id' in account and account['item_id'] != 0">
                                             <span t-esc="account['account_name']"></span>
-                                                <span t-att="{'itemId':account['item_id']}">【</span>
-                                                <t t-esc="account['item_class_name']"></t>
-                                                <span>】
+                                                <span t-att="{'itemId':account['item_id']}">
+                                                 <t t-esc="'【'+account['item_class_name']+'】'"></t>
                                                 </span>
                                                 <span t-esc="account['item_name']"></span>
                                             </span>
