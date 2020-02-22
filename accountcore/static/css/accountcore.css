@@ -1,4 +1,4 @@
-/* 凭证列表表格-开始 */
+
 table {
     border-collapse: collapse !important;
 }
@@ -11,17 +11,14 @@ table {
     white-space: nowrap;
 }
 
+
+/* 凭证列表表格-开始 */
+/* 凭证列表中的分录内容 */
 .oe_accountcore_entrys {
     margin: 0px;
     width: 1000px;
 }
 
-div.ac_rulebook {
-    white-space: normal !important;
-    vertical-align: middle !important;
-}
-
-/* 凭证列表分录内容 */
 th[data-name="entrysHtml"] {
     max-width: 1000px !important;
     width: 1000px !important;
@@ -76,41 +73,53 @@ div.oe_accountcore_entrys>div:hover {
     white-space: normal !important;
 }
 
-/* 凭证列表分录内容 结束*/
+/* 凭证列表中的分录内容 结束*/
 /* 分录列表开始 */
-.oe_ac_entrylist table {
-    width: 2000px !important;
+.oe_ac_entrylist table tr td{
+    word-break: break-all !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
 }
-
-.oe_ac_entrylist th {
-    white-space: nowrap;
-}
-
-.oe_ac_entrylist td {
-    vertical-align: middle !important;
-}
-
 /* 记账日期 */
-.oe_ac_entrylist table tr td:nth-child(3) {
-    white-space: nowrap;
+.oe_ac_entrylist table tr th:nth-child(3){
+    width:11rem !important;
 }
-
-/* 分录说明 */
-.oe_ac_entrylist table tr td:nth-child(5) {
-    width: 200px !important;
-    word-break: break-all !important;
-    word-wrap: break-word !important;
-    white-space: normal !important;
+/* 核算机构 */
+.oe_ac_entrylist table tr th:nth-child(4){
+    width:15rem !important;
 }
-
-/* 科目 */
-.oe_ac_entrylist table tr td:nth-child(6) {
-    width: 250px !important;
-    word-break: break-all !important;
-    word-wrap: break-word !important;
-    white-space: normal !important;
+/* 分录摘要 */
+.oe_ac_entrylist table tr th:nth-child(5){
+    width:20rem !important;
 }
-
+/* 科目和核算统计项目 */
+.oe_ac_entrylist table tr th:nth-child(6){
+    width:25rem !important;
+}
+/* 借方金额*/
+.oe_ac_entrylist table tr th:nth-child(7){
+    width:14rem !important;
+}
+/* 贷方金额*/
+.oe_ac_entrylist table tr th:nth-child(8){
+    width:14rem !important;
+}
+/* 现金流量项目 */
+/* .oe_ac_entrylist table tr th:nth-child(9){
+    width:15rem !important;
+} */
+/* 所属凭证 */
+.oe_ac_entrylist table tr th:nth-child(11){
+    width:4rem !important;
+}
+/* 业务日期 */
+.oe_ac_entrylist table tr th:nth-child(12){
+    width:11rem !important;
+}
+/* 全局标签*/
+/* .oe_ac_entrylist table tr th:nth-child(13){
+    width:9rem !important;
+} */
 /* 分录列表结束 */
 /* 会计凭证界面(非打印)-开始 */
 .oe_ac_voucher_entrys {

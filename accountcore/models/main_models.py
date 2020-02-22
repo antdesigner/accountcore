@@ -1058,9 +1058,8 @@ class Voucher(models.Model, Glob_tag_Model):
     @api.multi
     def get_currency(self):
         # Monetory类型字段必须有 currency_id
-        _currency_id = tools.config.get("foreign_amount_id", default=CNY)
         for s in self:
-            s.currency_id = _currency_id
+            s.currency_id = CNY
 
     @api.onchange('entrys')
     def balance_check(self):
@@ -1618,7 +1617,6 @@ class Enty(models.Model, Glob_tag_Model):
                              string="月",
                              index=True)
     updata_balance = fields.Boolean(string='是否更新科目余额内部标记', default=False)
-    # sequence = fields.Integer('Sequence')
     explain = fields.Char(string='分录摘要')
     account = fields.Many2one('accountcore.account',
                               string='会计科目',
@@ -1647,18 +1645,17 @@ class Enty(models.Model, Glob_tag_Model):
                                    compute="_getAccountItem",
                                    store=True,
                                    index=True)
-    items_html = fields.Html(string="核算统计项目",
+    items_html = fields.Html(string="会计科目和核算统计项目",
                              compute='_createItemsHtml',
                              store=True)
     business = fields.Text(string='业务数据')
     @api.multi
-    @api.depends('items.name', 'account_item', 'items.item_class_name')
+    @api.depends('account.name', 'items.name', 'account_item', 'items.item_class_name')
     def _createItemsHtml(self):
         for entry in self:
             content = ["【"+item.item_class_name+"】" +
                        item.name+"<br/>" for item in entry.items]
-            entry.items_html = ''.join(content)
-
+            entry.items_html = entry.account.name+"<br/>"+''.join(content)
     @api.multi
     @api.depends('items', 'account')
     def _getAccountItem(self):
@@ -1695,9 +1692,8 @@ class Enty(models.Model, Glob_tag_Model):
     @api.multi
     def get_currency(self):
         # Monetory类型字段必须有 currency_id
-        _currency_id = tools.config.get("foreign_amount_id", default=CNY)
         for s in self:
-            s.currency_id = _currency_id
+            s.currency_id = CNY
 
     @api.model
     def getItemByitemClassId(self, itemClassId):
@@ -1875,9 +1871,8 @@ class AccountsBalance(models.Model):
     @api.multi
     def get_currency(self):
         # Monetory类型字段必须有 currency_id
-        _currency_id = tools.config.get("foreign_amount_id", default=CNY)
         for s in self:
-            s.currency_id = _currency_id
+            s.currency_id = CNY
 
     @api.onchange('createDate')
     @api.depends('createDate')

@@ -459,19 +459,19 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix' default_order="org,voucherdate,v_number,uniqueNumber" import='0' limit='300' duplicate="false">
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix ac_voucher_list' default_order="org,voucherdate,v_number,uniqueNumber" import='0' limit='300' duplicate="false">
           <field name='voucherdate' />
-          <field name='v_number' />
-          <field name='entrysHtml' />
-          <field name='uniqueNumber' />
           <field name='org' />
-          <field name='roolbook_html' />
+          <field name='entrysHtml' />
+          <field name='v_number' />
+          <field name='uniqueNumber' />
+          <field name='createUser' />
           <field name='reviewer' />
           <field name='glob_tag' widget='many2many_tags' />
-          <field name='number' class='voucherNumber' />
-          <field name='createUser' />
-          <field name='appendixCount' />
           <field name='soucre' />
+          <field name='roolbook_html' />
+          <field name='number' class='voucherNumber' />
+          <field name='appendixCount'/>
           <field name='state' invisible='1'></field>
         </tree>
       </field>
@@ -784,20 +784,21 @@
       <field name='name'>会计分录列表</field>
       <field name='model'>accountcore.entry</field>
       <field name='arch' type='xml'>
-        <tree js_class='entryListView' class='oe_ac_entrylist' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
+        <tree js_class='entryListView' class='oe_ac_entrylist oe_accountcore_table_fix' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
           <button type='object' class="btn btn-sm fa fa-reply" aria-label="show_voucher" title="打开凭证编辑" name='show_voucher'></button>
           <field name="v_voucherdate" />
           <field name="v_year" invisible='1' />
           <field name="v_month" invisible='1' />
-          <field name="v_number" />
-          <field name="explain" string='分录摘要' />
-          <field name="account" />
+          <field name='org'></field>
+          <field name="explain" />
+          <field name="account" invisible='1'/>
           <field name="items_html" />
           <field name="damount" />
           <field name="camount" />
-          <field name="cashFlow" />
-          <field name="voucher" />
-          <field name='org'></field>
+          <field name="items" invisible='1' />
+          <field name="cashFlow"/>
+          <field name="v_number" string="凭证号"/>
+          <field name="voucher" string="所属凭证" />
           <field name="v_real_date" />
           <field name='glob_tag' string='全局标签' widget='many2many_tags' />
         </tree>
