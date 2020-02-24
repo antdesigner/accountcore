@@ -29,7 +29,7 @@
     </t>
     <!--列表视图导出excel按钮 -->
     <t t-name="accountcore.list2excel_t">
-        <button class="btn btn-secondary fa fa-download" type="button" title='导出EXCEL'></button>
+        <button class="btn btn-secondary fa fa-download" type="button" title='导出EXCEL(一次最多导出65535行'></button>
     </t>
 </templates>
 
