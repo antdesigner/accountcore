@@ -1,5 +1,5 @@
 /**
- * jExcel v3.8.2
+ * jExcel v3.9.1
  * 
  * Author: Paul Hodel <paul.hodel@gmail.com>
  * Website: https://bossanova.uk/jexcel/
@@ -155,6 +155,8 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             onchangepage: null,
             // Customize any cell behavior
             updateTable: null,
+            // Detach the HTML table when calling updateTable
+            detachForUpdates: false,
             // tiger 修改-开始
             computing: false,
             widget: null,
@@ -199,7 +201,16 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
         // Loading initial configuration from user
         for (var property in defaults) {
             if (options && options.hasOwnProperty(property)) {
-                obj.options[property] = options[property];
+                if (property === 'text') {
+                    obj.options[property] = defaults[property];
+                    for (var textKey in options[property]) {
+                        if (options[property].hasOwnProperty(textKey)) {
+                            obj.options[property][textKey] = options[property][textKey];
+                        }
+                    }
+                } else {
+                    obj.options[property] = options[property];
+                }
             } else {
                 obj.options[property] = defaults[property];
             }
@@ -471,6 +482,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             obj.textarea = document.createElement('textarea');
             obj.textarea.className = 'jexcel_textarea';
             obj.textarea.id = 'jexcel_textarea';
+            obj.textarea.tabIndex = '-1';
             // Contextmenu container
             obj.contextMenu = document.createElement('div');
             obj.contextMenu.className = 'jexcel_contextmenu';
@@ -716,11 +728,13 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
          * @param bool get highlighted cells only
          * @return array data
          */
-        obj.getData = function (highlighted) {
+        obj.getData = function (highlighted, dataOnly) {
             // Control vars
             var dataset = [];
             var px = 0;
             var py = 0;
+            // Data type
+            var dataType = dataOnly == true || obj.options.copyCompatibility == false ? true : false;
             // Column and row length
             var x = obj.options.columns.length
             var y = obj.options.data.length
@@ -734,7 +748,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                         if (!dataset[py]) {
                             dataset[py] = [];
                         }
-                        if (obj.options.copyCompatibility == true) {
+                        if (!dataType) {
                             dataset[py][px] = obj.records[j][i].innerHTML;
                         } else {
                             dataset[py][px] = obj.options.data[j][i];
@@ -1355,7 +1369,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                 // If there is a custom editor for it
                 if (obj.options.columns[x].editor) {
                     // Custom editors
-                    obj.options.columns[x].editor.openEditor(cell, el);
+                    obj.options.columns[x].editor.openEditor(cell, el, empty, e);
                 } else {
                     // Native functions
                     if (obj.options.columns[x].type == 'hidden') {
@@ -1863,7 +1877,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                 }
                 // Overflow
                 if (x > 0) {
-                    if (obj.options.data[y][x]) {
+                    if (value) {
                         obj.records[y][x - 1].style.overflow = 'hidden';
                     } else {
                         obj.records[y][x - 1].style.overflow = '';
@@ -1883,10 +1897,10 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
          */
         obj.copyData = function (o, d) {
             // Get data from all selected cells
-            var data = obj.getData(true);
+            var data = obj.getData(true, true);
             // Selected cells
-            var t0 = obj.selectedContainer[1];
-            var t1 = obj.selectedContainer[3];
+            // Selected cells
+            var h = obj.selectedContainer;
             // Cells
             var x1 = parseInt(o.getAttribute('data-x'));
             var y1 = parseInt(o.getAttribute('data-y'));
@@ -1894,8 +1908,24 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             var y2 = parseInt(d.getAttribute('data-y'));
             // Records
             var records = [];
-            var lineNumber = 1;
             var breakControl = false;
+            if (h[0] == x1) {
+                // Vertical copy
+                if (y1 < h[1]) {
+                    var rowNumber = y1 - h[1];
+                } else {
+                    var rowNumber = 1;
+                }
+                var colNumber = 0;
+            } else {
+                if (x1 < h[0]) {
+                    var colNumber = x1 - h[0];
+                } else {
+                    var colNumber = 1;
+                }
+                var rowNumber = 0;
+            }
+
             // Copy data procedure
             var posx = 0;
             var posy = 0;
@@ -1910,6 +1940,13 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                 }
                 posx = 0;
                 // Data columns
+                if (h[0] != x1) {
+                    if (x1 < h[0]) {
+                        var colNumber = x1 - h[0];
+                    } else {
+                        var colNumber = 1;
+                    }
+                }
                 for (var i = x1; i <= x2; i++) {
                     // Update non-readonly
                     if (obj.records[j][i] && !obj.records[j][i].classList.contains('readonly') && obj.records[j][i].style.display != 'none' && breakControl == false) {
@@ -1928,7 +1965,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                         }
                         // Value
                         var value = data[posy][posx];
-                        if (value && t0 == t1 && obj.options.autoIncrement == true) {
+                        if (value && !data[1] && obj.options.autoIncrement == true) {
                             if (obj.options.columns[i].type == 'text' || obj.options.columns[i].type == 'number') {
                                 if (('' + value).substr(0, 1) == '=') {
                                     var tokens = value.match(/([A-Z]+[0-9]+)/g);
@@ -1936,7 +1973,11 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                                         var affectedTokens = [];
                                         for (var index = 0; index < tokens.length; index++) {
                                             var position = jexcel.getIdFromColumnName(tokens[index], 1);
-                                            position[1] += lineNumber;
+                                            position[0] += colNumber;
+                                            position[1] += rowNumber;
+                                            if (position[1] < 0) {
+                                                position[1] = 0;
+                                            }
                                             var token = jexcel.getColumnNameFromId([position[0], position[1]]);
                                             if (token != tokens[index]) {
                                                 affectedTokens[tokens[index]] = token;
@@ -1949,13 +1990,13 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                                     }
                                 } else {
                                     if (value == Number(value)) {
-                                        value = Number(value) + lineNumber;
+                                        value = Number(value) + rowNumber;
                                     }
                                 }
                             } else if (obj.options.columns[i].type == 'calendar') {
                                 var date = new Date(value);
-                                date.setDate(date.getDate() + lineNumber);
-                                value = date.getFullYear() + '-' + parseInt(date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':00';
+                                date.setDate(date.getDate() + rowNumber);
+                                value = date.getFullYear() + '-' + jexcel.doubleDigitFormat(parseInt(date.getMonth() + 1)) + '-' + jexcel.doubleDigitFormat(date.getDate()) + ' ' + '00:00:00';
                             }
                         }
                         records.push(obj.updateCell(i, j, value));
@@ -1963,9 +2004,12 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                         obj.updateFormulaChain(i, j, records);
                     }
                     posx++;
+                    if (h[0] != x1) {
+                        colNumber++;
+                    }
                 }
                 posy++;
-                lineNumber++;
+                rowNumber++;
             }
             // Update history
             obj.setHistory({
@@ -2263,7 +2307,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             var y1 = obj.selectedContainer[1];
             var x2 = obj.selectedContainer[2];
             var y2 = obj.selectedContainer[3];
-            if (x3 && y3) {
+            if (x3 != null && y3 != null) {
                 if (x3 - x2 > 0) {
                     var px = parseInt(x2) + 1;
                     var ux = parseInt(x3);
@@ -2413,11 +2457,11 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             if (width > 0) {
                 // In case the column is an object
                 if (typeof (column) == 'object') {
-                    column = $(column).getAttribute('data-x');
+                    column = column.getAttribute('data-x');
                 }
                 // Oldwidth
                 if (!oldWidth) {
-                    obj.colgroup[column].getAttribute('width');
+                    oldWidth = obj.colgroup[column].getAttribute('width');
                 }
                 // Set width
                 obj.colgroup[column].setAttribute('width', width);
@@ -2450,14 +2494,21 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             if (height > 0) {
                 // In case the column is an object
                 if (typeof (row) == 'object') {
-                    row = $(row).getAttribute('data-y');
+                    row = row.getAttribute('data-y');
                 }
                 // Oldwidth
                 if (!oldHeight) {
-                    obj.rows[row].getAttribute('height');
+                    oldHeight = obj.rows[row].getAttribute('height');
+
+                    if (!oldHeight) {
+                        var rect = obj.rows[row].getBoundingClientRect();
+                        oldHeight = rect.height;
+                    }
                 }
+                // Integer
+                height = parseInt(height);
                 // Set width
-                obj.rows[row].setAttribute('height', height);
+                obj.rows[row].style.height = height + 'px';
                 // Keep options updated
                 if (!obj.options.rows[row]) {
                     obj.options.rows[row] = {};
@@ -2539,6 +2590,8 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                     obj.headers[column].innerHTML = newValue;
                     // Keep the title property
                     obj.headers[column].setAttribute('title', newValue);
+                    // Update title
+                    obj.options.columns[column].title = newValue;
                 }
                 obj.setHistory({
                     action: 'setHeader',
@@ -2780,16 +2833,31 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             }
         }
         /**
-         * Get cell comments
+         * Get cell comments, null cell for all
          */
         obj.getComments = function (cell, withAuthor) {
-            if (typeof (cell) == 'string') {
-                var cell = jexcel.getIdFromColumnName(cell, true);
-            }
-            if (withAuthor) {
-                return [obj.records[cell[1]][cell[0]].getAttribute('title'), obj.records[cell[1]][cell[0]].getAttribute('author')];
+            if (cell) {
+                if (typeof (cell) == 'string') {
+                    var cell = jexcel.getIdFromColumnName(cell, true);
+                }
+
+                if (withAuthor) {
+                    return [obj.records[cell[1]][cell[0]].getAttribute('title'), obj.records[cell[1]][cell[0]].getAttribute('author')];
+                } else {
+                    return obj.records[cell[1]][cell[0]].getAttribute('title') || '';
+                }
             } else {
-                return obj.records[cell[1]][cell[0]].getAttribute('title') || '';
+                var data = {};
+                for (var j = 0; j < obj.options.data.length; j++) {
+                    for (var i = 0; i < obj.options.columns.length; i++) {
+                        var comments = obj.records[j][i].getAttribute('title');
+                        if (comments) {
+                            var cell = jexcel.getColumnNameFromId([i, j]);
+                            data[cell] = comments;
+                        }
+                    }
+                }
+                return data;
             }
         }
         /**
@@ -2829,6 +2897,7 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             var options = obj.options;
             options.style = obj.getStyle();
             options.mergeCells = obj.getMerge();
+            options.comments = obj.getComments();
             return options;
         }
         /**
@@ -2964,7 +3033,13 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
          */
         obj.moveRow = function (o, d, ignoreDom) {
             if (Object.keys(obj.options.mergeCells).length > 0) {
-                if (obj.isRowMerged(d).length) {
+                if (o > d) {
+                    var insertBefore = 1;
+                } else {
+                    var insertBefore = 0;
+                }
+
+                if (obj.isRowMerged(o).length || obj.isRowMerged(d, insertBefore).length) {
                     if (!confirm(obj.options.text.thisActionWillDestroyAnyExistingMergedCellsAreYouSure)) {
                         return false;
                     } else {
@@ -3094,8 +3169,14 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                     // Create row
                     var tr = obj.createRow(row, obj.options.data[row]);
                     // Append node
-                    if (!currentRows[0] || Array.prototype.indexOf.call(obj.tbody.children, currentRows[0]) >= 0) {
-                        obj.tbody.insertBefore(tr, currentRows[0]);
+                    if (currentRows[0]) {
+                        if (Array.prototype.indexOf.call(obj.tbody.children, currentRows[0]) >= 0) {
+                            obj.tbody.insertBefore(tr, currentRows[0]);
+                        }
+                    } else {
+                        if (Array.prototype.indexOf.call(obj.tbody.children, obj.rows[rowNumber]) >= 0) {
+                            obj.tbody.appendChild(tr);
+                        }
                     }
                     // Record History
                     rowRecords.push(obj.records[row]);
@@ -3247,7 +3328,13 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
          */
         obj.moveColumn = function (o, d) {
             if (Object.keys(obj.options.mergeCells).length > 0) {
-                if (obj.isColMerged(d).length) {
+                if (o > d) {
+                    var insertBefore = 1;
+                } else {
+                    var insertBefore = 0;
+                }
+
+                if (obj.isColMerged(o).length || obj.isColMerged(d, insertBefore).length) {
                     if (!confirm(obj.options.text.thisActionWillDestroyAnyExistingMergedCellsAreYouSure)) {
                         return false;
                     } else {
@@ -3763,10 +3850,16 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             }
             // Customizations by the developer
             if (typeof (obj.options.updateTable) == 'function') {
+                if (obj.options.detachForUpdates) {
+                    el.removeChild(obj.content);
+                }
                 for (var j = 0; j < obj.rows.length; j++) {
                     for (var i = 0; i < obj.headers.length; i++) {
                         obj.options.updateTable(el, obj.records[j][i], i, j, obj.options.data[j][i], obj.records[j][i].innerText, jexcel.getColumnNameFromId([i, j]));
                     }
+                }
+                if (obj.options.detachForUpdates) {
+                    el.insertBefore(obj.content, obj.pagination);
                 }
             }
             // Update corner position
@@ -3774,6 +3867,21 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                 obj.updateCornerPosition();
             }, 0);
         }
+        /**
+         * Show row
+         */
+        obj.showRow = function (rowNumber) {
+            obj.rows[rowNumber].style.display = '';
+        }
+
+        /**
+         * Hide row
+         */
+        obj.hideRow = function (rowNumber) {
+            obj.rows[rowNumber].style.display = 'none';
+        }
+
+
         /**
          * Show column
          */
@@ -4807,17 +4915,23 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                 // Get data
                 data += obj.copy(false, obj.options.csvDelimiter, true);
                 // Download element
-                var pom = document.createElement('a');
                 // huang tiger 修改以处理导出乱码 var blob = new Blob([data], {type: 'text/csv;charset=utf-8;'});
                 var blob = new Blob(["\ufeff" + data], {
                     type: 'text/csv;charset=utf-8;'
                 });
-                var url = URL.createObjectURL(blob);
-                pom.href = url;
-                pom.setAttribute('download', obj.options.csvFileName + '.csv');
-                document.body.appendChild(pom);
-                pom.click();
-                pom.parentNode.removeChild(pom);
+                // IE Compatibility
+                if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveOrOpenBlob(blob, options.csvFileName + '.csv');
+                } else {
+                    // Download element
+                    var pom = document.createElement('a');
+                    var url = URL.createObjectURL(blob);
+                    pom.href = url;
+                    pom.setAttribute('download', obj.options.csvFileName + '.csv');
+                    document.body.appendChild(pom);
+                    pom.click();
+                    pom.parentNode.removeChild(pom);
+                }
             }
         }
         // tiger 添加-开始 自下载数据
@@ -4916,17 +5030,30 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                 // data += obj.copy(false, obj.options.csvDelimiter, true);原代码为true,只能下载公式           
                 data += obj.ACCopy(false, obj.options.csvDelimiter, false);
                 // Download element
-                var pom = document.createElement('a');
+                // var pom = document.createElement('a');
                 // huang tiger 修改以处理导出乱码 var blob = new Blob([data], {type: 'text/csv;charset=utf-8;'});
                 var blob = new Blob(["\ufeff" + data], {
                     type: 'text/csv;charset=utf-8;'
                 });
-                var url = URL.createObjectURL(blob);
-                pom.href = url;
-                pom.setAttribute('download', obj.options.csvFileName + '.csv');
-                document.body.appendChild(pom);
-                pom.click();
-                pom.parentNode.removeChild(pom);
+                // var url = URL.createObjectURL(blob);
+                // pom.href = url;
+                // pom.setAttribute('download', obj.options.csvFileName + '.csv');
+                // document.body.appendChild(pom);
+                // pom.click();
+                // pom.parentNode.removeChild(pom);
+                // IE Compatibility
+                if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveOrOpenBlob(blob, options.csvFileName + '.csv');
+                } else {
+                    // Download element
+                    var pom = document.createElement('a');
+                    var url = URL.createObjectURL(blob);
+                    pom.href = url;
+                    pom.setAttribute('download', obj.options.csvFileName + '.csv');
+                    document.body.appendChild(pom);
+                    pom.click();
+                    pom.parentNode.removeChild(pom);
+                }
             }
         }
         // tiger 添加-结束
@@ -5661,7 +5788,10 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
                             items.push({
                                 title: title ? obj.options.text.editComments : obj.options.text.addComments,
                                 onclick: function () {
-                                    obj.setComments([x, y], prompt(obj.options.text.comments, title));
+                                    var comment = prompt(obj.options.text.comments, title);
+                                    if (comment) {
+                                        obj.setComments([x, y], comment);
+                                    }
                                 }
                             });
                             if (title) {
@@ -5902,6 +6032,13 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
         }
         path(element);
         return [jexcelElement, jexcelSection];
+    }
+    jexcel.doubleDigitFormat = function (v) {
+        v = '' + v;
+        if (v.length == 1) {
+            v = '0' + v;
+        }
+        return v;
     }
     /**
      * Events

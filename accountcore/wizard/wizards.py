@@ -736,7 +736,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
         parent = self.env['accountcore.cashflow'].sudo().search(
             [['id', '=', parent_id]])
         default['parent_id'] = parent_id
-        default['cash_flow_type'] = parent.cashFlowType.id
+        default['cashFlowType'] = parent.cashFlowType.id
         default['direction'] = parent.direction
         default['number'] = parent.number + \
             '.' + str(parent.currentChildNumber)
