@@ -12,7 +12,7 @@
             <field name='name' >基础系统内置类</field>
         </record>
         <record id='glob_tag_class_4' model='accountcore.glob_tag_class'>
-            <field name='name' >关联交易类</field>
+            <field name='name' >关联事项类</field>
         </record>
         <record id='glob_tag_class_5' model='accountcore.glob_tag_class'>
             <field name='name' >核算方案类</field>
