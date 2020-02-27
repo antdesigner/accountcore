@@ -793,8 +793,8 @@
           <field name="explain" />
           <field name="account" invisible='1'/>
           <field name="items_html" />
-          <field name="damount" />
-          <field name="camount" />
+          <field name="damount" sum="sum_d"/>
+          <field name="camount" sum="sum_c"/>
           <field name="items" invisible='1' />
           <field name="cashFlow"/>
           <field name="v_number" string="凭证号"/>

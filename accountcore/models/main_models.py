@@ -1001,7 +1001,7 @@ class Voucher(models.Model, Glob_tag_Model):
                                 index=True,
                                 help='可用于标记不同的凭证',
                                 ondelete='restrict')
-    v_number = fields.Integer(string='凭证号', default=0)
+    v_number = fields.Integer(string='凭证号', default=0,group_operator='count')
     number = fields.Integer(string='策略号',
                             compute='getVoucherNumber',
                             search="searchNumber")
@@ -1655,7 +1655,7 @@ class Enty(models.Model, Glob_tag_Model):
         for entry in self:
             content = ["【"+item.item_class_name+"】" +
                        item.name+"<br/>" for item in entry.items]
-            entry.items_html = entry.account.name+"<br/>"+''.join(content)
+            entry.items_html = str(entry.account.name)+"<br/>"+''.join(content)
     @api.multi
     @api.depends('items', 'account')
     def _getAccountItem(self):
