@@ -728,7 +728,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
     name = fields.Char(string='现金流量名称', required=True)
     direction = fields.Selection(
         [("-1", "流出"), ("1", "流入")], string='流量方向', required=True)
-    sequence = fields.Integer(string="显示优先级", help="显示顺序")
+    sequence = fields.Integer(string="显示优先级", help="显示顺序", default=100)
     @api.model
     def default_get(self, field_names):
         default = super().default_get(field_names)

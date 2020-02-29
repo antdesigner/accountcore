@@ -31,6 +31,41 @@
             <field name='login' >user5</field>
             <field name='password' >666666</field>
         </record>
+        <record id='accounter_6' model='res.users'>
+            <field name='name' >user6</field>
+            <field name='login' >user6</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_7' model='res.users'>
+            <field name='name' >user7</field>
+            <field name='login' >user7</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_8' model='res.users'>
+            <field name='name' >user8</field>
+            <field name='login' >user8</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_9' model='res.users'>
+            <field name='name' >user9</field>
+            <field name='login' >user9</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_10' model='res.users'>
+            <field name='name' >user10</field>
+            <field name='login' >user10</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_11' model='res.users'>
+            <field name='name' >user11</field>
+            <field name='login' >user11</field>
+            <field name='password' >666666</field>
+        </record>
+        <record id='accounter_12' model='res.users'>
+            <field name='name' >user12</field>
+            <field name='login' >user12</field>
+            <field name='password' >666666</field>
+        </record>
         <!-- 用户组 -->
         <record id="users_accounters" model="res.groups">
             <field name="name">会计组</field>
