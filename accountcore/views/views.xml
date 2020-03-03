@@ -30,6 +30,7 @@
           <field name="is_current" />
           <field name='name' />
           <button string='设为默认' type='object' class="btn-sm  btn-outline-light text-muted" name='toggle' context="{'default_default_org':id}"></button>
+          <field name="user_ids"  groups="base.group_system"></field>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
@@ -46,6 +47,7 @@
             <group>
               <field name="number" help='核算机构的编码，不能相同' />
               <field name="name" help='一个核算机构就是一个会计主体，不能相同' />
+              <field name="user_ids"  groups="base.group_system"></field>
               <field name='glob_tag' widget='many2many_tags' help='对核算机构的一个分类标签，非必填' />
             </group>
           </sheet>
