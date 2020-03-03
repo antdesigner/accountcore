@@ -76,6 +76,7 @@ class Org(models.Model, Glob_tag_Model):
     accounts = fields.One2many('accountcore.account',
                                'org',
                                string='科目')
+    user_ids = fields.Many2many('res.users',string='有权用户')
     _sql_constraints = [('accountcore_org_number_unique', 'unique(number)',
                          '核算机构编码重复了!'),
                         ('accountcore_org_name_unique', 'unique(name)',

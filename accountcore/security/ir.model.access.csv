@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_glob_tag_users_accounters,accountcore.glob_tag,model_accountcore_glob_tag,,1,1,1,1
-access_org_users_accounters,accountcore.org,model_accountcore_org,,1,1,1,1
+access_org_admins_accounters,accountcore.org,model_accountcore_org,base.group_system,1,1,1,1
+access_org_users_accounters,accountcore.org,model_accountcore_org,base.group_user,1,0,0,0
 access_itemclass_users_accounters,accountcore.itemclass,model_accountcore_itemclass,,1,1,1,1
 access_item_users_accounters,accountcore.item,model_accountcore_item,,1,1,1,1
 access_rulebook_users_accounters,accountcore.rulebook,model_accountcore_rulebook,,1,1,1,1

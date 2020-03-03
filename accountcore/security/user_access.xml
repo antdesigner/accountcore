@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 用户核算机构权限-开始 -->
+    <record id="accountcore_user_org_read_rule" model="ir.rule">
+        <field name="name">普通用户拥有的核算机构读权限</field>
+        <field name="model_id" ref="accountcore.model_accountcore_org" />
+        <field name="domain_force">['|',('user_ids','=?',False),('user_ids','in',user.id)]</field>
+        <field name="groups" eval="[(4,ref('base.group_user'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+    <record id="accountcore_admin_org_rule" model="ir.rule">
+        <field name="name">管理员拥有的全部核算机构权限</field>
+        <field name="model_id" ref="accountcore.model_accountcore_org" />
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups" eval="[(4,ref('base.group_system'))]" />
+    </record>
+    <!-- 用户机核算构权限-结束 -->
+    <!-- 用户对凭证的权限-开始 -->
+    <record model="ir.rule" id="accountcore_user_voucher_rule">
+        <field name="name">用户只能查看自己有权限核算机构的凭证</field>
+        <field name="model_id" ref="accountcore.model_accountcore_voucher" />
+        <field name="domain_force">["|",("org.user_ids",'in',user.id),("org.user_ids",'=?',False)] </field>
+        <field name="groups" eval="[(4,ref('base.group_user'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <!-- 用户对凭证的权限-结束 -->
+    <!-- 用户对凭证分录的权限-开始 -->
+        <record model="ir.rule" id="accountcore_user_entry_rule">
+        <field name="name">用户只能查看自己有权限核算机构的凭证分录</field>
+        <field name="model_id" ref="accountcore.model_accountcore_entry" />
+        <field name="domain_force">["|",("voucher.org.user_ids",'in',user.id),("voucher.org.user_ids",'=?',False)] </field>
+        <field name="groups" eval="[(4,ref('base.group_user'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <!-- 用户对凭证分录的权限-结束 -->
+</odoo>
