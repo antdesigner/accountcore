@@ -144,6 +144,80 @@ odoo.define('accountcore.basechange', ['web.AbstractField', 'web.ListController'
     });
 
 });
+
+// 凭证科目选择字段小部件
+odoo.define('accountcore.voucher_account', ['web.core','web.relational_fields', 'web.field_registry'], function (require) {
+    var relational_fields = require('web.relational_fields');
+    var FieldMany2One = relational_fields.FieldMany2One;
+    var core = require('web.core');
+    var _t = core._t;
+    var ChoiceAccountMany2one = FieldMany2One.extend({
+        /**
+         * 继承重写方法,该方法调出调出搜索更多...的列表窗体
+         * @param  {any} view 这里'seach'
+         * @param  {any} ids 列表中展现的记录ID
+         * @param  {any} context 上下文
+         * @param  {any} dynamicFilters 
+         * @return 
+         */
+        _searchCreatePopup: function (view, ids, context) {
+            // 科目字段选择小部件的上级(分录)的上级(凭证)小部件的核算机构的ID
+            var org_id=this.__parentedParent.__parentedParent.recordData.org.data.id
+            var self = this;
+            // 在凭证科目选择字段,点击搜索更多打开的科目列表,默认只出现凭证上
+            // 核算机构范围类的科目和没有分配给任何核算机构的科目
+            var domain=this.record.getDomain({fieldName: this.name});
+            domain.push('|',['org','in',org_id],['org','=',false]);
+            return new dialogs.SelectCreateDialog(this, _.extend({}, this.nodeOptions, {
+                res_model: this.field.relation,
+                domain: domain,
+                context: _.extend({}, this.record.getContext(this.recordParams), context || {}),
+                title: (view === 'search' ? _t("Search: ") : _t("Create: ")) + this.string,
+                initial_ids: ids ? _.map(ids, function (x) { return x[0]; }) : undefined,
+                initial_view: view,
+                disable_multiple_selection: true,
+                no_create: !self.can_create,
+                on_selected: function (records) {
+                    self.reinitialize(records[0]);
+                    self.activate();
+                }
+            })).open();
+        },
+        // _getSearchCreatePopupOptions(view, ids, context, dynamicFilters){
+        //     // 科目字段选择小部件的上级(分录)的上级(凭证)小部件的核算机构的ID
+        //     var org_id=this.__parentedParent.__parentedParent.recordData.org.data.id
+        //     var self = this;
+        //     // 在凭证科目选择字段,点击搜索更多打开的科目列表,默认只出现凭证上
+        //     // 核算机构范围类的科目和没有分配给任何核算机构的科目
+        //     var domain=this.record.getDomain({fieldName: this.name});
+        //     domain.push('|',['org','in',org_id],['org','=',false]);
+        //     return {
+        //         res_model: this.field.relation,
+        //         domain: domain,
+        //         // 重写
+        //         context: _.extend({}, this.record.getContext(this.recordParams), context || {}),
+        //         dynamicFilters: dynamicFilters || [],
+        //         title: (view === 'search' ? _t("Search: ") : _t("Create: ")) + this.string,
+        //         initial_ids: ids,
+        //         initial_view: view,
+        //         disable_multiple_selection: true,
+        //         no_create: !self.can_create,
+        //         kanban_view_ref: this.attrs.kanban_view_ref,
+        //         on_selected: function (records) {
+        //             self.reinitialize(records[0]);
+        //         },
+        //         on_closed: function () {
+        //             self.activate();
+        //         },
+        //     };
+        // },
+    });
+    var fieldRegistry = require('web.field_registry');
+    fieldRegistry.add('ChoiceAccountMany2one', ChoiceAccountMany2one);
+    return {
+        ChoiceAccountMany2one: ChoiceAccountMany2one,
+    }
+});
 // 凭证借贷方金额颜色
 odoo.define('accountcore.accountcoreListRenderer', function (require) {
     "use strict";
@@ -1790,7 +1864,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 if (pre == '=') {
                     // if 单元格定义了ac公式
                     var context = {
-                        ac: formula.slice(1)
+                        ac: formula.slice(1),
+                        // 不通过后台重写的查找函数控制机构范围
+                        control_org:true
                     }
                     this.do_action({
                         name: '报表科目取数公式设置向导',
@@ -1809,6 +1885,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 name: '报表科目取数公式设置向导',
                 type: 'ir.actions.act_window',
                 res_model: 'accountcore.reportmodel_formula',
+                context:{control_org:false},
                 views: [
                     [false, 'form']
                 ],
