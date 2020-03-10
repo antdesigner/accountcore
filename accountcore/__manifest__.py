@@ -9,7 +9,7 @@
     'author': "黄虎",
     'website': "",
     'category': 'accountcore',
-    'version': '12.1.1_20200227_rc',
+    'version': '12.1.1_20200303_beta',
     'depends': ['base', 'web'],
     'application': True,
     'license': 'LGPL-3',
@@ -37,7 +37,9 @@
         'data/report_model.xml',
         'data/help_data.xml',
         'security/ir.model.access.csv',
-        'security/user_access.xml',
+        'security/record_group_role_ac.xml',
+        'security/record_group_role_search.xml',
+        'security/record_group_system.xml',
 
     ],
     'qweb': [
@@ -51,4 +53,3 @@
         'static/css/jsuites.css',
     ],
 }
-

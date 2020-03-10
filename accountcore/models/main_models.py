@@ -176,14 +176,20 @@ class Item(models.Model, Glob_tag_Model):
             args.append(('itemClass', 'in', filter_itemClass))
         context = self.env.context
         org_id = context.get('org_id')
+        control_org = context.get('control_org')
+        control_org = control_org if control_org else True
+
         if org_id:
             # 修改凭证时从上下文取
             org = org_id
         else:
             # 新增时从用户默认值取，凭证机构的change会触发默认值从新设置
             org = self.env.user.currentOrg.id
-        domain = domain+['|', ('org', '=', False), ('org', 'in', [org])]
-        pos = self.search(domain+args, limit=limit, order='number')
+        if control_org:
+            domain = ['|', ('org', '=', False), ('org', 'in', [org])]+args
+        elif args:
+            domain = ['|', ('org', '=', False)]+args
+        pos = self.search(domain, limit=limit, order='number')
         # return pos.name_get()
         return pos._my_name_get()
 
@@ -428,14 +434,19 @@ class Account(models.Model, Glob_tag_Model):
             limit = 0
         context = self.env.context
         org_id = context.get('org_id')
+        control_org = context.get('control_org')
+        control_org = control_org if control_org else True
         if org_id:
             # 修改凭证时从上下文取
             org = org_id
         else:
             # 新增时从用户默认值取，凭证机构的change会触发默认值从新设置
             org = self.env.user.currentOrg.id
-        domain = domain+['|', ('org', '=', False), ('org', 'in', [org])]
-        pos = self.search(domain+args, limit=limit, order='number')
+        if control_org:
+            domain = ['|', ('org', '=', False), ('org', 'in', [org])]+args
+        elif args:
+            domain = ['|', ('org', '=', False)]+args
+        pos = self.search(domain, limit=limit, order='number')
         # return pos.name_get()
         return pos._my_name_get()
 

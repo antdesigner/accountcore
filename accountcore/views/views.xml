@@ -749,8 +749,8 @@
                 <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':[account],'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
                 <field name='org' invisible='1' />
                 <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
-                <!-- org_id,show_balance用于在 -->
-                <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account'></field>
+                <!-- org_id,show_balance用于在科目查找限制当前机构范围和显示科目余额-->
+                <field name='account' domain="[('is_show','=',True)]" context="{'search_default_group_by_accountClassClass':1,'search_default_is_show':1,'org_id':org,'show_balance':True}" options="{'no_create_edit':1,'no_create':1,'no_open':1}" class='oe_ac_account' widget='ChoiceAccountMany2one'></field>
                 <field name='damount' sum='ac_dsum' class='amountColor'></field>
                 <field name='camount' sum='ac_csum' class='amountColor'></field>
                 <field name='items' widget="tiger_accountItems_m2m" class='oe_ac_items' context="{'account':account,'org_id':org,'show_balance':True,'itemclass_no_from_userInfo':True}" />
@@ -1102,7 +1102,7 @@
             </group>
             <group>
               <field name="only_this_level" />
-              <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" />
+              <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" context="{'control_org':False}"/>
               <field name="account" default_focus='1' domain="['|',('org','=',False),('org','in',orgs)]" context="{'search_default_group_by_accountClassClass':True}">
                 <tree default_order='accountClass,number,org'  >
                   <field name='org' />
