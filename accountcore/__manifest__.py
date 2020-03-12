@@ -9,7 +9,7 @@
     'author': "黄虎",
     'website': "",
     'category': 'accountcore',
-    'version': '12.1.1_20200303_beta',
+    'version': '12.1.2.20200312_beta',
     'depends': ['base', 'web'],
     'application': True,
     'license': 'LGPL-3',

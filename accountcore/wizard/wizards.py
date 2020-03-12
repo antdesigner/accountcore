@@ -798,7 +798,7 @@ class GetReport(models.TransientModel):
             'res_model': 'accountcore.report_model',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': 'current',
+            'target': 'main',
             'res_id': self.report_model.id,
             'context': {
                 'form_view_initial_mode': 'edit',
