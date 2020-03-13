@@ -146,10 +146,11 @@ odoo.define('accountcore.basechange', ['web.AbstractField', 'web.ListController'
 });
 
 // 凭证科目选择字段小部件
-odoo.define('accountcore.voucher_account', ['web.core','web.relational_fields', 'web.field_registry'], function (require) {
+odoo.define('accountcore.voucher_account', ['web.core','web.relational_fields', 'web.field_registry','web.view_dialogs'], function (require) {
     var relational_fields = require('web.relational_fields');
     var FieldMany2One = relational_fields.FieldMany2One;
     var core = require('web.core');
+    var dialogs = require('web.view_dialogs');
     var _t = core._t;
     var ChoiceAccountMany2one = FieldMany2One.extend({
         /**
