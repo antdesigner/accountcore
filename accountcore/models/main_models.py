@@ -76,7 +76,7 @@ class Org(models.Model, Glob_tag_Model):
     accounts = fields.One2many('accountcore.account',
                                'org',
                                string='科目')
-    user_ids = fields.Many2many('res.users',string='有权用户')
+    user_ids = fields.Many2many('res.users', string='有权用户')
     _sql_constraints = [('accountcore_org_number_unique', 'unique(number)',
                          '核算机构编码重复了!'),
                         ('accountcore_org_name_unique', 'unique(name)',
@@ -186,9 +186,10 @@ class Item(models.Model, Glob_tag_Model):
             # 新增时从用户默认值取，凭证机构的change会触发默认值从新设置
             org = self.env.user.currentOrg.id
         if control_org:
-            domain = ['|', ('org', '=', False), ('org', 'in', [org])]+args
+            domain = ['|', ('org', '=', False),
+                      ('org', 'in', [org])]+args+domain
         elif args:
-            domain = ['|', ('org', '=', False)]+args
+            domain = ['|', ('org', '=', False)]+args+domain
         pos = self.search(domain, limit=limit, order='number')
         # return pos.name_get()
         return pos._my_name_get()
@@ -443,9 +444,10 @@ class Account(models.Model, Glob_tag_Model):
             # 新增时从用户默认值取，凭证机构的change会触发默认值从新设置
             org = self.env.user.currentOrg.id
         if control_org:
-            domain = ['|', ('org', '=', False), ('org', 'in', [org])]+args
+            domain = ['|', ('org', '=', False),
+                      ('org', 'in', [org])]+args+domain
         elif args:
-            domain = ['|', ('org', '=', False)]+args
+            domain = ['|', ('org', '=', False)]+args+domain
         pos = self.search(domain, limit=limit, order='number')
         # return pos.name_get()
         return pos._my_name_get()
@@ -1013,7 +1015,7 @@ class Voucher(models.Model, Glob_tag_Model):
                                 index=True,
                                 help='可用于标记不同的凭证',
                                 ondelete='restrict')
-    v_number = fields.Integer(string='凭证号', default=0,group_operator='count')
+    v_number = fields.Integer(string='凭证号', default=0, group_operator='count')
     number = fields.Integer(string='策略号',
                             compute='getVoucherNumber',
                             search="searchNumber")
@@ -1089,6 +1091,7 @@ class Voucher(models.Model, Glob_tag_Model):
         for v in self:
             v.year = v.voucherdate.year
             v.month = v.voucherdate.month
+
     @ACTools.refuse_role_search
     @api.multi
     def reviewing(self):
@@ -1531,6 +1534,7 @@ class Voucher(models.Model, Glob_tag_Model):
                                       ['items', '=', itemId],
                                       ['isbegining', '=', False]])
         return record
+
     @ACTools.refuse_role_search
     def writeoff(self):
         '''冲销'''
@@ -1668,6 +1672,7 @@ class Enty(models.Model, Glob_tag_Model):
             content = ["【"+item.item_class_name+"】" +
                        item.name+"<br/>" for item in entry.items]
             entry.items_html = str(entry.account.name)+"<br/>"+''.join(content)
+
     @api.multi
     @api.depends('items', 'account')
     def _getAccountItem(self):
