@@ -1089,7 +1089,7 @@ class Voucher(models.Model, Glob_tag_Model):
         for v in self:
             v.year = v.voucherdate.year
             v.month = v.voucherdate.month
-
+    @ACTools.refuse_role_search
     @api.multi
     def reviewing(self):
         '''审核凭证'''
@@ -1531,7 +1531,7 @@ class Voucher(models.Model, Glob_tag_Model):
                                       ['items', '=', itemId],
                                       ['isbegining', '=', False]])
         return record
-
+    @ACTools.refuse_role_search
     def writeoff(self):
         '''冲销'''
         voucher_date = fields.Date.today()

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
+from functools import wraps
+from odoo import exceptions
 from odoo.tools import pycompat
 # 快速构造简单的对象
 
@@ -74,3 +76,15 @@ class ACTools():
             raise exceptions.UserError(
                 '必选项目类别【'+mast_b[0][0]+"】和科目的必选项目类别【"+mast_a[0][0]+"】不符")
         return rl
+
+    @staticmethod
+    def refuse_role_search(f):
+        '''对只查询组的拒绝权限的装饰器'''
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            self = args[0]
+            if self.env.user.has_group('accountcore.group_role_search'):
+                raise exceptions.AccessDenied("只查询组没有权限")
+            result = f(*args, **kwargs)
+            return result
+        return wrapper

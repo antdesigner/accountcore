@@ -10,6 +10,7 @@ from ..models.main_models import AccountsBalance
 from ..models.main_models import Voucher
 from ..models.ac_period import Period
 from ..models.main_models import Glob_tag_Model
+from ..models.ac_obj import ACTools
 # 向导部分-开始
 # 新增下级科目的向导
 
@@ -70,6 +71,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
             '.' + str(fatherAccount.currentChildNumber)
         return default
 
+    @ACTools.refuse_role_search
     @api.model
     def create(self, values):
         if 'name' in values:
@@ -186,7 +188,7 @@ class NumberStaticsWizard(models.TransientModel):
         default = super().default_get(field_names)
         default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
-
+    
     def setVoucherNumberTastics(self, args):
         currentUser = self.env['res.users'].sudo().browse(self.env.uid)
         currentUser.write(
@@ -210,7 +212,7 @@ class SetingVoucherNumberWizard(models.TransientModel):
         if self.env.user.voucherNumberTastics:
             default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
-
+    @ACTools.refuse_role_search
     def setingNumber(self, args):
         startNumber = self.startNumber
         numberTasticsId = self.voucherNumberTastics.id
@@ -246,7 +248,7 @@ class SetingVNumberWizard(models.TransientModel):
     _name = 'accountcore.seting_v_number'
     _description = '设置凭证号向导'
     startNumber = fields.Integer(string='从此编号开始', default=1, required=True)
-
+    @ACTools.refuse_role_search
     def setingNumber(self, args):
         startNumber = self.startNumber
         vouchers = self.env['accountcore.voucher'].sudo().browse(
@@ -283,7 +285,7 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
         if self.env.user.voucherNumberTastics:
             default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
-
+    @ACTools.refuse_role_search
     def setVoucherNumberSingle(self, argsDist):
         '''设置修改凭证策略号'''
         newNumber = self.newNumber
@@ -309,7 +311,7 @@ class SetingVNumberSingleWizard(models.TransientModel):
     _name = 'accountcore.seting_v_number_single'
     _description = '设置单张凭证号向导'
     newNumber = fields.Integer(string='新凭证号', required=True)
-
+    @ACTools.refuse_role_search
     def setVoucherNumberSingle(self, argsDist):
         '''设置修改凭证号'''
         voucher = self.env['accountcore.voucher'].sudo().browse(
@@ -458,6 +460,7 @@ class currencyDown_sunyi(models.TransientModel):
         default=lambda s: s.env.user.currentOrg, required=True)
     # def soucre(self):
     #     return self.env.ref('rulebook_1')
+    @ACTools.refuse_role_search
     @api.multi
     def do(self, *args):
         '''执行结转损益'''
@@ -741,7 +744,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
         default['number'] = parent.number + \
             '.' + str(parent.currentChildNumber)
         return default
-
+    @ACTools.refuse_role_search
     @api.model
     def create(self, values):
         parent_id = self.env.context.get('active_id')
@@ -784,7 +787,7 @@ class GetReport(models.TransientModel):
                             string='机构范围',
                             default=lambda s: s.env.user.currentOrg,
                             required=True)
-
+    
     def do(self):
         '''根据模板生成报表'''
         report = self.env['accountcore.report_model'].sudo().browse(
@@ -830,7 +833,7 @@ class ReportModelFormula(models.TransientModel):
         if self.env.context.get('ac'):
             default['formula'] = self.env.context.get('ac')
         return default
-
+    @ACTools.refuse_role_search
     def do(self):
         '''公式填入单元格'''
         return {
@@ -965,7 +968,7 @@ class StoreReport(models.TransientModel):
     receivers = fields.Many2many('accountcore.receiver', string='接收者(报送对象)')
     summary = fields.Text(string='归档报表说明')
     htmlstr = fields.Html(string='html内容')
-
+    @ACTools.refuse_role_search
     def do(self):
         reportModelId = self._context["model_id"]
         reportModel = self.env['accountcore.report_model'].sudo().browse([
@@ -1015,7 +1018,7 @@ class ReportCashFlowFormula(models.TransientModel):
         if self.env.context.get('ac'):
             default['formula'] = self.env.context.get('ac')
         return default
-
+    @ACTools.refuse_role_search
     def do(self):
         '''公式填入单元格'''
         return {
@@ -1025,7 +1028,7 @@ class ReportCashFlowFormula(models.TransientModel):
             'target': 'new',
             'context': {'ac_formula': self.formula}
         }
-
+    
     @api.onchange('btn_join_reduce')
     def join_reduce(self):
         '''减进公式'''
