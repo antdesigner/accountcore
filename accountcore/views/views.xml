@@ -227,7 +227,7 @@
           <field name='direction' />
           <field name="is_show" />
           <field name="is_last" />
-          <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d' attrs="{'invisibel':[('user.groups.id','in',%('accountcore.group_role_search')d)]}"></button>
+          <button string='下级科目' type='action' class="btn-sm fa fa-plus-square btn-outline-light text-muted" name='%(accountcore_warzidcreatechildaccounts_action)d' ></button>
           <field name='glob_tag' widget='many2many_tags' invisible='1' />
           <field name='fatherAccountId' invisible='1'></field>
         </tree>
