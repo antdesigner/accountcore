@@ -62,7 +62,7 @@
             <field name='password' >666666</field>
         </record>
     </data>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- 预设用户-结束 -->
         <!-- 创建用户组类别-开始 -->
         <record model="ir.module.category" id="accountcore_group_default">

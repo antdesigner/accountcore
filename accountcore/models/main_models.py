@@ -365,7 +365,7 @@ class Account(models.Model, Glob_tag_Model):
                          '科目编码重复了!'),
                         ('accountcore_account_name_unique', 'unique(name)',
                          '科目名称重复了!')]
-
+    @ACTools.refuse_role_search
     @api.model
     def create(self, values):
         '''新增科目'''
