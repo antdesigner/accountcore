@@ -109,5 +109,21 @@ td{vertical-align:middle !important;}
                 </t>
             </t>
         </template>
+                <template id='vouchers_report_a5'>
+            <t t-call="web.basic_layout">
+                <style>
+table{table-layout: fixed;}
+table>tbody>tr {height: 5em;}
+table, tr, td, th, tbody, thead, tfoot{page-break-inside: avoid !important;}
+.explain{font-size:0.7em}
+th, td{border:1px solid black !important;}
+td{vertical-align:middle !important;}
+.damount,.camount{white-space:nowrap !important;}
+                </style>
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="accountcore.voucher_report" />
+                </t>
+            </t>
+        </template>
     </data>
 </odoo>

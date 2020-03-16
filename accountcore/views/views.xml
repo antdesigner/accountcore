@@ -1539,9 +1539,9 @@
       <field name='domain'>[('isbegining','=',True)]</field>
     </record>
     <!-- 报表动作-凭证打印 -->
-    <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证A5' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_a4half'  />
+    <report id='accounctore_voucher_report' model='accountcore.voucher' string='凭证A5' report_type='qweb-html' print_report_name="'凭证A5'" name='accountcore.vouchers_report_a5' paperformat='paperformat_a4half' />
     <!-- 打印凭证24cmX14cm -->
-    <report id='accounctore_voucher_report_a5haft' model='accountcore.voucher' string='凭证24cmX14cm(发票大小)' report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_invoice'  />
+    <report id='accounctore_voucher_report_a5haft' model='accountcore.voucher' string='凭证24cmX14cm(发票大小)' print_report_name="'凭证24cmX14cm(发票大小)'" report_type='qweb-html' name='accountcore.vouchers_report' paperformat='paperformat_invoice' />
     <!--form-平衡检查向导 -->
     <record id="accountcore_check_begin_balance_form" model="ir.ui.view">
       <field name="name">平衡检查</field>
