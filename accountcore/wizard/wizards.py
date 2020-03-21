@@ -71,9 +71,10 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
             '.' + str(fatherAccount.currentChildNumber)
         return default
 
-    @ACTools.refuse_role_search
     @api.model
     def create(self, values):
+        if self.env.user.current_date:
+            voucher_date = self.env.user.current_date
         if 'name' in values:
             if '-' in values['name']:
                 raise exceptions.ValidationError("科目名称中不能含有'-'字符")
@@ -213,7 +214,8 @@ class SetingVoucherNumberWizard(models.TransientModel):
             default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
     @ACTools.refuse_role_search
-    def setingNumber(self, args):
+    def setingNumber(self):
+        args = self.env.context
         startNumber = self.startNumber
         numberTasticsId = self.voucherNumberTastics.id
         currentUserId = self.env.uid
@@ -249,7 +251,8 @@ class SetingVNumberWizard(models.TransientModel):
     _description = '设置凭证号向导'
     startNumber = fields.Integer(string='从此编号开始', default=1, required=True)
     @ACTools.refuse_role_search
-    def setingNumber(self, args):
+    def setingNumber(self):
+        args = self.env.context
         startNumber = self.startNumber
         vouchers = self.env['accountcore.voucher'].sudo().browse(
             args['active_ids'])
@@ -286,8 +289,9 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
             default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
     @ACTools.refuse_role_search
-    def setVoucherNumberSingle(self, argsDist):
+    def setVoucherNumberSingle(self):
         '''设置修改凭证策略号'''
+        argsDist = self.env.context
         newNumber = self.newNumber
         if newNumber < 0:
             newNumber = 0
@@ -312,8 +316,9 @@ class SetingVNumberSingleWizard(models.TransientModel):
     _description = '设置单张凭证号向导'
     newNumber = fields.Integer(string='新凭证号', required=True)
     @ACTools.refuse_role_search
-    def setVoucherNumberSingle(self, argsDist):
+    def setVoucherNumberSingle(self):
         '''设置修改凭证号'''
+        argsDist = self.env.context
         voucher = self.env['accountcore.voucher'].sudo().browse(
             argsDist['active_id'])
         if self.newNumber < 0:
@@ -744,9 +749,10 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
         default['number'] = parent.number + \
             '.' + str(parent.currentChildNumber)
         return default
-    @ACTools.refuse_role_search
     @api.model
     def create(self, values):
+        if self.env.user.current_date:
+            voucher_date = self.env.user.current_date
         parent_id = self.env.context.get('active_id')
         Table = self.env['accountcore.cashflow'].sudo()
         parent = Table.search(

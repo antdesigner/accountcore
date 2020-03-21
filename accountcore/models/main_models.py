@@ -365,10 +365,11 @@ class Account(models.Model, Glob_tag_Model):
                          '科目编码重复了!'),
                         ('accountcore_account_name_unique', 'unique(name)',
                          '科目名称重复了!')]
-    @ACTools.refuse_role_search
     @api.model
     def create(self, values):
         '''新增科目'''
+        if self.env.user.has_group('accountcore.group_role_search'):
+                raise exceptions.AccessDenied("只查询组没有权限")
         self._check_name(values['name'])
         rl = super(Account, self).create(values)
         return rl
