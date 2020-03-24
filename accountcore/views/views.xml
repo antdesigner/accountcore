@@ -765,7 +765,7 @@
               <div class="ac-warning" styel="margin:0px;color:black" attrs="{'invisible':[('sum_amount','=',0)]}">
                 <span>借贷方差额：</span>
                 <field name="sum_amount" />
-                <span id="auto_balance" style="margin-left:5px">自动平衡</span>
+                <!-- <span id="auto_balance" style="margin-left:5px">自动平衡</span> -->
               </div>
               <field name='soucre' />
               <field name='createUser' />
