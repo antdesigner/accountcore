@@ -10,6 +10,8 @@
     'website': "",
     'category': 'accountcore',
     'version': '12.1.3.20200322_beta',
+    'price': 333.85,
+    'currency': 'USD',
     'depends': ['base', 'web'],
     'application': True,
     'license': 'LGPL-3',
