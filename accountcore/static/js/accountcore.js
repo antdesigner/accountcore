@@ -163,7 +163,11 @@ odoo.define('accountcore.voucher_account', ['web.core','web.relational_fields', 
          */
         _searchCreatePopup: function (view, ids, context) {
             // 科目字段选择小部件的上级(分录)的上级(凭证)小部件的核算机构的ID
-            var org_id=this.__parentedParent.__parentedParent.recordData.org.data.id
+            var org_id = 0
+            if (this.__parentedParent.__parentedParent.recordData.org) {
+                org_id = this.__parentedParent.__parentedParent.recordData.org.data.id
+            }
+            // var org_id = this.__parentedParent.__parentedParent.recordData.org.data.id
             var self = this;
             // 在凭证科目选择字段,点击搜索更多打开的科目列表,默认只出现凭证上
             // 核算机构范围类的科目和没有分配给任何核算机构的科目
