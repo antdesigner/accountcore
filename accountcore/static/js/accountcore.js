@@ -1077,12 +1077,15 @@ odoo.define('accountcore.period_tool', function (require) {
             if (1 <= month && month <= 3) {
                 year = this.year - 1
             } else if (4 <= month && month < 6) {
+                firstMonth = 1;
+                endMonth = 3;
+            } else if (7 <= month && month <= 9) {
                 firstMonth = 4;
                 endMonth = 6;
-            } else if (7 <= month && month <= 9) {
+            }else if (10<= moth && month <=12){
                 firstMonth = 7;
                 endMonth = 9;
-            };
+            }
             var days = this.getDaysOf(year, endMonth)
             var firstDate = new Date(year, firstMonth - 1, 1);
             var endDate = new Date(year, endMonth - 1, days);
