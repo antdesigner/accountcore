@@ -1821,7 +1821,9 @@ class AccountsBalance(models.Model):
                                        index=True)
     accountItemClass = fields.Many2one('accountcore.itemclass',
                                        string='核算项目类别',
-                                       related='account.accountItemClass')
+                                       related='account.accountItemClass',
+                                       store=True,
+                                       index=True)
     items = fields.Many2one('accountcore.item',
                             string='核算项目',
                             index=True,
