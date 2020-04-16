@@ -1082,7 +1082,7 @@ odoo.define('accountcore.period_tool', function (require) {
             } else if (7 <= month && month <= 9) {
                 firstMonth = 4;
                 endMonth = 6;
-            }else if (10<= moth && month <=12){
+            }else if (10<= month && month <=12){
                 firstMonth = 7;
                 endMonth = 9;
             }
