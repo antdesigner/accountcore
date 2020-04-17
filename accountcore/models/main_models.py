@@ -643,7 +643,7 @@ class Account(models.Model, Glob_tag_Model):
                 if self.direction == '1':
                     amount = balance.beginingDamount-balance.beginingCamount
                 else:
-                    amount = balance.beginingCamount-balance.beginingCamount
+                    amount = balance.beginingCamount-balance.beginingDamount
             # 在启用当年的年初1月
             elif startP.month == 1:
                 begin = self.getBegins(org, item)
