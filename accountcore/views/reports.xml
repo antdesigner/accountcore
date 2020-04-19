@@ -184,8 +184,8 @@
                                     <field name="meta_info" invisible='1' widget='ac_jexcel_meta_info' />
                                 </center>
                                 <group>
-                                    <field name="explain" />
                                     <field name='glob_tag' widget='many2many_tags' />
+                                    <field name="explain" />
                                 </group>
                             </page>
                             <page string='机构范围'>
