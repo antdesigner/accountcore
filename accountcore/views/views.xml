@@ -713,7 +713,7 @@
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
         <form>
-          <header>
+          <header style="position: fixed;width:100%;margin-top:-12px;padding:0px;z-index:999;">
             <button string='取消审核' type='object' name='cancelReview' attrs="{'invisible':[('state','=','creating')]}"></button>
             <button string='审核凭证' type='object' name='reviewing' attrs="{'invisible':[('state','=','reviewed')]}"></button>
             <button string='修改凭证号' type='action' name='%(accountcore_seting_v_number_single_action)d'></button>
