@@ -807,6 +807,7 @@ class GetReport(models.TransientModel):
             'res_model': 'accountcore.report_model',
             'view_type': 'form',
             'view_mode': 'form',
+            'views': [[self.env.ref('accountcore.accountcore_report_model_auto_form').id, 'form']],
             'target': 'main',
             'res_id': self.report_model.id,
             'context': {

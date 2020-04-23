@@ -140,7 +140,7 @@
             <field name='target'>new</field>
         </record>
         <!-- list-报表模板-->
-        <record model='ir.ui.view' id='accountcore_report_model_list'>
+        <record model='ir.ui.view' id='accountcore_report_model_list' >
             <field name='name'>报表模板</field>
             <field name='model'>accountcore.report_model</field>
             <field name='arch' type='xml'>
@@ -148,7 +148,7 @@
                     <field name="id" invisible='1' />
                     <button type='action' class="btn-sm fa fa-caret-square-o-right oe_right" aria-label="get_report" title="get_report" name='%(accountcore_get_report_actions_window)d' context="{'default_report_model':id}"></button>
                     <field name="report_type" />
-                    <field name="guid" />
+                    <!-- <field name="guid" /> -->
                     <field name='name' />
                     <field name="version" />
                     <field name="summary" />
@@ -156,9 +156,9 @@
                 </tree>
             </field>
         </record>
-        <!--form-已归档类型 -->
-        <record id="accountcore_report_model_action_window_form" model="ir.ui.view">
-            <field name='name'>报表模板</field>
+        <!--form-报表模板 -->
+        <record id="accountcore_report_model_base_form" model="ir.ui.view">
+            <field name='name'>报表模板母板</field>
             <field name="model">accountcore.report_model</field>
             <field name="arch" type="xml">
                 <form string="">
@@ -204,7 +204,42 @@
                             </page>
                         </notebook>
                     </sheet>
+                    <script type="text/javascript">
+                        <!-- 另一个模板使用该标签，别删 -->
+                    </script>
                 </form>
+            </field>
+        </record>
+        <!--form-报表模板 不自动计算-->
+        <record id="accountcore_report_model_action_window_form" model="ir.ui.view">
+            <field name="name">报表模板</field>
+            <field name="model">accountcore.report_model</field>
+            <field name="inherit_id" ref="accountcore.accountcore_report_model_base_form" />
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <xpath expr="script[last()]" position="after">
+                    <script type="text/javascript">
+                    </script>
+                </xpath>
+            </field>
+        </record>
+        <!--form-报表模板 生成报表向导自动计算-->
+        <record id="accountcore_report_model_auto_form" model="ir.ui.view">
+            <field name="name">报表模板自动计算</field>
+            <field name="model">accountcore.report_model</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="accountcore.accountcore_report_model_base_form" />
+            <field name="arch" type="xml">
+                <xpath expr="script[last()]" position="after">
+                    <script type="text/javascript">
+odoo.define(function (require) {
+	$(function () {
+        //自动计算
+        $(".jexcel_toolbar_item:contains('exposure')").trigger('click');
+	});
+});
+                    </script>
+                </xpath>
             </field>
         </record>
         <!--form-用报表模板生成报表向导-->
@@ -216,7 +251,7 @@
                     <sheet>
                         <group>
                             <field name="report_model" options="{'no_create_edit':1,'no_create':1,'no_open':1}" required='1' />
-                            <field name="guid" />
+                            <!-- <field name="guid" /> -->
                             <field name="summary" />
                         </group>
                         <group>

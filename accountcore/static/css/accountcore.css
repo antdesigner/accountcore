@@ -312,6 +312,9 @@ table.jexcel {
     direction: ltr;
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
+    width: 30px !important;
+    height: 30px !important;
+    text-align: center !important;
 }
 
 /* 报表设计器工具栏 */

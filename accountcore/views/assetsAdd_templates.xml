@@ -26,6 +26,7 @@
         <template id="accountcore_jexcel_css" inherit_id="web.assets_backend" name="accountcore jexcel css">
             <xpath expr="link[last()]" position="after">
                 <link rel='stylesheet' type='text/css' href="/accountcore/static/css/jexcel.css" />
+                <link rel='stylesheet' type='text/css' href="/accountcore/static/css/jexcel.theme.css" />	
             </xpath>
         </template>
         <template id="accountcore_jsuites_css" inherit_id="web.assets_backend" name="accountcore jsuites css">

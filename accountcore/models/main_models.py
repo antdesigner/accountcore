@@ -99,6 +99,15 @@ class Org(models.Model, Glob_tag_Model):
             'view_mode': 'form',
             'target': 'new',
         }
+
+    @api.multi
+    def unlink(self):
+        '''删除'''
+        for mySelf in self:
+            if mySelf.id == 1:
+                raise exceptions.ValidationError("不能删除默认机构，可以修改")
+        rl_bool = super(Org, self).unlink()
+        return rl_bool
 # 会计科目体系
 
 

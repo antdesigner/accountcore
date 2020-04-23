@@ -107,7 +107,7 @@ class ReportModel(models.Model, Glob_tag_Model, Jexcel_fields):
             convert = self._fields[name].convert_to_display_name
             for record in self:
                 result.append((record.id, convert(
-                    record[name], record)+"[版本："+record.version+"]唯一码："+record.guid))
+                    record[name], record)+"["+record.version+"]"))
         else:
             for record in self:
                 result.append((record.id, "%s,%s" % (

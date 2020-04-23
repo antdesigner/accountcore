@@ -1559,9 +1559,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                                 return;
                             }
                             // var cell = jexcel.getColumnNameFromId([self.selection_x1, self.selection_y1])
-                            var x = self.selection_x2 - self.selection_x1;
-                            var y = self.selection_y2 - self.selection_y1;
-                            self.jexcel_obj.setMerge("", x, y);
+                            // var x = self.selection_x2 - self.selection_x1;
+                            // var y = self.selection_y2 - self.selection_y1;
+                            self.jexcel_obj.setMerge();
                         },
                     },
                     // 取消合并单元格
@@ -1733,7 +1733,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                     // about: ​ '关于', 修改后将无法使用
                     areYouSureToDeleteTheSelectedRows: '你确定要删除选中行?',
                     areYouSureToDeleteTheSelectedColumns: '你确定要删除选中列?',
-                    thisActionWillDestroyAnyExistingMergedCellsAreYouSure: '你是否确定要取消合并单元格?',
+                    thisActionWillDestroyAnyExistingMergedCellsAreYouSure: '需要取消合并单元格?',
                     thisActionWillClearYourSearchResultsAreYouSure: '该操作会清除你的搜索结果，你是否确定?',
                     thereIsAConflictWithAnotherMergedCell: '与另一个合并的单元格有冲突!',
                     invalidMergeProperties: '无效的合并',
@@ -1791,27 +1791,31 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 oninsertrow: function (instance) {},
                 onbeforedeleterow: function (instance, rowNumber, numOfRows) {
                     // removeMerge
-                    var x = rowNumber + numOfRows;
-                    var y = self.jexcel_obj.colgroup.length;
-                    var cellname = '';
-                    for (var j = 0; j < y; j++) {
-                        for (var i = rowNumber; i < x; i++) {
-                            cellname = jexcel.getColumnNameFromId([j, i]);
-                            instance.jexcel.removeMerge(cellname);
-                        }
-                    }
-                    return true
+                    // var x = rowNumber + numOfRows;
+                    // var y = self.jexcel_obj.colgroup.length;
+                    // var cellname = '';
+                    // for (var j = 0; j < y; j++) {
+                    //     for (var i = rowNumber; i < x; i++) {
+                    //         cellname = jexcel.getColumnNameFromId([j, i]);
+                    //         instance.jexcel.removeMerge(cellname);
+                    //     }
+                    // }
+                    // return true
                 },
                 ondeleterow: function (instance) {
                     self._changeStyleAndData(instance);
                 },
-                oninsertcolumn: function (instance) {},
+                oninsertcolumn: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
                 ondeletecolumn: function (instance) {
                     self._changeStyleAndData(instance);
                 },
                 onmoverow: function (instance) {},
                 onmovecolumn: function (instance, from, to) {},
-                onmerge: function (instance) {},
+                onmerge: function (instance) {
+                    self._changeStyleAndData(instance);
+                },
                 onresizerow: function (instance) {},
                 onresizecolumn: function (instance) {},
                 onsort: function (instance, cellNum, order) {
@@ -1834,7 +1838,6 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         return;
                     }
                 },
-                onmerge: function () {},
                 onblur: function (instance) {
                     self._changeStyleAndData(instance);
                 },

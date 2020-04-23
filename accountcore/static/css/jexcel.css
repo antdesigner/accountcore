@@ -1,5 +1,5 @@
 :root {
-    --jexcel-border-color:rgb(0, 0, 0);
+    --jexcel-border-color:#000;
 }
 
 .jexcel_container {
@@ -40,7 +40,9 @@
 }
 
 @supports (-moz-appearance:none) {
+					 
     .jexcel_content { padding-right:10px; } 
+	 
 }
 
 .jexcel_content::-webkit-scrollbar {
@@ -51,70 +53,73 @@
 .jexcel_content::-webkit-scrollbar-track {
     background: #eee;
 }
-
+ 
 .jexcel_content::-webkit-scrollbar-thumb {
   background: #666; 
 }
 
 
 .jexcel {
-    border-collapse:separate;
-    table-layout:fixed;
-    white-space: nowrap;
-    empty-cells:show;
-    border:0px;
-    background-color:#fff;
-    width:0;
+    border-collapse: separate;
+    table-layout: fixed;
+    white-space:  nowrap;
+    empty-cells: show;
+    border: 0px;
+    background-color: #fff;
+    width: 0;
 
-    border-top:1px solid transparent;
-    border-left:1px solid transparent;
-    border-right:1px solid #ccc;
-    border-bottom:1px solid #ccc;
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+
+
+
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+
+
 }
 
 .jexcel > thead > tr > td
 {
-    border-top:1px solid #ccc;
-    border-left:1px solid #ccc;
-    border-right:1px solid transparent;
-    border-bottom:1px solid transparent;
-    background-color:#f3f3f3;
-    padding:2px;
-    cursor:pointer;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    background-color: #f3f3f3;
+    padding: 2px;
+    cursor: pointer;
     box-sizing: border-box;
     overflow: hidden;
     position: -webkit-sticky;
     position: sticky;
     top: 0;
-    z-index:20;
+    z-index:2;
+					  
+ 
+
+								   
+			  
 }
 
 .with-toolbar .jexcel > thead > tr > td
 {
     top:42px;
+				
+					   
+				
+			  
+				 
 }
 
-.jexcel > thead.draggable > tr > td::before
-{
-    content:'\00a0';
-    width:100%;
-    height:3px;
-    position:absolute;
-    bottom:0px;
-    left:0px;
-    cursor:move;
-}
-
-.jexcel > thead.resizable > tr > td::after
-{
-    content:'\00a0';
-    width:3px;
-    height:100%;
-    position:absolute;
-    top:0px;
-    right:0px;
-    cursor:col-resize;
-}
+									  
+					 
+			   
+				 
+					   
+			 
+			   
+					   
+	
 
 .jexcel > thead > tr > td.dragging
 {
@@ -122,12 +127,11 @@
     opacity:0.5;
 }
 
-.jexcel > thead > tr > td:first-child:after,
-.jexcel > thead > tr.jexcel_nested > td::before,
-.jexcel > thead > tr.jexcel_nested > td::after
-{
-    cursor:default;
-}
+										 
+										  
+										  
+					
+	
 
 .jexcel > thead > tr > td.selected
 {
@@ -212,10 +216,12 @@
 {
     color:rgba(0,0,0,0.3)
 }
+
 .jexcel > tbody > tr.selected > td:first-child
 {
     background-color:#dcdcdc;
 }
+
 .jexcel > tbody > tr > td > select,
 .jexcel > tbody > tr > td > input,
 .jexcel > tbody > tr > td > textarea
@@ -241,6 +247,7 @@
     width:12px;
     margin-top:2px;
 }
+
 .jexcel > tbody > tr > td > input[type=radio]
 {
     width:12px;
@@ -278,6 +285,7 @@
     height:10px;
     margin:auto;
 }
+
 .jexcel > tbody > tr > td > a {
     text-decoration: underline;
 }
@@ -286,25 +294,43 @@
     color: blue;
     cursor: pointer;
 }
+
+.jexcel > tfoot > tr > td
+{
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    background-color: #f3f3f3;
+    padding: 2px;
+    cursor: pointer;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
 .jexcel .highlight {
     background-color:rgba(0,0,0,0.05);
 }
 
 .jexcel .highlight-top {
+							   
     border-top:1px solid #000; /* var(--jexcel-border-color);*/
     box-shadow: 0px -1px #ccc;
 }
 
 .jexcel .highlight-left {
+								
     border-left:1px solid #000; /* var(--jexcel-border-color);*/
     box-shadow: -1px 0px #ccc;
 }
 
 .jexcel .highlight-right {
+								 
     border-right:1px solid #000; /* var(--jexcel-border-color);*/
 }
 
 .jexcel .highlight-bottom {
+								  
     border-bottom:1px solid #000; /* var(--jexcel-border-color);*/
 }
 
@@ -318,26 +344,32 @@
 {
     background-color:rgba(0,0,0,0.0);
 }
+
 .jexcel .selection
 {
     background-color:rgba(0,0,0,0.05);
 }
+
 .jexcel .selection-left
 {
     border-left:1px dotted #000;
 }
+
 .jexcel .selection-right
 {
     border-right:1px dotted #000;
 }
+
 .jexcel .selection-top
 {
     border-top:1px dotted #000;
 }
+
 .jexcel .selection-bottom
 {
     border-bottom:1px dotted #000;
 }
+
 .jexcel_corner
 {
     position:absolute;
@@ -395,6 +427,25 @@
     height:auto;
 }
 
+.jexcel .editor .jexcel_richtext
+{
+    position:fixed;
+    top:100%;
+    z-index:40;
+    user-select:none;
+    -webkit-font-smoothing: antialiased;
+    font-size: .875rem;
+    letter-spacing: .2px;
+    -webkit-box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
+    padding:10px;
+    background-color:#fff;
+    min-width:280px;
+    max-width:310px;
+    margin-top:2px;
+    text-align:left;
+}
+
 .jexcel .editor .jclose:after
 {
     position:absolute;
@@ -411,6 +462,8 @@
     text-shadow: 0px 0px 5px #fff;
 }
 
+		
+		   
 .jexcel, .jexcel td, .jexcel_corner
 {
   -webkit-touch-callout: none;
@@ -434,10 +487,12 @@
     width:1px;
     height:1px;
 }
+
 .jexcel .dragline
 {
     position:absolute;
 }
+
 .jexcel .dragline div
 {
     position:relative;
@@ -445,6 +500,7 @@
     height:5px;
     width:22px;
 }
+
 .jexcel .dragline div:hover
 {
     cursor:move;
@@ -535,6 +591,7 @@
     letter-spacing: 1px;
     display: none;
 }
+
 .jexcel_about a {
     color: #ccc;
     text-decoration: none;
@@ -587,16 +644,27 @@
     margin-left:2px;
     cursor:pointer;
 }
+
 .jexcel_page
- {
-     font-size:0.8em;
- }
+{
+    font-size:0.8em;
+}
 
 .jexcel_page_selected
 {
     font-weight:bold;
     background-color:#f3f3f3;
 }
+
+				 
+				  
+							  
+						   
+				 
+							
+					 
+			 
+				
 
 .jexcel_toolbar
 {
@@ -608,7 +676,6 @@
     position:sticky;
     top:0px;
     z-index:21;
-
 }
 
 .jexcel_toolbar:empty
@@ -654,12 +721,12 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M10 17l5-5-5-5v10z'/%3E%3Cpath fill='none' d='M0 24V0h24v24H0z'/%3E%3C/svg%3E");
 }
 
-.jexcel_tabs > .jexcel_tab
+.jexcel_tabs .jexcel_tab
 {
     display:none;
 }
 
-.jexcel_tabs > .jexcel_tab_link
+.jexcel_tabs .jexcel_tab_link
 {
     display:inline-block;
     padding:10px;
@@ -671,13 +738,67 @@
     cursor:pointer;
 }
 
-.jexcel_tabs > .jexcel_tab_link.selected
+.jexcel_tabs .jexcel_tab_link.selected
 {
     background-color:#ddd;
 }
+
 .jexcel_hidden_index > tbody > tr > td:first-child,
 .jexcel_hidden_index > thead > tr > td:first-child, 
 .jexcel_hidden_index > colgroup > col:first-child
 {
     display:none;
+}
+
+
+
+.jexcel .jrating {
+    display: inline-flex;
+}
+
+.jexcel .jrating > div {
+    zoom: 0.55;
+}
+
+.jexcel .copying-top {
+    border-top:1px dashed #000;
+}
+
+.jexcel .copying-left {
+    border-left:1px dashed #000;
+}
+
+.jexcel .copying-right {
+    border-right:1px dashed #000;
+}
+
+.jexcel .copying-bottom {
+    border-bottom:1px dashed #000;
+}
+
+.jexcel .jexcel_column_filter {
+    background-repeat: no-repeat;
+    background-position: top 50% right 5px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='gray' width='18px' height='18px'%3E%3Cpath d='M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0px;
+    padding-left: 6px;
+    padding-right: 20px;
+}
+
+.jexcel thead .jexcel_freezed {
+    left: 0px;
+    z-index: 3 !important;
+    box-shadow: 2px 0px 2px 0.2px #ccc !important;
+    -webkit-box-shadow: 2px 0px 2px 0.2px #ccc !important;
+    -moz-box-shadow: 2px 0px 2px 0.2px #ccc !important;
+}
+
+.jexcel tbody .jexcel_freezed {
+    position: relative;
+    background-color: #fff;
+    box-shadow: 1px 1px 1px 1px #ccc !important;
+    -webkit-box-shadow: 2px 4px 4px 0.1px #ccc !important;
+    -moz-box-shadow: 2px 4px 4px 0.1px #ccc !important;
 }
