@@ -51,7 +51,7 @@ class CreateChildAccountWizard(models.TransientModel, Glob_tag_Model):
                                    help="录入凭证时,提示选择该类别下的核算项目",
                                    ondelete='restrict')
     accountItemClass = fields.Many2one('accountcore.itemclass',
-                                       string='作为明细科目的类别',
+                                       string='作为明细科目的类别(凭证中必填项目)',
                                        help="录入凭证分录时必须输入的该类别下的一个核算项目,作用相当于明细科目",
                                        ondelete='restrict')
     explain = fields.Html(string='科目说明')
@@ -189,7 +189,7 @@ class NumberStaticsWizard(models.TransientModel):
         default = super().default_get(field_names)
         default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
-    
+
     def setVoucherNumberTastics(self, args):
         currentUser = self.env['res.users'].sudo().browse(self.env.uid)
         currentUser.write(
@@ -213,6 +213,7 @@ class SetingVoucherNumberWizard(models.TransientModel):
         if self.env.user.voucherNumberTastics:
             default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
+
     @ACTools.refuse_role_search
     def setingNumber(self):
         args = self.env.context
@@ -288,6 +289,7 @@ class SetingVoucherNumberSingleWizard(models.TransientModel):
         if self.env.user.voucherNumberTastics:
             default['voucherNumberTastics'] = self.env.user.voucherNumberTastics.id
         return default
+
     @ACTools.refuse_role_search
     def setVoucherNumberSingle(self):
         '''设置修改凭证策略号'''
@@ -729,9 +731,9 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
     parent_number = fields.Char(related='parent_id.number',
                                 string='上级现金流量编码')
     cashFlowType = fields.Many2one('accountcore.cashflowtype',
-                                     string='现金流量类别',
-                                     index=True,
-                                     ondelete='restrict')
+                                   string='现金流量类别',
+                                   index=True,
+                                   ondelete='restrict')
     number = fields.Char(string='现金流量编码', required=True)
     name = fields.Char(string='现金流量名称', required=True)
     direction = fields.Selection(
@@ -749,6 +751,7 @@ class CreateChildCashoFlowWizard(models.TransientModel, Glob_tag_Model):
         default['number'] = parent.number + \
             '.' + str(parent.currentChildNumber)
         return default
+
     @api.model
     def create(self, values):
         if self.env.user.current_date:
@@ -793,7 +796,7 @@ class GetReport(models.TransientModel):
                             string='机构范围',
                             default=lambda s: s.env.user.currentOrg,
                             required=True)
-    
+
     def do(self):
         '''根据模板生成报表'''
         report = self.env['accountcore.report_model'].sudo().browse(
@@ -840,6 +843,7 @@ class ReportModelFormula(models.TransientModel):
         if self.env.context.get('ac'):
             default['formula'] = self.env.context.get('ac')
         return default
+
     @ACTools.refuse_role_search
     def do(self):
         '''公式填入单元格'''
@@ -1025,6 +1029,7 @@ class ReportCashFlowFormula(models.TransientModel):
         if self.env.context.get('ac'):
             default['formula'] = self.env.context.get('ac')
         return default
+
     @ACTools.refuse_role_search
     def do(self):
         '''公式填入单元格'''
@@ -1035,7 +1040,7 @@ class ReportCashFlowFormula(models.TransientModel):
             'target': 'new',
             'context': {'ac_formula': self.formula}
         }
-    
+
     @api.onchange('btn_join_reduce')
     def join_reduce(self):
         '''减进公式'''
@@ -1117,3 +1122,42 @@ class ReportCashFlowFormula(models.TransientModel):
         if not self.btn_between_date:
             return
         self.formula = "betweenDate()"
+
+# 克隆凭证向导
+
+
+class CloneVouchers(models.TransientModel):
+    '''克隆凭证向导'''
+    _name = 'accountcore.clone_vouchers'
+    _description = '克隆凭证向导'
+    org = fields.Many2one('accountcore.org', required=True)
+    voucherdate = fields.Date(string='新记账日期',
+                              placeholder='记账日期', default=lambda s: s.env.user.current_date)
+    real_date = fields.Date(string='新业务日期', help='新业务实际发生日期')
+    copy_appendixCount = fields.Boolean(string="保留附件数", default=True)
+    copy_v_number = fields.Boolean(string="保留凭证号", default=False)
+    @ACTools.refuse_role_search
+    # @api.model
+    def do(self):
+        my_default = {'org': self.org.id}
+        if hasattr(self, "voucherdate") and self.voucherdate != False:
+            my_default.update({"voucherdate": self.voucherdate})
+        if hasattr(self, "real_date"):
+            my_default.update({"real_date": self.real_date})
+        if not self.copy_appendixCount:
+            my_default.update({"appendixCount": 1})
+        if not self.copy_v_number:
+            my_default.update({"v_number": 0})
+        vouchers = self.env['accountcore.voucher'].sudo().browse(
+            self._context.get('active_ids'))
+        new_vouchers = []
+        for voucher in vouchers:
+            v = voucher.copy(my_default=my_default)
+            new_vouchers.append(v.id)
+        return {'name': '克隆的凭证',
+                'view_mode': 'tree,form',
+                'res_model': 'accountcore.voucher',
+                'view_id': False,
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in',  new_vouchers)]
+                }

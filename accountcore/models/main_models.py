@@ -351,7 +351,7 @@ class Account(models.Model, Glob_tag_Model):
                                    help="录入凭证分录时供的核算项目类别",
                                    ondelete='restrict')
     accountItemClass = fields.Many2one('accountcore.itemclass',
-                                       string='作为明细科目的类别',
+                                       string='作为明细科目的类别(凭证中必填项目)',
                                        help="录入凭证分录时必须输输入的核算项目类别,作用相当于明细科目",
                                        ondelete='restrict')
     fatherAccountId = fields.Many2one('accountcore.account',
@@ -1221,13 +1221,13 @@ class Voucher(models.Model, Glob_tag_Model):
         return rl_bool
 
     @api.multi
-    def copy(self, default=None):
+    def copy(self, default=None, my_default={}):
         '''复制凭证'''
         updateFields = {'state': 'creating',
                         'reviewer': None,
                         'createUser': self.env.uid,
-                        'numberTasticsContainer_str': '{}',
-                        'appendixCount': 1}
+                        'numberTasticsContainer_str': '{}'}
+        updateFields.update(my_default)
         rl = super(Voucher, self.with_context(
             {'ac_from_copy': True})).copy(updateFields)
         return rl
