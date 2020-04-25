@@ -1414,7 +1414,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             for (var j = 0; j < y; j++) {
                 for (var i = 0; i < x; i++) {
                     v = self.jexcel_obj.getValueFromCoords(j, i);
-                    if (v && v.slice(0, 1) == '=') {
+                    if (v && (v.toString()).slice(0, 1) == '=') {
                         cellName = jexcel.getColumnNameFromId([j, i]);
                         // 计算缓存标记
                         self.jexcel_obj.setMeta(cellName, 'isComputed', 'n');
