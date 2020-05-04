@@ -7,7 +7,7 @@
     </t>
     <!-- 凭证列表排序按钮-->
     <t t-name="accountcore.voucher_sort_by_number">
-        <button class='btn btn-secondary ac_voucher_number_sort' type="button">策略号排序</button>
+        <button class='btn btn-secondary ac_voucher_number_sort' type="button" style="margin-left:5px">策略号排序</button>
     </t>
     <!-- 科目期初平衡检查按钮 -->
     <t t-name="accountcore.check_balance">

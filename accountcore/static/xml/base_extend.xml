@@ -3,7 +3,7 @@
     <!-- 科目余额表和明细账等查询向导中机构的展现方式 -->
     <t t-name="FieldMany2ManyCheckBoxes_flowToLeft">
         <div aria-atomic="true">
-            <button type='button' class="btn btn-sm choose_all">全选</button>
+            <button type='button' class="btn btn-sm choose_all ">全选</button>
             <div t-foreach="widget.m2mValues" t-as="m2m_value">
                 <t t-set="id_for_label" t-value="'o_many2many_checkbox_' + _.uniqueId()" />
                 <div class="custom-control custom-checkbox" style="float:left">

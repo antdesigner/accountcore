@@ -1222,7 +1222,6 @@
           <field name="number" string="凭证策略号等于" domain="[('number','=', self)]" />
           <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
-          <field name="org" string="机构名称等于" domain="[('org.name','=', self)]" />
           <field name="reviewer" string="审核人包含" domain="[('reviewer.name','ilike', self)]" />
           <field name="soucre" string="凭证来源包含" domain="[('soucre','ilike', self)]" widget='many2one' />
           <field name="ruleBook" string="凭证标签包含" domain="[('ruleBook','ilike', self)]" widget='many2one' />
@@ -1259,9 +1258,12 @@
           <field name="explain" string="分录摘要包含" domain="[('explain','ilike', self)]" />
           <field name="items" string="核算统计项目包含" domain="[('items','ilike', self)]" />
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
-          <field name="org" string="机构名称等于" domain="[('org.name','=', self)]" />
-          <field name="damount" string="借方金额等于" domain="[('damount','=', self)]" />
-          <field name="camount" string="贷方金额等于" domain="[('camount','=', self)]" />
+          <field name="damount" string="借方金额&gt;&gt;" filter_domain="[('damount','&gt;', self)]" />
+          <field name="damount" string="借方金额==" domain="[('damount','=', self)]" />
+          <field name="damount" string="借方金额&lt;&lt;" filter_domain="[('damount','&lt;', self)]" />
+          <field name="camount" string="贷方金额&gt;&gt;" filter_domain="[('camount','&gt;', self)]" />
+          <field name="camount" string="贷方金额==" domain="[('camount','=', self)]" />
+          <field name="camount" string="贷方金额&lt;&lt;" filter_domain="[('camount','&lt;', self)]" />
           <filter string="本月" name="this_month" domain="[('v_month','=', time.strftime('%m')),('v_year','=', time.strftime('%Y'))]" />
           <filter string="上月" name="pre_month" domain="[('v_voucherdate','&lt;', time.strftime('%Y-%m-01 00:00:00')),('v_voucherdate','&gt;=',  (context_today() - relativedelta(months=1)).strftime('%Y-%m-01 00:00:00'))]" />
           <filter string="本年" name="this_year" domain="[('v_year','=', time.strftime('%Y'))]" />

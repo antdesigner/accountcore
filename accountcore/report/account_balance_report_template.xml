@@ -119,14 +119,18 @@ table tr{page-break-inside: avoid !important;}
                                         </td>
                                         <td class='account_name' style="width:16rem">
                                         <span t-esc="account['account_number']"></span>
-                                            <span t-if="'item_id' in account and account['item_id'] != 0">
-                                            <span t-esc="account['account_name']"></span>
-                                                <span t-att="{'itemId':account['item_id']}">
-                                                 <t t-esc="'【'+account['item_class_name']+'】'"></t>
-                                                </span>
-                                                <span t-esc="account['item_name']"></span>
-                                            </span>
-                                            <span t-else="" t-esc="account['account_name']"></span>
+                                        <!-- <input type='checkbox'></input> -->
+                                        <span class="b_account_number" t-esc="account['account_number']"></span>
+                                        <t t-if="'item_id' in account and account['item_id'] != 0">
+                                            <span class="b_account" t-esc="account['account_name']"></span>
+                                            <span class="b_itemClass" t-esc="'【'+account['item_class_name']+'】'"></span>
+                                            <span class="b_item" t-esc="account['item_name']" t-att="{'itemId':account['item_id']}"></span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="b_account" t-esc="account['account_name']"></span>
+                                            <span class="b_itemClass"></span>
+                                            <span class="b_item"></span>
+                                        </t>
                                         </td>
                                         <t t-set='direction' t-value="account['direction']"></t>
                                         <t t-set='beginingAmount' t-value="account['beginingDamount']-account['beginingCamount']"></t>
@@ -202,7 +206,10 @@ odoo.define(function (require) {
             var _startDate='<t t-esc="data['form']['startDate']"/>';
             var _endDate='<t t-esc="data['form']['endDate']"/>';
             var _orgs=<t t-esc="data['sum_orgids']"/>;
-            var tr=$(e.target).parents("tr");
+            var tr = $(e.target).parents("tr");
+            if(tr.attr('org_id')>0){
+            _orgs = [tr.attr('org_id')];
+            };
             var _account=[parseInt(tr.attr("accountId"))];
             var _item=parseInt(tr.find("span[itemId]").attr("itemId"));
             web_client_.do_action({
