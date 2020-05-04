@@ -118,7 +118,6 @@ table tr{page-break-inside: avoid !important;}
                                             <span t-esc="account['org_name']"></span>
                                         </td>
                                         <td class='account_name' style="width:16rem">
-                                        <span t-esc="account['account_number']"></span>
                                         <!-- <input type='checkbox'></input> -->
                                         <span class="b_account_number" t-esc="account['account_number']"></span>
                                         <t t-if="'item_id' in account and account['item_id'] != 0">
