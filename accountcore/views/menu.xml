@@ -40,7 +40,7 @@
         <menuitem name='备份' id='accountcore_data_menu' parent='accountcore_menu' action='accountcore_report_model_actions_sever' sequence="78" groups="base.group_system"/>
         <menuitem name='全局标签' id='accountcore_glob_tag_menu' parent='accountcore_menu' action='accountcore_glob_tag_actions_window' sequence="80"/>
         <menuitem name='全局标签类别' id='accountcore_glob_tag_class_menu' parent='accountcore_glob_tag_menu' action='accountcore_glob_tag_class_actions_window' />
-        <menuitem name <menuitem name='扩展' id='accountcore_expand_menu' parent='accountcore_menu' action='accountcore_glob_tag_actions_window' sequence="90"/>
+        <menuitem name='扩展' id='accountcore_expand_menu' parent='accountcore_menu' action='accountcore_glob_tag_actions_window' sequence="90"/>
         <menuitem name='接口集成' id='accountcore_expand_interface__menu' parent='accountcore_expand_menu' action='accountcore_helps_actions_window' /> 
         <menuitem name='会计智能' id='accountcore_expand_robot__menu' parent='accountcore_expand_menu' action='accountcore_helps_actions_window' /> 
         <menuitem name='会计运维' id='accountcore_expand_openration__menu' parent='accountcore_expand_menu' action='accountcore_helps_actions_window' /> 
