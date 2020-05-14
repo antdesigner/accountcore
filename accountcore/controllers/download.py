@@ -4,7 +4,6 @@ import io
 import json
 import operator
 import re
-
 from odoo import http, exceptions
 from odoo.tools import pycompat
 from odoo.tools.misc import xlwt
@@ -52,7 +51,14 @@ class ExcelExportBase(ExportFormat, http.Controller):
               "现金流量": 15000,
               "业务日期": 4000,
               "余额方向": 2500,
-              "制单人": 3000}
+              "制单人": 3000,
+              "创建日期": 3000,
+              "期初借方": 3000,
+              "期初贷方": 3000,
+              "本期借方金额": 3000,
+              "本期贷方金额": 3000,
+              "月初本年借方累计": 3000,
+              "月初本年贷方累计": 3000, }
 
     def index_base(self, data, token, listType):
         self.listType = listType
@@ -78,6 +84,21 @@ class ExcelExportBase(ExportFormat, http.Controller):
                                               ('Content-Type', self.content_type)],
                                      cookies={'fileToken': token})
 
+    def ac_index_base(self, listType, file_name):
+        ''''自定义直接下载'''
+        # 表头
+        columns_headers = listType.get_colums_headers(fields=[])
+        self.column_count = len(columns_headers)
+        # 表体
+        export_data = listType.get_export_data([])
+        self.row_count = len(export_data)
+        response_data = self.from_data(columns_headers, export_data, listType)
+        return request.make_response(response_data,
+                                     headers=[('Content-Disposition',
+                                               content_disposition(self.filename(file_name))),
+                                              ('Content-Type', self.content_type)],
+                                     cookies={'fileToken': ""})
+
     @property
     def content_type(self):
         return 'application/vnd.ms-excel'
@@ -85,7 +106,7 @@ class ExcelExportBase(ExportFormat, http.Controller):
     def filename(self, base):
         return base + '.xls'
 
-    def from_data(self, fields, rows):
+    def from_data(self, fields, rows, listType=None):
         if len(rows) > 65535:
             raise UserError(
                 _('导出的行数过多 (%s 行, 上限为: 65535行) , 请分多次导出') % len(rows))
@@ -167,6 +188,15 @@ class ExcelExportBase(ExportFormat, http.Controller):
         listType = ExcelExportOrgs()
         return self.index_base(data, token, listType)
 
+    # 导出启用期初余额模板
+    @http.route('/web/export/accountcore.begin_model', type='http', auth="user")
+    def accountcore_begin_model(self, data='{}', token=""):
+        self.env = request.env
+        accounts = self.env["accountcore.account"].search(
+            ["|", ("org.user_ids", 'in', self.env.user.id), ("org", '=?', False), ('is_last', '=', True)])
+        listType = ExcelExportBeginModel(accounts, "某公司", "2020-01-01")
+        return self.ac_index_base(listType, '初始余额导入模板')
+
 # 凭证列表导出EXCEL
 
 
@@ -210,7 +240,8 @@ class ExcelExportVouchers():
             entrys = v.entrys
             for e in entrys:
                 items_html = re.sub(r'<br>|<p>|</p>', '', e.items_html)
-                entry = [e.explain, e.account.number, items_html, e.damount, e.camount, e.cashFlow.name]
+                entry = [e.explain, e.account.number, items_html,
+                         e.damount, e.camount, e.cashFlow.name]
                 entry_line = []
                 entry_line.extend(voucher_before_entry)
                 entry_line.extend(entry)
@@ -266,15 +297,15 @@ class ExcelExportEntrys():
 class ExcelExportAccounts():
     def get_colums_headers(self, fields):
         columns_headers = ["所属机构",
-                            "所属科目体系",
-                            "科目类别",
-                            "科目编码",	
-                            "科目名称",	
-                            "核算类别",	
-                            "余额方向",	
-                            "凭证中可选",	
-                            "末级科目",	
-                            "全局标签"]
+                           "所属科目体系",
+                           "科目类别",
+                           "科目编码",
+                           "科目名称",
+                           "核算类别",
+                           "余额方向",
+                           "凭证中可选",
+                           "末级科目",
+                           "全局标签"]
         return columns_headers
 
     def get_export_data(self, records):
@@ -307,12 +338,12 @@ class ExcelExportAccounts():
 
 class ExcelExportItems():
     def get_colums_headers(self, fields):
-        columns_headers = ["所属机构",	
-                            "核算项目类别",	
-                            "核算项目编码",	
-                            "核算项目名称",	
-                            "唯一编号",	
-                            "全局标签"]
+        columns_headers = ["所属机构",
+                           "核算项目类别",
+                           "核算项目编码",
+                           "核算项目名称",
+                           "唯一编号",
+                           "全局标签"]
 
         return columns_headers
 
@@ -340,8 +371,8 @@ class ExcelExportItems():
 class ExcelExportOrgs():
     def get_colums_headers(self, fields):
         columns_headers = ["核算机构编码",
-                            "核算机构名称",
-                            "全局标签"]
+                           "核算机构名称",
+                           "全局标签"]
         return columns_headers
 
     def get_export_data(self, records):
@@ -353,5 +384,52 @@ class ExcelExportOrgs():
             excel_line = [line.number,
                           line.name,
                           glob_tags_str]
+            export_data.append(excel_line)
+        return export_data
+
+# 导出启用初始余额模板
+
+
+class ExcelExportBeginModel():
+    def __init__(self, accounts, org_name, date):
+        self.accounts = accounts
+        self.org_name = org_name
+        self.date = date
+        super().__init__()
+
+    def get_colums_headers(self, fields):
+        columns_headers = ["所属机构",
+                           "创建日期",
+                           "科目类别",
+                           "会计科目",
+                           "核算项目类别",
+                           "核算项目",
+                           "期初借方",
+                           "期初贷方",
+                           "本期借方金额",
+                           "本期贷方金额",
+                           "月初本年借方累计",
+                           "月初本年贷方累计"]
+        return columns_headers
+
+    def get_export_data(self, records):
+        export_data = []
+        for account in self.accounts:
+            itemClassName = ""
+            if account.accountItemClass:
+                itemClassName = account.accountItemClass.name
+            beginingDamount = ""
+            beginingCamount = ""
+            if account.direction == "1":
+                beginingDamount = 0
+            else:
+                beginingCamount = 0
+            excel_line = [self.org_name,
+                          self.date,
+                          account.accountClass.name,
+                          account.name,
+                          itemClassName,
+                          "",
+                          beginingDamount, beginingCamount, 0, 0, 0, 0]
             export_data.append(excel_line)
         return export_data
