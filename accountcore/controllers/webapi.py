@@ -121,9 +121,19 @@ class WebapiController(http.Controller):
                 entry['glob_tag'] = self._build_glob_tag(glob_tags, autoCreate)
             voucher['entrys'][i] = [0, '', entry]
         # 设置凭证状态为审核,审核人,制单人,单据来源
-        voucher.update({'state': 'reviewed',
-                        'reviewer': user.id,
-                        'createUser': user.id, })
+        if 'state' not in voucher:
+            voucher.update({'state': 'reviewed',
+                            'reviewer': user.id,
+                            'createUser': user.id, })
+        else:
+            state = voucher['state']
+            if state == 'reviewed':
+                voucher.update({'state': state,
+                                'reviewer': user.id,
+                                'createUser': user.id, })
+            else:
+                voucher.update({'state': state,
+                                'createUser': user.id, })
         # 设置凭证来源
         if 'source' not in voucher:
             source = "推送"
@@ -141,15 +151,13 @@ class WebapiController(http.Controller):
         itemClasses = self.env['accountcore.itemclass'].sudo().search(
             [('name', 'in', items_classNames)])
         itemClasses_updata = itemClasses-account.itemClasses
-        for itemClass in itemClasses_updata:
-            account.write({'itemClasses': [(4, itemClass.id)]})
         for item in items:
             if item[1]:
                 mast_item = itemClasses_updata.filtered(
                     lambda i: i.name == item[0])
                 # 如果科目后已有必选项目类别,而且和需要添加的必选项目类别不同
                 if account.accountItemClass and mast_item:
-                    raise exceptions.UserError('核算项目【'+i[0]+'】存在,但是不属于指定的类别')
+                    raise exceptions.UserError('核算项目【'+item[0]+'】存在,但是不属于指定的类别')
                 # 科目被使用过
                 elif account.haveBeenUsedInBalance() and mast_item:
                     raise exceptions.UserError(
@@ -157,6 +165,8 @@ class WebapiController(http.Controller):
                 elif mast_item:
                     account.write({'accountItemClass': mast_item.id})
                 break
+        for itemClass in itemClasses_updata:
+            account.write({'itemClasses': [(4, itemClass.id)]})
     # 购建会计科目
 
     def _build_account(self, accountInfo, autoCreate):
@@ -246,7 +256,7 @@ class WebapiController(http.Controller):
                     # 新建项目
                     i.create()
                 else:
-                    raise exceptions.UserError('核算机构【'+name+"】不存在")
+                    raise exceptions.UserError('核算机构【'+i.name+"】不存在")
             return i.id
     # 购建核算项目
 
@@ -288,7 +298,7 @@ class WebapiController(http.Controller):
                     pass
                     # 暂未实现现金流量项目的自动新增
                 else:
-                    raise exceptions.UserError('现金流量项目【'+name+"】不存在")
+                    raise exceptions.UserError('现金流量项目【'+i.name+"】不存在")
             return i.id
     # 购建全局标签
 
@@ -329,7 +339,7 @@ class WebapiController(http.Controller):
             if autoCreate:
                 i.create(items)
             else:
-                raise exceptions.UserError('凭证来源【'+name+"】不存在")
+                raise exceptions.UserError('凭证来源【'+i.name+"】不存在")
         return i.id
 
 
