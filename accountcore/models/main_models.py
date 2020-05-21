@@ -520,7 +520,7 @@ class Account(models.Model, Glob_tag_Model):
                 content = [('■'+itemType.name) if(itemType.id == accountItemClassId)
                            else itemType.name for itemType in itemTypes]
 
-            account.itemClassesHtml = '\\'.join(content)
+            account.itemClassesHtml = '/'.join(content)
         return True
     # 获得科目下的全部明细科目和自生对象的ID
     @api.multi

@@ -2,9 +2,8 @@
     <data>
         <!-- 主菜单 -->
         <menuitem name='总账' id='accountcore_menu' />
-
-        <menuitem name='用户' id='accountcore_user_menu' parent='accountcore_menu' action='base.action_res_users' sequence="33" groups="base.group_system"/>
-        <menuitem name='核算机构' id='accountcore_org_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="35" />
+        <menuitem name='核算机构' id='accountcore_org_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="33" />
+        <menuitem name='用户' id='accountcore_user_menu' parent='accountcore_menu' action='base.action_res_users' sequence="35" groups="base.group_system"/>
         <menuitem name='会计科目' id='accountcore_account_menu' parent='accountcore_menu' sequence="36" />
         <menuitem name="启用期初" id='accountcore_begining_menu' parent='accountcore_menu' sequence='38'/>
         <menuitem name="科目初始余额" id='accountcore_begining_balance_menu' parent='accountcore_begining_menu' action='accountcore_accounts_balance_actions_window'/>
