@@ -228,10 +228,11 @@ class ExcelExportVouchers():
             glob_tags = [g.name for g in v.glob_tag]
             glot_tags_str = '/'.join(glob_tags)
             voucher_before_entry = [v.voucherdate, v.org.name]
+            _reviewer = v.reviewer.name if v.reviewer else ""
             v_after_entry = [v.v_number,
                              v.uniqueNumber,
                              v.createUser.name,
-                             v.reviewer.name,
+                             _reviewer,
                              glot_tags_str,
                              v.soucre.name,
                              re.sub(r'<br>|<p>|</p>', '', v.roolbook_html),
@@ -240,8 +241,10 @@ class ExcelExportVouchers():
             entrys = v.entrys
             for e in entrys:
                 items_html = re.sub(r'<br>|<p>|</p>', '', e.items_html)
-                entry = [e.explain, e.account.number, items_html,
-                         e.damount, e.camount, e.cashFlow.name]
+                _explain = e.explain if e.explain else ""
+                _cashFlow = e.cashFlow.name if e.cashFlow else ""
+                entry = [_explain, e.account.number, items_html,
+                         e.damount, e.camount, _cashFlow]
                 entry_line = []
                 entry_line.extend(voucher_before_entry)
                 entry_line.extend(entry)
@@ -259,14 +262,19 @@ class ExcelExportEntrys():
                            '核算机构',
                            '分录摘要',
                            '科目编码',
-                           '会计科目和核算统计项目',
+                           '会计科目',
+                           '核算项目类别',
+                           '核算项目名称',
+                           '统计项目',
                            '借方金额',
                            '贷方金额',
                            '现金流量项目',
+                           '附件张数',
+                           '业务日期',
                            '凭证号',
                            '所属凭证',
                            '全局标签',
-                           '业务日期']
+                           '会计科目和核算统计项目']
         return columns_headers
 
     def get_export_data(self, records):
@@ -275,19 +283,32 @@ class ExcelExportEntrys():
         for e in entry:
             glob_tags = [g.name for g in e.glob_tag]
             glot_tags_str = '/'.join(glob_tags)
+            statisticsItems = e.getStatisticsItems()
+            statticticsItems_str = "/".join(
+                [item.item_class_name+":"+item.name for item in statisticsItems])
+            _explain = e.explain if e.explain else ""
+            _accountItemCalss = e.account.accountItemClass.name if e.account.accountItemClass else ""
+            _itemName = e.account_item.name if e.account_item else ""
+            _cashFlow = e.cashFlow.name if e.cashFlow else ""
+            _realdate = e.v_real_date if e.v_real_date else ""
             items_html = re.sub(r'<br>|<p>|</p>', '', e.items_html)
             entry_line = [e.v_voucherdate,
                           e.org.name,
-                          e.explain,
+                          _explain,
                           e.account.number,
-                          items_html,
+                          e.account.name,
+                          _accountItemCalss,
+                          _itemName,
+                          statticticsItems_str,
                           e.damount,
                           e.camount,
-                          e.cashFlow.name,
+                          _cashFlow,
+                          e.voucher.appendixCount,
+                          _realdate,
                           e.v_number,
                           e.voucher.name,
                           glot_tags_str,
-                          e.v_real_date]
+                          items_html]
             export_data.append(entry_line)
         return export_data
 
