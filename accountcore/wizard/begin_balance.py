@@ -126,7 +126,7 @@ class ImportBeginBalance(models.TransientModel):
     result = fields.Html(string='导入结果', default="")
     auto_create = fields.Boolean(
         string="自动创建核算项目", help="不存在核算项目会尝试自动创建", default=False)
-    file = fields.Binary(string="excel文件", required=True)
+    file = fields.Binary(string="excel文件",attachment=False)
     
     @ACTools.refuse_role_search
     def do(self):
@@ -141,7 +141,8 @@ class ImportBeginBalance(models.TransientModel):
         }
         self.result = ""
         if not self.file:
-            return
+            self.result = "<div><span class='text-success fa fa-thumbs-o-up'></span><kbd>没有选择excel文件</kbd>"
+            return action
         book = xlrd.open_workbook(file_contents=base64.decodebytes(self.file))
         sh = book.sheet_by_index(0)
     # 检查表头
@@ -168,8 +169,8 @@ class ImportBeginBalance(models.TransientModel):
             try:
                 self._update_row(row)
             except exceptions.ValidationError as e:
-                self.result = self.result + "<div><span class='text-danger fa fa-close'></span><kbd>第{}行数据行未导入</kbd>,{}</div>".format(
-                    rx, e.name)
+                self.result = self.result + "<div><span class='text-danger fa fa-close'></span><kbd>第{}行未导入</kbd>,{}</div>".format(
+                    rx+1, e.name)
                 lost_row += 1
                 continue
         if len(self.result) > 0:
@@ -204,7 +205,7 @@ class ImportBeginBalance(models.TransientModel):
             result = result + "<div><span class='text-danger fa fa-close'></span>科目所在列<kbd>{}</kbd>不存在</div>".format(
                 row[3].value)
         else:
-            account = self.env['accountcore.account'].browse(accountId)
+            account = self.env['accountcore.account'].sudo().browse(accountId)
             # 判断金额方向
             if self.control_direction:
                 if account.direction == "1" and row[7].ctype == 2 and row[7].value > 0:
@@ -235,11 +236,11 @@ class ImportBeginBalance(models.TransientModel):
                                 row[5].value)
                         # 控制是否新增核算项目
                         elif row[5].value not in self.newItems:
-                            self.env["accountcore.item"].create(
+                            self.env["accountcore.item"].sudo().create(
                                 {"name": row[5].value, "itemClass": itemclassId})
                             self.newItems.append(row[5].value)
                     else:
-                        if itemclassId != self.env['accountcore.item'].browse(itemId).itemClass.id:
+                        if itemclassId != self.env['accountcore.item'].sudo().browse(itemId).itemClass.id:
                             result = result + "<div><span class='text-danger fa fa-close'></span>核算项目列<kbd>{}</kbd>不属于核算项目类别<kbd>{}</kbd></div> ".format(
                                 row[5].value, row[4].value)
             else:
@@ -252,7 +253,7 @@ class ImportBeginBalance(models.TransientModel):
                 result = result + "<div><span class='text-danger fa fa-close'></span>金额相关列<kbd>{}</kbd>不是数字</div> ".format(
                     row[col].value)
         if len(result) > 0:
-            result = "<div><kbd>第{}行</kbd>数据行出现如下错误:</div>".format(rx)+result
+            result = "<div><kbd>第{}行</kbd>出现如下错误:</div>".format(rx+1)+result
         return result
 
     def _update_row(self, row):
@@ -291,7 +292,7 @@ class ImportBeginBalance(models.TransientModel):
                    'month': _createdate_tuple[1],
                    'account': _account,
                    'items': _items}
-        self.env['accountcore.accounts_balance'].create(balance)
+        self.env['accountcore.accounts_balance'].sudo().create(balance)
 
     def _checkheader(self, row):
         '''检查导入的excel的表头格式'''
@@ -319,7 +320,7 @@ class ImportBeginBalance(models.TransientModel):
         '''更据名称和模型查找ID'''
         if not name_model[0]:
             return False
-        record = self.env[name_model[1]].search(
+        record = self.env[name_model[1]].sudo().search(
             [('name', '=', name_model[0])], limit=1)
         if record.exists():
             return record.id

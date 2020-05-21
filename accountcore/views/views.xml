@@ -1254,7 +1254,7 @@
         <search string="voucherFilter">
           <field name="v_number" string="凭证号等于" domain="[('v_number','=', self)]" />
           <field name="voucher" string="凭证唯一编号等于" domain="[('voucher','=', self)]" />
-          <field name="account" string="科目名称包含" domain="[('account','ilike', self)]" />
+          <field name="account" string="科目名称包含" domain="[('account.name','ilike', self)]" />
           <field name="explain" string="分录摘要包含" domain="[('explain','ilike', self)]" />
           <field name="items" string="核算统计项目包含" domain="[('items','ilike', self)]" />
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />

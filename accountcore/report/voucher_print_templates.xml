@@ -33,14 +33,14 @@
                                             <span style="margin-left:1em">唯一编号:</span>
                                             <span t-field='doc.uniqueNumber' />
                                             <span style="margin-left:1em">凭证编号:</span>
-                                            <span t-field='doc.number' />
+                                            <span t-field='doc.v_number' />
                                         </span>
                                     </h6>
                                 </th>
                             </tr>
                             <tr>
                                 <th>说明</th>
-                                <th>科目(核算项目）</th>
+                                <th>科目(核算统计项目）</th>
                                 <th>借方</th>
                                 <th>贷方</th>
                             </tr>
