@@ -374,11 +374,12 @@ class Account(models.Model, Glob_tag_Model):
                          '科目编码重复了!'),
                         ('accountcore_account_name_unique', 'unique(name)',
                          '科目名称重复了!')]
+
     @api.model
     def create(self, values):
         '''新增科目'''
         if self.env.user.has_group('accountcore.group_role_search'):
-                raise exceptions.AccessDenied("只查询组没有权限")
+            raise exceptions.AccessDenied("只查询组没有权限")
         self._check_name(values['name'])
         rl = super(Account, self).create(values)
         return rl
@@ -1773,6 +1774,15 @@ class Enty(models.Model, Glob_tag_Model):
             'res_model': 'accountcore.entry',
             'context': context,
         }
+
+    def getStatisticsItems(self):
+        '''获得统计项目'''
+        if self.items and self.account_item:
+            return [item for item in self.items if item.id != self.account_item.id]
+        elif self.items:
+            return [item for item in self.items]
+        else:
+            return []
 # 凭证编号策略
 
 
