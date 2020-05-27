@@ -1443,8 +1443,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
             this.$el.append(this.ddom);
             var options = {
                 editable: (this.mode === 'edit'),
-                tableOverflow: false,
+                tableOverflow:true,
                 tableHeight: "297mm",
+                tableWidth: "260mm",
+                fullscreen: false,
+                freezeColumns:2,
                 fullscreen: false,
                 defaultColWidth: 150,
                 wordWrap: true,
@@ -1645,6 +1648,11 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         content: 'airplay',
                         onclick: function () {
                             self.jexcel_obj.fullscreen();
+                            if($("div.jexcel_container").hasClass("fullscreen")){
+                                $(".jexcel_content").width(window.innerWidth);                   
+                            }else{
+                                $(".jexcel_content").css({"width":"260mm"});
+                            }   
                         }
                     },
                     // 移动工具栏
