@@ -1514,6 +1514,7 @@ class Voucher(models.Model, Glob_tag_Model):
             newBalanceInfo['beginingCamount'] = \
                 pre_record.beginingCamount + pre_record.camount
         # 以后月份存在数据就添加以后最近一月那条记录的关联
+        next_record = None
         if next_balanceRecords.exists():
             next_record = next_balanceRecords[0]
             newBalanceInfo['nextRecord'] = next_record.id
@@ -1524,6 +1525,8 @@ class Voucher(models.Model, Glob_tag_Model):
             newBalanceInfo['camount'] = entry_camount
         # 创建新的余额记录
         newBalance = accountBalanceTable.sudo().create(newBalanceInfo)
+        if next_record:
+            next_record.preRecord = newBalance.id
         # 建立和前期余额记录的关联
         if pre_balanceRecords.exists():
             pre_record.nextRecord = newBalance.id

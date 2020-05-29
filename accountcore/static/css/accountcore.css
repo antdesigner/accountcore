@@ -16,14 +16,12 @@ table {
 /* 凭证列表中的分录内容 */
 .oe_accountcore_entrys {
     margin: 0px;
-    width: 1000px;
 }
 
 th[data-name="entrysHtml"] {
-    max-width: 1000px !important;
-    width: 1000px !important;
+    max-width: 1200px !important;
+    width: 1110px !important;
 }
-
 .oe_accountcore_entrys>div:nth-child(odd) {
     background-color: whitesmoke;
 }
@@ -71,6 +69,7 @@ div.oe_accountcore_entrys>div:hover {
     word-break: break-all !important;
     word-wrap: break-word !important;
     white-space: normal !important;
+    margin-left: 5px;
 }
 
 /* 凭证列表中的分录内容 结束*/
