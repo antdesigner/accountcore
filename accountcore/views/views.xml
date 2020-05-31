@@ -1188,7 +1188,6 @@
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
           <field name="uniqueNumber" string="唯一编号包含" domain="[('uniqueNumber','ilike', self)]" />
           <filter name="groupby_itemClass" string="按项目类别分组" context = "{'group_by': 'itemClass'}" />
-          <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
         </search>
       </field>
     </record>
