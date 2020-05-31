@@ -45,7 +45,8 @@
         <menuitem name='扩展' id='accountcore_expand_menu' parent='accountcore_menu' action='accountcore_glob_tag_actions_window' sequence="90"/>
         <menuitem name='接口集成' id='accountcore_expand_interface__menu' parent='accountcore_expand_menu' action='accountcore_helps_actions_window' />
         <menuitem name='会计智能' id='accountcore_expand_robot__menu' parent='accountcore_expand_menu' action='accountcore_helps_actions_window' />
-        <menuitem name='系统运维' id='accountcore_expand_openration__menu' parent='accountcore_expand_menu' action='accountcore_helps_actions_window' />
+        <menuitem name='系统运维' id='accountcore_expand_openration__menu' parent='accountcore_expand_menu'/>
+        <menuitem name='内部科目余额表' id='accountcore_accounts_balance__menu' parent='accountcore_expand_openration__menu' action='accountcore_accounts_balance_window'  groups="base.group_system"/>
         <menuitem name='帮助' id='accountcore_guide_menu' parent='accountcore_menu' action='accountcore_org_action_window' sequence="99" />
         <menuitem name='第1步:快速了解' id='accountcore_guide_menu_0' parent='accountcore_guide_menu' action='accountcore_helps_actions_window' sequence="5" />
         <menuitem name='第2步:添加核算机构' id='accountcore_guide_menu_1' parent='accountcore_guide_menu' action='accountcore_org_action_window' sequence="10" />
