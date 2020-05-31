@@ -5,7 +5,7 @@
             <field name='name'>内部科目余额表列表(谨慎操作)</field>
             <field name='model'>accountcore.accounts_balance</field>
             <field name='arch' type='xml'>
-                <tree  class='oe_accountcore_table_fix' default_order="org,account,items,isbegining desc,year,month" create='false' duplicate='0' import="0" editable="top">
+                <tree  class='oe_accountcore_table_fix' default_order="org,account,items,isbegining desc,year,month" create='false' duplicate='0' import="0" editable="top" decoration-warning='not preRecord'>
                     <field name="preRecord" string="前期id"/>
                     <field name="name" string="id"/>
                     <field name="nextRecord" string="后期id"/>
