@@ -29,6 +29,7 @@
         'views/assetsAdd_templates.xml',
         'security/users.xml',
         'views/views.xml',
+        'views/accounts_balance_views.xml',
         'views/voucher_clone.xml',
         'wizard/begin_balance_views.xml',
         'report/voucher_print_templates.xml',

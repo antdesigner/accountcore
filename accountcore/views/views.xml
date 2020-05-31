@@ -320,7 +320,7 @@
       <field name='name'>科目启用期初余额</field>
       <field name='model'>accountcore.accounts_balance</field>
       <field name='arch' type='xml'>
-        <tree js_class='balanceListView' class='oe_accountcore_table_fix' default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80'>
+        <tree js_class='balanceListView' class='oe_accountcore_table_fix' default_order='org,year,month,account_class_id,account_number,accountItemClass' editable='top' create='1' limit='80' duplicate='0' import="0">
           <field name='org' options="{'no_create_edit':1,'no_create':1,'no_open':1}"></field>
           <field name='createDate' string='启用日期' />
           <field name='year' invisible='1'></field>

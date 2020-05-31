@@ -1811,6 +1811,7 @@ class AccountsBalance(models.Model):
     '''科目余额'''
     _name = 'accountcore.accounts_balance'
     _description = '科目余额'
+    name = fields.Integer(related='id', store=True)
     org = fields.Many2one(
         'accountcore.org',
         string='所属机构',
