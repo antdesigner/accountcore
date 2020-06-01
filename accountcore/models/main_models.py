@@ -1811,7 +1811,7 @@ class AccountsBalance(models.Model):
     '''科目余额'''
     _name = 'accountcore.accounts_balance'
     _description = '科目余额'
-    name = fields.Integer(related='id', store=True)
+    name = fields.Integer(related='id', store=True, group_operator='count')
     org = fields.Many2one(
         'accountcore.org',
         string='所属机构',
@@ -1825,10 +1825,10 @@ class AccountsBalance(models.Model):
     # 通过createDate生成,不要直接修改
     year = fields.Integer(string='年',
                           required=True,
-                          index=True)
+                          index=True, group_operator='count')
     # 通过createDate生成,不要直接修改
-    month = fields.Integer(string='月', required=True, index=True)
-    isbegining = fields.Boolean(string="是启用期间", default=False, index=True)
+    month = fields.Integer(string='月', required=True, index=True, group_operator='count')
+    isbegining = fields.Boolean(string="是启用期间", default=False, index=True, group_operator='count_distinct')
     account = fields.Many2one('accountcore.account',
                               string='会计科目',
                               required=True,
