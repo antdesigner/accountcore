@@ -279,7 +279,8 @@ class ExcelExportEntrys():
 
     def get_export_data(self, records):
         export_data = []
-        entry = records
+        entry = records.sorted(key=lambda r: (
+            r.org, r.v_voucherdate, r.v_voucherdate, r.v_number, r.voucher.name))
         for e in entry:
             glob_tags = [g.name for g in e.glob_tag]
             glot_tags_str = '/'.join(glob_tags)

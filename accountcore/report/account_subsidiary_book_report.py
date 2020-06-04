@@ -249,7 +249,7 @@ class SubsidiaryBook(models.AbstractModel):
                     voucherdate,
                     t_voucher.year as year,
                     t_voucher.month as month,
-                    "v_number",
+                    t_voucher.v_number as v_number,
                     "uniqueNumber",
                     t_voucher.roolbook_html as roolbook_html,
                     t_org.id as org_id,
@@ -272,7 +272,7 @@ class SubsidiaryBook(models.AbstractModel):
                      AND year*12+month<=%s*12+%s
                      AND t_voucher.org in %s
                      AND t_entry.account in %s
-                ORDER BY voucherdate,org_name,account_number,v_number
+                ORDER BY voucherdate,org_name,account_number,t_entry.v_number
                 '''
         elif len_parmas == 7:
             query = '''SELECT
@@ -280,7 +280,7 @@ class SubsidiaryBook(models.AbstractModel):
                     voucherdate,
                     t_voucher.year as year,
                     t_voucher.month as month,
-                    "v_number",
+                    t_voucher.v_number as v_number,
                     "uniqueNumber",
                     t_voucher.roolbook_html as roolbook_html,
                     t_org.id as org_id,
@@ -304,7 +304,7 @@ class SubsidiaryBook(models.AbstractModel):
                     AND t_voucher.org in %s
                     AND t_entry.account in %s
                     AND t_entry.account_item = %s
-                ORDER BY voucherdate,org_name,account_number,v_number
+                ORDER BY voucherdate,org_name,account_number,t_entry.v_number
                 '''
         else:
             raise exceptions.ValidationError('查询参数数量错误!')

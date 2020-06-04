@@ -461,7 +461,7 @@
       <field name='name'>记账凭证列表</field>
       <field name='model'>accountcore.voucher</field>
       <field name='arch' type='xml'>
-        <tree js_class='voucherListView' class='oe_accountcore_table_fix ac_voucher_list' default_order="org,voucherdate,v_number,uniqueNumber" import='0' limit='300' duplicate="false">
+        <tree js_class='voucherListView' class='oe_accountcore_table_fix ac_voucher_list' default_order="org,year,month,voucherdate,v_number,uniqueNumber" import='0' limit='300' duplicate="false">
           <field name='voucherdate' />
           <field name='org' />
           <field name='entrysHtml' />
@@ -786,11 +786,9 @@
       <field name='name'>会计分录列表</field>
       <field name='model'>accountcore.entry</field>
       <field name='arch' type='xml'>
-        <tree js_class='entryListView' class='oe_ac_entrylist oe_accountcore_table_fix' create='false' edit='false' delete='false' default_order='org,v_voucherdate,voucher'>
+        <tree js_class='entryListView' class='oe_ac_entrylist oe_accountcore_table_fix' create='false' edit='false' delete='false' default_order='org,v_year,v_month,v_voucherdate,v_number,voucher'>
           <button type='object' class="btn btn-sm fa fa-reply" aria-label="show_voucher" title="打开凭证编辑" name='show_voucher'></button>
           <field name="v_voucherdate" />
-          <field name="v_year" invisible='1' />
-          <field name="v_month" invisible='1' />
           <field name='org'></field>
           <field name="explain" />
           <field name="account" invisible='1'/>

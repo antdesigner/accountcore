@@ -1622,7 +1622,7 @@ class Enty(models.Model, Glob_tag_Model):
     _name = 'accountcore.entry'
     _description = "会计分录"
     voucher_id = fields.Integer(related="voucher.id", string='voucher_id')
-    v_number = fields.Integer(related="voucher.v_number", string='凭证号')
+    v_number = fields.Integer(related="voucher.v_number", string='凭证号', store=True)
     voucher = fields.Many2one('accountcore.voucher',
                               string='所属凭证',
                               index=True,
