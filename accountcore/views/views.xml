@@ -1214,10 +1214,10 @@
       <field name="model">accountcore.voucher</field>
       <field name="arch" type="xml">
         <search string="voucherFilter">
+          <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="v_number" string="凭证编号等于" domain="[('v_number','=', self)]" />
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
           <field name="number" string="凭证策略号等于" domain="[('number','=', self)]" />
-          <field name="entrysHtml" string="分录内容包含关键字" domain="[('entrysHtml','ilike', self)]" />
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
           <field name="reviewer" string="审核人包含" domain="[('reviewer.name','ilike', self)]" />
           <field name="soucre" string="凭证来源包含" domain="[('soucre','ilike', self)]" widget='many2one' />
@@ -1232,6 +1232,7 @@
           <filter string="审核人是自己" name="reviewer_is_me" domain="[('reviewer','=',uid)]" />
           <filter string="审核人是他人" name="reviewer_not_me" domain="[('reviewer','!=',uid)]" />
           <filter string="制单人是他人" name="createUser_not_me" domain="[('createUser','!=',uid)]" />
+          <filter string="非结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','not ilike', '结转损益')]" />
           <filter string="结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','ilike', '结转损益')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />

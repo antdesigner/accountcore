@@ -9,6 +9,7 @@ import re
 from odoo import exceptions
 from odoo import models, fields, api
 from odoo import http
+from ..models.ac_obj import ACTools
 from ..models.ac_period import Period
 import sys
 sys.path.append('.\\.\\server')
@@ -548,8 +549,12 @@ class EntrysAssembler():
                 # 依据余额方向更新余额记
                 if main_direction == '1':
                     e.balance = tmp_pre_blanace+e.damount-e.camount
+                    if ACTools.TranslateToDecimal(e.balance) == ACTools.ZeroAmount():
+                        e.balance = 0.00
                 elif main_direction == '-1':
                     e.balance = -tmp_pre_blanace-e.damount+e.camount
+                    if ACTools.TranslateToDecimal(e.balance) == ACTools.ZeroAmount():
+                        e.balance = 0.00
                 tmp_pre_blanace = tmp_pre_blanace+e.damount-e.camount
                 self.entrys.append(e)
                 if not e.is_PrebeginBalance:
@@ -576,8 +581,12 @@ class EntrysAssembler():
                 # 依据余额方向更新余额记
                 if main_direction == '1':
                     e.balance = tmp_pre_blanace+e.damount-e.camount
+                    if ACTools.TranslateToDecimal(e.balance) == ACTools.ZeroAmount():
+                        e.balance = 0.00
                 elif main_direction == '-1':
                     e.balance = -tmp_pre_blanace-e.damount+e.camount
+                    if ACTools.TranslateToDecimal(e.balance) == ACTools.ZeroAmount():
+                        e.balance = 0.00
                 tmp_pre_blanace = tmp_pre_blanace+e.damount-e.camount
                 self.entrys.append(e)
                 if not e.is_PrebeginBalance:

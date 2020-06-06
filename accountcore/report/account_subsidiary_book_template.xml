@@ -99,6 +99,7 @@ td, th {vertical-align: middle!important;font-size: small;}
                                             </td>
                                             <td style="width:7rem" class='bamount text-right'>
                                                 <span t-if='entry.balance!=0' t-esc="'{:,.2f}'.format(entry.balance)"></span>
+                                                <span t-else="" t-esc="'{:,.2f}'.format(entry.balance)"></span>
                                             </td>
                                         </tr>
                                     </t>
