@@ -1186,6 +1186,8 @@ class Voucher(models.Model, Glob_tag_Model):
                 needUpdateBalance = True
             elif 'entrys' in values:
                 es = values['entrys']
+                # n判断如果只是删除分录,也需要更新科目余额表
+                n = 0
                 for e in es:
                     fields = e[2]
                     if not fields:
@@ -1196,6 +1198,8 @@ class Voucher(models.Model, Glob_tag_Model):
                             'items' in fields]):
                         needUpdateBalance = True
                         break
+                if n == len(es):
+                    needUpdateBalance = True
             # 先从余额表减去原来的金额
             if needUpdateBalance:
                 self.updateBalance(isAdd=False)
