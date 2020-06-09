@@ -1205,7 +1205,7 @@ class Voucher(models.Model, Glob_tag_Model):
                 # 跟新处理并发冲突
                 try:
                     self.env.cr.commit()
-                except:
+                except Exception as e:
                     n = self.env.context.get('ac_write_count', 0)
                     if int(n) < 3:
                         self.env.cr.rollback()
@@ -1214,9 +1214,9 @@ class Voucher(models.Model, Glob_tag_Model):
                         rl_bool = self.with_context(
                             {'ac_write_count': n}).write(values)
                     else:
-                        raise
-        except:
-            raise
+                        raise e
+        except Exception as e:
+            raise e
         finally:
             VOCHER_LOCK.release()
         return rl_bool
