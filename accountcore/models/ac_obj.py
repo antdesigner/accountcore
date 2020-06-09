@@ -88,3 +88,26 @@ class ACTools():
             result = f(*args, **kwargs)
             return result
         return wrapper
+    
+    @staticmethod
+    def compareDate(date1, date2):
+        '''比较两个日期'''
+        pre = -1
+        after = 1
+        equal = 0
+        if date1.year == date2.year:
+            if date1.month < date2.month:
+                return pre
+            elif date1.month > date2.month:
+                return after
+            else:
+                if date1.day < date2.day:
+                    return pre
+                elif date1.day > date2.day:
+                    return after
+                else:
+                    return equal
+        elif date1.year < date2.year:
+            return pre
+        else:
+            return after

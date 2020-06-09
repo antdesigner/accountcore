@@ -366,11 +366,8 @@ class GetAccountsBalance(models.TransientModel):
         self.ensure_one()
         if len(self.orgs) == 0:
             raise exceptions.ValidationError('你还没选择机构范围！')
-            return False
         if len(self.account) == 0:
             self.account = self.env['accountcore.account'].search([])
-            # raise exceptions.ValidationError('你需要选择查询的科目范围！')
-            # return False
         self._setDefaultDate()
         [data] = self.read()
         startDate = data['startDate']
@@ -380,8 +377,7 @@ class GetAccountsBalance(models.TransientModel):
             start_year, start_month, data['orgs'],  data['account'])
         if period:
             raise exceptions.ValidationError(
-                "查询范围内有科目的启用期间晚于查询的开始期间" + str(start_year) + "-"+str(start_month) + ", \
-                查询的开始期间不能大于启用期间,当前选择的机构和科目范围的最早启用期间为"+period+"请选择该期间为查询的开始期间")
+                "查询范围内有科目的启用期间晚于查询的开始期间" + str(start_year) + "-"+str(start_month) + ",查询的开始期间不能大于启用期间,最早可选择"+period+"为查询的开始期间")
         datas = {
             'form': data
         }
@@ -474,9 +470,12 @@ class currencyDown_sunyi(models.TransientModel):
         self.ensure_one()
         if len(self.orgs) == 0:
             raise exceptions.ValidationError('你还没选择机构范围！')
-            return False
         if self.startDate > self.endDate:
             raise exceptions.ValidationError('你选择的开始日期不能大于结束日期')
+        # 检查开始日期和锁定日期
+        for _org in self.orgs:
+            if _org.lock_date and ACTools.compareDate(self.startDate, _org.lock_date) != 1:
+                raise exceptions.ValidationError('核算机构:'+str(_org.name)+'的锁定日期为:' + str(_org.lock_date)+",结转损益的开始日期"+str(self.startDate)+"早于或等于该日期")
         # 获得需要结转的会计期间
         periods = Period(self.startDate, self.endDate).getPeriodList()
         self.t_entry = self.env['accountcore.entry']
@@ -1039,6 +1038,8 @@ class CloneVouchers(models.TransientModel):
         my_default = {'org': self.org.id}
         if hasattr(self, "voucherdate") and self.voucherdate != False:
             my_default.update({"voucherdate": self.voucherdate})
+            if self.org.lock_date and ACTools.compareDate(self.voucherdate, self.org.lock_date) != 1:
+                raise exceptions.ValidationError('核算机构:'+str(self.org.name)+'的锁定日期为:' + str(self.org.lock_date)+",新记账日期"+str(self.voucherdate)+"应晚于该日期")
         if hasattr(self, "real_date"):
             my_default.update({"real_date": self.real_date})
         if not self.copy_appendixCount:
@@ -1047,6 +1048,11 @@ class CloneVouchers(models.TransientModel):
             my_default.update({"v_number": 0})
         vouchers = self.env['accountcore.voucher'].sudo().browse(
             self._context.get('active_ids'))
+                # 检查克隆凭证日期是否晚于机构的锁定日期
+        if not hasattr(self, "voucherdate") or not self.voucherdate:
+            for v in vouchers:
+                if self.org.lock_date and ACTools.compareDate(v.voucherdate, self.org.lock_date) != 1:
+                    raise exceptions.ValidationError('核算机构:'+str(self.org.name)+'的锁定日期为:' + str(self.org.lock_date)+",新记账日期"+str(v.voucherdate)+"应晚于该日期")
         new_vouchers = []
         for voucher in vouchers:
             v = voucher.copy(my_default=my_default)
