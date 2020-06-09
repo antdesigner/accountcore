@@ -94,7 +94,8 @@ td, th {vertical-align: middle!important;font-size: small;}
                                                 <span t-if='entry.camount!=0' t-esc="'{:,.2f}'.format(entry.camount)"></span>
                                             </td>
                                             <td style="width:2rem" class='text-center'>
-                                                <span t-if="entry.direction=='1'">借</span>
+                                                <span t-if="entry.balance==0">平</span>
+                                                <span t-elif="entry.direction=='1'">借</span>
                                                 <span t-else="">贷</span>
                                             </td>
                                             <td style="width:7rem" class='bamount text-right'>

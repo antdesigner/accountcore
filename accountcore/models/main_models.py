@@ -77,6 +77,8 @@ class Org(models.Model, Glob_tag_Model):
                                'org',
                                string='科目')
     user_ids = fields.Many2many('res.users', string='有权用户')
+    start_date = fields.Date(string="启用日期", compute="_get_start_date", help="该机构的科目最早启用日期")
+    lock_date = fields.Date(string="锁定日期", help="只能修改该日期后的凭证")
     _sql_constraints = [('accountcore_org_number_unique', 'unique(number)',
                          '核算机构编码重复了!'),
                         ('accountcore_org_name_unique', 'unique(name)',
@@ -108,6 +110,17 @@ class Org(models.Model, Glob_tag_Model):
                 raise exceptions.ValidationError("不能删除默认机构，可以修改")
         rl_bool = super(Org, self).unlink()
         return rl_bool
+    
+    @api.multi
+    def _get_start_date(self):
+        '''获得机构的启用期'''
+        for org in self:
+            banlances = self.env['accountcore.accounts_balance'].search(
+                [('org', '=', org.id)], order='createDate', limit=2)
+            if banlances.exists():
+                org.start_date = banlances[0].createDate
+            else:
+                org.start_date = None
 # 会计科目体系
 
 
@@ -1123,26 +1136,6 @@ class Voucher(models.Model, Glob_tag_Model):
     @api.model
     def create(self, values):
         '''新增凭证'''
-        # # 只允许一条分录更新余额表,进程锁
-        # VOCHER_LOCK.acquire()
-        # # 出错了，必须释放锁，要不就会死锁
-        # try:
-        #     values['uniqueNumber'] = self.env['ir.sequence'].next_by_code(
-        #         'voucher.uniqueNumber')
-        #     rl = super(Voucher, self).create(values)
-        #     # 如果是复制新增就不执行凭证检查
-        #     isCopye = self.env.context.get('ac_from_copy')
-        #     if isCopye:
-        #         pass
-        #     else:
-        #         rl.checkVoucher(values)
-        #     rl.updateBalance()
-        #     # 跟新处理并发冲突
-        #     self.env.cr.commit()
-        # finally:
-        #     VOCHER_LOCK.release()
-        # return rl
-        # 只允许一条分录更新余额表,进程锁
         VOCHER_LOCK.acquire()
         # 出错了，必须释放锁，要不就会死锁
         try:
@@ -1191,6 +1184,7 @@ class Voucher(models.Model, Glob_tag_Model):
                 for e in es:
                     fields = e[2]
                     if not fields:
+                        n = n+1
                         continue
                     if any(['damount' in fields,
                             'acmount' in fields,
@@ -1205,7 +1199,7 @@ class Voucher(models.Model, Glob_tag_Model):
                 self.updateBalance(isAdd=False)
             rl_bool = super(Voucher, self).write(values)
             self.checkVoucher(values)
-            # 再从余额表加上新的金额
+            # 再从余额表加上新的金额ckVouch
             if needUpdateBalance:
                 self.updateBalance()
                 # 跟新处理并发冲突
@@ -1221,6 +1215,8 @@ class Voucher(models.Model, Glob_tag_Model):
                             {'ac_write_count': n}).write(values)
                     else:
                         raise
+        except:
+            raise
         finally:
             VOCHER_LOCK.release()
         return rl_bool
@@ -1228,6 +1224,8 @@ class Voucher(models.Model, Glob_tag_Model):
     @api.multi
     def copy(self, default=None, my_default={}):
         '''复制凭证'''
+        if "voucherdate" not in my_default:
+            self._checkDate()
         updateFields = {'state': 'creating',
                         'reviewer': None,
                         'createUser': self.env.uid,
@@ -1287,11 +1285,22 @@ class Voucher(models.Model, Glob_tag_Model):
     @api.model
     def checkVoucher(self, voucherDist):
         '''凭证检查'''
+        self._checkDate()
         self._checkEntyCount(voucherDist)
         self._checkCDBalance(voucherDist)
         self._checkChashFlow(voucherDist)
         self._checkCDValue(voucherDist)
         self._checkRequiredItemClass()
+    
+    @api.model
+    def _checkDate(self):
+        '''检查凭证日期是否晚于锁定日期'''
+        if self.org.lock_date and self._compareDate(self.voucherdate, self.org.lock_date) != 1:
+            raise exceptions.ValidationError('核算机构:'+str(self.org.name)+'的锁定日期为:' + str(self.org.lock_date)+",操作凭证的记账日期应晚于该日期")
+
+    @tools.ormcache('date1.year', 'date1.month', 'date1.day', 'date2.year', 'date2.month', 'date2.day')
+    def _compareDate(self, date1, date2):
+        return ACTools.compareDate(date1, date2)
 
     @api.model
     def _checkEntyCount(self, voucherDist):
@@ -1618,6 +1627,8 @@ class Voucher(models.Model, Glob_tag_Model):
             'res_model': 'accountcore.voucher',
             'context': context,
         }
+    
+
 # 分录
 
 

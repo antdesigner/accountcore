@@ -30,7 +30,9 @@
           <field name="is_current" />
           <field name='name' />
           <button string='设为默认' type='object' class="btn-sm  btn-outline-light text-muted" name='toggle' context="{'default_default_org':id}"></button>
-          <field name="user_ids"  groups="base.group_system"></field>
+          <field name="start_date" />
+          <field name="lock_date" />
+          <field name="user_ids" groups="base.group_system"></field>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
       </field>
@@ -47,7 +49,9 @@
             <group>
               <field name="number" help='核算机构的编码，不能相同' />
               <field name="name" help='一个核算机构就是一个会计主体，不能相同' />
-              <field name="user_ids"  groups="base.group_system"></field>
+              <field name="start_date" />
+              <field name="lock_date" />
+              <field name="user_ids" groups="base.group_system"></field>
               <field name='glob_tag' widget='many2many_tags' help='对核算机构的一个分类标签，非必填' />
             </group>
           </sheet>
@@ -217,7 +221,7 @@
       <field name='name'>会计科目</field>
       <field name='model'>accountcore.account</field>
       <field name='arch' type='xml'>
-        <tree  default_order='accountClass,number' limit='600'>
+        <tree default_order='accountClass,number' limit='600'>
           <field name='org' invisible='1'></field>
           <field name='accountsArch' invisible='1' />
           <field name='accountClass'></field>
@@ -473,7 +477,7 @@
           <field name='soucre' />
           <field name='roolbook_html' />
           <field name='number' class='voucherNumber' />
-          <field name='appendixCount'/>
+          <field name='appendixCount' />
           <field name='state' invisible='1'></field>
         </tree>
       </field>
@@ -658,7 +662,7 @@
         </form>
       </field>
     </record>
-        <!-- form-修改凭证策略号向导 -->
+    <!-- form-修改凭证策略号向导 -->
     <record id="accoutcore_seting_voucher_number_single_form" model="ir.ui.view">
       <field name="name">修改策略号</field>
       <field name="model">accountcore.seting_voucher_number_single</field>
@@ -666,7 +670,7 @@
         <form string="">
           <sheet>
             <group>
-             <field name="voucherNumberTastics"></field>
+              <field name="voucherNumberTastics"></field>
               <field name="newNumber" />
             </group>
           </sheet>
@@ -791,13 +795,13 @@
           <field name="v_voucherdate" />
           <field name='org'></field>
           <field name="explain" />
-          <field name="account" invisible='1'/>
+          <field name="account" invisible='1' />
           <field name="items_html" />
-          <field name="damount" sum="sum_d"/>
-          <field name="camount" sum="sum_c"/>
+          <field name="damount" sum="sum_d" />
+          <field name="camount" sum="sum_c" />
           <field name="items" invisible='1' />
-          <field name="cashFlow"/>
-          <field name="v_number" string="凭证号"/>
+          <field name="cashFlow" />
+          <field name="v_number" string="凭证号" />
           <field name="voucher" string="所属凭证" />
           <field name="v_real_date" />
           <field name='glob_tag' string='全局标签' widget='many2many_tags' />
@@ -975,7 +979,7 @@
       </field>
     </record>
 
-        <!-- form-自动生成凭证号 -->
+    <!-- form-自动生成凭证号 -->
     <record id="accountcore_seting_v_number_form" model="ir.ui.view">
       <field name="name">自动生成凭证号</field>
       <field name="model">accountcore.seting_v_number</field>
@@ -1100,7 +1104,7 @@
             </group>
             <group>
               <field name="only_this_level" />
-              <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" context="{'control_org':False}"/>
+              <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" context="{'control_org':False}" />
               <field name="account" default_focus='1' domain="['|',('org','=',False),('org','in',orgs)]" context="{'search_default_group_by_accountClassClass':True}">
                 <tree default_order='accountClass,number,org'  >
                   <field name='org' />
@@ -1533,7 +1537,7 @@
       <field name="res_model">accountcore.accounts_balance</field>
       <field name="view_mode">tree,form</field>
       <field name="target">current</field>
-      <field name="view_id" ref="accountcore_accounts_balance_list"/>
+      <field name="view_id" ref="accountcore_accounts_balance_list" />
       <!-- <field name='context'>{'default_isbegining':True,'search_default_group_by_org': 1,'search_default_group_by_account_class_id':1}</field> -->
       <!-- 默认按列表显示，不分组 -->
       <field name='context'>{'default_isbegining':True}</field>

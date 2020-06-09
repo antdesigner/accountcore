@@ -235,7 +235,8 @@ class SubsidiaryBook(models.AbstractModel):
             entry_arch.account_name = entry['account_name']
             entry_arch.damount = entry['damount']
             entry_arch.camount = entry['camount']
-            entry_arch.items_html = re.sub(r'<br>|<p>|</p>', '', entry['items_html'])
+            entry_arch.items_html = re.sub(
+                r'<br>|<p>|</p>', '', entry['items_html'])
             entry_arch.direction = entry['direction']
             entry_arch.cash_flow = entry['cash_flow']
             entryArchs.append(entry_arch)
@@ -420,7 +421,7 @@ class PrebeginBalance(EntryArch):
 class SumMonth(EntryArch):
     '''本月合计'''
 
-    def __init__(self, year, month, direction, damount, camount):
+    def __init__(self, year, month, direction, damount, camount, balance=0):
         super(SumMonth, self).__init__()
         self.explain = '本月合计'
         self.voucherdate = year
@@ -429,13 +430,14 @@ class SumMonth(EntryArch):
         self.direction = direction
         self.damount = damount
         self.camount = camount
+        self.balance = balance
 # 本年累计
 
 
 class CumulativeYear(EntryArch):
     '''本年累计'''
 
-    def __init__(self, year, month, direction, damount, camount):
+    def __init__(self, year, month, direction, damount, camount, balance=0):
         super().__init__()
         self.explain = '本年累计'
         self.year = year
@@ -444,6 +446,7 @@ class CumulativeYear(EntryArch):
         self.direction = direction
         self.damount = damount
         self.camount = camount
+        self.balance = balance
 # 明细账组装器
 
 
@@ -515,13 +518,13 @@ class EntrysAssembler():
                                             tmp_month,
                                             main_direction,
                                             sum_month_d,
-                                            sum_month_c))
+                                            sum_month_c, self.entrys[-1].balance))
                 # 添加本年累计
                 self.entrys.append(CumulativeYear(tmp_year,
                                                   tmp_month,
                                                   main_direction,
                                                   sum_year_d,
-                                                  sum_year_c))
+                                                  sum_year_c, self.entrys[-1].balance))
                 # 添加年初余额
                 tmp_begin_year_d = tmp_begin_year_d+sum_year_d
                 tmp_begin_year_c = tmp_begin_year_c+sum_year_c
@@ -568,13 +571,13 @@ class EntrysAssembler():
                                             tmp_month,
                                             main_direction,
                                             sum_month_d,
-                                            sum_month_c))
+                                            sum_month_c, self.entrys[-1].balance))
                 # 添加本年累计
                 self.entrys.append(CumulativeYear(tmp_year,
                                                   tmp_month,
                                                   main_direction,
                                                   sum_year_d,
-                                                  sum_year_c))
+                                                  sum_year_c, self.entrys[-1].balance))
                 # 一个月结束,本月合计清零
                 sum_month_d = 0
                 sum_month_c = 0
@@ -601,13 +604,13 @@ class EntrysAssembler():
                                     tmp_month,
                                     main_direction,
                                     sum_month_d,
-                                    sum_month_c))
+                                    sum_month_c, self.entrys[-1].balance))
         # 添加本年累计
         self.entrys.append(CumulativeYear(tmp_year,
                                           tmp_month,
                                           main_direction,
                                           sum_year_d,
-                                          sum_year_c))
+                                          sum_year_c, self.entrys[-1].balance))
 
     def _addBegingBalance(self):
         '''把查询期间的启用期初加入分录列表'''
