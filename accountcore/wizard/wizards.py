@@ -508,7 +508,7 @@ class currencyDown_sunyi(models.TransientModel):
                     voucher_ids.append(voucher.id)
         # 自动锁定到结转损益日期
         if self.auto_lock:
-            self.orgs.write({"lock_date": periods[-1].endDate})
+            self.orgs.sudo().write({"lock_date": periods[-1].endDate})
         return {'name': '自动生成的结转损益凭证',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
