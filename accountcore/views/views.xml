@@ -20,18 +20,26 @@
         </form>
       </field>
     </record>
+    <!-- 窗体动作-打开机构结转损益凭证列表 -->
+    <record model='ir.actions.act_window' id='accountcore_shuyi_vouchers_action_window'>
+      <field name='name'>结转损益凭证列表</field>
+      <field name='res_model'>accountcore.voucher</field>
+      <field name='view_mode'>tree,form</field>
+      <field name="context">{'search_default_org':[active_id],'search_default_vouchers_sunyi': 1,'search_default_group_by_year':1,'search_default_group_by_month':1}</field>
+    </record>
     <!-- list-核算机构 -->
     <record model='ir.ui.view' id='accountcore_org_list'>
       <field name='name'>核算机构</field>
       <field name='model'>accountcore.org</field>
       <field name='arch' type='xml'>
         <tree js_class="orgListView">
-          <field name='number' />
-          <field name="is_current" />
-          <field name='name' />
-          <button string='设为默认' type='object' class="btn-sm  btn-outline-light text-muted" name='toggle' context="{'default_default_org':id}"></button>
           <field name="start_date" />
+          <field name='number' />
           <field name="lock_date" />
+          <field name='name' />
+          <field name="is_current" />
+          <button string='设为默认' type='object' class="btn-sm  btn-outline-light text-muted" name='toggle' context="{'default_default_org':id}"></button>
+           <button string='查看损益凭证' type='action' class="btn-sm  btn-outline-light text-muted" name='%(accountcore_shuyi_vouchers_action_window)d' context="{'default_default_org':id}"></button>
           <field name="user_ids" groups="base.group_system"></field>
           <field name='glob_tag' widget='many2many_tags' />
         </tree>
@@ -1136,6 +1144,7 @@
               <field name="startDate" />
               <field name="endDate" />
               <field name="fast_period" widget="ac_fast_period" />
+              <field name="auto_lock"></field>
             </group>
             <group>
               <field name="orgs" widget="many2many_checkboxes_floatleft" />
@@ -1236,7 +1245,7 @@
           <filter string="审核人是自己" name="reviewer_is_me" domain="[('reviewer','=',uid)]" />
           <filter string="审核人是他人" name="reviewer_not_me" domain="[('reviewer','!=',uid)]" />
           <filter string="制单人是他人" name="createUser_not_me" domain="[('createUser','!=',uid)]" />
-          <filter string="非结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','not ilike', '结转损益')]" />
+          <filter string="非结转损益凭证" name="no_vouchers_sunyi" domain="[('ruleBook','not ilike', '结转损益')]" />
           <filter string="结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','ilike', '结转损益')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
           <filter name="group_by_createUser" string="按制单人分组" context = "{'group_by': 'createUser'}" />

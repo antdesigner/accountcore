@@ -461,6 +461,7 @@ class currencyDown_sunyi(models.TransientModel):
         'accountcore.org',
         string='机构范围',
         default=lambda s: s.env.user.currentOrg, required=True)
+    auto_lock = fields.Boolean(string='自动锁定', default=True, help="锁定到结转损益的日期")
     # def soucre(self):
     #     return self.env.ref('rulebook_1')
     @ACTools.refuse_role_search
@@ -475,7 +476,8 @@ class currencyDown_sunyi(models.TransientModel):
         # 检查开始日期和锁定日期
         for _org in self.orgs:
             if _org.lock_date and ACTools.compareDate(self.startDate, _org.lock_date) != 1:
-                raise exceptions.ValidationError('核算机构:'+str(_org.name)+'的锁定日期为:' + str(_org.lock_date)+",结转损益的开始日期"+str(self.startDate)+"早于或等于该日期")
+                raise exceptions.ValidationError('核算机构:'+str(_org.name)+'的锁定日期为:' + str(
+                    _org.lock_date)+",结转损益的开始日期为"+str(self.startDate)+",结转日期应晚于锁定日期,或请管理员修改锁定日期")
         # 获得需要结转的会计期间
         periods = Period(self.startDate, self.endDate).getPeriodList()
         self.t_entry = self.env['accountcore.entry']
@@ -504,6 +506,9 @@ class currencyDown_sunyi(models.TransientModel):
                 voucher = self._do_currencyDown(org, p)
                 if voucher:
                     voucher_ids.append(voucher.id)
+        # 自动锁定到结转损益日期
+        if self.auto_lock:
+            self.orgs.write({"lock_date": periods[-1].endDate})
         return {'name': '自动生成的结转损益凭证',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
