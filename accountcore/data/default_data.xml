@@ -898,6 +898,26 @@
             <field name='accountsArch' eval='accountsarch_1' />
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
         </record>
+        <record id='account_43_1505' model='accountcore.account'>
+            <field name='org' eval='False' />
+            <field name='accountClass' eval='account_class_1' />
+            <field name='number' >1505</field>
+            <field name='name' >债权投资</field>
+            <field name='direction' >1</field>
+            <field name='cashFlowControl' >0</field>
+            <field name='accountsArch' eval='accountsarch_1' />
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>
+        <record id='account_43_1507' model='accountcore.account'>
+            <field name='org' eval='False' />
+            <field name='accountClass' eval='account_class_1' />
+            <field name='number' >1507</field>
+            <field name='name' >其他债权投资</field>
+            <field name='direction' >1</field>
+            <field name='cashFlowControl' >0</field>
+            <field name='accountsArch' eval='accountsarch_1' />
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>
         <record id='account_44' model='accountcore.account'>
             <field name='org' eval='False' />
             <field name='accountClass' eval='account_class_1' />
@@ -963,6 +983,16 @@
             <field name='accountClass' eval='account_class_1' />
             <field name='number' >1526</field>
             <field name='name' >投资性房地产</field>
+            <field name='direction' >1</field>
+            <field name='cashFlowControl' >0</field>
+            <field name='accountsArch' eval='accountsarch_1' />
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>
+        <record id='account_50_1528' model='accountcore.account'>
+            <field name='org' eval='False' />
+            <field name='accountClass' eval='account_class_1' />
+            <field name='number' >1528</field>
+            <field name='name' >其他权益工具投资</field>
             <field name='direction' >1</field>
             <field name='cashFlowControl' >0</field>
             <field name='accountsArch' eval='accountsarch_1' />
