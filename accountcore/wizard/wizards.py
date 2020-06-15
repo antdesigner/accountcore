@@ -377,7 +377,7 @@ class GetAccountsBalance(models.TransientModel):
             start_year, start_month, data['orgs'],  data['account'])
         if period:
             raise exceptions.ValidationError(
-                "查询范围内有科目的启用期间晚于查询的开始期间" + str(start_year) + "-"+str(start_month) + ",查询的开始期间不能大于启用期间,最早可选择"+period+"为查询的开始期间")
+                "查询的开始期间 " + str(start_year) + "-"+str(start_month) + " 早于查询范围内科目: "+str(period[1])+" 等的启用期,查询的开始期间不能大于启用期间(因启用期前的期初余额无法明确,会导致逻辑错误,禁止查询),最早可选择 "+period[0]+" 为查询的开始期间")
         datas = {
             'form': data
         }
@@ -393,9 +393,13 @@ class GetAccountsBalance(models.TransientModel):
 
     def _periodIsBeforBeging(self, start_year, start_month, org_ids, account_ids):
         '''检查查询期间是否早于启用期间'''
+        accounts = self.env['accountcore.account'].sudo().browse(account_ids)
+        all_ids = []
+        for ac in accounts:
+            all_ids.extend(ac.getMeAndChild_ids())
         domain = [('isbegining', '=', True),
                   ('org', 'in', org_ids),
-                  ('account', 'in', account_ids), '|', '&',
+                  ('account', 'in', list(set(all_ids))), '|', '&',
                   ('year', '=', start_year),
                   ('month', '>', start_month),
                   ('year', '>', start_year)]
@@ -405,7 +409,7 @@ class GetAccountsBalance(models.TransientModel):
             records_sorted = records.sorted(key=lambda r: r.year+r.month*12)
             period_str = str(records_sorted[-1].year) + \
                 "-"+str(records_sorted[-1].month)
-            return period_str
+            return (period_str, records_sorted[-1].account.name)
         return False
 # 科目明细账查询向导
 

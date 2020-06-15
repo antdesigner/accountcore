@@ -113,7 +113,7 @@ class SubsidiaryBook(models.AbstractModel):
                                   item_id,
                                   year desc,
                                   month desc,
-                                  isbegining desc'''
+                                  isbegining asc'''
         # elif 在向导中选择了核算项目
         elif len_parmas == 4:
             query = ''' SELECT
@@ -137,7 +137,7 @@ class SubsidiaryBook(models.AbstractModel):
                                   item_id,
                                   year desc,
                                   month desc,
-                                  isbegining desc'''
+                                  isbegining asc'''
         else:
             raise exceptions.ValidationError('查询参数数量错误!')
         self.env.cr.execute(query, params)
@@ -163,6 +163,7 @@ class SubsidiaryBook(models.AbstractModel):
                 temp_orgId = record['org_id']
                 temp_accountId = record['account_id']
                 temp_itemId = record['item_id']
+
         # 求和,得出年初余额
         return (sum(d), sum(c))
 
@@ -385,11 +386,11 @@ class BeginYear(EntryArch):
 
 
 class BeginBalance(EntryArch):
-    '''启用期初'''
+    '''月初到启用日'''
 
     def __init__(self, year, month, direction, damount, camount):
         super(BeginBalance, self).__init__()
-        self.explain = '启用期初'
+        self.explain = '月初到启用日'
         self.year = year
         self.month = month
         self.direction = direction
@@ -397,16 +398,16 @@ class BeginBalance(EntryArch):
         self.damount = damount
         self.camount = camount
         self.is_not_begining = False
-# 启用期初以前
+# 启用月初以前
 
 
 class PrebeginBalance(EntryArch):
-    '''启用期初以前'''
+    '''启用月初以前'''
 
     def __init__(self, year, month, direction, damount, camount):
         super(PrebeginBalance, self).__init__()
         # 不要改变名称，在
-        self.explain = '年初至启用期'
+        self.explain = '年初至启用月初'
         self.year = year
         self.month = month
         self.direction = direction
@@ -467,12 +468,17 @@ class EntrysAssembler():
         self.beginBalances = beginBalances
         self.entryArchs = entryArchs
         self.entrys = []
-        self._generating()
+        self._generating(period)
 
-    def _generating(self):
+    def _generating(self, period):
         '''生成明细账'''
         self._addBegingBalance()
         if len(self.entryArchs) == 0:
+            # 添加年初余额
+            self.entrys.append(BeginYear(period.start_year,
+                                         self.main_account.direction,
+                                         self.beginingOfYearBalance[0],
+                                         self.beginingOfYearBalance[1]))
             return
         # 查询范围内有启用期初,就添加启用期初,因为如果启用期初有当月已发生额,需要计入当月发生额
         tmp_year = self.entryArchs[0].year

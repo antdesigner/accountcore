@@ -71,6 +71,7 @@ class AccountBalanceReport(models.AbstractModel):
         temp_orgId = ""
         # 科目在查询期间以前的余额记录,按机构,科目,项目和年月进行了排序
         recordsBeforSart = self._getRecordsBeforStart(params_befor_start)
+        is_begining = False
         for record in recordsBeforSart:
             # if 已经对开始期间以前的最近一条相同科目和核算项目的记录取了数,就跳到下一个record(
             # 也就是取到了查询期间离期初最近的那一条余额记录,如果存在,这条记录的期初就是该科目在
@@ -78,7 +79,13 @@ class AccountBalanceReport(models.AbstractModel):
             if (record['org_id'] == temp_orgId
                 and record['account_id'] == temp_accountId
                     and record['item_id'] == temp_itemId):
-                continue
+                # 判断是否在查询开始期间之前,是之前不能取启用期初那条
+                if is_begining:
+                    if record['year'] < start_year or record['year'] == start_year and record['month'] < start_month:
+                        balances.del_(record)
+                else:
+                    continue
+            is_begining = record['isbegining']
             temp_orgId = record['org_id']
             temp_accountId = record['account_id']
             temp_itemId = record['item_id']
@@ -97,6 +104,11 @@ class AccountBalanceReport(models.AbstractModel):
                     record['beginingDamount']).quantize(Decimal('0.00'))
                 balance.beginingCamount = Decimal.from_float(
                     record['beginingCamount']).quantize(Decimal('0.00'))
+            elif record['year'] < start_year or record['year'] == start_year and record['month'] < start_month:
+                balance.beginingDamount = Decimal.from_float(
+                    record['endDamount']).quantize(Decimal('0.00'))
+                balance.beginingCamount = Decimal.from_float(
+                    record['endCamount']).quantize(Decimal('0.00'))
             else:
                 balance.beginingDamount = Decimal.from_float(
                     record['endDamount']).quantize(Decimal('0.00'))
@@ -185,7 +197,8 @@ class AccountBalanceReport(models.AbstractModel):
                         "beginingDamount",
                         "beginingCamount",
                         "endDamount",
-                        "endCamount"
+                        "endCamount",
+                        isbegining
                     FROM
                         (SELECT
                             year,
@@ -376,6 +389,14 @@ class Balances(object):
     def getBalancesList(self):
         '''获得balance的列表形式'''
         return self.org_account_items.values()
+
+    def del_(self, balance):
+        '''删除'''
+        mark = str(balance['org_id'])+'.' \
+            + str(balance['account_id']) + "-" \
+            + str(balance['item_id'])
+        del self.org_account_items[mark]
+
 # 科目余额管理器
 
 
