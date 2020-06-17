@@ -429,6 +429,7 @@ class GetSubsidiaryBook(models.TransientModel):
         'accountcore.account', string='查询的科目', required=True)
     only_this_level = fields.Boolean(string='只包含本级科目', default=False)
     item = fields.Many2one('accountcore.item', string='查询的核算项目')
+    show_general = fields.Boolean(string="显示总账")
 
     @api.multi
     def getReport(self, *args):

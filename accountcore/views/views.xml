@@ -712,9 +712,9 @@
       <field name='view_mode'>form</field>
       <field name='target'>new</field>
     </record>
-    <!-- 窗体动作-打开查询科目明细账 -->
+    <!-- 窗体动作-打开查询科目明细/总账 -->
     <record model='ir.actions.act_window' id='accountcore_get_subsidiary_book_window'>
-      <field name="name">查询科目明细账</field>
+      <field name="name">查询科目明细/总账</field>
       <field name="res_model">accountcore.get_subsidiary_book</field>
       <field name="view_mode">form</field>
       <field name="target">new</field>
@@ -758,7 +758,7 @@
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1'>
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
-                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':[account],'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细账"></button>
+                <button name='%(accountcore_get_subsidiary_book_window)d' context="{'default_account':[account],'default_orgs':[org],'default_item':account_item}" type='action' class='btn btn-sm fa fa-reply' data-toggle="tooltip" title="点击查看明细/总账"></button>
                 <field name='org' invisible='1' />
                 <field name='explain' widget="FieldChar_voucher_explain" class='oe_ac_explain' ></field>
                 <!-- org_id,show_balance用于在科目查找限制当前机构范围和显示科目余额-->
@@ -1032,20 +1032,20 @@
         </form>
       </field>
     </record>
-    <!-- 科目余额表，明细账等纸张格式 -->
-    <record id="paperformat_A4_Landspace" model="report.paperformat">
-      <field name="name">科目余额表</field>
+    <!-- 科目余额表，明细/总账等纸张格式 -->
+    <record id="book_A4_Landspace" model="report.paperformat">
+      <field name="name">科目余额表等</field>
       <field name="default" eval="True" />
       <field name="format">A4</field>
       <field name="page_height">0</field>
       <field name="page_width">0</field>
       <field name="orientation">Landscape</field>
-      <field name="margin_top">10</field>
+      <field name="margin_top">25</field>
       <field name="margin_bottom">20</field>
       <field name="margin_left">7</field>
       <field name="margin_right">7</field>
-      <field name="header_line" eval="False" />
-      <field name="header_spacing">35</field>
+      <field name="header_line" eval="True" />
+      <field name="header_spacing">20</field>
       <field name="dpi">90</field>
     </record>
     <!-- form-科目余额表查询向导 -->
@@ -1094,10 +1094,10 @@
         </form>
       </field>
     </record>
-    <report id='accountcore.subsidiarybook_report' model='accountcore.entry' string='科目明细账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='paperformat_A4_Landspace' />
-    <!-- form-查询明细账向导 -->
+    <report id='accountcore.subsidiarybook_report' model='accountcore.entry' string='科目明细账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='book_A4_Landspace' />
+    <!-- form-查询明细/总账向导 -->
     <record id="accountcore_get_subsidiary_book_form" model="ir.ui.view">
-      <field name="name">查询科目明细账</field>
+      <field name="name">查询科目明细/总账</field>
       <field name="model">accountcore.get_subsidiary_book</field>
       <field name="arch" type="xml">
         <form string="">
@@ -1111,6 +1111,7 @@
               <field name="orgs" widget="many2many_checkboxes_floatleft" />
             </group>
             <group>
+            <field name="show_general" />
               <field name="only_this_level" />
               <field name="item" domain="['|',('org','=',False),('org','in',orgs)]" options="{'no_create_edit':1,'no_create':1,'no_open':1}" context="{'control_org':False}" />
               <field name="account" default_focus='1' domain="['|',('org','=',False),('org','in',orgs)]" context="{'search_default_group_by_accountClassClass':True}">
