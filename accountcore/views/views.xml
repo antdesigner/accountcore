@@ -1094,7 +1094,7 @@
         </form>
       </field>
     </record>
-    <report id='accountcore.subsidiarybook_report' model='accountcore.entry' string='科目明细账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='book_A4_Landspace' />
+    <report id='accountcore.subsidiarybook_report' model='accountcore.entry' string='科目明细/总账' report_type='qweb-html' name='accountcore.subsidiary_book_report' paperformat='book_A4_Landspace' />
     <!-- form-查询明细/总账向导 -->
     <record id="accountcore_get_subsidiary_book_form" model="ir.ui.view">
       <field name="name">查询科目明细/总账</field>
