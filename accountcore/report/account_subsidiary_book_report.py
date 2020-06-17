@@ -84,6 +84,7 @@ class SubsidiaryBook(models.AbstractModel):
                                      beginBlances,
                                      entryArchs)
             multi_entrys.append(entrys)
+        data["period"] = period
         return {'doc_ids': docids,
                 'docs': multi_entrys,
                 'data': data}
