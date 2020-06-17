@@ -411,13 +411,13 @@ class GetAccountsBalance(models.TransientModel):
                 "-"+str(records_sorted[-1].month)
             return (period_str, records_sorted[-1].account.name)
         return False
-# 科目明细账查询向导
+# 科目明细/总账查询向导
 
 
 class GetSubsidiaryBook(models.TransientModel):
-    "科目明细账查询向导"
+    "科目明细/总账查询向导"
     _name = 'accountcore.get_subsidiary_book'
-    _description = '科目明细账查询向导'
+    _description = '科目明细/总账查询向导'
     startDate = fields.Date(string='开始月份')
     endDate = fields.Date(string='结束月份')
     fast_period = fields.Date(string="选取期间", store=False)
