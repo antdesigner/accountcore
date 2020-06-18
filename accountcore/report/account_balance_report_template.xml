@@ -87,7 +87,7 @@ table tr{page-break-inside: avoid !important;}
                         <table id='ac_table' class='m-auto o_list_table ac-no-border table-bordered table-sm table-striped table-hover'>
                             <thead class='ac-no-border'>
                             <tr style='page-break-inside:avoid !important'>
-                              <th class='ac-no-border text-left' t-if='sum_orgs or orgs_count==1'><h6>机构:<t t-esc="data['sum_orgs_name']"></t></h6></th>
+                              <th class='ac-no-border text-left'  colspan="8">机构:<t t-esc="data['sum_orgs_name']"></t></th>
                             </tr>
                                 <tr>
                                     <th t-if='not (sum_orgs or orgs_count==1)' rowspan='2' colspan="1">机构名称</th>
