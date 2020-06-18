@@ -9,7 +9,7 @@
     'author': "黄虎",
     'website': "",
     'category': 'accountcore',
-    'version': '12.7.9.20200617_beta',
+    'version': '12.7.10.20200618_beta',
     'price': 333.85,
     'currency': 'USD',
     'depends': ['base', 'web'],

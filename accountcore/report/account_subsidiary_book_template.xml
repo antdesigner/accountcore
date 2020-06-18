@@ -36,7 +36,7 @@ td, th {vertical-align: middle!important;font-size: small;}
                             <t t-set='item' t-value='account_entry.item'></t>
                              <!-- 单个科目循环开始 -->
                             <div class="row" style="page-break-after:always;">
-                                <table class='m-auto o_list_table table-bordered table-sm table-hover ac-no-border'>
+                                 <table  t-attf-class="{{'m-auto' if report_type == 'pdf' or show_general else ''}} o_list_table table-bordered table-sm table-hover ac-no-border">
                                     <thead> 
                                         <tr style='page-break-inside:avoid !important'>
                                             <th colspan="5" class='text-left ac-no-border'><h5>科目:<t t-esc='account_name'></t></h5></th>
