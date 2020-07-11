@@ -79,6 +79,8 @@ class Org(models.Model, Glob_tag_Model):
     user_ids = fields.Many2many('res.users', string='有权用户')
     start_date = fields.Date(string="启用日期", compute="_get_start_date", help="该机构的科目最早启用日期")
     lock_date = fields.Date(string="锁定日期", help="只能修改该日期后的凭证")
+    last_voucher_date = fields.Date(
+        string="最后凭证日", compute="_get_last_voucher_date")
     _sql_constraints = [('accountcore_org_number_unique', 'unique(number)',
                          '核算机构编码重复了!'),
                         ('accountcore_org_name_unique', 'unique(name)',
@@ -121,6 +123,17 @@ class Org(models.Model, Glob_tag_Model):
                 org.start_date = banlances[0].createDate
             else:
                 org.start_date = None
+
+    @api.multi
+    def _get_last_voucher_date(self):
+        '''机构最后的凭证日'''
+        for org in self:
+            last_voucher = self.env['accountcore.voucher'].search(
+                [('org', '=', org.id)], order='voucherdate desc', limit=1)
+            if last_voucher:
+                org.last_voucher_date = last_voucher.voucherdate
+            else:
+                org.last_voucher_date = None
 # 会计科目体系
 
 
@@ -1084,6 +1097,7 @@ class Voucher(models.Model, Glob_tag_Model):
                                   compute='get_currency',
                                   readonly=True,
                                   string="币别")
+    b_source = fields.Char(string="业务标识")
 
     @api.onchange('org')
     def _set_userdefault_org(self):

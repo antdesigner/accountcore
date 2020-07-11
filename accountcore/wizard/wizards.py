@@ -614,13 +614,17 @@ class currencyDown_sunyi(models.TransientModel):
                                  })
         if len(entrys_value) < 2:
             return None
-        entrys = self.t_entry.sudo().create(entrys_value)
+        # entrys = self.t_entry.sudo().create(entrys_value)
+        entrys = []
+        for e in entrys_value:
+            entrys.append([0, '', e])
         voucher = self.env['accountcore.voucher'].sudo().create({
             'voucherdate': voucer_period.endDate,
             'org': org.id,
             'soucre': self.env.ref('accountcore.source_2').id,
             'ruleBook': [(6, 0, [self.env.ref('accountcore.rulebook_1').id])],
-            'entrys': [(6, 0, entrys.ids)],
+            # 'entrys': [(6, 0, entrys.ids)],
+            'entrys': entrys,
             'createUser': self.env.uid,
         })
         return voucher

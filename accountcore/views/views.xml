@@ -16,7 +16,7 @@
               <field name='number' />
               <field name="name" />
             </group>
-          </sheet>
+          </sheet>记账凭证列表
         </form>
       </field>
     </record>
@@ -36,6 +36,7 @@
           <field name="start_date" />
           <field name='number' />
           <field name="lock_date" />
+          <field name="last_voucher_date" />
           <field name='name' />
           <field name="is_current" />
           <button string='设为默认' type='object' class="btn-sm  btn-outline-light text-muted" name='toggle' context="{'default_default_org':id}"></button>
@@ -481,6 +482,7 @@
           <field name='uniqueNumber' />
           <field name='createUser' />
           <field name='reviewer' />
+          <field name="b_source"></field>
           <field name='glob_tag' widget='many2many_tags' />
           <field name='soucre' />
           <field name='roolbook_html' />
@@ -753,8 +755,9 @@
               <field name='org' colspan='2' options="{'no_create_edit':1,'no_create':1,'no_open':1}" attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='appendixCount' colspan='2' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='real_date' colspan='2' attrs="{'readonly':[('state','=','reviewed')]}" />
-              <field name='glob_tag' colspan='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
+              <field name='b_source' colspan='2' attrs="{'readonly':[('state','=','reviewed')]}" />
               <field name='ruleBook' colspan='2' readonly='1' widget="many2many_tags" />
+              <field name='glob_tag' colspan='2' options="{'no_create_edit':0,'no_create':0,'no_open':0}" widget="many2many_tags" />
             </group>
             <field name='entrys' context="{'disable_open':True}" attrs="{'readonly':[('state','=','reviewed')]}" default_focus='1'>
               <tree editable="bottom" class='oe_ac_voucher_entrys' options="{'no_open':1}" col='6' limit='80'>
@@ -1163,8 +1166,8 @@
       <field name="model">accountcore.org</field>
       <field name="arch" type="xml">
         <search string="orgFilter">
-          <field name="name" string="核算机构名称包含" domain="[('name','ilike', self)]" />
-          <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
+          <field name="name" string="核算机构名称包含" />
+          <field name="glob_tag" string="全局标签等于" operator="=" />
         </search>
       </field>
     </record>
@@ -1174,9 +1177,12 @@
       <field name="model">accountcore.account</field>
       <field name="arch" type="xml">
         <search string="accountFilter">
-          <field name="name" string="科目名称包含" domain="[('name','ilike', self)]" />
-          <field name="number" string="科目编号包含" domain="[('number','ilike', self)]" />
-          <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
+          <field name="name" string="科目名称包含" filter_domain="[('name','ilike', self)]" />
+          <field name="number" string="科目编号包含" filter_domain="[('number','ilike', self)]" />
+          <field name="number" string="科目编号等于" filter_domain="[('number','=', self)]" />
+          <!-- <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' /> -->
+          <field name="org" string="所属机构等于" operator="="/>
+          <field name="glob_tag" string="全局标签等于" operator="="/>
           <filter string="一级科目" name="leve_1" domain="[('fatherAccountId','=',False)]"></filter>
           <filter string="非一级科目" name="leve_2" domain="[('fatherAccountId','!=',False)]"></filter>
           <filter string="末级科目" name="is_last" domain="[('childs_ids','=',False)]"></filter>
@@ -1195,10 +1201,13 @@
       <field name="model">accountcore.item</field>
       <field name="arch" type="xml">
         <search string="itemFilter">
-          <field name="name" string="项目名称包含" domain="[('name','ilike', self)]" />
-          <field name="number" string="项目编号包含" domain="[('number','ilike', self)]" />
-          <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
-          <field name="uniqueNumber" string="唯一编号包含" domain="[('uniqueNumber','ilike', self)]" />
+           <field name="name" string="项目名称包含" filter_domain="[('name','ilike', self)]" />
+          <field name="number" string="项目编号包含" filter_domain="[('number','ilike', self)]" />
+          <field name="number" string="项目编号等于" filter_domain="[('number','=', self)]" />
+          <field name="uniqueNumber" string="唯一编号包含" filter_domain="[('uniqueNumber','ilike', self)]" />
+          <field name="uniqueNumber" string="唯一编号等于" filter_domain="[('uniqueNumber','=', self)]" />
+          <field name="org" string="所属机构等于" operator="="/>
+          <field name="glob_tag" string="全局标签等于" operator="="/>
           <filter name="groupby_itemClass" string="按项目类别分组" context = "{'group_by': 'itemClass'}" />
         </search>
       </field>
@@ -1209,11 +1218,12 @@
       <field name="model">accountcore.accounts_balance</field>
       <field name="arch" type="xml">
         <search string="balanceFilter">
-          <field name="account" string="科目名称包含" domain="[('account.name','ilike', self)]" />
-          <field name="account_number" string="科目编号包含" domain="[('account_number','ilike', self)]" />
-          <field name="items" string="项目名称包含" domain="[('items.name','ilike', self)]" />
-          <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
+          <field name="account" string="科目名称包含" filter_domain="[('account','ilike', self)]" />
+          <field name="account_number" string="科目编号等于" filter_domain="[('account_number','=', self)]" />
+          <field name="items" string="项目名称包含" filter_domain="[('items','ilike', self)]" />
+          <field name="org" string="机构名称包含" filter_domain="[('org','ilike', self)]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
+          <filter string="启用日期范围" name="createDate" date='createDate' default_period="this_month" />
           <filter name="group_by_account_class_id" string="按科目类别分组" context = "{'group_by': 'account_class_id'}" />
           <filter name="group_by_account_number" string="按科目编码分组" context = "{'group_by': 'account_number'}" />
           <filter name="group_by_accountClass" string="按科目分组" context = "{'group_by': 'account'}" />
@@ -1233,7 +1243,9 @@
           <field name="uniqueNumber" string="唯一编号等于" domain="[('uniqueNumber','=', self),'|',('uniqueNumber','=', 'v'+self)]" />
           <field name="number" string="凭证策略号等于" domain="[('number','=', self)]" />
           <field name="org" string="机构名称包含" domain="[('org.name','ilike', self)]" />
-          <field name="reviewer" string="审核人包含" domain="[('reviewer.name','ilike', self)]" />
+           <field name="reviewer" string="审核人为" filter_domain="[('reviewer','=', self)]" />
+          <field name="createUser" string="制单人为" filter_domain="[('createUser','=', self)]" />
+          <field name="b_source" string="业务标识包含关键字" filter_domain="[('b_source','ilike', self)]" />
           <field name="soucre" string="凭证来源包含" domain="[('soucre','ilike', self)]" widget='many2one' />
           <field name="ruleBook" string="凭证标签包含" domain="[('ruleBook','ilike', self)]" widget='many2one' />
           <field name="glob_tag" string="全局标签包含" domain="[('glob_tag','ilike', self)]" widget='many2one' />
@@ -1246,6 +1258,7 @@
           <filter string="审核人是自己" name="reviewer_is_me" domain="[('reviewer','=',uid)]" />
           <filter string="审核人是他人" name="reviewer_not_me" domain="[('reviewer','!=',uid)]" />
           <filter string="制单人是他人" name="createUser_not_me" domain="[('createUser','!=',uid)]" />
+         
           <filter string="非结转损益凭证" name="no_vouchers_sunyi" domain="[('ruleBook','not ilike', '结转损益')]" />
           <filter string="结转损益凭证" name="vouchers_sunyi" domain="[('ruleBook','ilike', '结转损益')]" />
           <filter name="group_by_org" string="按核算机构分组" context = "{'group_by': 'org'}" />
