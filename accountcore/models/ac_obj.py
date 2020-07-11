@@ -29,7 +29,7 @@ class ACTools():
             return Decimal.from_float(amount).quantize(Decimal('0.00'))
         except TypeError:
             if isinstance(amount, Decimal):
-                return amount
+                return Decimal.from_float(float(amount)).quantize(Decimal('0.00'))
 
     @staticmethod
     def ZeroAmount():

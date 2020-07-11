@@ -249,6 +249,16 @@
             <field name="name">推送</field>
             <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
         </record>
+        <record id="source_4" model="accountcore.source">
+            <field name="number">4</field>
+            <field name="name">导入</field>
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>
+        <record id="source_5" model="accountcore.source">
+            <field name="number">5</field>
+            <field name="name">接口</field>
+            <field name='glob_tag' eval='[(6, 0, [ref("glob_tag_3")])]' />
+        </record>
         <!-- 现金流量类别结束 -->
         <!-- 现金流量项目开始 -->
         <record id="cashflow_1" model="accountcore.cashflow">
