@@ -228,7 +228,7 @@ class AccountBalanceReport(models.AbstractModel):
                               item_id,
                               year desc ,
                               month desc,
-                              isbegining desc'''
+                              isbegining asc'''
         self.env.cr.execute(query, params)
         return self.env.cr.dictfetchall()
 
