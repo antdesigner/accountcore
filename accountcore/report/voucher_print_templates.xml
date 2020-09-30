@@ -2,30 +2,30 @@
     <data>
         <!-- 凭证打印 -->
         <template id='voucher_report'>
-            <div class="page container text-center" style="page-break-after:always">
+            <div class="page container text-center" style="page-break-after:always;display:flex;flex-direction:column;">
                 <div class="row">
                     <table class='table table-bordered table-sm ac-no-border'>
                         <thead style="white-space:nowrap;">
                             <tr>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <center>
-                                        <h4>记账凭证</h4>
+                                        <h3>记账凭证</h3>
                                     </center>
                                 </th>
                             </tr>
                             <tr>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <center>
-                                        <h6>
+                                        <h5>
                                             <span t-field='doc.voucherdate' />
-                                        </h6>
+                                        </h5>
                                     </center>
                                 </th>
                             </tr>
                             <tr class='ac-no-border'>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <h6>
-                                        <span style='float:left'>机构:</span>
+                                        <span style='float:left'>机构/主体:</span>
                                         <span style='float:left;margin-left:1em' t-field='doc.org' />
                                         <span style='float:right'>
                                             <span >附件张数:</span>
@@ -39,10 +39,10 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>说明</th>
-                                <th>科目(核算统计项目）</th>
-                                <th>借方</th>
-                                <th>贷方</th>
+                                <th colspan="3">说明</th>
+                                <th colspan="5">科目(核算统计项目）</th>
+                                <th colspan="2">借方</th>
+                                <th colspan="2">贷方</th>
                             </tr>
                         </thead>
                         <tbody class="text-left">
@@ -51,35 +51,35 @@
                             <tr t-foreach="doc.entrys" t-as="entry">
                                 <t t-set='dsum' t-value='dsum+entry.damount'></t>
                                 <t t-set='csum' t-value='csum+entry.camount'></t>
-                                <td>
+                                <td colspan="3">
                                     <span t-field='entry.explain' class="explain" />
                                 </td>
-                                <td>
+                                <td colspan="5">
                                     <span t-field="entry.account" />
                                     <span t-if="entry.items">(</span>
                                     <span t-field='entry.items' />
                                     <span t-if="entry.items">)</span>
                                 </td>
-                                <td class="damount text-right">
-                                    <span t-if="entry.damount!=0" t-field="entry.damount" />
+                                <td colspan="2" class="damount text-right">
+                                    <span t-if="entry.damount!=0" t-esc='"{:,.2f}".format(entry.damount)' />
                                 </td>
-                                <td class='camount text-right'>
-                                    <span t-if="entry.camount!=0" t-field="entry.camount" />
+                                <td  colspan="2" class='camount text-right'>
+                                    <span t-if="entry.camount!=0" t-esc='"{:,.2f}".format(entry.camount)'/>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan='2'>合计</td>
-                                <td>
+                                <td colspan='8'>合计</td>
+                                <td colspan='2'>
                                     <t t-esc='"{:,.2f}".format(dsum)'></t>
                                 </td>
-                                <td>
+                                <td colspan='2'>
                                     <t t-esc='"{:,.2f}".format(csum)'></t>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan='4' class='ac-no-border'>
+                                <td colspan='12' class='ac-no-border'>
                                     <center>
                                         <span style='margin-left:0px'>记账:</span>
                                         <span style='margin-left:1em' t-field='doc.createUser' />
@@ -95,30 +95,30 @@
         </template>
         <!-- 凭证打印_仅凭证号 -->
         <template id='voucher_report_v_number'>
-            <div class="page container text-center" style="page-break-after:always">
+               <div class="page container text-center" style="page-break-after:always;display:flex;flex-direction:column;">
                 <div class="row">
                     <table class='table table-bordered table-sm ac-no-border'>
                         <thead style="white-space:nowrap;">
                             <tr>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <center>
-                                        <h4>记账凭证</h4>
+                                        <h3>记账凭证</h3>
                                     </center>
                                 </th>
                             </tr>
                             <tr>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <center>
-                                        <h6>
+                                        <h5>
                                             <span t-field='doc.voucherdate' />
-                                        </h6>
+                                        </h5>
                                     </center>
                                 </th>
                             </tr>
                             <tr class='ac-no-border'>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <h6>
-                                        <span style='float:left'>机构:</span>
+                                        <span style='float:left'>机构/主体:</span>
                                         <span style='float:left;margin-left:1em' t-field='doc.org' />
                                         <span style='float:right'>
                                             <span >附件张数:</span>
@@ -130,10 +130,10 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>说明</th>
-                                <th>科目(核算统计项目）</th>
-                                <th>借方</th>
-                                <th>贷方</th>
+                                <th colspan="3">说明</th>
+                                <th colspan="5">科目(核算统计项目）</th>
+                                <th colspan="2">借方</th>
+                                <th colspan="2">贷方</th>
                             </tr>
                         </thead>
                         <tbody class="text-left">
@@ -142,35 +142,35 @@
                             <tr t-foreach="doc.entrys" t-as="entry">
                                 <t t-set='dsum' t-value='dsum+entry.damount'></t>
                                 <t t-set='csum' t-value='csum+entry.camount'></t>
-                                <td>
+                                <td colspan="3">
                                     <span t-field='entry.explain' class="explain" />
                                 </td>
-                                <td>
+                                <td colspan="5">
                                     <span t-field="entry.account" />
                                     <span t-if="entry.items">(</span>
                                     <span t-field='entry.items' />
                                     <span t-if="entry.items">)</span>
                                 </td>
-                                <td class="damount text-right">
-                                    <span t-if="entry.damount!=0" t-field="entry.damount" />
+                                <td colspan="2" class="damount text-right">
+                                    <span t-if="entry.damount!=0" t-esc='"{:,.2f}".format(entry.damount)' />
                                 </td>
-                                <td class='camount text-right'>
-                                    <span t-if="entry.camount!=0" t-field="entry.camount" />
+                                <td  colspan="2" class='camount text-right'>
+                                    <span t-if="entry.camount!=0" t-esc='"{:,.2f}".format(entry.camount)'/>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan='2'>合计</td>
-                                <td>
+                                <td colspan='8'>合计</td>
+                                <td colspan='2'>
                                     <t t-esc='"{:,.2f}".format(dsum)'></t>
                                 </td>
-                                <td>
+                                <td colspan='2'>
                                     <t t-esc='"{:,.2f}".format(csum)'></t>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan='4' class='ac-no-border'>
+                                <td colspan='12' class='ac-no-border'>
                                     <center>
                                         <span style='margin-left:0px'>记账:</span>
                                         <span style='margin-left:1em' t-field='doc.createUser' />
@@ -186,34 +186,36 @@
         </template>
         <!-- 凭证打印_仅策略号 -->
         <template id='voucher_report_number'>
-            <div class="page container text-center" style="page-break-after:always">
+              <div class="page container text-center" style="page-break-after:always;display:flex;flex-direction:column;">
                 <div class="row">
                     <table class='table table-bordered table-sm ac-no-border'>
                         <thead style="white-space:nowrap;">
                             <tr>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <center>
-                                        <h4>记账凭证</h4>
+                                        <h3>记账凭证</h3>
                                     </center>
                                 </th>
                             </tr>
                             <tr>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <center>
-                                        <h6>
+                                        <h5>
                                             <span t-field='doc.voucherdate' />
-                                        </h6>
+                                        </h5>
                                     </center>
                                 </th>
                             </tr>
                             <tr class='ac-no-border'>
-                                <th colspan="4" class='ac-no-border'>
+                                <th colspan="12" class='ac-no-border'>
                                     <h6>
-                                        <span style='float:left'>机构:</span>
+                                        <span style='float:left'>机构/主体:</span>
                                         <span style='float:left;margin-left:1em' t-field='doc.org' />
                                         <span style='float:right'>
                                             <span >附件张数:</span>
                                             <span t-field='doc.appendixCount' />
+                                            <!-- <span style="margin-left:1em">唯一编号:</span>
+                                            <span t-field='doc.uniqueNumber' /> -->
                                             <span style="margin-left:1em">凭证编号:</span>
                                             <span t-field='doc.number' />
                                         </span>
@@ -221,10 +223,10 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>说明</th>
-                                <th>科目(核算统计项目）</th>
-                                <th>借方</th>
-                                <th>贷方</th>
+                                <th colspan="3">说明</th>
+                                <th colspan="5">科目(核算统计项目）</th>
+                                <th colspan="2">借方</th>
+                                <th colspan="2">贷方</th>
                             </tr>
                         </thead>
                         <tbody class="text-left">
@@ -233,35 +235,35 @@
                             <tr t-foreach="doc.entrys" t-as="entry">
                                 <t t-set='dsum' t-value='dsum+entry.damount'></t>
                                 <t t-set='csum' t-value='csum+entry.camount'></t>
-                                <td>
+                                <td colspan="3">
                                     <span t-field='entry.explain' class="explain" />
                                 </td>
-                                <td>
+                                <td colspan="5">
                                     <span t-field="entry.account" />
                                     <span t-if="entry.items">(</span>
                                     <span t-field='entry.items' />
                                     <span t-if="entry.items">)</span>
                                 </td>
-                                <td class="damount text-right">
-                                    <span t-if="entry.damount!=0" t-field="entry.damount" />
+                                <td colspan="2" class="damount text-right">
+                                    <span t-if="entry.damount!=0" t-esc='"{:,.2f}".format(entry.damount)' />
                                 </td>
-                                <td class='camount text-right'>
-                                    <span t-if="entry.camount!=0" t-field="entry.camount" />
+                                <td  colspan="2" class='camount text-right'>
+                                    <span t-if="entry.camount!=0" t-esc='"{:,.2f}".format(entry.camount)'/>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan='2'>合计</td>
-                                <td>
+                                <td colspan='8'>合计</td>
+                                <td colspan='2'>
                                     <t t-esc='"{:,.2f}".format(dsum)'></t>
                                 </td>
-                                <td>
+                                <td colspan='2'>
                                     <t t-esc='"{:,.2f}".format(csum)'></t>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan='4' class='ac-no-border'>
+                                <td colspan='12' class='ac-no-border'>
                                     <center>
                                         <span style='margin-left:0px'>记账:</span>
                                         <span style='margin-left:1em' t-field='doc.createUser' />
@@ -278,11 +280,12 @@
         <template id='vouchers_report'>
             <t t-call="web.basic_layout">
                 <style>
-table{table-layout: fixed;}
-table>tbody>tr {height: 5em;}
+
+table>tbody>tr {height: 6em;}
 table, tr, td, th, tbody, thead, tfoot{page-break-inside: avoid !important;}
-.explain{font-size:0.7em}
-th, td{border:1px solid black !important;}
+.explain{font-size:0.8em}
+th, td{border:1px solid black !important;font-size:1.2em}
+tfoot tr:nth-child(2){font-size:0.8em}
 td{vertical-align:middle !important;}
 .damount,.camount{white-space:nowrap !important;}
                 </style>
@@ -294,11 +297,11 @@ td{vertical-align:middle !important;}
         <template id='vouchers_report_a5'>
             <t t-call="web.basic_layout">
                 <style>
-table{table-layout: fixed;}
-table>tbody>tr {height: 5em;}
+table>tbody>tr {height: 6em;}
 table, tr, td, th, tbody, thead, tfoot{page-break-inside: avoid !important;}
-.explain{font-size:0.7em}
-th, td{border:1px solid black !important;}
+.explain{font-size:0.8em}
+th, td{border:1px solid black !important;font-size:1.2em}
+tfoot tr:nth-child(2){font-size:0.8em}
 td{vertical-align:middle !important;}
 .damount,.camount{white-space:nowrap !important;}
                 </style>
@@ -310,11 +313,11 @@ td{vertical-align:middle !important;}
         <template id='vouchers_report_a5_v_number_only'>
             <t t-call="web.basic_layout">
                 <style>
-table{table-layout: fixed;}
-table>tbody>tr {height: 5em;}
+table>tbody>tr {height: 6em;}
 table, tr, td, th, tbody, thead, tfoot{page-break-inside: avoid !important;}
-.explain{font-size:0.7em}
-th, td{border:1px solid black !important;}
+.explain{font-size:0.8em}
+th, td{border:1px solid black !important;font-size:1.2em}
+tfoot tr:nth-child(2){font-size:0.8em}
 td{vertical-align:middle !important;}
 .damount,.camount{white-space:nowrap !important;}
                 </style>
@@ -326,11 +329,11 @@ td{vertical-align:middle !important;}
         <template id='vouchers_report_a5_number_only'>
             <t t-call="web.basic_layout">
                 <style>
-table{table-layout: fixed;}
-table>tbody>tr {height: 5em;}
+table>tbody>tr {height: 6em;}
 table, tr, td, th, tbody, thead, tfoot{page-break-inside: avoid !important;}
-.explain{font-size:0.7em}
-th, td{border:1px solid black !important;}
+.explain{font-size:0.8em}
+th, td{border:1px solid black !important;font-size:1.2em}
+tfoot tr:nth-child(2){font-size:0.8em}
 td{vertical-align:middle !important;}
 .damount,.camount{white-space:nowrap !important;}
                 </style>
