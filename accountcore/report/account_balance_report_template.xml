@@ -107,7 +107,7 @@ table tr{page-break-inside: avoid !important;}
                             </thead>
                             <tbody class='text-left'>
                                 <t t-foreach="docs" t-as="account">
-                                    <tr style="page-break-inside: avoid !important;" t-att="{'org_id': account['org_id'],'accountId':account['account_id']}">
+                                    <tr style="page-break-inside: avoid !important;" t-att="{'ac_org_id': account['org_id'],'accountId':account['account_id']}">
                                         <td t-if='not (sum_orgs or orgs_count==1)' class='org_name' data-toggle="tooltip" t-att-title="account['org_name']">
                                             <span t-esc="account['org_name']"></span>
                                         </td>
@@ -197,11 +197,11 @@ odoo.define(function (require) {
             var web_client_ =window.top.odoo.__DEBUG__.services['web.web_client'];
             var _startDate='<t t-esc="data['form']['startDate']"/>';
             var _endDate='<t t-esc="data['form']['endDate']"/>';
-            var _orgs=<t t-esc="data['sum_orgids']"/>;
+            var ac_orgs=<t t-esc="data['sum_orgids']"/>;
             var tr = $(e.target).parents("tr");
-            if(tr.attr('org_id')>0){
-            _orgs = [tr.attr('org_id')];
-            };
+            var org_id_=parseInt(tr.attr('ac_org_id'))
+            if(org_id_>0){
+            ac_orgs = [org_id_]};
             var _account=[parseInt(tr.attr("accountId"))];
             var _item=parseInt(tr.find("span[itemId]").attr("itemId"));
             web_client_.do_action({
@@ -212,7 +212,7 @@ odoo.define(function (require) {
                                     default_startDate:_startDate,
                                     default_endDate:_endDate,
                                     default_account: _account,
-                                    default_orgs:_orgs,
+                                    default_orgs: ac_orgs,
                                     default_item:_item
                                 },
                                 views: [
