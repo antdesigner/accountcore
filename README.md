@@ -5,8 +5,8 @@ AccountCoreForOdoo,in China
 ## 安装注意
 - 该模块名称为accountcore,基于odoo12开发,不支持其他版本.(目前该版本已停止更新)更全的功能,更快的支持请加入QQ群161455531 群获得最新odoo13的基础源代码
 ## 商用官网
-![https://www.88v88v.com](https://www.88v88v.com)
-![商用模块许可购买地址](https://www.88v88v.com/gmrj)
+[https://www.88v88v.com](https://www.88v88v.com)
+[商用模块许可购买地址](https://www.88v88v.com/gmrj)
 ## 商用开发支持QQ群：161455531 
 ## 功能特点:
 - 无需复杂的初始化配置,开箱即用
@@ -37,7 +37,6 @@ AccountCoreForOdoo,in China
 .....
 
 开发目标是实现会计核算自动化和智能化,以完全取代会计核算的手工操作.
-![accountcore界面](https://images.cnblogs.com/cnblogs_com/antDesigner/1585005/o_accountcore.png)
 ## 最新功能及更新
 2020-11-24
 简单复制，批量新增下级科目
