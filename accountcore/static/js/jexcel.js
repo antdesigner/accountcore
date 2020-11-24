@@ -102,7 +102,9 @@ odoo.define('accountcore.jexcel', ['accountcore.jsuites', 'accountcore.accountin
             // CSV source
             csv:null,
             // Filename
-            csvFileName:'jexcel',
+            // tiger 修改-开始
+            csvFileName:'报表',
+            // tiger 修改-结束
             // Consider first line as header
             csvHeaders:true,
             // Delimiters

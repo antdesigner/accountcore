@@ -179,7 +179,8 @@ odoo.define(['accountcore.table2excel'], function (require) {
 		var btn2excel = require('accountcore.table2excel');
 		$('#t2excel', window.parent.document).click(function () {
             var fileName=$('.ac_title').text()+"[<t t-esc="data['form']['startDate']"></t>至<t t-esc="data['form']['endDate']"></t>].xls";
-			$("#ac_table").table2excel({
+			if (fileName.length>60){fileName=fileName.slice(0,60)+"等等";}
+            $("#ac_table").table2excel({
 				filename: fileName,
 				preserveColors: false
 			});

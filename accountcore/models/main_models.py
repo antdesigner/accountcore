@@ -1201,7 +1201,7 @@ class Voucher(models.Model, Glob_tag_Model):
                         n = n+1
                         continue
                     if any(['damount' in fields,
-                            'acmount' in fields,
+                            'camount' in fields,
                             'account' in fields,
                             'items' in fields]):
                         needUpdateBalance = True
