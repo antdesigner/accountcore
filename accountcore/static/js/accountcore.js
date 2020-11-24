@@ -1467,6 +1467,7 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                 allowRenameColumn: false,
                 // 排序和odoo可能有冲突，所以禁用
                 columnSorting: false,
+                csvFileName: "报表",
                 data: $.parseJSON(self.value),
                 mergeCells: $.parseJSON(self.record.data['merge_info']),
                 // 自定义扩展option
@@ -1600,6 +1601,15 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                         content: 'move_to_inbox',
                         tooltip: '下载报表(保留公式)',
                         onclick: function () {
+                            var startDate = self._getStartDate();
+                            var endDate = self._getEndDate();
+                            var orgs = self._getOrgs();
+                            var fileName = self.record.data['name'] + "[" + startDate + "至" + endDate + "]" + orgs;
+                            if (fileName.length>60){
+                                fileName=fileName.slice(0,60)+"等等";
+                            }
+                            self.jexcel_obj.options.csvFileName=fileName;
+                            console.info(self.jexcel_obj.options.csvFileName);
                             self.jexcel_obj.ACDownloadFomular();
                         }
                     },
@@ -1613,6 +1623,9 @@ odoo.define('accountcore.myjexcel', ['web.AbstractField', 'web.field_registry', 
                             var endDate = self._getEndDate();
                             var orgs = self._getOrgs();
                             var fileName = self.record.data['name'] + "[" + startDate + "至" + endDate + "]" + orgs + ".xls";
+                            if (fileName.length>60){
+                                fileName=fileName.slice(0,60)+"等等";
+                            }
                             $("#print_content tbody").table2excel({
                                 exclude: "tr td:first-child",
                                 filename: fileName,
